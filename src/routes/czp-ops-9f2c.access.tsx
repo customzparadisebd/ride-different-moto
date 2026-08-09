@@ -30,6 +30,9 @@ import {
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/czp-ops-9f2c/access")({
+  // Client-only: the form depends on the browser auth session, and
+  // server-rendering it caused a hydration mismatch on load.
+  ssr: false,
   head: () => ({
     meta: [
       { title: `Staff Sign In — ${site.name}` },
@@ -135,7 +138,7 @@ function AuthPage() {
       return;
     }
     await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + "/czp-ops-9f2c/access",
+      redirectTo: window.location.origin + "/czp-ops-9f2c/reset-password",
     });
     // Same response regardless of whether the account exists.
     toast.success("If that account exists, a reset link is on its way.");
@@ -241,6 +244,13 @@ function AuthPage() {
       <p className="mt-6 text-xs text-muted-foreground">
         New staff accounts start as <strong>Pending</strong> and need Admin approval before the panel
         opens. Privileged accounts must also pass authenticator verification.
+      </p>
+
+      <p className="mt-2 text-xs text-muted-foreground">
+        Owner account: if it has not been created yet, use <strong>Sign up</strong> once with the
+        owner email — it is granted Super Admin automatically. If it already exists, use{" "}
+        <strong>Forgot password?</strong> to set a new password by email. Passwords are stored only
+        as hashes and cannot be looked up by anyone.
       </p>
     </section>
   );
