@@ -19,8 +19,8 @@ import {
   statusLabel,
 } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/admin/")({
-  head: () => ({ meta: [{ title: "Orders — Admin" }, { name: "robots", content: "noindex" }] }),
+export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/")({
+  head: () => ({ meta: [{ title: "Orders — Admin" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: AdminOrders,
 });
 
@@ -41,7 +41,7 @@ function AdminOrders() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    void navigate({ to: "/auth", replace: true });
+    void navigate({ to: "/czp-ops-9f2c/access", replace: true });
   };
 
   if (accessQuery.isLoading) {
@@ -112,7 +112,7 @@ function AdminOrders() {
               <tr key={order.id} className="border-b border-border last:border-0">
                 <td className="p-3">
                   <Link
-                    to="/admin/orders/$id"
+                    to="/czp-ops-9f2c/orders/$id"
                     params={{ id: order.id }}
                     className="font-semibold text-primary underline"
                   >
