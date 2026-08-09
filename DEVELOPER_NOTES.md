@@ -105,6 +105,11 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Done:** Super-Admin-only card on `/czp-ops-9f2c/security` showing the panel URL, login page URL, login method (email + password + TOTP), owner account, live MFA status, remaining recovery codes and step-by-step recovery/lockout instructions. Served by a server function that verifies Super Admin before responding and returns no keys, secrets or tokens. Nothing about it appears on the public site.
 - **Next:** Once `admin.customzparadisebd.com` is connected the displayed URL updates automatically (it is derived from the live origin).
 
+## Owner / Staff Password Reset
+- **Status:** Completed
+- **Done:** "Forgot password?" on `/czp-ops-9f2c/access` now sends the recovery link to a real reset page, `/czp-ops-9f2c/reset-password` (public, client-only, `noindex, nofollow, noarchive`). It validates the recovery session from the link, requires the new password twice with a 10-character minimum and the show/hide eye field, saves it, signs the recovery session out and records a `security.password_reset` entry in the audit log. Reset responses stay generic so account existence is never revealed, and no password is ever logged or stored by the app. The login page also documents the owner-account path: sign up once with the owner email (auto Super Admin) or use Forgot password.
+- **Next:** None. Reset emails use the default provider templates; branded auth emails can be added once a sending domain is connected.
+
 ## Analytics & SEO Tracking
 - **Status:** Pending
 - **Done:** Per-route meta tags and structured data only.
