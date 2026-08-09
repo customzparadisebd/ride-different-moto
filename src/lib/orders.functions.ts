@@ -1,12 +1,22 @@
 import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
   adminOrderInput,
   checkoutSubmitInput,
   orderStatusUpdateInput,
   SHIPPING_FLAT_BDT,
 } from "./orders.shared";
+
+// ============================================================
+// ADMIN RBAC ENFORCEMENT ON ORDER FUNCTIONS
+// Purpose: Each order endpoint requires a specific permission and
+//          writes an audit entry for changes.
+// Status: COMPLETED
+// Security: Permissions are resolved server-side from the verified
+//          bearer token; the UI never decides access.
+// ============================================================
 
 /** Public: the storefront checkout. Prices are resolved server-side. */
 export const placeOrder = createServerFn({ method: "POST" })
@@ -39,21 +49,35 @@ export const placeOrder = createServerFn({ method: "POST" })
     return { invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
   });
 
-/** Admin: does the signed-in account have staff access? */
+/** Admin: does the signed-in account have staff access? Used by the route gate. */
 export const getMyAccess = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { ensureAccount } = await import("./orders.server");
-    const email = (context.claims as { email?: string } | null)?.email ?? null;
-    const roles = await ensureAccount(context.userId, email);
-    return { userId: context.userId, email, roles, isStaff: roles.length > 0 };
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    return {
+      userId: actor.userId,
+      email: actor.email,
+      roles: actor.roles,
+      primaryRole: actor.primaryRole,
+      permissions: actor.permissions,
+      status: actor.status,
+      isStaff: actor.isStaff,
+      isSuperAdmin: actor.isSuperAdmin,
+      mfaRequired: actor.mfaRequired,
+      mfaSatisfied: actor.mfaSatisfied,
+      sessionRevoked: actor.sessionRevoked,
+    };
   });
 
 export const listOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { assertStaff } = await import("./orders.server");
-    await assertStaff(context.supabase, context.userId);
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
 
     const { data, error } = await context.supabase
       .from("orders")
@@ -70,8 +94,11 @@ export const getOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
   .handler(async ({ data, context }) => {
-    const { assertStaff } = await import("./orders.server");
-    await assertStaff(context.supabase, context.userId);
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
 
     const order = await context.supabase
       .from("orders")
@@ -100,8 +127,16 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => orderStatusUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { assertStaff, logOrderEvent } = await import("./orders.server");
-    await assertStaff(context.supabase, context.userId);
+    const { logOrderEvent } = await import("./orders.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const before = await context.supabase
+      .from("orders")
+      .select("invoice_no, status, payment_status")
+      .eq("id", data.orderId)
+      .maybeSingle();
 
     const patch: { status?: string; payment_status?: string } = {};
     if (data.status) patch.status = data.status;
@@ -128,6 +163,19 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       metadata: patch,
     });
 
+    await auditFromActor(actor, {
+      action: Object.keys(patch).length
+        ? AUDIT_ACTIONS.orderStatusChanged
+        : AUDIT_ACTIONS.orderNoteAdded,
+      targetType: "order",
+      targetId: data.orderId,
+      targetLabel: before.data?.invoice_no ?? null,
+      oldValue: before.data
+        ? { status: before.data.status, payment_status: before.data.payment_status }
+        : null,
+      newValue: Object.keys(patch).length ? patch : { note: data.note ?? null },
+    });
+
     return { ok: true };
   });
 
@@ -136,8 +184,10 @@ export const createManualOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => adminOrderInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { assertStaff, createOrder } = await import("./orders.server");
-    await assertStaff(context.supabase, context.userId);
+    const { createOrder } = await import("./orders.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersCreate);
 
     const order = await createOrder(data, {
       source: "admin",
@@ -147,6 +197,13 @@ export const createManualOrder = createServerFn({ method: "POST" })
       status: data.status,
       actor: context.userId,
       actorLabel: "admin",
+    });
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.orderCreated,
+      targetType: "order",
+      targetId: order.orderId,
+      targetLabel: order.invoiceNo,
+      newValue: { total: order.total, source: "admin" },
     });
     return { orderId: order.orderId, invoiceNo: order.invoiceNo, total: order.total };
   });

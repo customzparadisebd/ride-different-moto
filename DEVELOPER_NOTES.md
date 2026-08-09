@@ -73,7 +73,37 @@ Status values: `Completed` / `In Progress` / `Pending`.
 ## Admin Panel Access & Login Security
 - **Status:** Completed
 - **Done:** Admin panel moved off predictable URLs to the private path `/czp-ops-9f2c` (staff sign-in `/czp-ops-9f2c/access`, order detail `/czp-ops-9f2c/orders/:id`, `/czp-ops-9f2c/access-denied`). Nothing on the public site links to or reveals it. Real security is server-side: `_authenticated` gate requires a valid session, and a nested layout gate calls the `getMyAccess` server function (bearer-token validated, roles read from `user_roles`) before rendering; non-staff users are redirected to access-denied. All admin/auth pages send `noindex, nofollow` and are disallowed in `robots.txt`. Store header/footer/nav are hidden in the admin area. Login form has a modern show/hide password (eye) toggle, password never logged, plus a 5-attempt / 60-second client-side lockout on top of backend rate limiting.
-- **Next:** Point the `admin.customzparadisebd.com` subdomain at the project once the custom domain is connected (DNS + Domains settings), and add per-role permissions (Super Admin vs Staff) if finer-grained control is needed.
+- **Next:** Point the `admin.customzparadisebd.com` subdomain at the project once the custom domain is connected (DNS + Domains settings).
+
+## Admin MFA (Two-Factor)
+- **Status:** Completed
+- **Done:** TOTP authenticator MFA via the auth provider (secret never stored in our DB). Super Admin accounts are `mfa_required` and cannot open any admin screen without an AAL2 token — the server-side gate redirects to `/czp-ops-9f2c/mfa`, which handles both first-time enrolment (QR) and step-up verification. Flow: Email + Password -> TOTP -> panel. 8 one-time recovery codes are generated at setup, stored only as salted SHA-256 hashes in `mfa_backup_codes` (service-role only) and shown once; a valid code removes the lost authenticator so a new device can be enrolled. Optional MFA for other roles from the Security page.
+- **Next:** None.
+
+## Admin Audit Log
+- **Status:** Completed
+- **Done:** Append-only `admin_audit_log` (actor, role, action, target, IP, user agent, session, before/after JSON, timestamp) written only with the service-role client. Covers logins, failed logins, logout, MFA enrolment/recovery/backup codes, session revocation, staff status/role/permission changes and order create/status/notes. Viewer at `/czp-ops-9f2c/audit-log` requires the `audit.view` permission (Super Admin by default); no client role can insert, edit or delete rows.
+- **Next:** Append product create/edit/delete/restore and API-configuration events when those modules are built (the writer already accepts them).
+
+## Staff Roles & Permissions (RBAC)
+- **Status:** Completed
+- **Done:** Roles `super_admin`, `admin`, `manager`, `staff` in `user_roles`, plus per-user grants in `user_permissions`. Effective permissions = role defaults + explicit grants, resolved server-side in `admin.server.ts`; `roles.manage`, `security.manage` and `api.manage` are Super-Admin-only and are stripped from anyone else even if a row exists. Every admin server function calls `assertAccess(actor, permission)` — hiding buttons is never the gate. Manage screen at `/czp-ops-9f2c/staff`. Nobody can change their own status, role or permissions; only a Super Admin can change roles or touch another Super Admin.
+- **Next:** None.
+
+## Admin Session Hardening & Rate Limiting
+- **Status:** Completed
+- **Done:** `admin_sessions` tracks every admin session (session id from the verified token, IP, device, first/last seen). Sign-out and Super Admin revocation mark sessions revoked and the gate blocks them on the next request; suspending/revoking an account kills its live sessions immediately. Tokens are short-lived and rotated by the auth provider, CSRF middleware protects server functions, and baseline security headers (nosniff, referrer-policy, permissions-policy) are set for every response. Login rate limiting is server-side in `login_attempts`: 3 consecutive failures = 5 min lock, then 15/30/60 min progressively; errors are generic so account existence is never revealed.
+- **Next:** Frame-ancestors/HSTS are handled by the hosting platform; revisit if a custom reverse proxy is introduced.
+
+## Secure Staff Access (Approval Workflow)
+- **Status:** Completed
+- **Done:** `profiles.access_status` = Pending / Approved / Suspended / Revoked; new sign-ups start Pending and `is_staff()` only returns true for approved accounts with a role, so RLS and the gate both deny them. Admins with `staff.manage` can approve, suspend, revoke or reset to pending from `/czp-ops-9f2c/staff`. Staff cannot approve themselves, edit their own role/permissions, create a Super Admin, or reach API/security/role screens (blocked server-side, not just hidden).
+- **Next:** None.
+
+## Super Admin Access Information
+- **Status:** Completed
+- **Done:** Super-Admin-only card on `/czp-ops-9f2c/security` showing the panel URL, login page URL, login method (email + password + TOTP), owner account, live MFA status, remaining recovery codes and step-by-step recovery/lockout instructions. Served by a server function that verifies Super Admin before responding and returns no keys, secrets or tokens. Nothing about it appears on the public site.
+- **Next:** Once `admin.customzparadisebd.com` is connected the displayed URL updates automatically (it is derived from the live origin).
 
 ## Analytics & SEO Tracking
 - **Status:** Pending

@@ -1,3 +1,16 @@
+// ============================================================
+// ADMIN / STAFF LOGIN
+// Purpose: Email + password entry point for the admin panel. After
+//          a successful password step the server gate sends
+//          privileged accounts to two-factor verification.
+// Status: COMPLETED
+// Security: Lockout counters live server-side (login_attempts), so
+//          clearing browser storage does not reset them: 3 failed
+//          attempts lock for 5 minutes and repeated failures extend
+//          the lockout progressively. Error messages never reveal
+//          whether an account exists. Every attempt is audited.
+// Future: None.
+// ============================================================
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -9,6 +22,12 @@ import { PasswordInput } from "@/components/PasswordInput";
 import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import {
+  checkLoginAllowed,
+  recordSignIn,
+  reportLoginFailure,
+  reportLoginSuccess,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/czp-ops-9f2c/access")({
   head: () => ({
@@ -35,9 +54,14 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentEmail, setSentEmail] = useState(false);
-  const [failures, setFailures] = useState(0);
-  const [lockedUntil, setLockedUntil] = useState(0);
-  const locked = lockedUntil > Date.now();
+  const [lockSeconds, setLockSeconds] = useState(0);
+  const locked = lockSeconds > 0;
+
+  useEffect(() => {
+    if (!lockSeconds) return;
+    const timer = setInterval(() => setLockSeconds((s) => (s > 1 ? s - 1 : 0)), 1000);
+    return () => clearInterval(timer);
+  }, [lockSeconds]);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
@@ -51,12 +75,19 @@ function AuthPage() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (locked) {
-      toast.error("Too many attempts. Please wait a moment before trying again.");
-      return;
-    }
     setBusy(true);
     try {
+      // Server-side rate limit check before touching the auth provider.
+      const gate = await checkLoginAllowed({ data: { email } });
+      if (gate.locked) {
+        setLockSeconds(gate.retryInSeconds);
+        toast.error(
+          `Too many failed attempts. Try again in about ${Math.ceil(gate.retryInSeconds / 60)} minute(s).`,
+        );
+        setBusy(false);
+        return;
+      }
+
       if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -67,23 +98,47 @@ function AuthPage() {
         if (!data.session) {
           setSentEmail(true);
           toast.success("Check your email to confirm the account.");
+        } else {
+          toast.success("Account created. Access must be approved by an admin.");
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        setFailures(0);
+        await reportLoginSuccess({ data: { email } });
+        try {
+          await recordSignIn({});
+        } catch {
+          /* audit is best-effort */
+        }
       }
     } catch (error) {
-      const next = failures + 1;
-      setFailures(next);
-      if (next >= 5) {
-        setLockedUntil(Date.now() + 60_000);
-        setFailures(0);
+      if (mode === "signin") {
+        try {
+          const state = await reportLoginFailure({ data: { email } });
+          if (state.locked) setLockSeconds(state.retryInSeconds);
+        } catch {
+          /* ignore throttle bookkeeping failures */
+        }
+        // Generic message: never disclose whether the account exists.
+        toast.error("Those sign-in details are not valid.");
+      } else {
+        toast.error(error instanceof Error ? error.message : "Could not create the account.");
       }
-      toast.error(error instanceof Error ? error.message : "Authentication failed.");
     } finally {
       setBusy(false);
     }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast.error("Enter your email address first.");
+      return;
+    }
+    await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + "/czp-ops-9f2c/access",
+    });
+    // Same response regardless of whether the account exists.
+    toast.success("If that account exists, a reset link is on its way.");
   };
 
   const handleGoogle = async () => {
@@ -144,8 +199,21 @@ function AuthPage() {
             className="w-full"
             disabled={busy || locked}
           >
-            {locked ? "Locked — try again shortly" : mode === "signup" ? "Create account" : "Sign in"}
+            {locked
+              ? `Locked — retry in ${Math.floor(lockSeconds / 60)}:${String(lockSeconds % 60).padStart(2, "0")}`
+              : mode === "signup"
+                ? "Create account"
+                : "Sign in"}
           </Button>
+          {mode === "signin" ? (
+            <button
+              type="button"
+              className="text-xs text-muted-foreground underline"
+              onClick={() => void handleForgotPassword()}
+            >
+              Forgot password?
+            </button>
+          ) : null}
         </form>
       )}
 
@@ -169,6 +237,11 @@ function AuthPage() {
       >
         {mode === "signin" ? "Need an account? Sign up" : "Already have an account? Sign in"}
       </button>
+
+      <p className="mt-6 text-xs text-muted-foreground">
+        New staff accounts start as <strong>Pending</strong> and need Admin approval before the panel
+        opens. Privileged accounts must also pass authenticator verification.
+      </p>
     </section>
   );
 }
