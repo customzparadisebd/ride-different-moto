@@ -135,6 +135,21 @@ export const orderFilterInput = z.object({
   pageSize: z.coerce.number().int().min(10).max(200).default(25),
   sortBy: z.enum(["created_at", "total", "invoice_no"]).default("created_at"),
   sortDir: z.enum(["asc", "desc"]).default("desc"),
+  /** Recycle Bin view: when true, only soft-deleted orders are returned. */
+  deleted: z.boolean().default(false),
+});
+
+/** Recycle Bin actions on orders. */
+export const orderRecycleInput = z.object({
+  id: z.string().uuid(),
+  reason: z.string().trim().max(300).optional(),
+});
+
+export const orderRestoreInput = z.object({ id: z.string().uuid() });
+
+export const orderPurgeInput = z.object({
+  id: z.string().uuid(),
+  confirmInvoiceNo: z.string().trim().min(1).max(60),
 });
 
 /** Bulk order-status change from the list screen. */

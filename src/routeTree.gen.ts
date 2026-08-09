@@ -32,6 +32,7 @@ import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedCzpOps9f2cAuditLogRouteImport } from './routes/_authenticated/czp-ops-9f2c/audit-log'
 import { Route as AuthenticatedCzpOps9f2cCustomersRouteImport } from './routes/_authenticated/czp-ops-9f2c/customers'
 import { Route as AuthenticatedCzpOps9f2cProductsRouteImport } from './routes/_authenticated/czp-ops-9f2c/products'
+import { Route as AuthenticatedCzpOps9f2cRecycleBinRouteImport } from './routes/_authenticated/czp-ops-9f2c/recycle-bin'
 import { Route as AuthenticatedCzpOps9f2cSecurityRouteImport } from './routes/_authenticated/czp-ops-9f2c/security'
 import { Route as AuthenticatedCzpOps9f2cSettingsRouteImport } from './routes/_authenticated/czp-ops-9f2c/settings'
 import { Route as AuthenticatedCzpOps9f2cStaffRouteImport } from './routes/_authenticated/czp-ops-9f2c/staff'
@@ -159,6 +160,12 @@ const AuthenticatedCzpOps9f2cProductsRoute =
     path: '/products',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
+const AuthenticatedCzpOps9f2cRecycleBinRoute =
+  AuthenticatedCzpOps9f2cRecycleBinRouteImport.update({
+    id: '/recycle-bin',
+    path: '/recycle-bin',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
 const AuthenticatedCzpOps9f2cSecurityRoute =
   AuthenticatedCzpOps9f2cSecurityRouteImport.update({
     id: '/security',
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
   '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
+  '/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
   '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
@@ -254,6 +262,7 @@ export interface FileRoutesByTo {
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
   '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
+  '/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
   '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/_authenticated/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/_authenticated/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
   '/_authenticated/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
+  '/_authenticated/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
   '/_authenticated/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
   '/_authenticated/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/_authenticated/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
@@ -320,6 +330,7 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/audit-log'
     | '/czp-ops-9f2c/customers'
     | '/czp-ops-9f2c/products'
+    | '/czp-ops-9f2c/recycle-bin'
     | '/czp-ops-9f2c/security'
     | '/czp-ops-9f2c/settings'
     | '/czp-ops-9f2c/staff'
@@ -350,6 +361,7 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/audit-log'
     | '/czp-ops-9f2c/customers'
     | '/czp-ops-9f2c/products'
+    | '/czp-ops-9f2c/recycle-bin'
     | '/czp-ops-9f2c/security'
     | '/czp-ops-9f2c/settings'
     | '/czp-ops-9f2c/staff'
@@ -382,6 +394,7 @@ export interface FileRouteTypes {
     | '/_authenticated/czp-ops-9f2c/audit-log'
     | '/_authenticated/czp-ops-9f2c/customers'
     | '/_authenticated/czp-ops-9f2c/products'
+    | '/_authenticated/czp-ops-9f2c/recycle-bin'
     | '/_authenticated/czp-ops-9f2c/security'
     | '/_authenticated/czp-ops-9f2c/settings'
     | '/_authenticated/czp-ops-9f2c/staff'
@@ -576,6 +589,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cProductsRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
+    '/_authenticated/czp-ops-9f2c/recycle-bin': {
+      id: '/_authenticated/czp-ops-9f2c/recycle-bin'
+      path: '/recycle-bin'
+      fullPath: '/czp-ops-9f2c/recycle-bin'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cRecycleBinRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
     '/_authenticated/czp-ops-9f2c/security': {
       id: '/_authenticated/czp-ops-9f2c/security'
       path: '/security'
@@ -632,6 +652,7 @@ interface AuthenticatedCzpOps9f2cRouteRouteChildren {
   AuthenticatedCzpOps9f2cAuditLogRoute: typeof AuthenticatedCzpOps9f2cAuditLogRoute
   AuthenticatedCzpOps9f2cCustomersRoute: typeof AuthenticatedCzpOps9f2cCustomersRoute
   AuthenticatedCzpOps9f2cProductsRoute: typeof AuthenticatedCzpOps9f2cProductsRoute
+  AuthenticatedCzpOps9f2cRecycleBinRoute: typeof AuthenticatedCzpOps9f2cRecycleBinRoute
   AuthenticatedCzpOps9f2cSecurityRoute: typeof AuthenticatedCzpOps9f2cSecurityRoute
   AuthenticatedCzpOps9f2cSettingsRoute: typeof AuthenticatedCzpOps9f2cSettingsRoute
   AuthenticatedCzpOps9f2cStaffRoute: typeof AuthenticatedCzpOps9f2cStaffRoute
@@ -648,6 +669,8 @@ const AuthenticatedCzpOps9f2cRouteRouteChildren: AuthenticatedCzpOps9f2cRouteRou
     AuthenticatedCzpOps9f2cCustomersRoute:
       AuthenticatedCzpOps9f2cCustomersRoute,
     AuthenticatedCzpOps9f2cProductsRoute: AuthenticatedCzpOps9f2cProductsRoute,
+    AuthenticatedCzpOps9f2cRecycleBinRoute:
+      AuthenticatedCzpOps9f2cRecycleBinRoute,
     AuthenticatedCzpOps9f2cSecurityRoute: AuthenticatedCzpOps9f2cSecurityRoute,
     AuthenticatedCzpOps9f2cSettingsRoute: AuthenticatedCzpOps9f2cSettingsRoute,
     AuthenticatedCzpOps9f2cStaffRoute: AuthenticatedCzpOps9f2cStaffRoute,
