@@ -90,6 +90,31 @@ export const recordSignOut = createServerFn({ method: "POST" })
   });
 
 // ---------- LOGIN RATE LIMITING (public, no account disclosure) ----------
+// ============================================================
+// PASSWORD RESET AUDIT
+// Purpose: Records that an account's password was changed through
+//          the recovery link, so resets are traceable.
+// Status: COMPLETED
+// Security: The caller is resolved from the verified recovery
+//          bearer token; no password material is ever accepted,
+//          returned or logged here.
+// Future: None.
+// ============================================================
+export const recordPasswordReset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.passwordReset,
+      targetType: "account",
+      targetId: actor.userId,
+      targetLabel: actor.email,
+      metadata: { method: "recovery_link" },
+    });
+    return { ok: true };
+  });
+
 export const checkLoginAllowed = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => loginAttemptInput.parse(input))
   .handler(async ({ data }) => {

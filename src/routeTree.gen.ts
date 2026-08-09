@@ -27,6 +27,7 @@ import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 import { Route as CzpOps9f2cAccessRouteImport } from './routes/czp-ops-9f2c.access'
 import { Route as CzpOps9f2cAccessDeniedRouteImport } from './routes/czp-ops-9f2c.access-denied'
 import { Route as CzpOps9f2cMfaRouteImport } from './routes/czp-ops-9f2c.mfa'
+import { Route as CzpOps9f2cResetPasswordRouteImport } from './routes/czp-ops-9f2c.reset-password'
 import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
 import { Route as AuthenticatedCzpOps9f2cAuditLogRouteImport } from './routes/_authenticated/czp-ops-9f2c/audit-log'
 import { Route as AuthenticatedCzpOps9f2cSecurityRouteImport } from './routes/_authenticated/czp-ops-9f2c/security'
@@ -123,6 +124,11 @@ const CzpOps9f2cMfaRoute = CzpOps9f2cMfaRouteImport.update({
   path: '/czp-ops-9f2c/mfa',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CzpOps9f2cResetPasswordRoute = CzpOps9f2cResetPasswordRouteImport.update({
+  id: '/czp-ops-9f2c/reset-password',
+  path: '/czp-ops-9f2c/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCzpOps9f2cIndexRoute =
   AuthenticatedCzpOps9f2cIndexRouteImport.update({
     id: '/',
@@ -171,6 +177,7 @@ export interface FileRoutesByFullPath {
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
+  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
+  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
+  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/_authenticated/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
   '/_authenticated/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
@@ -246,6 +255,7 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
     | '/czp-ops-9f2c/mfa'
+    | '/czp-ops-9f2c/reset-password'
     | '/bike-models/'
     | '/czp-ops-9f2c/audit-log'
     | '/czp-ops-9f2c/security'
@@ -269,6 +279,7 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
     | '/czp-ops-9f2c/mfa'
+    | '/czp-ops-9f2c/reset-password'
     | '/bike-models'
     | '/czp-ops-9f2c/audit-log'
     | '/czp-ops-9f2c/security'
@@ -294,6 +305,7 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
     | '/czp-ops-9f2c/mfa'
+    | '/czp-ops-9f2c/reset-password'
     | '/bike-models/'
     | '/_authenticated/czp-ops-9f2c/audit-log'
     | '/_authenticated/czp-ops-9f2c/security'
@@ -319,6 +331,7 @@ export interface RootRouteChildren {
   CzpOps9f2cAccessRoute: typeof CzpOps9f2cAccessRoute
   CzpOps9f2cAccessDeniedRoute: typeof CzpOps9f2cAccessDeniedRoute
   CzpOps9f2cMfaRoute: typeof CzpOps9f2cMfaRoute
+  CzpOps9f2cResetPasswordRoute: typeof CzpOps9f2cResetPasswordRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
 
@@ -450,6 +463,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CzpOps9f2cMfaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/czp-ops-9f2c/reset-password': {
+      id: '/czp-ops-9f2c/reset-password'
+      path: '/czp-ops-9f2c/reset-password'
+      fullPath: '/czp-ops-9f2c/reset-password'
+      preLoaderRoute: typeof CzpOps9f2cResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/czp-ops-9f2c/': {
       id: '/_authenticated/czp-ops-9f2c/'
       path: '/'
@@ -539,18 +559,9 @@ const rootRouteChildren: RootRouteChildren = {
   CzpOps9f2cAccessRoute: CzpOps9f2cAccessRoute,
   CzpOps9f2cAccessDeniedRoute: CzpOps9f2cAccessDeniedRoute,
   CzpOps9f2cMfaRoute: CzpOps9f2cMfaRoute,
+  CzpOps9f2cResetPasswordRoute: CzpOps9f2cResetPasswordRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
