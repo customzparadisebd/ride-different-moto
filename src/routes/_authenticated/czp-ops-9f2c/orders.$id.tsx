@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
+import { adminHead } from "@/components/admin/AdminShell";
 import {
   type AdminOrderItem,
   OrderItemsTable,
@@ -22,7 +23,7 @@ import {
 } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/$id")({
-  head: () => ({ meta: [{ title: "Order — Admin" }, { name: "robots", content: "noindex, nofollow" }] }),
+  head: () => adminHead("Order — CZP Ops"),
   component: AdminOrderDetail,
 });
 
@@ -57,7 +58,7 @@ function AdminOrderDetail() {
       <section className="mx-auto max-w-md px-4 py-16 text-center">
         <p className="text-sm text-muted-foreground">Order not found.</p>
         <Button variant="steel" size="touch" className="mt-4" asChild>
-          <Link to="/czp-ops-9f2c">Back to orders</Link>
+          <Link to="/czp-ops-9f2c/orders">Back to orders</Link>
         </Button>
       </section>
     );
@@ -73,9 +74,19 @@ function AdminOrderDetail() {
 
   return (
     <section className="mx-auto max-w-6xl">
-      <Link to="/czp-ops-9f2c" className="text-xs uppercase tracking-wider text-muted-foreground underline">
-        ← All orders
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          to="/czp-ops-9f2c/orders"
+          className="text-xs uppercase tracking-wider text-muted-foreground underline"
+        >
+          ← All orders
+        </Link>
+        <Button variant="steel" size="sm" asChild>
+          <Link to="/czp-ops-9f2c/invoice/$id" params={{ id: order.id }}>
+            Print invoice
+          </Link>
+        </Button>
+      </div>
       <div className="mt-2 flex flex-wrap items-center gap-3">
         <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
           {order.invoice_no}

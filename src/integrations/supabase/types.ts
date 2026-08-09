@@ -378,6 +378,42 @@ export type Database = {
         }
         Relationships: []
       }
+      store_settings: {
+        Row: {
+          created_at: string
+          id: string
+          low_stock_threshold: number
+          payment_methods: Json
+          shipping_flat: number
+          support_email: string | null
+          support_phone: string
+          updated_at: string
+          zone_charges: Json
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          low_stock_threshold?: number
+          payment_methods?: Json
+          shipping_flat?: number
+          support_email?: string | null
+          support_phone?: string
+          updated_at?: string
+          zone_charges?: Json
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          low_stock_threshold?: number
+          payment_methods?: Json
+          shipping_flat?: number
+          support_email?: string | null
+          support_phone?: string
+          updated_at?: string
+          zone_charges?: Json
+        }
+        Relationships: []
+      }
       user_permissions: {
         Row: {
           created_at: string

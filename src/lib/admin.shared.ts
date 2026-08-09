@@ -105,6 +105,8 @@ export const AUDIT_ACTIONS = {
   orderUpdated: "order.updated",
   orderStatusChanged: "order.status_changed",
   orderNoteAdded: "order.note_added",
+  orderBulkStatusChanged: "order.bulk_status_changed",
+  settingsUpdated: "settings.updated",
 } as const;
 
 export const staffStatusInput = z.object({
