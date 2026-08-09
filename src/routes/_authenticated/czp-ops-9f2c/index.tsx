@@ -1,9 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import {
+  EMPTY_ORDER_FILTERS,
+  OrderFilterBar,
+  type OrderFilters,
+} from "@/components/admin/orders/OrderFilterBar";
+import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +17,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { formatBDT } from "@/lib/format";
 import { createManualOrder, getMyAccess, listOrders } from "@/lib/orders.functions";
 import {
+  DELIVERY_ZONES,
+  deliveryZoneLabel,
   newIdempotencyKey,
   ORDER_STATUSES,
   PAYMENT_METHODS,
@@ -29,12 +37,24 @@ function AdminOrders() {
   const queryClient = useQueryClient();
   const access = useServerFn(getMyAccess);
   const fetchOrders = useServerFn(listOrders);
+  const [filters, setFilters] = useState<OrderFilters>(EMPTY_ORDER_FILTERS);
+
+  // Only non-empty filters are sent, so the server-side Zod schema keeps its defaults.
+  const activeFilters = useMemo(
+    () =>
+      Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== "")) as Record<
+        string,
+        string
+      >,
+    [filters],
+  );
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
   const ordersQuery = useQuery({
-    queryKey: ["admin-orders"],
-    queryFn: () => fetchOrders({}),
+    queryKey: ["admin-orders", activeFilters],
+    queryFn: () => fetchOrders({ data: activeFilters }),
     enabled: accessQuery.data?.isStaff === true,
+    placeholderData: (previous) => previous,
   });
 
   const handleSignOut = async () => {
@@ -63,6 +83,7 @@ function AdminOrders() {
   }
 
   const orders = ordersQuery.data ?? [];
+  const totalValue = orders.reduce((sum, order) => sum + Number(order.total), 0);
 
   return (
     <section>
@@ -70,7 +91,8 @@ function AdminOrders() {
         <div>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Orders</h1>
           <p className="text-xs text-muted-foreground">
-            {accessQuery.data.primaryRole ?? "staff"} access · {orders.length} order(s) loaded
+            {accessQuery.data.primaryRole ?? "staff"} access · {orders.length} order(s) ·{" "}
+            {formatBDT(totalValue)} value
           </p>
         </div>
       </div>
@@ -78,31 +100,41 @@ function AdminOrders() {
       {/* Manual order entry requires the orders.create permission (also enforced server-side). */}
       {accessQuery.data.permissions.includes("orders.create") ? <ManualOrderForm /> : null}
 
-      <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
-        <table className="w-full min-w-[760px] text-sm">
+      <OrderFilterBar
+        value={filters}
+        onChange={setFilters}
+        onReset={() => setFilters(EMPTY_ORDER_FILTERS)}
+        isLoading={ordersQuery.isFetching}
+      />
+
+      <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
+        <table className="w-full min-w-[1080px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
               <th className="p-3">Invoice</th>
               <th className="p-3">Date</th>
               <th className="p-3">Customer</th>
-              <th className="p-3">Total</th>
+              <th className="p-3">Zone</th>
+              <th className="p-3 text-right">Total</th>
+              <th className="p-3 text-right">Due</th>
               <th className="p-3">Payment</th>
               <th className="p-3">Status</th>
+              <th className="p-3">Courier</th>
               <th className="p-3">Source</th>
             </tr>
           </thead>
           <tbody>
             {ordersQuery.isLoading && (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-muted-foreground">
+                <td colSpan={10} className="p-6 text-center text-muted-foreground">
                   Loading orders…
                 </td>
               </tr>
             )}
             {!ordersQuery.isLoading && orders.length === 0 && (
               <tr>
-                <td colSpan={7} className="p-6 text-center text-muted-foreground">
-                  No orders yet.
+                <td colSpan={10} className="p-6 text-center text-muted-foreground">
+                  No orders match these filters.
                 </td>
               </tr>
             )}
@@ -126,14 +158,25 @@ function AdminOrders() {
                     {order.customer_phone} · {order.city}
                   </span>
                 </td>
-                <td className="p-3 font-semibold">{formatBDT(Number(order.total))}</td>
+                <td className="p-3 text-muted-foreground">
+                  {deliveryZoneLabel(order.delivery_zone)}
+                </td>
+                <td className="p-3 text-right font-semibold">{formatBDT(Number(order.total))}</td>
+                <td className="p-3 text-right text-muted-foreground">
+                  {formatBDT(Math.max(Number(order.total) - Number(order.advance_paid ?? 0), 0))}
+                </td>
                 <td className="p-3">
                   {paymentMethodLabel(order.payment_method)}
-                  <span className="block text-xs text-muted-foreground">
-                    {statusLabel(order.payment_status)}
+                  <span className="mt-1 block">
+                    <StatusBadge value={order.payment_status} />
                   </span>
                 </td>
-                <td className="p-3">{statusLabel(order.status)}</td>
+                <td className="p-3">
+                  <StatusBadge value={order.status} />
+                </td>
+                <td className="p-3">
+                  <StatusBadge value={order.courier_status} />
+                </td>
                 <td className="p-3 text-muted-foreground">{statusLabel(order.order_source)}</td>
               </tr>
             ))}
@@ -154,11 +197,15 @@ function ManualOrderForm() {
     customerPhone: "",
     addressLine: "",
     city: "",
+    deliveryZone: "inside_dhaka",
     productName: "",
+    variant: "",
     unitPrice: "",
     quantity: "1",
     discount: "0",
     shipping: "0",
+    advancePaid: "0",
+    transactionId: "",
     paymentMethod: "cash_on_delivery",
     paymentStatus: "unpaid",
     status: "pending",
@@ -199,16 +246,20 @@ function ManualOrderForm() {
             customerPhone: form.customerPhone,
             addressLine: form.addressLine,
             city: form.city,
+            deliveryZone: form.deliveryZone as "inside_dhaka",
             notes: form.notes,
             paymentMethod: form.paymentMethod as "cash_on_delivery",
             discount: Number(form.discount) || 0,
             shipping: Number(form.shipping) || 0,
+            advancePaid: Number(form.advancePaid) || 0,
+            transactionId: form.transactionId,
             paymentStatus: form.paymentStatus as "unpaid",
             status: form.status as "pending",
             idempotencyKey: key,
             items: [
               {
                 productName: form.productName,
+                variant: form.variant,
                 unitPrice: Number(form.unitPrice) || 0,
                 quantity: Number(form.quantity) || 1,
               },
@@ -221,12 +272,22 @@ function ManualOrderForm() {
       <TextField label="Customer name" value={form.customerName} onChange={set("customerName")} />
       <TextField label="Mobile" value={form.customerPhone} onChange={set("customerPhone")} />
       <TextField label="City" value={form.city} onChange={set("city")} />
+      <SelectField
+        label="Delivery zone"
+        value={form.deliveryZone}
+        onChange={set("deliveryZone")}
+        options={DELIVERY_ZONES.map((z) => [z.value, z.label] as const)}
+      />
       <TextField label="Address" value={form.addressLine} onChange={set("addressLine")} />
       <TextField label="Product" value={form.productName} onChange={set("productName")} />
+      <TextField label="Variant / attributes" value={form.variant} onChange={set("variant")} />
       <TextField label="Unit price (৳)" value={form.unitPrice} onChange={set("unitPrice")} />
       <TextField label="Quantity" value={form.quantity} onChange={set("quantity")} />
       <TextField label="Discount (৳)" value={form.discount} onChange={set("discount")} />
       <TextField label="Shipping (৳)" value={form.shipping} onChange={set("shipping")} />
+      <TextField label="Advance paid (৳)" value={form.advancePaid} onChange={set("advancePaid")} />
+      <TextField label="Transaction ID" value={form.transactionId} onChange={set("transactionId")} />
+      <TextField label="Internal note" value={form.notes} onChange={set("notes")} />
       <SelectField
         label="Payment method"
         value={form.paymentMethod}
