@@ -8,6 +8,7 @@ import {
   type AdminOrderItem,
   OrderItemsTable,
 } from "@/components/admin/orders/OrderItemsTable";
+import { CourierPanel } from "@/components/admin/orders/CourierPanel";
 import {
   OrderManagePanel,
   type OrderUpdatePayload,
@@ -163,6 +164,18 @@ function AdminOrderDetail() {
           onSubmit={submitUpdate}
           isPending={mutation.isPending}
           canManage={canManage}
+        />
+      </div>
+
+      <h2 className="mt-6 font-display text-lg font-bold uppercase">Courier</h2>
+      <div className="mt-2">
+        <CourierPanel
+          order={order}
+          canManage={canManage}
+          onChanged={() => {
+            void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
+            void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+          }}
         />
       </div>
 
