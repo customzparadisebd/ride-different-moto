@@ -36,6 +36,13 @@ export function SafeImage({
 
   // Images that finish before hydration never fire React's onLoad, so sync
   // from the DOM node and attach native listeners as a fallback.
+  const previousSrc = useRef(src);
+  if (previousSrc.current !== src) {
+    previousSrc.current = src;
+    setAttempt(0);
+    setStatus("loading");
+  }
+
   useEffect(() => {
     const node = imgRef.current;
     if (!node) return;
@@ -52,11 +59,6 @@ export function SafeImage({
       node.removeEventListener("error", onError);
     };
   }, [attempt, src]);
-
-  useEffect(() => {
-    setAttempt(0);
-    setStatus("loading");
-  }, [src]);
 
   const retry = useCallback(() => {
     setAttempt((current) => {
