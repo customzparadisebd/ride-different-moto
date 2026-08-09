@@ -1,15 +1,16 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
-import { site } from "@/data/site";
 import type { Product } from "@/data/types";
 import { useCart } from "@/lib/cart";
 import { discountPercent, formatBDT } from "@/lib/format";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const discount = discountPercent(product.price, product.offerPrice);
   const activePrice = product.offerPrice ?? product.price;
@@ -22,9 +23,11 @@ export function ProductCard({ product }: { product: Product }) {
     window.setTimeout(() => setBusy(false), 600);
   };
 
-  const orderHref = `${site.whatsappHref}?text=${encodeURIComponent(
-    `Hi ${site.name}, I want to order: ${product.name} (${formatBDT(activePrice)})`,
-  )}`;
+  const handleOrderNow = () => {
+    if (!product.inStock) return;
+    addItem(product);
+    void navigate({ to: "/checkout" });
+  };
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card">
@@ -90,14 +93,14 @@ export function ProductCard({ product }: { product: Product }) {
           >
             <span className="truncate">Add to Cart</span>
           </Button>
-          <Button variant="red" size="sm" asChild={product.inStock} disabled={!product.inStock}>
-            {product.inStock ? (
-              <a href={orderHref} target="_blank" rel="noopener noreferrer" className="min-w-0">
-                <span className="truncate">Order Now</span>
-              </a>
-            ) : (
-              <span className="truncate">Order Now</span>
-            )}
+          <Button
+            variant="red"
+            size="sm"
+            onClick={handleOrderNow}
+            disabled={!product.inStock}
+            className="min-w-0"
+          >
+            <span className="truncate">Order Now</span>
           </Button>
         </div>
       </div>

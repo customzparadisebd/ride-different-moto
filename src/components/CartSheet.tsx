@@ -1,3 +1,4 @@
+import { Link } from "@tanstack/react-router";
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,21 +16,13 @@ import { formatBDT } from "@/lib/format";
 export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
   const { lines, subtotal, setQty, removeItem } = useCart();
 
-  const orderMessage = encodeURIComponent(
-    lines.length
-      ? `Hi ${site.name}, I want to order:\n${lines
-          .map((line) => `• ${line.name} x${line.qty}`)
-          .join("\n")}\nSubtotal: ${formatBDT(subtotal)}`
-      : `Hi ${site.name}, I would like to place an order.`,
-  );
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b border-border p-4 text-left">
           <SheetTitle className="font-display text-xl uppercase tracking-wide">Your Cart</SheetTitle>
           <SheetDescription className="text-xs">
-            Confirm your order over WhatsApp — no account needed.
+            Checkout in a minute — no account needed.
           </SheetDescription>
         </SheetHeader>
 
@@ -99,15 +92,20 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
             <span className="text-muted-foreground">Subtotal</span>
             <span className="font-display text-lg font-bold">{formatBDT(subtotal)}</span>
           </div>
-          <Button variant="red" size="touch" className="w-full" asChild disabled={!lines.length}>
-            <a
-              href={`${site.whatsappHref}?text=${orderMessage}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Order on WhatsApp
-            </a>
-          </Button>
+          {lines.length ? (
+            <Button variant="red" size="touch" className="w-full" asChild>
+              <Link to="/checkout" onClick={() => onOpenChange(false)}>
+                Proceed to Checkout
+              </Link>
+            </Button>
+          ) : (
+            <Button variant="red" size="touch" className="w-full" disabled>
+              Proceed to Checkout
+            </Button>
+          )}
+          <p className="mt-2 text-center text-[11px] text-muted-foreground">
+            Need help? Call {site.phoneDisplay}
+          </p>
         </div>
       </SheetContent>
     </Sheet>
