@@ -48,7 +48,12 @@ Status values: `Completed` / `In Progress` / `Pending`.
 ## Admin Panel — Orders
 - **Status:** Completed
 - **Done:** Staff sign-in at `/auth` (email/password + Google). `/admin` lists the latest 200 orders; `/admin/orders/:id` shows customer, amounts, items, status/payment controls, notes and full order history. Manual orders use the same tables and invoice series (`order_source = admin`). All reads/writes go through authenticated server functions guarded by an `is_staff` check; RLS blocks non-staff. First sign-in by customzparadisebd@gmail.com is granted the admin role automatically.
-- **Next:** Product/inventory management, order filters and CSV export are Pending.
+- **Next:** Product/inventory management and CSV export are Pending.
+
+## Admin Panel — Full Order Management
+- **Status:** Completed
+- **Done:** Orders/order_items expanded with delivery zone, advance paid, transaction ID, courier name/tracking/status, internal notes, item variant + image snapshot (indexed on created_at/status/payment_status). Order list has server-side filters (invoice/order ID, customer name, phone, order status, payment status, delivery zone, date range) plus columns for zone, total, due, payment, status, courier and source with status badges. Detail page shows customer info, ordered items with image/variant/qty/unit price/subtotal, pricing summary (subtotal, discount, delivery, advance paid, due, total payable), status updater (Pending → Returned), payment + transaction editor, courier/delivery editor and admin internal notes. Manual order form captures zone, variant, advance paid and transaction ID. One audited `updateOrderStatus` server fn handles every change: `orders.manage` permission required, Zod-validated, totals recomputed server-side from the stored subtotal, and each change written to order history + the append-only audit log with old/new values.
+- **Next:** Courier API auto-booking/tracking sync, CSV/invoice PDF export and pagination beyond 500 rows are Pending.
 
 ## Gallery
 - **Status:** Completed
