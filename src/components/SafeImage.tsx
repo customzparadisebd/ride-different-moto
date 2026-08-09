@@ -34,12 +34,23 @@ export function SafeImage({
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Images that finished before hydration never fire onLoad; check on mount.
+  // Images that finish before hydration never fire React's onLoad, so sync
+  // from the DOM node and attach native listeners as a fallback.
   useEffect(() => {
     const node = imgRef.current;
-    if (node?.complete) {
+    if (!node) return;
+    if (node.complete) {
       setStatus(node.naturalWidth > 0 ? "loaded" : "error");
+      return;
     }
+    const onLoad = () => setStatus("loaded");
+    const onError = () => setStatus("error");
+    node.addEventListener("load", onLoad);
+    node.addEventListener("error", onError);
+    return () => {
+      node.removeEventListener("load", onLoad);
+      node.removeEventListener("error", onError);
+    };
   }, [attempt, src]);
 
   useEffect(() => {
