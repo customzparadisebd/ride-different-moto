@@ -15,6 +15,7 @@ import { formatBDT } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import {
   checkoutSubmitInput,
+  DELIVERY_ZONES,
   newIdempotencyKey,
   PAYMENT_METHODS,
   SHIPPING_FLAT_BDT,
@@ -56,6 +57,7 @@ function CheckoutPage() {
     customerEmail: "",
     addressLine: "",
     city: "",
+    deliveryZone: "inside_dhaka",
     notes: "",
     paymentMethod: "cash_on_delivery",
   });
@@ -186,6 +188,21 @@ function CheckoutPage() {
               error={errors["city"]}
               autoComplete="address-level2"
             />
+            <div>
+              <Label htmlFor="deliveryZone">Delivery zone</Label>
+              <select
+                id="deliveryZone"
+                value={form.deliveryZone}
+                onChange={(e) => update("deliveryZone")(e.target.value)}
+                className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+              >
+                {DELIVERY_ZONES.map((zone) => (
+                  <option key={zone.value} value={zone.value}>
+                    {zone.label}
+                  </option>
+                ))}
+              </select>
+            </div>
             <div>
               <Label htmlFor="addressLine">Full delivery address</Label>
               <Textarea

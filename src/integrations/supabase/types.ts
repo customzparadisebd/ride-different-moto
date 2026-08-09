@@ -197,6 +197,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          image_url: string | null
           line_total: number
           order_id: string
           product_id: string | null
@@ -204,10 +205,12 @@ export type Database = {
           product_slug: string | null
           quantity: number
           unit_price: number
+          variant: string | null
         }
         Insert: {
           created_at?: string
           id?: string
+          image_url?: string | null
           line_total: number
           order_id: string
           product_id?: string | null
@@ -215,10 +218,12 @@ export type Database = {
           product_slug?: string | null
           quantity: number
           unit_price: number
+          variant?: string | null
         }
         Update: {
           created_at?: string
           id?: string
+          image_url?: string | null
           line_total?: number
           order_id?: string
           product_id?: string | null
@@ -226,6 +231,7 @@ export type Database = {
           product_slug?: string | null
           quantity?: number
           unit_price?: number
+          variant?: string | null
         }
         Relationships: [
           {
@@ -240,16 +246,22 @@ export type Database = {
       orders: {
         Row: {
           address_line: string
+          advance_paid: number
           city: string
+          courier_name: string | null
+          courier_status: string
+          courier_tracking_id: string | null
           created_at: string
           created_by: string | null
           currency: string
           customer_email: string | null
           customer_name: string
           customer_phone: string
+          delivery_zone: string | null
           discount: number
           id: string
           idempotency_key: string | null
+          internal_notes: string | null
           invoice_no: string
           notes: string | null
           order_source: string
@@ -259,20 +271,27 @@ export type Database = {
           status: string
           subtotal: number
           total: number
+          transaction_id: string | null
           updated_at: string
         }
         Insert: {
           address_line: string
+          advance_paid?: number
           city: string
+          courier_name?: string | null
+          courier_status?: string
+          courier_tracking_id?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string
           customer_email?: string | null
           customer_name: string
           customer_phone: string
+          delivery_zone?: string | null
           discount?: number
           id?: string
           idempotency_key?: string | null
+          internal_notes?: string | null
           invoice_no?: string
           notes?: string | null
           order_source?: string
@@ -282,20 +301,27 @@ export type Database = {
           status?: string
           subtotal?: number
           total?: number
+          transaction_id?: string | null
           updated_at?: string
         }
         Update: {
           address_line?: string
+          advance_paid?: number
           city?: string
+          courier_name?: string | null
+          courier_status?: string
+          courier_tracking_id?: string | null
           created_at?: string
           created_by?: string | null
           currency?: string
           customer_email?: string | null
           customer_name?: string
           customer_phone?: string
+          delivery_zone?: string | null
           discount?: number
           id?: string
           idempotency_key?: string | null
+          internal_notes?: string | null
           invoice_no?: string
           notes?: string | null
           order_source?: string
@@ -305,6 +331,7 @@ export type Database = {
           status?: string
           subtotal?: number
           total?: number
+          transaction_id?: string | null
           updated_at?: string
         }
         Relationships: []
