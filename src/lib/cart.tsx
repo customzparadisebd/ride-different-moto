@@ -38,12 +38,12 @@ const isCartLine = (value: unknown): value is CartLine => {
   if (!value || typeof value !== "object") return false;
   const line = value as Record<string, unknown>;
   return (
-    typeof line.id === "string" &&
-    typeof line.slug === "string" &&
-    typeof line.name === "string" &&
-    typeof line.image === "string" &&
-    typeof line.unitPrice === "number" &&
-    typeof line.qty === "number"
+    typeof line["id"] === "string" &&
+    typeof line["slug"] === "string" &&
+    typeof line["name"] === "string" &&
+    typeof line["image"] === "string" &&
+    typeof line["unitPrice"] === "number" &&
+    typeof line["qty"] === "number"
   );
 };
 
