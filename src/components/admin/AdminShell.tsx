@@ -1,8 +1,8 @@
 // ============================================================
-// ADMIN SHELL (navigation + session controls)
+// ADMIN SHELL (sidebar layout + session controls)
 // Purpose: Chrome for the admin panel, fully separate from the
-//          customer-facing store UI. Shows only the sections the
-//          signed-in role is permitted to use.
+//          customer-facing store UI. Sidebar sections are filtered
+//          by the signed-in role's permissions.
 // Status: COMPLETED
 // Security: Hidden links are convenience only — each destination
 //          and every server function re-checks the permission.
@@ -10,14 +10,16 @@
 //          client cache before navigating away.
 // Future: None.
 // ============================================================
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 
+import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Button } from "@/components/ui/button";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { recordSignOut } from "@/lib/admin.functions";
-import { PERMISSIONS, ROLE_LABELS, type Permission, type Role } from "@/lib/admin.shared";
+import { ROLE_LABELS, type Permission, type Role } from "@/lib/admin.shared";
 
 export type AdminAccess = {
   email: string | null;
@@ -27,17 +29,9 @@ export type AdminAccess = {
   mfaSatisfied: boolean;
 };
 
-export function AdminShell({
-  access,
-  children,
-}: {
-  access: AdminAccess;
-  children: ReactNode;
-}) {
+export function AdminShell({ access, children }: { access: AdminAccess; children: ReactNode }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
-  const can = (permission: Permission) => access.permissions.includes(permission);
 
   const handleSignOut = async () => {
     try {
@@ -51,47 +45,32 @@ export function AdminShell({
     void navigate({ to: "/czp-ops-9f2c/access", replace: true });
   };
 
-  const navItems: { to: string; label: string; show: boolean }[] = [
-    { to: "/czp-ops-9f2c", label: "Orders", show: can(PERMISSIONS.ordersView) },
-    { to: "/czp-ops-9f2c/staff", label: "Staff & roles", show: can(PERMISSIONS.staffManage) },
-    { to: "/czp-ops-9f2c/audit-log", label: "Audit log", show: can(PERMISSIONS.auditView) },
-    { to: "/czp-ops-9f2c/security", label: "Security", show: true },
-  ];
-
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="font-display text-lg font-bold uppercase tracking-wide">CZP Ops</p>
-            <p className="text-xs text-muted-foreground">
-              {access.email} ·{" "}
-              {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "No role"} ·{" "}
-              {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
-            </p>
-          </div>
-          <Button variant="steel" size="sm" onClick={handleSignOut}>
-            Sign out
-          </Button>
-        </div>
-        <nav className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-2 pb-2">
-          {navItems
-            .filter((item) => item.show)
-            .map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                activeOptions={{ exact: item.to === "/czp-ops-9f2c" }}
-                activeProps={{ className: "bg-primary text-primary-foreground" }}
-                className="whitespace-nowrap rounded-md px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:bg-secondary"
-              >
-                {item.label}
-              </Link>
-            ))}
-        </nav>
-      </header>
-      <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
-    </div>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-background">
+        <AdminSidebar permissions={access.permissions} />
+        <SidebarInset>
+          <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger />
+              <div>
+                <p className="font-display text-sm font-bold uppercase tracking-wide">
+                  Customz Paradise BD — Operations
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {access.email} · {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "No role"}{" "}
+                  · {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
+                </p>
+              </div>
+            </div>
+            <Button variant="steel" size="sm" onClick={handleSignOut}>
+              Sign out
+            </Button>
+          </header>
+          <main className="px-4 py-6">{children}</main>
+        </SidebarInset>
+      </div>
+    </SidebarProvider>
   );
 }
 

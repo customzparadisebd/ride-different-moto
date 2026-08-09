@@ -30,9 +30,15 @@ import { Route as CzpOps9f2cMfaRouteImport } from './routes/czp-ops-9f2c.mfa'
 import { Route as CzpOps9f2cResetPasswordRouteImport } from './routes/czp-ops-9f2c.reset-password'
 import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
 import { Route as AuthenticatedCzpOps9f2cAuditLogRouteImport } from './routes/_authenticated/czp-ops-9f2c/audit-log'
+import { Route as AuthenticatedCzpOps9f2cCustomersRouteImport } from './routes/_authenticated/czp-ops-9f2c/customers'
+import { Route as AuthenticatedCzpOps9f2cProductsRouteImport } from './routes/_authenticated/czp-ops-9f2c/products'
 import { Route as AuthenticatedCzpOps9f2cSecurityRouteImport } from './routes/_authenticated/czp-ops-9f2c/security'
+import { Route as AuthenticatedCzpOps9f2cSettingsRouteImport } from './routes/_authenticated/czp-ops-9f2c/settings'
 import { Route as AuthenticatedCzpOps9f2cStaffRouteImport } from './routes/_authenticated/czp-ops-9f2c/staff'
+import { Route as AuthenticatedCzpOps9f2cInvoiceIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/invoice.$id'
+import { Route as AuthenticatedCzpOps9f2cOrdersIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.index'
 import { Route as AuthenticatedCzpOps9f2cOrdersIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.$id'
+import { Route as AuthenticatedCzpOps9f2cOrdersNewRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -141,10 +147,28 @@ const AuthenticatedCzpOps9f2cAuditLogRoute =
     path: '/audit-log',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
+const AuthenticatedCzpOps9f2cCustomersRoute =
+  AuthenticatedCzpOps9f2cCustomersRouteImport.update({
+    id: '/customers',
+    path: '/customers',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cProductsRoute =
+  AuthenticatedCzpOps9f2cProductsRouteImport.update({
+    id: '/products',
+    path: '/products',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
 const AuthenticatedCzpOps9f2cSecurityRoute =
   AuthenticatedCzpOps9f2cSecurityRouteImport.update({
     id: '/security',
     path: '/security',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cSettingsRoute =
+  AuthenticatedCzpOps9f2cSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
 const AuthenticatedCzpOps9f2cStaffRoute =
@@ -153,10 +177,28 @@ const AuthenticatedCzpOps9f2cStaffRoute =
     path: '/staff',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
+const AuthenticatedCzpOps9f2cInvoiceIdRoute =
+  AuthenticatedCzpOps9f2cInvoiceIdRouteImport.update({
+    id: '/invoice/$id',
+    path: '/invoice/$id',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cOrdersIndexRoute =
+  AuthenticatedCzpOps9f2cOrdersIndexRouteImport.update({
+    id: '/orders/',
+    path: '/orders/',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
 const AuthenticatedCzpOps9f2cOrdersIdRoute =
   AuthenticatedCzpOps9f2cOrdersIdRouteImport.update({
     id: '/orders/$id',
     path: '/orders/$id',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cOrdersNewRoute =
+  AuthenticatedCzpOps9f2cOrdersNewRouteImport.update({
+    id: '/orders/new',
+    path: '/orders/new',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
 
@@ -180,10 +222,16 @@ export interface FileRoutesByFullPath {
   '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
+  '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
+  '/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
+  '/czp-ops-9f2c/orders/': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -204,10 +252,16 @@ export interface FileRoutesByTo {
   '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
+  '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
   '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
+  '/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
+  '/czp-ops-9f2c/orders': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -231,10 +285,16 @@ export interface FileRoutesById {
   '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/_authenticated/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/_authenticated/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
+  '/_authenticated/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
   '/_authenticated/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/_authenticated/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
   '/_authenticated/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/_authenticated/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/_authenticated/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
   '/_authenticated/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
+  '/_authenticated/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
+  '/_authenticated/czp-ops-9f2c/orders/': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -258,10 +318,16 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/reset-password'
     | '/bike-models/'
     | '/czp-ops-9f2c/audit-log'
+    | '/czp-ops-9f2c/customers'
+    | '/czp-ops-9f2c/products'
     | '/czp-ops-9f2c/security'
+    | '/czp-ops-9f2c/settings'
     | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c/'
+    | '/czp-ops-9f2c/invoice/$id'
     | '/czp-ops-9f2c/orders/$id'
+    | '/czp-ops-9f2c/orders/new'
+    | '/czp-ops-9f2c/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -282,10 +348,16 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/reset-password'
     | '/bike-models'
     | '/czp-ops-9f2c/audit-log'
+    | '/czp-ops-9f2c/customers'
+    | '/czp-ops-9f2c/products'
     | '/czp-ops-9f2c/security'
+    | '/czp-ops-9f2c/settings'
     | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c'
+    | '/czp-ops-9f2c/invoice/$id'
     | '/czp-ops-9f2c/orders/$id'
+    | '/czp-ops-9f2c/orders/new'
+    | '/czp-ops-9f2c/orders'
   id:
     | '__root__'
     | '/'
@@ -308,10 +380,16 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/reset-password'
     | '/bike-models/'
     | '/_authenticated/czp-ops-9f2c/audit-log'
+    | '/_authenticated/czp-ops-9f2c/customers'
+    | '/_authenticated/czp-ops-9f2c/products'
     | '/_authenticated/czp-ops-9f2c/security'
+    | '/_authenticated/czp-ops-9f2c/settings'
     | '/_authenticated/czp-ops-9f2c/staff'
     | '/_authenticated/czp-ops-9f2c/'
+    | '/_authenticated/czp-ops-9f2c/invoice/$id'
     | '/_authenticated/czp-ops-9f2c/orders/$id'
+    | '/_authenticated/czp-ops-9f2c/orders/new'
+    | '/_authenticated/czp-ops-9f2c/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -484,11 +562,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cAuditLogRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
+    '/_authenticated/czp-ops-9f2c/customers': {
+      id: '/_authenticated/czp-ops-9f2c/customers'
+      path: '/customers'
+      fullPath: '/czp-ops-9f2c/customers'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cCustomersRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/products': {
+      id: '/_authenticated/czp-ops-9f2c/products'
+      path: '/products'
+      fullPath: '/czp-ops-9f2c/products'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cProductsRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
     '/_authenticated/czp-ops-9f2c/security': {
       id: '/_authenticated/czp-ops-9f2c/security'
       path: '/security'
       fullPath: '/czp-ops-9f2c/security'
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cSecurityRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/settings': {
+      id: '/_authenticated/czp-ops-9f2c/settings'
+      path: '/settings'
+      fullPath: '/czp-ops-9f2c/settings'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cSettingsRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
     '/_authenticated/czp-ops-9f2c/staff': {
@@ -498,6 +597,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cStaffRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
+    '/_authenticated/czp-ops-9f2c/invoice/$id': {
+      id: '/_authenticated/czp-ops-9f2c/invoice/$id'
+      path: '/invoice/$id'
+      fullPath: '/czp-ops-9f2c/invoice/$id'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cInvoiceIdRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/orders/': {
+      id: '/_authenticated/czp-ops-9f2c/orders/'
+      path: '/orders'
+      fullPath: '/czp-ops-9f2c/orders/'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
     '/_authenticated/czp-ops-9f2c/orders/$id': {
       id: '/_authenticated/czp-ops-9f2c/orders/$id'
       path: '/orders/$id'
@@ -505,24 +618,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
+    '/_authenticated/czp-ops-9f2c/orders/new': {
+      id: '/_authenticated/czp-ops-9f2c/orders/new'
+      path: '/orders/new'
+      fullPath: '/czp-ops-9f2c/orders/new'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersNewRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
   }
 }
 
 interface AuthenticatedCzpOps9f2cRouteRouteChildren {
   AuthenticatedCzpOps9f2cAuditLogRoute: typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  AuthenticatedCzpOps9f2cCustomersRoute: typeof AuthenticatedCzpOps9f2cCustomersRoute
+  AuthenticatedCzpOps9f2cProductsRoute: typeof AuthenticatedCzpOps9f2cProductsRoute
   AuthenticatedCzpOps9f2cSecurityRoute: typeof AuthenticatedCzpOps9f2cSecurityRoute
+  AuthenticatedCzpOps9f2cSettingsRoute: typeof AuthenticatedCzpOps9f2cSettingsRoute
   AuthenticatedCzpOps9f2cStaffRoute: typeof AuthenticatedCzpOps9f2cStaffRoute
   AuthenticatedCzpOps9f2cIndexRoute: typeof AuthenticatedCzpOps9f2cIndexRoute
+  AuthenticatedCzpOps9f2cInvoiceIdRoute: typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
   AuthenticatedCzpOps9f2cOrdersIdRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRoute
+  AuthenticatedCzpOps9f2cOrdersNewRoute: typeof AuthenticatedCzpOps9f2cOrdersNewRoute
+  AuthenticatedCzpOps9f2cOrdersIndexRoute: typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
 }
 
 const AuthenticatedCzpOps9f2cRouteRouteChildren: AuthenticatedCzpOps9f2cRouteRouteChildren =
   {
     AuthenticatedCzpOps9f2cAuditLogRoute: AuthenticatedCzpOps9f2cAuditLogRoute,
+    AuthenticatedCzpOps9f2cCustomersRoute:
+      AuthenticatedCzpOps9f2cCustomersRoute,
+    AuthenticatedCzpOps9f2cProductsRoute: AuthenticatedCzpOps9f2cProductsRoute,
     AuthenticatedCzpOps9f2cSecurityRoute: AuthenticatedCzpOps9f2cSecurityRoute,
+    AuthenticatedCzpOps9f2cSettingsRoute: AuthenticatedCzpOps9f2cSettingsRoute,
     AuthenticatedCzpOps9f2cStaffRoute: AuthenticatedCzpOps9f2cStaffRoute,
     AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
+    AuthenticatedCzpOps9f2cInvoiceIdRoute:
+      AuthenticatedCzpOps9f2cInvoiceIdRoute,
     AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
+    AuthenticatedCzpOps9f2cOrdersNewRoute:
+      AuthenticatedCzpOps9f2cOrdersNewRoute,
+    AuthenticatedCzpOps9f2cOrdersIndexRoute:
+      AuthenticatedCzpOps9f2cOrdersIndexRoute,
   }
 
 const AuthenticatedCzpOps9f2cRouteRouteWithChildren =
@@ -565,13 +701,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

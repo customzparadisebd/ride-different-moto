@@ -5,6 +5,7 @@ import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
   adminOrderInput,
   checkoutSubmitInput,
+  orderBulkStatusInput,
   orderFilterInput,
   orderStatusUpdateInput,
   SHIPPING_FLAT_BDT,
@@ -125,6 +126,8 @@ export const listOrders = createServerFn({ method: "POST" })
         sel(
           "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, order_source, created_at",
         ),
+        // exact count powers the pagination footer
+        { count: "exact" },
       );
 
     if (data.invoiceNo) query = query.ilike("invoice_no", likeTerm(data.invoiceNo));
@@ -136,12 +139,68 @@ export const listOrders = createServerFn({ method: "POST" })
     if (data.dateFrom) query = query.gte("created_at", `${data.dateFrom}T00:00:00.000Z`);
     if (data.dateTo) query = query.lte("created_at", `${data.dateTo}T23:59:59.999Z`);
 
-    const { data: rows, error } = await query
-      .order("created_at", { ascending: false })
-      .limit(data.limit)
+    const from = (data.page - 1) * data.pageSize;
+    const {
+      data: rows,
+      count,
+      error,
+    } = await query
+      .order(data.sortBy, { ascending: data.sortDir === "asc" })
+      .range(from, from + data.pageSize - 1)
       .returns<AdminOrderRow[]>();
     if (error) throw new Error("Could not load orders.");
-    return rows ?? [];
+    return {
+      rows: rows ?? [],
+      count: count ?? 0,
+      page: data.page,
+      pageSize: data.pageSize,
+    };
+  });
+
+// ============================================================
+// BULK ORDER STATUS UPDATE
+// Purpose: Move several selected orders to the same status from the
+//          list screen.
+// Status: COMPLETED
+// Security: Requires orders.manage, writes one order-history event
+//          per order and a single audit entry for the batch.
+// ============================================================
+export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => orderBulkStatusInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { logOrderEvent } = await import("./orders.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const { error } = await context.supabase
+      .from("orders")
+      .update({ status: data.status })
+      .in("id", data.orderIds);
+    if (error) throw new Error("Could not update the selected orders.");
+
+    await Promise.all(
+      data.orderIds.map((orderId: string) =>
+        logOrderEvent(orderId, {
+          eventType: "order_updated",
+          message: `Status changed to ${data.status} (bulk update)`,
+          actor: context.userId,
+          actorLabel: "admin",
+          metadata: { status: data.status, bulk: true },
+        }),
+      ),
+    );
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.orderBulkStatusChanged,
+      targetType: "order",
+      targetId: data.orderIds.join(","),
+      targetLabel: `${data.orderIds.length} order(s)`,
+      newValue: { status: data.status, orderIds: data.orderIds },
+    });
+
+    return { ok: true, updated: data.orderIds.length };
   });
 
 export const getOrder = createServerFn({ method: "POST" })

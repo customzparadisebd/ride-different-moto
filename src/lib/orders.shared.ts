@@ -130,7 +130,17 @@ export const orderFilterInput = z.object({
   deliveryZone: z.enum(["inside_dhaka", "dhaka_suburb", "outside_dhaka"]).optional(),
   dateFrom: optionalText(30),
   dateTo: optionalText(30),
-  limit: z.number().int().min(1).max(500).default(200),
+  /** Pagination (1-based page number). */
+  page: z.coerce.number().int().min(1).max(10_000).default(1),
+  pageSize: z.coerce.number().int().min(10).max(200).default(25),
+  sortBy: z.enum(["created_at", "total", "invoice_no"]).default("created_at"),
+  sortDir: z.enum(["asc", "desc"]).default("desc"),
+});
+
+/** Bulk order-status change from the list screen. */
+export const orderBulkStatusInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(100),
+  status: z.enum(ORDER_STATUSES),
 });
 
 export type OrderFilterInput = z.input<typeof orderFilterInput>;
