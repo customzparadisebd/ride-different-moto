@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -32,6 +32,15 @@ export function SafeImage({
 }: SafeImageProps) {
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  // Images that finished before hydration never fire onLoad; check on mount.
+  useEffect(() => {
+    const node = imgRef.current;
+    if (node?.complete) {
+      setStatus(node.naturalWidth > 0 ? "loaded" : "error");
+    }
+  }, [attempt, src]);
 
   useEffect(() => {
     setAttempt(0);
@@ -61,6 +70,7 @@ export function SafeImage({
       {status !== "error" && (
         <img
           key={attempt}
+          ref={imgRef}
           src={attempt === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}r=${attempt}`}
           alt={alt}
           width={width}
