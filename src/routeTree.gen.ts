@@ -14,7 +14,11 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as ReturnsRouteImport } from './routes/returns'
+import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 
@@ -43,9 +47,29 @@ const NewArrivalsRoute = NewArrivalsRouteImport.update({
   path: '/new-arrivals',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReturnsRoute = ReturnsRouteImport.update({
+  id: '/returns',
+  path: '/returns',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShippingRoute = ShippingRouteImport.update({
+  id: '/shipping',
+  path: '/shipping',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BikeModelsIndexRoute = BikeModelsIndexRouteImport.update({
@@ -65,7 +89,11 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
 }
@@ -75,7 +103,11 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/bike-models': typeof BikeModelsIndexRoute
 }
@@ -86,7 +118,11 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/returns': typeof ReturnsRoute
+  '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
+  '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
 }
@@ -98,7 +134,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/new-arrivals'
+    | '/privacy-policy'
+    | '/returns'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/bike-models/$slug'
     | '/bike-models/'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +148,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/new-arrivals'
+    | '/privacy-policy'
+    | '/returns'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/bike-models/$slug'
     | '/bike-models'
   id:
@@ -118,7 +162,11 @@ export interface FileRouteTypes {
     | '/contact'
     | '/gallery'
     | '/new-arrivals'
+    | '/privacy-policy'
+    | '/returns'
+    | '/shipping'
     | '/shop'
+    | '/terms'
     | '/bike-models/$slug'
     | '/bike-models/'
   fileRoutesById: FileRoutesById
@@ -129,7 +177,11 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
   NewArrivalsRoute: typeof NewArrivalsRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  ReturnsRoute: typeof ReturnsRoute
+  ShippingRoute: typeof ShippingRoute
   ShopRoute: typeof ShopRoute
+  TermsRoute: typeof TermsRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
@@ -171,11 +223,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NewArrivalsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/returns': {
+      id: '/returns'
+      path: '/returns'
+      fullPath: '/returns'
+      preLoaderRoute: typeof ReturnsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shipping': {
+      id: '/shipping'
+      path: '/shipping'
+      fullPath: '/shipping'
+      preLoaderRoute: typeof ShippingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/bike-models/': {
@@ -201,7 +281,11 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
   NewArrivalsRoute: NewArrivalsRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  ReturnsRoute: ReturnsRoute,
+  ShippingRoute: ShippingRoute,
   ShopRoute: ShopRoute,
+  TermsRoute: TermsRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
