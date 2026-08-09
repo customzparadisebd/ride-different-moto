@@ -105,6 +105,11 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Done:** Super-Admin-only card on `/czp-ops-9f2c/security` showing the panel URL, login page URL, login method (email + password + TOTP), owner account, live MFA status, remaining recovery codes and step-by-step recovery/lockout instructions. Served by a server function that verifies Super Admin before responding and returns no keys, secrets or tokens. Nothing about it appears on the public site.
 - **Next:** Once `admin.customzparadisebd.com` is connected the displayed URL updates automatically (it is derived from the live origin).
 
+## Admin Login Page (simplified)
+- **Status:** Completed
+- **Done:** `/czp-ops-9f2c/access` now shows only the brand logo, an "Admin Panel" label, Email + Password (with show/hide eye), a Log in button and Continue with Google. Self sign-up, the Forgot password link and all bottom instruction text were removed, so staff and admins use one form. The owner Super Admin account (customzparadisebd@gmail.com) was provisioned server-side with an approved profile and the super_admin role.
+- **Next:** New staff accounts must now be created by an Admin/Super Admin (there is no public sign-up); password resets are handled by an admin, since the self-service reset link is no longer surfaced. The `/czp-ops-9f2c/reset-password` page still exists and works if a recovery link is issued.
+
 ## Owner / Staff Password Reset
 - **Status:** Completed
 - **Done:** "Forgot password?" on `/czp-ops-9f2c/access` now sends the recovery link to a real reset page, `/czp-ops-9f2c/reset-password` (public, client-only, `noindex, nofollow, noarchive`). It validates the recovery session from the link, requires the new password twice with a 10-character minimum and the show/hide eye field, saves it, signs the recovery session out and records a `security.password_reset` entry in the audit log. Reset responses stay generic so account existence is never revealed, and no password is ever logged or stored by the app. The login page also documents the owner-account path: sign up once with the owner email (auto Super Admin) or use Forgot password.
