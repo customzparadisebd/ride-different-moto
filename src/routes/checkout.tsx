@@ -279,13 +279,13 @@ function Field({
   onChange,
   error,
   ...rest
-}: {
+}: Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "id"> & {
   id: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
   error?: string;
-} & React.InputHTMLAttributes<HTMLInputElement>) {
+}) {
   return (
     <div>
       <Label htmlFor={id}>{label}</Label>
