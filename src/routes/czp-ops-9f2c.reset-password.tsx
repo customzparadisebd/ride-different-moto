@@ -112,7 +112,7 @@ function ResetPasswordPage() {
         <div className="mt-6 rounded-lg border border-border bg-secondary p-4 text-sm">
           <p>Your password has been updated.</p>
           <Button
-            variant="hero"
+            variant="red"
             size="touch"
             className="mt-4 w-full"
             onClick={() => void navigate({ to: "/czp-ops-9f2c/access", replace: true })}
@@ -160,7 +160,7 @@ function ResetPasswordPage() {
               required
             />
           </div>
-          <Button type="submit" variant="hero" size="touch" className="w-full" disabled={busy}>
+          <Button type="submit" variant="red" size="touch" className="w-full" disabled={busy}>
             {busy ? "Saving…" : "Update password"}
           </Button>
         </form>
