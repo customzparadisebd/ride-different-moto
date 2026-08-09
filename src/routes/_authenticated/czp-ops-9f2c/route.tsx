@@ -7,7 +7,7 @@ export const Route = createFileRoute("/_authenticated/czp-ops-9f2c")({
   // resolves staff roles from the database. URL obscurity is not the gate.
   beforeLoad: async () => {
     try {
-      const access = await getMyAccess({ data: {} });
+      const access = await getMyAccess({});
       if (!access.isStaff) throw redirect({ to: "/czp-ops-9f2c/access-denied" });
       return { access };
     } catch (error) {

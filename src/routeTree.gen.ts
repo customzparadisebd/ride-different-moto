@@ -21,9 +21,11 @@ import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TermsRouteImport } from './routes/terms'
+import { Route as AuthenticatedCzpOps9f2cRouteRouteImport } from './routes/_authenticated/czp-ops-9f2c/route'
 import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 import { Route as CzpOps9f2cAccessRouteImport } from './routes/czp-ops-9f2c.access'
+import { Route as CzpOps9f2cAccessDeniedRouteImport } from './routes/czp-ops-9f2c.access-denied'
 import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
 import { Route as AuthenticatedCzpOps9f2cOrdersIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.$id'
 
@@ -86,6 +88,12 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCzpOps9f2cRouteRoute =
+  AuthenticatedCzpOps9f2cRouteRouteImport.update({
+    id: '/czp-ops-9f2c',
+    path: '/czp-ops-9f2c',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const BikeModelsIndexRoute = BikeModelsIndexRouteImport.update({
   id: '/bike-models/',
   path: '/bike-models/',
@@ -101,17 +109,22 @@ const CzpOps9f2cAccessRoute = CzpOps9f2cAccessRouteImport.update({
   path: '/czp-ops-9f2c/access',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CzpOps9f2cAccessDeniedRoute = CzpOps9f2cAccessDeniedRouteImport.update({
+  id: '/czp-ops-9f2c/access-denied',
+  path: '/czp-ops-9f2c/access-denied',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCzpOps9f2cIndexRoute =
   AuthenticatedCzpOps9f2cIndexRouteImport.update({
-    id: '/czp-ops-9f2c/',
-    path: '/czp-ops-9f2c/',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
 const AuthenticatedCzpOps9f2cOrdersIdRoute =
   AuthenticatedCzpOps9f2cOrdersIdRouteImport.update({
-    id: '/czp-ops-9f2c/orders/$id',
-    path: '/czp-ops-9f2c/orders/$id',
-    getParentRoute: () => AuthenticatedRouteRoute,
+    id: '/orders/$id',
+    path: '/orders/$id',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -126,8 +139,10 @@ export interface FileRoutesByFullPath {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
+  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
@@ -146,6 +161,7 @@ export interface FileRoutesByTo {
   '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
+  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
@@ -164,8 +180,10 @@ export interface FileRoutesById {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/_authenticated/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
+  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/_authenticated/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/_authenticated/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
@@ -184,8 +202,10 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/terms'
+    | '/czp-ops-9f2c'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
+    | '/czp-ops-9f2c/access-denied'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
     | '/czp-ops-9f2c/orders/$id'
@@ -204,6 +224,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
+    | '/czp-ops-9f2c/access-denied'
     | '/bike-models'
     | '/czp-ops-9f2c'
     | '/czp-ops-9f2c/orders/$id'
@@ -221,8 +242,10 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/terms'
+    | '/_authenticated/czp-ops-9f2c'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
+    | '/czp-ops-9f2c/access-denied'
     | '/bike-models/'
     | '/_authenticated/czp-ops-9f2c/'
     | '/_authenticated/czp-ops-9f2c/orders/$id'
@@ -243,6 +266,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
   CzpOps9f2cAccessRoute: typeof CzpOps9f2cAccessRoute
+  CzpOps9f2cAccessDeniedRoute: typeof CzpOps9f2cAccessDeniedRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
 
@@ -332,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/czp-ops-9f2c': {
+      id: '/_authenticated/czp-ops-9f2c'
+      path: '/czp-ops-9f2c'
+      fullPath: '/czp-ops-9f2c'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/bike-models/': {
       id: '/bike-models/'
       path: '/bike-models'
@@ -353,31 +384,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CzpOps9f2cAccessRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/czp-ops-9f2c/access-denied': {
+      id: '/czp-ops-9f2c/access-denied'
+      path: '/czp-ops-9f2c/access-denied'
+      fullPath: '/czp-ops-9f2c/access-denied'
+      preLoaderRoute: typeof CzpOps9f2cAccessDeniedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/czp-ops-9f2c/': {
       id: '/_authenticated/czp-ops-9f2c/'
-      path: '/czp-ops-9f2c'
+      path: '/'
       fullPath: '/czp-ops-9f2c/'
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
     '/_authenticated/czp-ops-9f2c/orders/$id': {
       id: '/_authenticated/czp-ops-9f2c/orders/$id'
-      path: '/czp-ops-9f2c/orders/$id'
+      path: '/orders/$id'
       fullPath: '/czp-ops-9f2c/orders/$id'
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
+interface AuthenticatedCzpOps9f2cRouteRouteChildren {
   AuthenticatedCzpOps9f2cIndexRoute: typeof AuthenticatedCzpOps9f2cIndexRoute
   AuthenticatedCzpOps9f2cOrdersIdRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 
+const AuthenticatedCzpOps9f2cRouteRouteChildren: AuthenticatedCzpOps9f2cRouteRouteChildren =
+  {
+    AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
+    AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
+  }
+
+const AuthenticatedCzpOps9f2cRouteRouteWithChildren =
+  AuthenticatedCzpOps9f2cRouteRoute._addFileChildren(
+    AuthenticatedCzpOps9f2cRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCzpOps9f2cRouteRoute: typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
+}
+
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
-  AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
+  AuthenticatedCzpOps9f2cRouteRoute:
+    AuthenticatedCzpOps9f2cRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -398,6 +451,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
   CzpOps9f2cAccessRoute: CzpOps9f2cAccessRoute,
+  CzpOps9f2cAccessDeniedRoute: CzpOps9f2cAccessDeniedRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
 export const routeTree = rootRouteImport
