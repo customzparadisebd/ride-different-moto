@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PasswordInput } from "@/components/PasswordInput";
 import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -21,7 +22,7 @@ export const Route = createFileRoute("/czp-ops-9f2c/access")({
       { property: "og:description", content: "Admin access for Customz Paradise BD staff." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "robots", content: "noindex" },
+      { name: "robots", content: "noindex, nofollow" },
     ],
   }),
   component: AuthPage,
@@ -34,6 +35,9 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [sentEmail, setSentEmail] = useState(false);
+  const [failures, setFailures] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState(0);
+  const locked = lockedUntil > Date.now();
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
@@ -47,6 +51,10 @@ function AuthPage() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    if (locked) {
+      toast.error("Too many attempts. Please wait a moment before trying again.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -63,8 +71,15 @@ function AuthPage() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        setFailures(0);
       }
     } catch (error) {
+      const next = failures + 1;
+      setFailures(next);
+      if (next >= 5) {
+        setLockedUntil(Date.now() + 60_000);
+        setFailures(0);
+      }
       toast.error(error instanceof Error ? error.message : "Authentication failed.");
     } finally {
       setBusy(false);
@@ -112,9 +127,8 @@ function AuthPage() {
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete={mode === "signup" ? "new-password" : "current-password"}
               required
               minLength={8}
@@ -123,8 +137,14 @@ function AuthPage() {
               className="mt-1.5 h-11"
             />
           </div>
-          <Button type="submit" variant="red" size="touch" className="w-full" disabled={busy}>
-            {mode === "signup" ? "Create account" : "Sign in"}
+          <Button
+            type="submit"
+            variant="red"
+            size="touch"
+            className="w-full"
+            disabled={busy || locked}
+          >
+            {locked ? "Locked — try again shortly" : mode === "signup" ? "Create account" : "Sign in"}
           </Button>
         </form>
       )}
