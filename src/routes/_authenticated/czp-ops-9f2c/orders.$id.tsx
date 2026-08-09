@@ -16,7 +16,7 @@ import {
   statusLabel,
 } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/admin/orders/$id")({
+export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/$id")({
   head: () => ({ meta: [{ title: "Order — Admin" }, { name: "robots", content: "noindex" }] }),
   component: AdminOrderDetail,
 });
@@ -52,7 +52,7 @@ function AdminOrderDetail() {
       <section className="mx-auto max-w-md px-4 py-16 text-center">
         <p className="text-sm text-muted-foreground">Order not found.</p>
         <Button variant="steel" size="touch" className="mt-4" asChild>
-          <Link to="/admin">Back to orders</Link>
+          <Link to="/czp-ops-9f2c">Back to orders</Link>
         </Button>
       </section>
     );
@@ -62,7 +62,7 @@ function AdminOrderDetail() {
 
   return (
     <section className="mx-auto max-w-4xl px-4 py-8">
-      <Link to="/admin" className="text-xs uppercase tracking-wider text-muted-foreground underline">
+      <Link to="/czp-ops-9f2c" className="text-xs uppercase tracking-wider text-muted-foreground underline">
         ← All orders
       </Link>
       <h1 className="mt-2 font-display text-3xl font-bold uppercase tracking-wide">

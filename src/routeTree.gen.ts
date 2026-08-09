@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GalleryRouteImport } from './routes/gallery'
@@ -24,8 +23,9 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
-import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminOrdersIdRouteImport } from './routes/_authenticated/admin.orders.$id'
+import { Route as CzpOps9f2cAccessRouteImport } from './routes/czp-ops-9f2c.access'
+import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
+import { Route as AuthenticatedCzpOps9f2cOrdersIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,11 +39,6 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutRoute = CheckoutRouteImport.update({
@@ -101,22 +96,27 @@ const BikeModelsSlugRoute = BikeModelsSlugRouteImport.update({
   path: '/bike-models/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const CzpOps9f2cAccessRoute = CzpOps9f2cAccessRouteImport.update({
+  id: '/czp-ops-9f2c/access',
+  path: '/czp-ops-9f2c/access',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedAdminOrdersIdRoute =
-  AuthenticatedAdminOrdersIdRouteImport.update({
-    id: '/admin/orders/$id',
-    path: '/admin/orders/$id',
+const AuthenticatedCzpOps9f2cIndexRoute =
+  AuthenticatedCzpOps9f2cIndexRouteImport.update({
+    id: '/czp-ops-9f2c/',
+    path: '/czp-ops-9f2c/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cOrdersIdRoute =
+  AuthenticatedCzpOps9f2cOrdersIdRouteImport.update({
+    id: '/czp-ops-9f2c/orders/$id',
+    path: '/czp-ops-9f2c/orders/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -127,14 +127,14 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/bike-models/': typeof BikeModelsIndexRoute
-  '/admin/': typeof AuthenticatedAdminIndexRoute
-  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -145,16 +145,16 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/bike-models': typeof BikeModelsIndexRoute
-  '/admin': typeof AuthenticatedAdminIndexRoute
-  '/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
   '/gallery': typeof GalleryRoute
@@ -165,16 +165,16 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/bike-models/': typeof BikeModelsIndexRoute
-  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
-  '/_authenticated/admin/orders/$id': typeof AuthenticatedAdminOrdersIdRoute
+  '/_authenticated/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
+  '/_authenticated/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
-    | '/auth'
     | '/checkout'
     | '/contact'
     | '/gallery'
@@ -185,14 +185,14 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/bike-models/$slug'
+    | '/czp-ops-9f2c/access'
     | '/bike-models/'
-    | '/admin/'
-    | '/admin/orders/$id'
+    | '/czp-ops-9f2c/'
+    | '/czp-ops-9f2c/orders/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
-    | '/auth'
     | '/checkout'
     | '/contact'
     | '/gallery'
@@ -203,15 +203,15 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/bike-models/$slug'
+    | '/czp-ops-9f2c/access'
     | '/bike-models'
-    | '/admin'
-    | '/admin/orders/$id'
+    | '/czp-ops-9f2c'
+    | '/czp-ops-9f2c/orders/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/about'
-    | '/auth'
     | '/checkout'
     | '/contact'
     | '/gallery'
@@ -222,16 +222,16 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/bike-models/$slug'
+    | '/czp-ops-9f2c/access'
     | '/bike-models/'
-    | '/_authenticated/admin/'
-    | '/_authenticated/admin/orders/$id'
+    | '/_authenticated/czp-ops-9f2c/'
+    | '/_authenticated/czp-ops-9f2c/orders/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
   GalleryRoute: typeof GalleryRoute
@@ -242,6 +242,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   TermsRoute: typeof TermsRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
+  CzpOps9f2cAccessRoute: typeof CzpOps9f2cAccessRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
 
@@ -266,13 +267,6 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checkout': {
@@ -352,31 +346,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BikeModelsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/': {
-      id: '/_authenticated/admin/'
-      path: '/admin'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+    '/czp-ops-9f2c/access': {
+      id: '/czp-ops-9f2c/access'
+      path: '/czp-ops-9f2c/access'
+      fullPath: '/czp-ops-9f2c/access'
+      preLoaderRoute: typeof CzpOps9f2cAccessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/czp-ops-9f2c/': {
+      id: '/_authenticated/czp-ops-9f2c/'
+      path: '/czp-ops-9f2c'
+      fullPath: '/czp-ops-9f2c/'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/orders/$id': {
-      id: '/_authenticated/admin/orders/$id'
-      path: '/admin/orders/$id'
-      fullPath: '/admin/orders/$id'
-      preLoaderRoute: typeof AuthenticatedAdminOrdersIdRouteImport
+    '/_authenticated/czp-ops-9f2c/orders/$id': {
+      id: '/_authenticated/czp-ops-9f2c/orders/$id'
+      path: '/czp-ops-9f2c/orders/$id'
+      fullPath: '/czp-ops-9f2c/orders/$id'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-  AuthenticatedAdminOrdersIdRoute: typeof AuthenticatedAdminOrdersIdRoute
+  AuthenticatedCzpOps9f2cIndexRoute: typeof AuthenticatedCzpOps9f2cIndexRoute
+  AuthenticatedCzpOps9f2cOrdersIdRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-  AuthenticatedAdminOrdersIdRoute: AuthenticatedAdminOrdersIdRoute,
+  AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
+  AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -386,7 +387,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
   GalleryRoute: GalleryRoute,
@@ -397,8 +397,19 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   TermsRoute: TermsRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
+  CzpOps9f2cAccessRoute: CzpOps9f2cAccessRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

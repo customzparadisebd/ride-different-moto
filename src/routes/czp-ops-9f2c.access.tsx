@@ -9,7 +9,7 @@ import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/czp-ops-9f2c/access")({
   head: () => ({
     meta: [
       { title: `Staff Sign In — ${site.name}` },
@@ -37,10 +37,10 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) void navigate({ to: "/admin", replace: true });
+      if (event === "SIGNED_IN" && session) void navigate({ to: "/czp-ops-9f2c", replace: true });
     });
     void supabase.auth.getSession().then(({ data: s }) => {
-      if (s.session) void navigate({ to: "/admin", replace: true });
+      if (s.session) void navigate({ to: "/czp-ops-9f2c", replace: true });
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
@@ -53,7 +53,7 @@ function AuthPage() {
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin + "/auth" },
+          options: { emailRedirectTo: window.location.origin + "/czp-ops-9f2c/access" },
         });
         if (error) throw error;
         if (!data.session) {
@@ -74,7 +74,7 @@ function AuthPage() {
   const handleGoogle = async () => {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/auth",
+      redirect_uri: window.location.origin + "/czp-ops-9f2c/access",
     });
     if (result.error) {
       toast.error("Google sign-in failed. Please try again.");
@@ -82,7 +82,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/admin", replace: true });
+    void navigate({ to: "/czp-ops-9f2c", replace: true });
   };
 
   return (
