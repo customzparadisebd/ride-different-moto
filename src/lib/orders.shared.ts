@@ -48,6 +48,19 @@ export const checkoutInput = z.object({
   idempotencyKey: z.string().trim().min(8).max(80),
 });
 
+/**
+ * What the storefront actually submits: product ids + quantity only.
+ * Prices are resolved server-side from the catalog so they can't be tampered with.
+ */
+export const checkoutSubmitInput = checkoutInput.omit({ items: true }).extend({
+  items: z
+    .array(z.object({ productId: z.string().trim().min(1).max(120), quantity: z.number().int().min(1).max(999) }))
+    .min(1, "Your cart is empty")
+    .max(50),
+});
+
+export type CheckoutSubmitInput = z.infer<typeof checkoutSubmitInput>;
+
 export const adminOrderInput = checkoutInput.extend({
   discount: money.default(0),
   shipping: money.default(0),
