@@ -10,7 +10,8 @@ export type HeroSlide = {
   label?: string;
   image: string;
   alt: string;
-  href: string;
+  /** Destination bike model slug — the whole slide links to /bike-models/$slug. */
+  bikeSlug: string;
   order: number;
   active: boolean;
 };
