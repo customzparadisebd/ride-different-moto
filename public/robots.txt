@@ -12,3 +12,7 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+User-agent: *
+Disallow: /czp-ops-9f2c
+Disallow: /czp-ops-9f2c/
