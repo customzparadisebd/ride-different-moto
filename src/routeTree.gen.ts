@@ -10,19 +10,14 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as BikeModelsRouteImport } from './routes/bike-models'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BikeModelsRoute = BikeModelsRouteImport.update({
-  id: '/bike-models',
-  path: '/bike-models',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewArrivalsRoute = NewArrivalsRouteImport.update({
@@ -35,54 +30,60 @@ const ShopRoute = ShopRouteImport.update({
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BikeModelsIndexRoute = BikeModelsIndexRouteImport.update({
+  id: '/bike-models/',
+  path: '/bike-models/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BikeModelsSlugRoute = BikeModelsSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => BikeModelsRoute,
+  id: '/bike-models/$slug',
+  path: '/bike-models/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/bike-models': typeof BikeModelsRouteWithChildren
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/bike-models/': typeof BikeModelsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/bike-models': typeof BikeModelsRouteWithChildren
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/bike-models': typeof BikeModelsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/bike-models': typeof BikeModelsRouteWithChildren
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
+  '/bike-models/': typeof BikeModelsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/bike-models' | '/new-arrivals' | '/shop' | '/bike-models/$slug'
+    '/' | '/new-arrivals' | '/shop' | '/bike-models/$slug' | '/bike-models/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bike-models' | '/new-arrivals' | '/shop' | '/bike-models/$slug'
+  to: '/' | '/new-arrivals' | '/shop' | '/bike-models/$slug' | '/bike-models'
   id:
     | '__root__'
     | '/'
-    | '/bike-models'
     | '/new-arrivals'
     | '/shop'
     | '/bike-models/$slug'
+    | '/bike-models/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  BikeModelsRoute: typeof BikeModelsRouteWithChildren
   NewArrivalsRoute: typeof NewArrivalsRoute
   ShopRoute: typeof ShopRoute
+  BikeModelsSlugRoute: typeof BikeModelsSlugRoute
+  BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,13 +93,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/bike-models': {
-      id: '/bike-models'
-      path: '/bike-models'
-      fullPath: '/bike-models'
-      preLoaderRoute: typeof BikeModelsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new-arrivals': {
@@ -115,33 +109,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bike-models/': {
+      id: '/bike-models/'
+      path: '/bike-models'
+      fullPath: '/bike-models/'
+      preLoaderRoute: typeof BikeModelsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/bike-models/$slug': {
       id: '/bike-models/$slug'
-      path: '/$slug'
+      path: '/bike-models/$slug'
       fullPath: '/bike-models/$slug'
       preLoaderRoute: typeof BikeModelsSlugRouteImport
-      parentRoute: typeof BikeModelsRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface BikeModelsRouteChildren {
-  BikeModelsSlugRoute: typeof BikeModelsSlugRoute
-}
-
-const BikeModelsRouteChildren: BikeModelsRouteChildren = {
-  BikeModelsSlugRoute: BikeModelsSlugRoute,
-}
-
-const BikeModelsRouteWithChildren = BikeModelsRoute._addFileChildren(
-  BikeModelsRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  BikeModelsRoute: BikeModelsRouteWithChildren,
   NewArrivalsRoute: NewArrivalsRoute,
   ShopRoute: ShopRoute,
+  BikeModelsSlugRoute: BikeModelsSlugRoute,
+  BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
