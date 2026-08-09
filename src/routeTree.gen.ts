@@ -26,7 +26,11 @@ import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 import { Route as CzpOps9f2cAccessRouteImport } from './routes/czp-ops-9f2c.access'
 import { Route as CzpOps9f2cAccessDeniedRouteImport } from './routes/czp-ops-9f2c.access-denied'
+import { Route as CzpOps9f2cMfaRouteImport } from './routes/czp-ops-9f2c.mfa'
 import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
+import { Route as AuthenticatedCzpOps9f2cAuditLogRouteImport } from './routes/_authenticated/czp-ops-9f2c/audit-log'
+import { Route as AuthenticatedCzpOps9f2cSecurityRouteImport } from './routes/_authenticated/czp-ops-9f2c/security'
+import { Route as AuthenticatedCzpOps9f2cStaffRouteImport } from './routes/_authenticated/czp-ops-9f2c/staff'
 import { Route as AuthenticatedCzpOps9f2cOrdersIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -114,10 +118,33 @@ const CzpOps9f2cAccessDeniedRoute = CzpOps9f2cAccessDeniedRouteImport.update({
   path: '/czp-ops-9f2c/access-denied',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CzpOps9f2cMfaRoute = CzpOps9f2cMfaRouteImport.update({
+  id: '/czp-ops-9f2c/mfa',
+  path: '/czp-ops-9f2c/mfa',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedCzpOps9f2cIndexRoute =
   AuthenticatedCzpOps9f2cIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cAuditLogRoute =
+  AuthenticatedCzpOps9f2cAuditLogRouteImport.update({
+    id: '/audit-log',
+    path: '/audit-log',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cSecurityRoute =
+  AuthenticatedCzpOps9f2cSecurityRouteImport.update({
+    id: '/security',
+    path: '/security',
+    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+  } as any)
+const AuthenticatedCzpOps9f2cStaffRoute =
+  AuthenticatedCzpOps9f2cStaffRouteImport.update({
+    id: '/staff',
+    path: '/staff',
     getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
   } as any)
 const AuthenticatedCzpOps9f2cOrdersIdRoute =
@@ -143,7 +170,11 @@ export interface FileRoutesByFullPath {
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
+  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
   '/bike-models/': typeof BikeModelsIndexRoute
+  '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
@@ -162,7 +193,11 @@ export interface FileRoutesByTo {
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
+  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
   '/bike-models': typeof BikeModelsIndexRoute
+  '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
@@ -184,7 +219,11 @@ export interface FileRoutesById {
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
   '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
+  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
   '/bike-models/': typeof BikeModelsIndexRoute
+  '/_authenticated/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  '/_authenticated/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
+  '/_authenticated/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
   '/_authenticated/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
   '/_authenticated/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
@@ -206,7 +245,11 @@ export interface FileRouteTypes {
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
+    | '/czp-ops-9f2c/mfa'
     | '/bike-models/'
+    | '/czp-ops-9f2c/audit-log'
+    | '/czp-ops-9f2c/security'
+    | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c/'
     | '/czp-ops-9f2c/orders/$id'
   fileRoutesByTo: FileRoutesByTo
@@ -225,7 +268,11 @@ export interface FileRouteTypes {
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
+    | '/czp-ops-9f2c/mfa'
     | '/bike-models'
+    | '/czp-ops-9f2c/audit-log'
+    | '/czp-ops-9f2c/security'
+    | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c'
     | '/czp-ops-9f2c/orders/$id'
   id:
@@ -246,7 +293,11 @@ export interface FileRouteTypes {
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/access'
     | '/czp-ops-9f2c/access-denied'
+    | '/czp-ops-9f2c/mfa'
     | '/bike-models/'
+    | '/_authenticated/czp-ops-9f2c/audit-log'
+    | '/_authenticated/czp-ops-9f2c/security'
+    | '/_authenticated/czp-ops-9f2c/staff'
     | '/_authenticated/czp-ops-9f2c/'
     | '/_authenticated/czp-ops-9f2c/orders/$id'
   fileRoutesById: FileRoutesById
@@ -267,6 +318,7 @@ export interface RootRouteChildren {
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
   CzpOps9f2cAccessRoute: typeof CzpOps9f2cAccessRoute
   CzpOps9f2cAccessDeniedRoute: typeof CzpOps9f2cAccessDeniedRoute
+  CzpOps9f2cMfaRoute: typeof CzpOps9f2cMfaRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
 }
 
@@ -391,11 +443,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CzpOps9f2cAccessDeniedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/czp-ops-9f2c/mfa': {
+      id: '/czp-ops-9f2c/mfa'
+      path: '/czp-ops-9f2c/mfa'
+      fullPath: '/czp-ops-9f2c/mfa'
+      preLoaderRoute: typeof CzpOps9f2cMfaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/czp-ops-9f2c/': {
       id: '/_authenticated/czp-ops-9f2c/'
       path: '/'
       fullPath: '/czp-ops-9f2c/'
       preLoaderRoute: typeof AuthenticatedCzpOps9f2cIndexRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/audit-log': {
+      id: '/_authenticated/czp-ops-9f2c/audit-log'
+      path: '/audit-log'
+      fullPath: '/czp-ops-9f2c/audit-log'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cAuditLogRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/security': {
+      id: '/_authenticated/czp-ops-9f2c/security'
+      path: '/security'
+      fullPath: '/czp-ops-9f2c/security'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cSecurityRouteImport
+      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+    }
+    '/_authenticated/czp-ops-9f2c/staff': {
+      id: '/_authenticated/czp-ops-9f2c/staff'
+      path: '/staff'
+      fullPath: '/czp-ops-9f2c/staff'
+      preLoaderRoute: typeof AuthenticatedCzpOps9f2cStaffRouteImport
       parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
     }
     '/_authenticated/czp-ops-9f2c/orders/$id': {
@@ -409,12 +489,18 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedCzpOps9f2cRouteRouteChildren {
+  AuthenticatedCzpOps9f2cAuditLogRoute: typeof AuthenticatedCzpOps9f2cAuditLogRoute
+  AuthenticatedCzpOps9f2cSecurityRoute: typeof AuthenticatedCzpOps9f2cSecurityRoute
+  AuthenticatedCzpOps9f2cStaffRoute: typeof AuthenticatedCzpOps9f2cStaffRoute
   AuthenticatedCzpOps9f2cIndexRoute: typeof AuthenticatedCzpOps9f2cIndexRoute
   AuthenticatedCzpOps9f2cOrdersIdRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRoute
 }
 
 const AuthenticatedCzpOps9f2cRouteRouteChildren: AuthenticatedCzpOps9f2cRouteRouteChildren =
   {
+    AuthenticatedCzpOps9f2cAuditLogRoute: AuthenticatedCzpOps9f2cAuditLogRoute,
+    AuthenticatedCzpOps9f2cSecurityRoute: AuthenticatedCzpOps9f2cSecurityRoute,
+    AuthenticatedCzpOps9f2cStaffRoute: AuthenticatedCzpOps9f2cStaffRoute,
     AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
     AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
   }
@@ -452,6 +538,7 @@ const rootRouteChildren: RootRouteChildren = {
   BikeModelsSlugRoute: BikeModelsSlugRoute,
   CzpOps9f2cAccessRoute: CzpOps9f2cAccessRoute,
   CzpOps9f2cAccessDeniedRoute: CzpOps9f2cAccessDeniedRoute,
+  CzpOps9f2cMfaRoute: CzpOps9f2cMfaRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
 }
 export const routeTree = rootRouteImport

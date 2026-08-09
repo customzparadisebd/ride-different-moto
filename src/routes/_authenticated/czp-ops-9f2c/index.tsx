@@ -65,20 +65,18 @@ function AdminOrders() {
   const orders = ordersQuery.data ?? [];
 
   return (
-    <section className="mx-auto max-w-6xl px-4 py-8">
+    <section>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Orders</h1>
           <p className="text-xs text-muted-foreground">
-            Signed in as {accessQuery.data.email} ({accessQuery.data.roles.join(", ")})
+            {accessQuery.data.primaryRole ?? "staff"} access · {orders.length} order(s) loaded
           </p>
         </div>
-        <Button variant="steel" size="sm" onClick={handleSignOut}>
-          Sign out
-        </Button>
       </div>
 
-      <ManualOrderForm />
+      {/* Manual order entry requires the orders.create permission (also enforced server-side). */}
+      {accessQuery.data.permissions.includes("orders.create") ? <ManualOrderForm /> : null}
 
       <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[760px] text-sm">
