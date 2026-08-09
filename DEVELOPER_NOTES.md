@@ -1,0 +1,66 @@
+# Developer Notes / Project Comments
+
+Project: **CUSTOMZ PARADISE BD** — motorcycle modification store
+Tagline: RIDE DIFFERENT. BE DIFFERENT.
+Stack: TanStack Start (React 19) + Tailwind CSS 4 + shadcn/ui
+
+**How to use this file:** one entry per major feature/section. Keep it short.
+Update the **Status** when work is completed — never delete old entries.
+Status values: `Completed` / `In Progress` / `Pending`.
+
+---
+
+## Branding & Design System
+- **Status:** Completed
+- **Done:** Brand palette (red / silver / black) and shadows as tokens in `src/styles.css`; Barlow Condensed headings + Barlow body; utilities (`bg-gradient-red`, `text-gradient-red`, `eyebrow`, `pb-safe`, `no-scrollbar`). Logo used as-is in light-bg / dark-bg versions via `src/components/Logo.tsx`. Favicon generated from the mark.
+- **Next:** None. Rule: never recolor, stretch or redesign the logo.
+
+## Layout & Navigation
+- **Status:** Completed
+- **Done:** Sticky `Header` with mobile menu, cart button and theme toggle; `Footer` with quick links, policies and socials; providers wired in `src/routes/__root.tsx` (Query, Theme, Cart, Toaster).
+- **Next:** None.
+
+## Home / Landing Page
+- **Status:** Completed — **do not rebuild**
+- **Done:** Hero slider (Embla, autoplay + touch), bike model carousel, featured products, trust, reviews, store-coming-soon, about, contact and social sections; SEO meta + JSON-LD `Store` schema.
+- **Next:** Content/photo swaps only when the owner supplies real shop images.
+
+## Shop & New Arrivals
+- **Status:** Completed
+- **Done:** `/shop` product grid and `/new-arrivals` recent-parts view built from `src/data/catalog.ts`; BDT (৳) prices, discount badges.
+- **Next:** Filters (category / price / bike fitment) and sorting are Pending.
+
+## Bike Model Pages
+- **Status:** Completed
+- **Done:** `/bike-models` directory and dynamic `/bike-models/$slug` pages with loader, breadcrumbs, matching parts and a not-found state.
+- **Next:** Expand catalog to more models as inventory grows.
+
+## Cart & WhatsApp Ordering
+- **Status:** Completed
+- **Done:** Local-storage cart (`src/lib/cart.tsx`), `CartSheet` drawer, "Order Now" builds a pre-filled WhatsApp message to +880 1890-722202.
+- **Next:** Online checkout / payments are Pending (needs backend + payment provider).
+
+## Gallery
+- **Status:** Completed
+- **Done:** `/gallery` square image grid using hero and bike model assets.
+- **Next:** Replace placeholders with real customer build photos.
+
+## About, Contact & Policies
+- **Status:** Completed
+- **Done:** `/about`, `/contact`, plus `privacy-policy`, `terms`, `returns`, `shipping` via reusable `PolicyArticle`.
+- **Next:** Owner to review policy wording for accuracy.
+
+## Mobile & Network Resilience
+- **Status:** Completed
+- **Done:** 44px touch targets, safe-area padding, `NetworkBanner` for offline/slow connections, `SafeImage` with reserved aspect ratio, shimmer and per-image retry (SSR-complete images handled).
+- **Next:** None.
+
+## Backend / Admin
+- **Status:** Pending
+- **Done:** Nothing yet — catalog is static data.
+- **Next:** Needs Lovable Cloud for product management, order records, auth and image uploads before an admin panel can be built.
+
+## Analytics & SEO Tracking
+- **Status:** Pending
+- **Done:** Per-route meta tags and structured data only.
+- **Next:** Add analytics, sitemap and robots handling when the domain goes live.
