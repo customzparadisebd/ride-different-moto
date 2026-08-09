@@ -15,6 +15,7 @@ import { formatBDT } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import {
   checkoutSubmitInput,
+  DELIVERY_ZONES,
   newIdempotencyKey,
   PAYMENT_METHODS,
   SHIPPING_FLAT_BDT,
