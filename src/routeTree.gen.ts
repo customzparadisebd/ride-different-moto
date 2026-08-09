@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
@@ -18,6 +21,21 @@ import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NewArrivalsRoute = NewArrivalsRouteImport.update({
@@ -43,6 +61,9 @@ const BikeModelsSlugRoute = BikeModelsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
@@ -50,6 +71,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
@@ -58,6 +82,9 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/shop': typeof ShopRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
@@ -66,12 +93,30 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/new-arrivals' | '/shop' | '/bike-models/$slug' | '/bike-models/'
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/gallery'
+    | '/new-arrivals'
+    | '/shop'
+    | '/bike-models/$slug'
+    | '/bike-models/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/new-arrivals' | '/shop' | '/bike-models/$slug' | '/bike-models'
+  to:
+    | '/'
+    | '/about'
+    | '/contact'
+    | '/gallery'
+    | '/new-arrivals'
+    | '/shop'
+    | '/bike-models/$slug'
+    | '/bike-models'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/contact'
+    | '/gallery'
     | '/new-arrivals'
     | '/shop'
     | '/bike-models/$slug'
@@ -80,6 +125,9 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
+  GalleryRoute: typeof GalleryRoute
   NewArrivalsRoute: typeof NewArrivalsRoute
   ShopRoute: typeof ShopRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
@@ -93,6 +141,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/new-arrivals': {
@@ -128,6 +197,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
+  GalleryRoute: GalleryRoute,
   NewArrivalsRoute: NewArrivalsRoute,
   ShopRoute: ShopRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
