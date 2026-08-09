@@ -1,0 +1,177 @@
+/**
+ * Server-only order logic. Never imported by client code (blocked by the
+ * `.server.ts` extension) — it uses the service-role client.
+ */
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type { Database } from "@/integrations/supabase/types";
+import { checkoutInput, type CheckoutInput } from "./orders.shared";
+
+const ADMIN_BOOTSTRAP_EMAIL = "customzparadisebd@gmail.com";
+
+type CreateOptions = {
+  source: "website" | "admin";
+  discount?: number;
+  shipping?: number;
+  paymentStatus?: string;
+  status?: string;
+  actor?: string | null;
+  actorLabel?: string;
+};
+
+const round2 = (n: number) => Math.round(n * 100) / 100;
+
+export type CreatedOrder = { orderId: string; invoiceNo: string; total: number; duplicate: boolean };
+
+export async function createOrder(
+  raw: CheckoutInput,
+  options: CreateOptions,
+): Promise<CreatedOrder> {
+  const input = checkoutInput.parse(raw);
+
+  // Duplicate protection: the same submit key never creates a second order.
+  const existing = await supabaseAdmin
+    .from("orders")
+    .select("id, invoice_no, total")
+    .eq("idempotency_key", input.idempotencyKey)
+    .maybeSingle();
+  if (existing.data) {
+    return {
+      orderId: existing.data.id,
+      invoiceNo: existing.data.invoice_no,
+      total: Number(existing.data.total),
+      duplicate: true,
+    };
+  }
+
+  const subtotal = round2(
+    input.items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0),
+  );
+  const discount = round2(Math.min(options.discount ?? 0, subtotal));
+  const shipping = round2(options.shipping ?? 0);
+  const total = round2(subtotal - discount + shipping);
+
+  const inserted = await supabaseAdmin
+    .from("orders")
+    .insert({
+      idempotency_key: input.idempotencyKey,
+      customer_name: input.customerName,
+      customer_phone: input.customerPhone,
+      customer_email: input.customerEmail || null,
+      address_line: input.addressLine,
+      city: input.city,
+      notes: input.notes || null,
+      subtotal,
+      discount,
+      shipping,
+      total,
+      payment_method: input.paymentMethod,
+      payment_status: options.paymentStatus ?? "unpaid",
+      order_source: options.source,
+      status: options.status ?? "pending",
+      created_by: options.actor ?? null,
+    })
+    .select("id, invoice_no, total")
+    .single();
+
+  if (inserted.error) {
+    // Unique violation on the submit key = a racing duplicate; return the winner.
+    if (inserted.error.code === "23505") {
+      const winner = await supabaseAdmin
+        .from("orders")
+        .select("id, invoice_no, total")
+        .eq("idempotency_key", input.idempotencyKey)
+        .single();
+      if (winner.data) {
+        return {
+          orderId: winner.data.id,
+          invoiceNo: winner.data.invoice_no,
+          total: Number(winner.data.total),
+          duplicate: true,
+        };
+      }
+    }
+    throw new Error("Could not save the order. Please try again.");
+  }
+
+  const order = inserted.data;
+
+  const items = await supabaseAdmin.from("order_items").insert(
+    input.items.map((item) => ({
+      order_id: order.id,
+      product_id: item.productId ?? null,
+      product_slug: item.productSlug ?? null,
+      product_name: item.productName,
+      unit_price: round2(item.unitPrice),
+      quantity: item.quantity,
+      line_total: round2(item.unitPrice * item.quantity),
+    })),
+  );
+  if (items.error) {
+    await supabaseAdmin.from("orders").delete().eq("id", order.id);
+    throw new Error("Could not save the order items. Please try again.");
+  }
+
+  await logOrderEvent(order.id, {
+    eventType: "order_created",
+    message:
+      options.source === "admin"
+        ? "Order created manually from the admin panel"
+        : "Order placed from the website checkout",
+    actor: options.actor ?? null,
+    actorLabel: options.actorLabel ?? (options.source === "admin" ? "admin" : "customer"),
+    metadata: { subtotal, discount, shipping, total, items: input.items.length },
+  });
+
+  return { orderId: order.id, invoiceNo: order.invoice_no, total, duplicate: false };
+}
+
+export async function logOrderEvent(
+  orderId: string,
+  event: {
+    eventType: string;
+    message?: string;
+    actor?: string | null;
+    actorLabel?: string;
+    metadata?: Record<string, unknown>;
+  },
+) {
+  await supabaseAdmin.from("order_events").insert({
+    order_id: orderId,
+    event_type: event.eventType,
+    message: event.message ?? null,
+    actor: event.actor ?? null,
+    actor_label: event.actorLabel ?? "system",
+    metadata: (event.metadata ?? null) as never,
+  });
+}
+
+/** Confirms the caller has a staff role. Throws otherwise. */
+export async function assertStaff(
+  supabase: SupabaseClient<Database>,
+  userId: string,
+): Promise<void> {
+  const { data, error } = await supabase.rpc("is_staff", { _user_id: userId });
+  if (error || !data) throw new Error("You are not authorised to access the admin panel.");
+}
+
+/**
+ * Keeps a profile row for the signed-in staff account and grants the owner
+ * account the admin role the first time it signs in.
+ */
+export async function ensureAccount(userId: string, email: string | null, fullName?: string | null) {
+  await supabaseAdmin.from("profiles").upsert(
+    { id: userId, email, full_name: fullName ?? null, updated_at: new Date().toISOString() },
+    { onConflict: "id" },
+  );
+
+  if (email && email.toLowerCase() === ADMIN_BOOTSTRAP_EMAIL) {
+    await supabaseAdmin
+      .from("user_roles")
+      .upsert({ user_id: userId, role: "admin" }, { onConflict: "user_id,role" });
+  }
+
+  const { data } = await supabaseAdmin.from("user_roles").select("role").eq("user_id", userId);
+  return (data ?? []).map((row) => row.role);
+}
