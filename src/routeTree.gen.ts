@@ -10,33 +10,79 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BikeModelsRouteImport } from './routes/bike-models'
+import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BikeModelsRoute = BikeModelsRouteImport.update({
+  id: '/bike-models',
+  path: '/bike-models',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewArrivalsRoute = NewArrivalsRouteImport.update({
+  id: '/new-arrivals',
+  path: '/new-arrivals',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BikeModelsSlugRoute = BikeModelsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BikeModelsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bike-models': typeof BikeModelsRouteWithChildren
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/shop': typeof ShopRoute
+  '/bike-models/$slug': typeof BikeModelsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bike-models': typeof BikeModelsRouteWithChildren
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/shop': typeof ShopRoute
+  '/bike-models/$slug': typeof BikeModelsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bike-models': typeof BikeModelsRouteWithChildren
+  '/new-arrivals': typeof NewArrivalsRoute
+  '/shop': typeof ShopRoute
+  '/bike-models/$slug': typeof BikeModelsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    '/' | '/bike-models' | '/new-arrivals' | '/shop' | '/bike-models/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/bike-models' | '/new-arrivals' | '/shop' | '/bike-models/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/bike-models'
+    | '/new-arrivals'
+    | '/shop'
+    | '/bike-models/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BikeModelsRoute: typeof BikeModelsRouteWithChildren
+  NewArrivalsRoute: typeof NewArrivalsRoute
+  ShopRoute: typeof ShopRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,22 +94,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/bike-models': {
+      id: '/bike-models'
+      path: '/bike-models'
+      fullPath: '/bike-models'
+      preLoaderRoute: typeof BikeModelsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/new-arrivals': {
+      id: '/new-arrivals'
+      path: '/new-arrivals'
+      fullPath: '/new-arrivals'
+      preLoaderRoute: typeof NewArrivalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bike-models/$slug': {
+      id: '/bike-models/$slug'
+      path: '/$slug'
+      fullPath: '/bike-models/$slug'
+      preLoaderRoute: typeof BikeModelsSlugRouteImport
+      parentRoute: typeof BikeModelsRoute
+    }
   }
 }
 
+interface BikeModelsRouteChildren {
+  BikeModelsSlugRoute: typeof BikeModelsSlugRoute
+}
+
+const BikeModelsRouteChildren: BikeModelsRouteChildren = {
+  BikeModelsSlugRoute: BikeModelsSlugRoute,
+}
+
+const BikeModelsRouteWithChildren = BikeModelsRoute._addFileChildren(
+  BikeModelsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BikeModelsRoute: BikeModelsRouteWithChildren,
+  NewArrivalsRoute: NewArrivalsRoute,
+  ShopRoute: ShopRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

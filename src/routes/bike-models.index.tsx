@@ -7,7 +7,7 @@ const title = "Bike Models — Customz Paradise BD";
 const description =
   "Find motorcycle modification parts by bike model — Pulsar, R15, MT-15, Duke and more.";
 
-export const Route = createFileRoute("/bike-models")({
+export const Route = createFileRoute("/bike-models/")({
   head: () => ({
     meta: [
       { title },
