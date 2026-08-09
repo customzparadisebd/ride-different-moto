@@ -74,6 +74,8 @@ export const saveStoreSettings = createServerFn({ method: "POST" })
         support_phone: data.supportPhone,
         support_email: data.supportEmail || null,
         low_stock_threshold: data.lowStockThreshold,
+        steadfast_enabled: data.steadfastEnabled,
+        steadfast_base_url: data.steadfastBaseUrl,
       })
       .eq("id", "default");
     if (error) throw new Error("Could not save the store settings.");

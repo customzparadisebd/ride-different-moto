@@ -107,6 +107,20 @@ export const AUDIT_ACTIONS = {
   orderNoteAdded: "order.note_added",
   orderBulkStatusChanged: "order.bulk_status_changed",
   settingsUpdated: "settings.updated",
+  productCreated: "product.created",
+  productUpdated: "product.updated",
+  productStockChanged: "product.stock_changed",
+  productRecycled: "product.recycled",
+  productRestored: "product.restored",
+  productPurged: "product.purged",
+  orderRecycled: "order.recycled",
+  orderRestored: "order.restored",
+  orderPurged: "order.purged",
+  orderPinned: "order.pinned",
+  orderAssigned: "order.assigned",
+  courierShipmentCreated: "courier.shipment_created",
+  courierStatusRefreshed: "courier.status_refreshed",
+  courierConnectionTested: "courier.connection_tested",
 } as const;
 
 export const staffStatusInput = z.object({

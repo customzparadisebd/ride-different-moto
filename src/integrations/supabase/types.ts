@@ -104,6 +104,62 @@ export type Database = {
         }
         Relationships: []
       }
+      courier_shipments: {
+        Row: {
+          consignment_id: string | null
+          courier_name: string
+          courier_status: string
+          created_at: string
+          id: string
+          order_id: string
+          response_message: string | null
+          response_status: string | null
+          sent_by: string | null
+          sent_by_label: string
+          success: boolean
+          tracking_code: string | null
+          tracking_url: string | null
+        }
+        Insert: {
+          consignment_id?: string | null
+          courier_name?: string
+          courier_status?: string
+          created_at?: string
+          id?: string
+          order_id: string
+          response_message?: string | null
+          response_status?: string | null
+          sent_by?: string | null
+          sent_by_label?: string
+          success?: boolean
+          tracking_code?: string | null
+          tracking_url?: string | null
+        }
+        Update: {
+          consignment_id?: string | null
+          courier_name?: string
+          courier_status?: string
+          created_at?: string
+          id?: string
+          order_id?: string
+          response_message?: string | null
+          response_status?: string | null
+          sent_by?: string | null
+          sent_by_label?: string
+          success?: boolean
+          tracking_code?: string | null
+          tracking_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courier_shipments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       login_attempts: {
         Row: {
           created_at: string
@@ -247,8 +303,11 @@ export type Database = {
         Row: {
           address_line: string
           advance_paid: number
+          assigned_to: string | null
           city: string
+          consignment_id: string | null
           courier_name: string | null
+          courier_response: Json | null
           courier_status: string
           courier_tracking_id: string | null
           created_at: string
@@ -257,28 +316,44 @@ export type Database = {
           customer_email: string | null
           customer_name: string
           customer_phone: string
+          delete_reason: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           delivery_zone: string | null
           discount: number
+          duplicate_note: string | null
           id: string
           idempotency_key: string | null
           internal_notes: string | null
           invoice_no: string
+          is_duplicate: boolean
+          is_pinned: boolean
           notes: string | null
           order_source: string
           payment_method: string
           payment_status: string
+          pinned_at: string | null
+          pinned_by: string | null
+          print_count: number
+          printed_at: string | null
+          printed_by: string | null
+          shipment_at: string | null
           shipping: number
           status: string
           subtotal: number
           total: number
+          tracking_url: string | null
           transaction_id: string | null
           updated_at: string
         }
         Insert: {
           address_line: string
           advance_paid?: number
+          assigned_to?: string | null
           city: string
+          consignment_id?: string | null
           courier_name?: string | null
+          courier_response?: Json | null
           courier_status?: string
           courier_tracking_id?: string | null
           created_at?: string
@@ -287,28 +362,44 @@ export type Database = {
           customer_email?: string | null
           customer_name: string
           customer_phone: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           delivery_zone?: string | null
           discount?: number
+          duplicate_note?: string | null
           id?: string
           idempotency_key?: string | null
           internal_notes?: string | null
           invoice_no?: string
+          is_duplicate?: boolean
+          is_pinned?: boolean
           notes?: string | null
           order_source?: string
           payment_method?: string
           payment_status?: string
+          pinned_at?: string | null
+          pinned_by?: string | null
+          print_count?: number
+          printed_at?: string | null
+          printed_by?: string | null
+          shipment_at?: string | null
           shipping?: number
           status?: string
           subtotal?: number
           total?: number
+          tracking_url?: string | null
           transaction_id?: string | null
           updated_at?: string
         }
         Update: {
           address_line?: string
           advance_paid?: number
+          assigned_to?: string | null
           city?: string
+          consignment_id?: string | null
           courier_name?: string | null
+          courier_response?: Json | null
           courier_status?: string
           courier_tracking_id?: string | null
           created_at?: string
@@ -317,21 +408,109 @@ export type Database = {
           customer_email?: string | null
           customer_name?: string
           customer_phone?: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           delivery_zone?: string | null
           discount?: number
+          duplicate_note?: string | null
           id?: string
           idempotency_key?: string | null
           internal_notes?: string | null
           invoice_no?: string
+          is_duplicate?: boolean
+          is_pinned?: boolean
           notes?: string | null
           order_source?: string
           payment_method?: string
           payment_status?: string
+          pinned_at?: string | null
+          pinned_by?: string | null
+          print_count?: number
+          printed_at?: string | null
+          printed_by?: string | null
+          shipment_at?: string | null
           shipping?: number
           status?: string
           subtotal?: number
           total?: number
+          tracking_url?: string | null
           transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          bike_compatibility: string[]
+          category: string
+          created_at: string
+          created_by: string | null
+          delete_reason: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          is_best_deal: boolean
+          is_featured: boolean
+          is_new_arrival: boolean
+          is_universal: boolean
+          name: string
+          offer_price: number | null
+          price: number
+          sku: string
+          slug: string
+          stock_qty: number
+          updated_at: string
+        }
+        Insert: {
+          bike_compatibility?: string[]
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_best_deal?: boolean
+          is_featured?: boolean
+          is_new_arrival?: boolean
+          is_universal?: boolean
+          name: string
+          offer_price?: number | null
+          price?: number
+          sku: string
+          slug: string
+          stock_qty?: number
+          updated_at?: string
+        }
+        Update: {
+          bike_compatibility?: string[]
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          is_best_deal?: boolean
+          is_featured?: boolean
+          is_new_arrival?: boolean
+          is_universal?: boolean
+          name?: string
+          offer_price?: number | null
+          price?: number
+          sku?: string
+          slug?: string
+          stock_qty?: number
           updated_at?: string
         }
         Relationships: []
@@ -385,6 +564,8 @@ export type Database = {
           low_stock_threshold: number
           payment_methods: Json
           shipping_flat: number
+          steadfast_base_url: string
+          steadfast_enabled: boolean
           support_email: string | null
           support_phone: string
           updated_at: string
@@ -396,6 +577,8 @@ export type Database = {
           low_stock_threshold?: number
           payment_methods?: Json
           shipping_flat?: number
+          steadfast_base_url?: string
+          steadfast_enabled?: boolean
           support_email?: string | null
           support_phone?: string
           updated_at?: string
@@ -407,6 +590,8 @@ export type Database = {
           low_stock_threshold?: number
           payment_methods?: Json
           shipping_flat?: number
+          steadfast_base_url?: string
+          steadfast_enabled?: boolean
           support_email?: string | null
           support_phone?: string
           updated_at?: string

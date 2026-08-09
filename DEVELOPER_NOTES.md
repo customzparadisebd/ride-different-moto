@@ -125,6 +125,21 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Done:** The panel is now a proper back office with a collapsible sidebar (Dashboard, Orders, Products, Customers, Staff & roles, Audit log, Store settings, Security) that only shows what the signed-in role is permitted to open. `/czp-ops-9f2c` is a Dashboard with today / 7-day / 30-day order and revenue figures, status counts and the latest orders. Orders moved to `/czp-ops-9f2c/orders` with server-side pagination, sorting, bulk status update and CSV export; manual order entry moved out to its own screen `/czp-ops-9f2c/orders/new` with a multi-line product picker from the live catalog, live totals and duplicate-submit protection. The order detail page keeps the full customer / items / pricing / status / payment / courier / internal-notes layout and now links to a print-ready invoice at `/czp-ops-9f2c/invoice/:id`. New sections: Products (read-only catalog reference with images, prices and stock), Customers (grouped by mobile number with lifetime value and per-customer order history) and Store settings (delivery charge per zone, enabled payment methods, support contact, low-stock threshold) backed by a `store_settings` table instead of hard-coded values.
 - **Next:** Products are still code-managed — a products table is needed to add/edit/price items from the panel. Checkout should read delivery charges from Store settings once the zone pricing is finalised. Screens have not been clicked through live yet because the owner login stops at the 2FA code step, so please review each section and report anything off.
 
+## Product Management (database-backed)
+- **Status:** Completed
+- **Done:** `products` table with SKU, name, slug, category, brand, bike compatibility, price / sale price / cost, stock and low-stock level, images, active / featured / new-arrival flags and soft delete. `/czp-ops-9f2c/products` is a full CRUD screen (search, category and stock filters, create/edit form, stock adjust, merchandising toggles, soft delete). All writes require the products.manage permission and are written to the audit log.
+- **Next:** Point the public shop at the products table so panel edits show on the storefront; add image upload (currently image URLs).
+
+## Recycle Bin (soft delete & restore)
+- **Status:** Completed
+- **Done:** Deleted products and orders keep `deleted_at` / `deleted_by` / `delete_reason` instead of being removed. `/czp-ops-9f2c/recycle-bin` lists both, supports restore, and permanent purge is Super-Admin-only. Deleted rows are filtered out of every normal list and every action is audited.
+- **Next:** Optional auto-purge after a retention window.
+
+## Courier Integration (Steadfast)
+- **Status:** Completed
+- **Done:** `courier_shipments` records every booking attempt with the consignment id, tracking code and raw response. The order detail page has a Courier panel to book the order to Steadfast (COD amount derived from the stored total minus advance) and to refresh delivery status, which writes back `courier_status`, `consignment_id` and `tracking_url` plus an order-history entry. Store settings has a Steadfast enable toggle and API base URL; the API key/secret live in server secrets only and are never returned to the browser.
+- **Next:** Optional scheduled status sync and bulk booking from the orders list.
+
 ## Analytics & SEO Tracking
 - **Status:** Pending
 - **Done:** Per-route meta tags and structured data only.

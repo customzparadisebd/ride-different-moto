@@ -130,6 +130,10 @@ export const listOrders = createServerFn({ method: "POST" })
         { count: "exact" },
       );
 
+    query = data.deleted
+      ? query.not("deleted_at", "is", null)
+      : query.is("deleted_at", null);
+
     if (data.invoiceNo) query = query.ilike("invoice_no", likeTerm(data.invoiceNo));
     if (data.customerName) query = query.ilike("customer_name", likeTerm(data.customerName));
     if (data.customerPhone) query = query.ilike("customer_phone", likeTerm(data.customerPhone));
