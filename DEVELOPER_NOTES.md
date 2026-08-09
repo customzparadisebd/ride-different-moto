@@ -36,9 +36,19 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Next:** Expand catalog to more models as inventory grows.
 
 ## Cart & WhatsApp Ordering
+- **Status:** Completed — replaced by on-site checkout
+- **Done:** Local-storage cart (`src/lib/cart.tsx`) and `CartSheet` drawer. Cart now leads to `/checkout` instead of WhatsApp; WhatsApp remains only as a contact/help channel.
+- **Next:** None.
+
+## Checkout & Order Storage
 - **Status:** Completed
-- **Done:** Local-storage cart (`src/lib/cart.tsx`), `CartSheet` drawer, "Order Now" builds a pre-filled WhatsApp message to +880 1890-722202.
-- **Next:** Online checkout / payments are Pending (needs backend + payment provider).
+- **Done:** `/checkout` form (name, mobile, email, address, city, payment method, notes) with client + server Zod validation. `placeOrder` server fn re-prices every line from the catalog server-side, applies flat ৳120 shipping, generates the invoice ID (`CZP-YYMM-XXXX`) and saves `orders` + `order_items` + `order_events`. Duplicate protection via a per-attempt idempotency key (unique index, race-safe). Confirmation screen shows the invoice ID.
+- **Next:** Online payment capture (bKash/Nagad/card) is Pending.
+
+## Admin Panel — Orders
+- **Status:** Completed
+- **Done:** Staff sign-in at `/auth` (email/password + Google). `/admin` lists the latest 200 orders; `/admin/orders/:id` shows customer, amounts, items, status/payment controls, notes and full order history. Manual orders use the same tables and invoice series (`order_source = admin`). All reads/writes go through authenticated server functions guarded by an `is_staff` check; RLS blocks non-staff. First sign-in by customzparadisebd@gmail.com is granted the admin role automatically.
+- **Next:** Product/inventory management, order filters and CSV export are Pending.
 
 ## Gallery
 - **Status:** Completed
@@ -56,9 +66,9 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Next:** None.
 
 ## Backend / Admin
-- **Status:** Pending
-- **Done:** Nothing yet — catalog is static data.
-- **Next:** Needs Lovable Cloud for product management, order records, auth and image uploads before an admin panel can be built.
+- **Status:** In Progress
+- **Done:** Lovable Cloud enabled. Tables: `profiles`, `user_roles` (separate role table + `has_role`/`is_staff` security-definer functions), `orders`, `order_items`, `order_events`. RLS enabled everywhere; invoice numbering function is service-role only.
+- **Next:** Move the product catalog from `src/data/catalog.ts` into the database and add image uploads.
 
 ## Analytics & SEO Tracking
 - **Status:** Pending
