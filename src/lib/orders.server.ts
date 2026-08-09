@@ -14,6 +14,8 @@ type CreateOptions = {
   source: "website" | "admin";
   discount?: number;
   shipping?: number;
+  advancePaid?: number;
+  transactionId?: string | null;
   paymentStatus?: string;
   status?: string;
   actor?: string | null;
@@ -51,6 +53,13 @@ export async function createOrder(
   const discount = round2(Math.min(options.discount ?? 0, subtotal));
   const shipping = round2(options.shipping ?? 0);
   const total = round2(subtotal - discount + shipping);
+  const advancePaid = round2(Math.min(options.advancePaid ?? 0, total));
+
+  // A part payment recorded up front is reflected in the payment status, so
+  // the admin list never shows "unpaid" for an order that already has cash in.
+  const paymentStatus =
+    options.paymentStatus ??
+    (advancePaid <= 0 ? "unpaid" : advancePaid >= total ? "paid" : "partial");
 
   const inserted = await supabaseAdmin
     .from("orders")
@@ -61,13 +70,16 @@ export async function createOrder(
       customer_email: input.customerEmail || null,
       address_line: input.addressLine,
       city: input.city,
+      delivery_zone: input.deliveryZone,
       notes: input.notes || null,
       subtotal,
       discount,
       shipping,
       total,
+      advance_paid: advancePaid,
+      transaction_id: options.transactionId || null,
       payment_method: input.paymentMethod,
-      payment_status: options.paymentStatus ?? "unpaid",
+      payment_status: paymentStatus,
       order_source: options.source,
       status: options.status ?? "pending",
       created_by: options.actor ?? null,
@@ -103,6 +115,8 @@ export async function createOrder(
       product_id: item.productId ?? null,
       product_slug: item.productSlug ?? null,
       product_name: item.productName,
+      variant: item.variant || null,
+      image_url: item.imageUrl || null,
       unit_price: round2(item.unitPrice),
       quantity: item.quantity,
       line_total: round2(item.unitPrice * item.quantity),
