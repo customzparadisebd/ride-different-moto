@@ -17,7 +17,7 @@ import {
 } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/$id")({
-  head: () => ({ meta: [{ title: "Order — Admin" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Order — Admin" }, { name: "robots", content: "noindex, nofollow" }] }),
   component: AdminOrderDetail,
 });
 
