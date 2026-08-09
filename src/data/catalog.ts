@@ -8,6 +8,7 @@ import prodExhaust from "@/assets/product-exhaust.jpg";
 import prodFoglight from "@/assets/product-foglight.jpg";
 import prodGrips from "@/assets/product-grips.jpg";
 import prodIndicators from "@/assets/product-indicators.jpg";
+import prodMirrors from "@/assets/product-mirrors.jpg";
 import prodTankpad from "@/assets/product-tankpad.jpg";
 
 import type { BikeModel, HeroSlide, PolicyPage, Product, Review } from "./types";
@@ -174,7 +175,7 @@ const products: Product[] = [
     slug: "bar-end-mirrors",
     name: "CNC Bar End Mirrors",
     description: "Compact aerodynamic mirrors with red accent.",
-    image: prodMirrorsRef,
+    image: prodMirrors,
     alt: "Black CNC motorcycle bar end mirrors",
     price: 2600,
     currency: "BDT",
