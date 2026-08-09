@@ -1,17 +1,22 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { formatBDT } from "@/lib/format";
-import { getOrder, updateOrderStatus } from "@/lib/orders.functions";
 import {
-  ORDER_STATUSES,
-  PAYMENT_STATUSES,
+  type AdminOrderItem,
+  OrderItemsTable,
+} from "@/components/admin/orders/OrderItemsTable";
+import {
+  OrderManagePanel,
+  type OrderUpdatePayload,
+} from "@/components/admin/orders/OrderManagePanel";
+import { StatusBadge } from "@/components/admin/orders/StatusBadge";
+import { Button } from "@/components/ui/button";
+import { formatBDT } from "@/lib/format";
+import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions";
+import {
+  deliveryZoneLabel,
   paymentMethodLabel,
   statusLabel,
 } from "@/lib/orders.shared";
@@ -25,18 +30,18 @@ function AdminOrderDetail() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
   const fetchOrder = useServerFn(getOrder);
+  const access = useServerFn(getMyAccess);
   const update = useServerFn(updateOrderStatus);
-  const [note, setNote] = useState("");
 
   const query = useQuery({
     queryKey: ["admin-order", id],
     queryFn: () => fetchOrder({ data: { orderId: id } }),
   });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
 
   const mutation = useMutation({
     mutationFn: update,
     onSuccess: () => {
-      setNote("");
       void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
       void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       toast.success("Order updated");
@@ -59,120 +64,105 @@ function AdminOrderDetail() {
   }
 
   const { order, items, events } = query.data;
+  const canManage = accessQuery.data?.permissions.includes("orders.manage") ?? false;
+  const advancePaid = Number(order.advance_paid ?? 0);
+  const due = Math.max(Number(order.total) - advancePaid, 0);
+
+  const submitUpdate = (payload: OrderUpdatePayload) =>
+    mutation.mutate({ data: { orderId: order.id, ...payload } as never });
 
   return (
-    <section className="mx-auto max-w-4xl px-4 py-8">
+    <section className="mx-auto max-w-6xl">
       <Link to="/czp-ops-9f2c" className="text-xs uppercase tracking-wider text-muted-foreground underline">
         ← All orders
       </Link>
-      <h1 className="mt-2 font-display text-3xl font-bold uppercase tracking-wide">
-        {order.invoice_no}
-      </h1>
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
+          {order.invoice_no}
+        </h1>
+        <StatusBadge value={order.status} />
+        <StatusBadge value={order.payment_status} />
+        <StatusBadge value={order.courier_status} />
+      </div>
       <p className="text-xs text-muted-foreground">
-        {new Date(order.created_at).toLocaleString("en-GB")} · {statusLabel(order.order_source)}
+        {new Date(order.created_at).toLocaleString("en-GB")} · source{" "}
+        {statusLabel(order.order_source)} · updated{" "}
+        {new Date(order.updated_at).toLocaleString("en-GB")}
       </p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        {/* ---- Customer information ---- */}
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-          <h2 className="font-display text-lg font-bold uppercase">Customer</h2>
+          <h2 className="font-display text-lg font-bold uppercase">Customer information</h2>
           <p className="mt-2 text-sm">{order.customer_name}</p>
-          <p className="text-sm text-muted-foreground">{order.customer_phone}</p>
+          <p className="text-sm text-muted-foreground">
+            <a href={`tel:${order.customer_phone}`} className="underline">
+              {order.customer_phone}
+            </a>
+          </p>
           {order.customer_email && (
             <p className="text-sm text-muted-foreground">{order.customer_email}</p>
           )}
           <p className="mt-2 text-sm">
             {order.address_line}, {order.city}
           </p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Zone: {deliveryZoneLabel(order.delivery_zone)}
+          </p>
           {order.notes && <p className="mt-2 text-xs text-muted-foreground">Note: {order.notes}</p>}
         </div>
 
+        {/* ---- Pricing summary + payment/transaction ---- */}
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-          <h2 className="font-display text-lg font-bold uppercase">Payment</h2>
+          <h2 className="font-display text-lg font-bold uppercase">Pricing summary</h2>
           <dl className="mt-2 space-y-1 text-sm">
             <Row label="Method" value={paymentMethodLabel(order.payment_method)} />
             <Row label="Payment status" value={statusLabel(order.payment_status)} />
+            <Row label="Transaction ID" value={order.transaction_id || "—"} />
             <Row label="Subtotal" value={formatBDT(Number(order.subtotal))} />
             <Row label="Discount" value={formatBDT(Number(order.discount))} />
-            <Row label="Shipping" value={formatBDT(Number(order.shipping))} />
+            <Row label="Delivery charge" value={formatBDT(Number(order.shipping))} />
+            <Row label="Advance paid" value={formatBDT(advancePaid)} />
+            <Row label="Due" value={formatBDT(due)} />
             <div className="flex justify-between border-t border-border pt-1">
-              <dt className="font-semibold">Total</dt>
+              <dt className="font-semibold">Total payable</dt>
               <dd className="font-display text-lg font-bold text-primary">
                 {formatBDT(Number(order.total))}
               </dd>
             </div>
           </dl>
+          <dl className="mt-3 space-y-1 border-t border-border pt-3 text-sm">
+            <Row label="Courier" value={order.courier_name || "—"} />
+            <Row label="Tracking ID" value={order.courier_tracking_id || "—"} />
+            <Row label="Courier status" value={statusLabel(order.courier_status)} />
+          </dl>
         </div>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-border bg-card shadow-card">
-        <table className="w-full text-sm">
-          <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
-            <tr>
-              <th className="p-3">Product</th>
-              <th className="p-3">Unit</th>
-              <th className="p-3">Qty</th>
-              <th className="p-3">Line total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((item) => (
-              <tr key={item.id} className="border-b border-border last:border-0">
-                <td className="p-3">{item.product_name}</td>
-                <td className="p-3">{formatBDT(Number(item.unit_price))}</td>
-                <td className="p-3">{item.quantity}</td>
-                <td className="p-3">{formatBDT(Number(item.line_total))}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <h2 className="mt-6 font-display text-lg font-bold uppercase">Ordered items</h2>
+      <div className="mt-2">
+        <OrderItemsTable items={items as unknown as AdminOrderItem[]} />
       </div>
 
-      <div className="mt-4 grid gap-3 rounded-xl border border-border bg-card p-4 shadow-card sm:grid-cols-2">
-        <div>
-          <Label>Order status</Label>
-          <select
-            value={order.status}
-            onChange={(e) => mutation.mutate({ data: { orderId: order.id, status: e.target.value as "pending" } })}
-            className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
-          >
-            {ORDER_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {statusLabel(status)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <Label>Payment status</Label>
-          <select
-            value={order.payment_status}
-            onChange={(e) =>
-              mutation.mutate({ data: { orderId: order.id, paymentStatus: e.target.value as "unpaid" } })
-            }
-            className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
-          >
-            {PAYMENT_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {statusLabel(status)}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="sm:col-span-2">
-          <Label htmlFor="note">Add a note to the order history</Label>
-          <div className="mt-1.5 flex gap-2">
-            <Input id="note" value={note} onChange={(e) => setNote(e.target.value)} className="h-11" />
-            <Button
-              variant="steel"
-              size="touch"
-              disabled={!note.trim() || mutation.isPending}
-              onClick={() => mutation.mutate({ data: { orderId: order.id, note: note.trim() } })}
-            >
-              Save note
-            </Button>
-          </div>
-        </div>
+      <h2 className="mt-6 font-display text-lg font-bold uppercase">Manage order</h2>
+      <div className="mt-2">
+        <OrderManagePanel
+          key={order.updated_at}
+          order={order}
+          onSubmit={submitUpdate}
+          isPending={mutation.isPending}
+          canManage={canManage}
+        />
       </div>
+
+      {order.internal_notes ? (
+        <p className="mt-4 whitespace-pre-line rounded-xl border border-border bg-card p-4 text-sm shadow-card">
+          <span className="block text-xs uppercase tracking-wider text-muted-foreground">
+            Saved internal notes
+          </span>
+          {order.internal_notes}
+        </p>
+      ) : null}
 
       <h2 className="mt-6 font-display text-lg font-bold uppercase">Order history</h2>
       <ol className="mt-2 space-y-2">
