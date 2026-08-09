@@ -103,9 +103,9 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     const { assertStaff, logOrderEvent } = await import("./orders.server");
     await assertStaff(context.supabase, context.userId);
 
-    const patch: Record<string, string> = {};
-    if (data.status) patch["status"] = data.status;
-    if (data.paymentStatus) patch["payment_status"] = data.paymentStatus;
+    const patch: { status?: string; payment_status?: string } = {};
+    if (data.status) patch.status = data.status;
+    if (data.paymentStatus) patch.payment_status = data.paymentStatus;
     if (!Object.keys(patch).length && !data.note) return { ok: true };
 
     if (Object.keys(patch).length) {
