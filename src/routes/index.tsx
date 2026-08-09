@@ -1,24 +1,120 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { ProductGrid } from "@/components/ProductCard";
+import { SectionBoundary } from "@/components/SectionBoundary";
+import { AboutSection } from "@/components/home/AboutSection";
+import { BikeModelCarousel } from "@/components/home/BikeModelCarousel";
+import { ContactSection } from "@/components/home/ContactSection";
+import { HeroSlider } from "@/components/home/HeroSlider";
+import { ReviewsSection } from "@/components/home/ReviewsSection";
+import { SectionHeading } from "@/components/home/SectionHeading";
+import { SocialSection } from "@/components/home/SocialSection";
+import { StoreComingSoon } from "@/components/home/StoreComingSoon";
+import { TrustSection } from "@/components/home/TrustSection";
+import {
+  getBestDeals,
+  getBikeModels,
+  getHeroSlides,
+  getReviews,
+  getUniversalProducts,
+} from "@/data/catalog";
+import { site } from "@/data/site";
+
+const title = "Customz Paradise BD — Premium Motorcycle Modification Parts";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: site.description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: site.description },
+      { property: "og:type", content: "website" },
+      { property: "og:url", content: "/" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Store",
+          name: site.name,
+          slogan: site.tagline,
+          telephone: site.phoneDisplay,
+          email: site.email,
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Uttara, Dhaka",
+            postalCode: "1230",
+            addressCountry: "BD",
+          },
+          sameAs: site.socials.map((social) => social.href),
+        }),
+      },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const heroSlides = getHeroSlides();
+  const bikeModels = getBikeModels();
+  const universalProducts = getUniversalProducts();
+  const bestDeals = getBestDeals();
+  const reviews = getReviews();
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <>
+      <h1 className="sr-only">
+        {site.name} — premium motorcycle modification parts and accessories in Bangladesh
+      </h1>
+
+      <SectionBoundary label="hero">
+        <HeroSlider slides={heroSlides} />
+      </SectionBoundary>
+
+      <SectionBoundary label="bike-models">
+        <BikeModelCarousel models={bikeModels} />
+      </SectionBoundary>
+
+      <SectionBoundary label="universal-products">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+          <SectionHeading eyebrow="Fits most bikes" title="Universal Products" />
+          <ProductGrid products={universalProducts} />
+        </section>
+      </SectionBoundary>
+
+      <SectionBoundary label="best-deals">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+          <SectionHeading eyebrow="Limited offers" title="Featured & Best Deals" />
+          <ProductGrid products={bestDeals} />
+        </section>
+      </SectionBoundary>
+
+      <SectionBoundary label="trust">
+        <TrustSection />
+      </SectionBoundary>
+
+      <SectionBoundary label="reviews">
+        <ReviewsSection reviews={reviews} />
+      </SectionBoundary>
+
+      <SectionBoundary label="store">
+        <StoreComingSoon />
+      </SectionBoundary>
+
+      <SectionBoundary label="about">
+        <AboutSection />
+      </SectionBoundary>
+
+      <SectionBoundary label="contact">
+        <ContactSection />
+      </SectionBoundary>
+
+      <SectionBoundary label="social">
+        <SocialSection />
+      </SectionBoundary>
+    </>
   );
 }
