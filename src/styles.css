@@ -9,6 +9,16 @@
   --font-sans: "Barlow", ui-sans-serif, system-ui, sans-serif;
 }
 
+@theme inline {
+  --color-onyx: var(--onyx);
+  --color-onyx-foreground: var(--onyx-foreground);
+  --color-steel: var(--steel);
+  --color-steel-foreground: var(--steel-foreground);
+  --color-brand-red: var(--brand-red);
+  --shadow-red: var(--shadow-red-value);
+  --shadow-card: var(--shadow-card-value);
+}
+
 /*
  * Design system definition.
  *
