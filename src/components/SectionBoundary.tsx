@@ -5,17 +5,17 @@ type State = { failed: boolean };
 
 /** Keeps one broken section from taking down the whole page. */
 export class SectionBoundary extends Component<Props, State> {
-  state: State = { failed: false };
+  override state: State = { failed: false };
 
   static getDerivedStateFromError(): State {
     return { failed: true };
   }
 
-  componentDidCatch(error: Error, info: ErrorInfo) {
+  override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error(`[${this.props.label}] section failed`, error, info.componentStack);
   }
 
-  render() {
+  override render() {
     if (this.state.failed) {
       return (
         <div className="mx-auto max-w-7xl px-4 py-10">
