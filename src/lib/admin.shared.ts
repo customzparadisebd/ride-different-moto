@@ -96,6 +96,7 @@ export const AUDIT_ACTIONS = {
   mfaRemoved: "security.mfa_removed",
   mfaBackupCodesIssued: "security.mfa_backup_codes_issued",
   mfaBackupCodeUsed: "security.mfa_backup_code_used",
+  passwordReset: "security.password_reset",
   sessionRevoked: "security.session_revoked",
   staffStatusChanged: "staff.status_changed",
   staffRoleChanged: "staff.role_changed",
