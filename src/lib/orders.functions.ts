@@ -5,6 +5,7 @@ import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
   adminOrderInput,
   checkoutSubmitInput,
+  orderFilterInput,
   orderStatusUpdateInput,
   SHIPPING_FLAT_BDT,
 } from "./orders.shared";
@@ -37,6 +38,10 @@ export const placeOrder = createServerFn({ method: "POST" })
         productId: product.id,
         productSlug: product.slug,
         productName: product.name,
+        // Snapshot of what the customer saw, so admin order views keep the
+        // right image and variant text even if the catalog changes later.
+        imageUrl: product.image,
+        variant: product.category,
         unitPrice: product.offerPrice ?? product.price,
         quantity: line.quantity,
       };
@@ -70,24 +75,73 @@ export const getMyAccess = createServerFn({ method: "POST" })
     };
   });
 
+// ============================================================
+// ADMIN ORDER LIST + FILTERS
+// Purpose: Server-side filtered order list for the admin table.
+// Status: COMPLETED
+// Security: Filters are validated and applied through the Supabase
+//          query builder (parameterised, no string concatenation),
+//          and the read runs as the signed-in user so RLS still
+//          restricts it to approved staff.
+// ============================================================
+type AdminOrderRow = {
+  id: string;
+  invoice_no: string;
+  customer_name: string;
+  customer_phone: string;
+  city: string;
+  delivery_zone: string | null;
+  subtotal: number;
+  discount: number;
+  shipping: number;
+  advance_paid: number;
+  total: number;
+  status: string;
+  payment_status: string;
+  payment_method: string;
+  courier_status: string;
+  order_source: string;
+  created_at: string;
+};
+
+const sel = (columns: string): string => columns;
+
+/** Escapes the LIKE wildcards so a search for "%" is a literal search. */
+const likeTerm = (value: string) => `%${value.replace(/[%_\\]/g, (c) => `\\${c}`)}%`;
+
 export const listOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .inputValidator((input: unknown) => orderFilterInput.parse(input ?? {}))
+  .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
       await resolveActor(context.userId, context.claims as never),
       PERMISSIONS.ordersView,
     );
 
-    const { data, error } = await context.supabase
+    let query = context.supabase
       .from("orders")
       .select(
-        "id, invoice_no, customer_name, customer_phone, city, total, status, payment_status, payment_method, order_source, created_at",
-      )
+        sel(
+          "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, order_source, created_at",
+        ),
+      );
+
+    if (data.invoiceNo) query = query.ilike("invoice_no", likeTerm(data.invoiceNo));
+    if (data.customerName) query = query.ilike("customer_name", likeTerm(data.customerName));
+    if (data.customerPhone) query = query.ilike("customer_phone", likeTerm(data.customerPhone));
+    if (data.status) query = query.eq("status", data.status);
+    if (data.paymentStatus) query = query.eq("payment_status", data.paymentStatus);
+    if (data.deliveryZone) query = query.eq("delivery_zone", data.deliveryZone);
+    if (data.dateFrom) query = query.gte("created_at", `${data.dateFrom}T00:00:00.000Z`);
+    if (data.dateTo) query = query.lte("created_at", `${data.dateTo}T23:59:59.999Z`);
+
+    const { data: rows, error } = await query
       .order("created_at", { ascending: false })
-      .limit(200);
+      .limit(data.limit)
+      .returns<AdminOrderRow[]>();
     if (error) throw new Error("Could not load orders.");
-    return data;
+    return rows ?? [];
   });
 
 export const getOrder = createServerFn({ method: "POST" })
@@ -123,6 +177,19 @@ export const getOrder = createServerFn({ method: "POST" })
     return { order: order.data, items: items.data ?? [], events: events.data ?? [] };
   });
 
+// ============================================================
+// ADMIN ORDER UPDATE (status, payment, courier, internal notes)
+// Purpose: Single audited endpoint for every change an admin can
+//          make to an existing order.
+// Status: COMPLETED
+// Security: Requires the orders.manage permission, validates each
+//          field with Zod, recomputes the total from stored values
+//          so pricing can never be set to an arbitrary number, and
+//          writes both an order-history event and an audit entry
+//          with old/new values.
+// Future: Courier fields are filled in manually; a courier API can
+//          later write the same columns.
+// ============================================================
 export const updateOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => orderStatusUpdateInput.parse(input))
@@ -134,13 +201,41 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
 
     const before = await context.supabase
       .from("orders")
-      .select("invoice_no, status, payment_status")
+      .select(
+        "invoice_no, status, payment_status, payment_method, transaction_id, advance_paid, discount, shipping, subtotal, total, delivery_zone, courier_name, courier_tracking_id, courier_status, internal_notes",
+      )
       .eq("id", data.orderId)
       .maybeSingle();
+    if (before.error || !before.data) throw new Error("Order not found.");
+    const current = before.data;
 
-    const patch: { status?: string; payment_status?: string } = {};
+    const patch: Record<string, string | number | null> = {};
     if (data.status) patch.status = data.status;
     if (data.paymentStatus) patch.payment_status = data.paymentStatus;
+    if (data.paymentMethod) patch.payment_method = data.paymentMethod;
+    if (data.transactionId !== undefined) patch.transaction_id = data.transactionId || null;
+    if (data.deliveryZone) patch.delivery_zone = data.deliveryZone;
+    if (data.courierName !== undefined) patch.courier_name = data.courierName || null;
+    if (data.courierTrackingId !== undefined)
+      patch.courier_tracking_id = data.courierTrackingId || null;
+    if (data.courierStatus) patch.courier_status = data.courierStatus;
+    if (data.internalNotes !== undefined) patch.internal_notes = data.internalNotes || null;
+
+    // Money changes are recomputed against the stored subtotal.
+    const round2 = (n: number) => Math.round(n * 100) / 100;
+    const subtotal = Number(current.subtotal);
+    if (data.discount !== undefined || data.shipping !== undefined) {
+      const discount = round2(Math.min(data.discount ?? Number(current.discount), subtotal));
+      const shipping = round2(data.shipping ?? Number(current.shipping));
+      patch.discount = discount;
+      patch.shipping = shipping;
+      patch.total = round2(subtotal - discount + shipping);
+    }
+    if (data.advancePaid !== undefined) {
+      const total = Number(patch.total ?? current.total);
+      patch.advance_paid = round2(Math.min(Math.max(data.advancePaid, 0), total));
+    }
+
     if (!Object.keys(patch).length && !data.note) return { ok: true };
 
     if (Object.keys(patch).length) {
@@ -156,11 +251,11 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       message:
         data.note ??
         `Updated ${Object.entries(patch)
-          .map(([key, value]) => `${key.replace("_", " ")} → ${value}`)
+          .map(([key, value]) => `${key.replace(/_/g, " ")} → ${value ?? "—"}`)
           .join(", ")}`,
       actor: context.userId,
       actorLabel: "admin",
-      metadata: patch,
+      metadata: patch as Record<string, unknown>,
     });
 
     await auditFromActor(actor, {
@@ -169,10 +264,10 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
         : AUDIT_ACTIONS.orderNoteAdded,
       targetType: "order",
       targetId: data.orderId,
-      targetLabel: before.data?.invoice_no ?? null,
-      oldValue: before.data
-        ? { status: before.data.status, payment_status: before.data.payment_status }
-        : null,
+      targetLabel: current.invoice_no,
+      oldValue: Object.fromEntries(
+        Object.keys(patch).map((key) => [key, (current as Record<string, unknown>)[key] ?? null]),
+      ),
       newValue: Object.keys(patch).length ? patch : { note: data.note ?? null },
     });
 
@@ -193,6 +288,8 @@ export const createManualOrder = createServerFn({ method: "POST" })
       source: "admin",
       discount: data.discount,
       shipping: data.shipping,
+      advancePaid: data.advancePaid,
+      transactionId: data.transactionId || null,
       paymentStatus: data.paymentStatus,
       status: data.status,
       actor: context.userId,
