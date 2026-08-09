@@ -70,6 +70,11 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Done:** Lovable Cloud enabled. Tables: `profiles`, `user_roles` (separate role table + `has_role`/`is_staff` security-definer functions), `orders`, `order_items`, `order_events`. RLS enabled everywhere; invoice numbering function is service-role only.
 - **Next:** Move the product catalog from `src/data/catalog.ts` into the database and add image uploads.
 
+## Admin Panel Access & Login Security
+- **Status:** Completed
+- **Done:** Admin panel moved off predictable URLs to the private path `/czp-ops-9f2c` (staff sign-in `/czp-ops-9f2c/access`, order detail `/czp-ops-9f2c/orders/:id`, `/czp-ops-9f2c/access-denied`). Nothing on the public site links to or reveals it. Real security is server-side: `_authenticated` gate requires a valid session, and a nested layout gate calls the `getMyAccess` server function (bearer-token validated, roles read from `user_roles`) before rendering; non-staff users are redirected to access-denied. All admin/auth pages send `noindex, nofollow` and are disallowed in `robots.txt`. Store header/footer/nav are hidden in the admin area. Login form has a modern show/hide password (eye) toggle, password never logged, plus a 5-attempt / 60-second client-side lockout on top of backend rate limiting.
+- **Next:** Point the `admin.customzparadisebd.com` subdomain at the project once the custom domain is connected (DNS + Domains settings), and add per-role permissions (Super Admin vs Staff) if finer-grained control is needed.
+
 ## Analytics & SEO Tracking
 - **Status:** Pending
 - **Done:** Per-route meta tags and structured data only.
