@@ -196,34 +196,12 @@ function AdminSettings() {
               </div>
             </div>
 
-            {/* ---- Steadfast courier ---- */}
+            {/* ---- Couriers moved to their own screen ---- */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-              <h2 className="font-display text-sm font-bold uppercase">Steadfast courier</h2>
-              <label className="mt-3 flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm">
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 accent-[hsl(var(--primary))]"
-                  checked={draft.steadfastEnabled}
-                  onChange={(event) =>
-                    setDraft((current) => ({ ...current, steadfastEnabled: event.target.checked }))
-                  }
-                />
-                Allow staff to send orders to Steadfast
-              </label>
-              <div className="mt-3">
-                <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                  Steadfast API base URL
-                </Label>
-                <Input
-                  className="mt-1.5 h-11"
-                  value={draft.steadfastBaseUrl}
-                  onChange={(event) =>
-                    setDraft((current) => ({ ...current, steadfastBaseUrl: event.target.value }))
-                  }
-                />
-              </div>
+              <h2 className="font-display text-sm font-bold uppercase">Couriers</h2>
               <p className="mt-2 text-xs text-muted-foreground">
-                The API key and secret are stored server-side only and are never shown here.
+                Delivery partners, per-zone charges, COD % and API keys are managed on the Couriers
+                screen. Keys stay server-side and are never shown here.
               </p>
             </div>
 
