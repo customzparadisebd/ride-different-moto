@@ -42,19 +42,19 @@ type NavItem = {
 };
 
 const OPERATIONS: NavItem[] = [
-  { to: "/czp-ops-9f2c", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/czp-ops-9f2c/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
-  { to: "/czp-ops-9f2c/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
-  { to: "/czp-ops-9f2c/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
-  { to: "/czp-ops-9f2c/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
-  { to: "/czp-ops-9f2c/recycle-bin", label: "Recycle Bin", icon: RotateCcw, permission: PERMISSIONS.ordersView },
+  { to: "/ad", label: "Dashboard", icon: LayoutDashboard, exact: true },
+  { to: "/ad/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
+  { to: "/ad/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
+  { to: "/ad/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
+  { to: "/ad/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
+  { to: "/ad/recycle-bin", label: "Recycle Bin", icon: RotateCcw, permission: PERMISSIONS.ordersView },
 ];
 
 const ADMINISTRATION: NavItem[] = [
-  { to: "/czp-ops-9f2c/staff", label: "Staff & roles", icon: Users, permission: PERMISSIONS.staffManage },
-  { to: "/czp-ops-9f2c/audit-log", label: "Audit log", icon: ScrollText, permission: PERMISSIONS.auditView },
-  { to: "/czp-ops-9f2c/settings", label: "Store settings", icon: Settings, permission: PERMISSIONS.productsManage },
-  { to: "/czp-ops-9f2c/security", label: "Security", icon: ShieldCheck },
+  { to: "/ad/staff", label: "Staff & roles", icon: Users, permission: PERMISSIONS.staffManage },
+  { to: "/ad/audit-log", label: "Audit log", icon: ScrollText, permission: PERMISSIONS.auditView },
+  { to: "/ad/settings", label: "Store settings", icon: Settings, permission: PERMISSIONS.productsManage },
+  { to: "/ad/security", label: "Security", icon: ShieldCheck },
 ];
 
 export function AdminSidebar({ permissions }: { permissions: Permission[] }) {

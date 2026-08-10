@@ -21,26 +21,28 @@ import { Route as ReturnsRouteImport } from './routes/returns'
 import { Route as ShippingRouteImport } from './routes/shipping'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TermsRouteImport } from './routes/terms'
-import { Route as AuthenticatedCzpOps9f2cRouteRouteImport } from './routes/_authenticated/czp-ops-9f2c/route'
+import { Route as AuthenticatedAdRouteRouteImport } from './routes/_authenticated/ad/route'
+import { Route as AdDeniedRouteImport } from './routes/ad.denied'
+import { Route as AdLogRouteImport } from './routes/ad.log'
+import { Route as AdMfaRouteImport } from './routes/ad.mfa'
+import { Route as AdResetPasswordRouteImport } from './routes/ad.reset-password'
 import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
-import { Route as CzpOps9f2cAccessRouteImport } from './routes/czp-ops-9f2c.access'
-import { Route as CzpOps9f2cAccessDeniedRouteImport } from './routes/czp-ops-9f2c.access-denied'
-import { Route as CzpOps9f2cMfaRouteImport } from './routes/czp-ops-9f2c.mfa'
-import { Route as CzpOps9f2cResetPasswordRouteImport } from './routes/czp-ops-9f2c.reset-password'
-import { Route as AuthenticatedCzpOps9f2cIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/index'
-import { Route as AuthenticatedCzpOps9f2cAuditLogRouteImport } from './routes/_authenticated/czp-ops-9f2c/audit-log'
-import { Route as AuthenticatedCzpOps9f2cCouriersRouteImport } from './routes/_authenticated/czp-ops-9f2c/couriers'
-import { Route as AuthenticatedCzpOps9f2cCustomersRouteImport } from './routes/_authenticated/czp-ops-9f2c/customers'
-import { Route as AuthenticatedCzpOps9f2cProductsRouteImport } from './routes/_authenticated/czp-ops-9f2c/products'
-import { Route as AuthenticatedCzpOps9f2cRecycleBinRouteImport } from './routes/_authenticated/czp-ops-9f2c/recycle-bin'
-import { Route as AuthenticatedCzpOps9f2cSecurityRouteImport } from './routes/_authenticated/czp-ops-9f2c/security'
-import { Route as AuthenticatedCzpOps9f2cSettingsRouteImport } from './routes/_authenticated/czp-ops-9f2c/settings'
-import { Route as AuthenticatedCzpOps9f2cStaffRouteImport } from './routes/_authenticated/czp-ops-9f2c/staff'
-import { Route as AuthenticatedCzpOps9f2cInvoiceIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/invoice.$id'
-import { Route as AuthenticatedCzpOps9f2cOrdersIndexRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.index'
-import { Route as AuthenticatedCzpOps9f2cOrdersIdRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.$id'
-import { Route as AuthenticatedCzpOps9f2cOrdersNewRouteImport } from './routes/_authenticated/czp-ops-9f2c/orders.new'
+import { Route as CzpOps9f2cIndexRouteImport } from './routes/czp-ops-9f2c.index'
+import { Route as CzpOps9f2cSplatRouteImport } from './routes/czp-ops-9f2c.$'
+import { Route as AuthenticatedAdIndexRouteImport } from './routes/_authenticated/ad/index'
+import { Route as AuthenticatedAdAuditLogRouteImport } from './routes/_authenticated/ad/audit-log'
+import { Route as AuthenticatedAdCouriersRouteImport } from './routes/_authenticated/ad/couriers'
+import { Route as AuthenticatedAdCustomersRouteImport } from './routes/_authenticated/ad/customers'
+import { Route as AuthenticatedAdProductsRouteImport } from './routes/_authenticated/ad/products'
+import { Route as AuthenticatedAdRecycleBinRouteImport } from './routes/_authenticated/ad/recycle-bin'
+import { Route as AuthenticatedAdSecurityRouteImport } from './routes/_authenticated/ad/security'
+import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
+import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
+import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice.$id'
+import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
+import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
+import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -101,12 +103,31 @@ const TermsRoute = TermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedCzpOps9f2cRouteRoute =
-  AuthenticatedCzpOps9f2cRouteRouteImport.update({
-    id: '/czp-ops-9f2c',
-    path: '/czp-ops-9f2c',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
+const AuthenticatedAdRouteRoute = AuthenticatedAdRouteRouteImport.update({
+  id: '/ad',
+  path: '/ad',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AdDeniedRoute = AdDeniedRouteImport.update({
+  id: '/ad/denied',
+  path: '/ad/denied',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdLogRoute = AdLogRouteImport.update({
+  id: '/ad/log',
+  path: '/ad/log',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdMfaRoute = AdMfaRouteImport.update({
+  id: '/ad/mfa',
+  path: '/ad/mfa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdResetPasswordRoute = AdResetPasswordRouteImport.update({
+  id: '/ad/reset-password',
+  path: '/ad/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BikeModelsIndexRoute = BikeModelsIndexRouteImport.update({
   id: '/bike-models/',
   path: '/bike-models/',
@@ -117,103 +138,85 @@ const BikeModelsSlugRoute = BikeModelsSlugRouteImport.update({
   path: '/bike-models/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CzpOps9f2cAccessRoute = CzpOps9f2cAccessRouteImport.update({
-  id: '/czp-ops-9f2c/access',
-  path: '/czp-ops-9f2c/access',
+const CzpOps9f2cIndexRoute = CzpOps9f2cIndexRouteImport.update({
+  id: '/czp-ops-9f2c/',
+  path: '/czp-ops-9f2c/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CzpOps9f2cAccessDeniedRoute = CzpOps9f2cAccessDeniedRouteImport.update({
-  id: '/czp-ops-9f2c/access-denied',
-  path: '/czp-ops-9f2c/access-denied',
+const CzpOps9f2cSplatRoute = CzpOps9f2cSplatRouteImport.update({
+  id: '/czp-ops-9f2c/$',
+  path: '/czp-ops-9f2c/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CzpOps9f2cMfaRoute = CzpOps9f2cMfaRouteImport.update({
-  id: '/czp-ops-9f2c/mfa',
-  path: '/czp-ops-9f2c/mfa',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedAdIndexRoute = AuthenticatedAdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
-const CzpOps9f2cResetPasswordRoute = CzpOps9f2cResetPasswordRouteImport.update({
-  id: '/czp-ops-9f2c/reset-password',
-  path: '/czp-ops-9f2c/reset-password',
-  getParentRoute: () => rootRouteImport,
+const AuthenticatedAdAuditLogRoute = AuthenticatedAdAuditLogRouteImport.update({
+  id: '/audit-log',
+  path: '/audit-log',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
-const AuthenticatedCzpOps9f2cIndexRoute =
-  AuthenticatedCzpOps9f2cIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cAuditLogRoute =
-  AuthenticatedCzpOps9f2cAuditLogRouteImport.update({
-    id: '/audit-log',
-    path: '/audit-log',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cCouriersRoute =
-  AuthenticatedCzpOps9f2cCouriersRouteImport.update({
-    id: '/couriers',
-    path: '/couriers',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cCustomersRoute =
-  AuthenticatedCzpOps9f2cCustomersRouteImport.update({
+const AuthenticatedAdCouriersRoute = AuthenticatedAdCouriersRouteImport.update({
+  id: '/couriers',
+  path: '/couriers',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdCustomersRoute =
+  AuthenticatedAdCustomersRouteImport.update({
     id: '/customers',
     path: '/customers',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+    getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
-const AuthenticatedCzpOps9f2cProductsRoute =
-  AuthenticatedCzpOps9f2cProductsRouteImport.update({
-    id: '/products',
-    path: '/products',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cRecycleBinRoute =
-  AuthenticatedCzpOps9f2cRecycleBinRouteImport.update({
+const AuthenticatedAdProductsRoute = AuthenticatedAdProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdRecycleBinRoute =
+  AuthenticatedAdRecycleBinRouteImport.update({
     id: '/recycle-bin',
     path: '/recycle-bin',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+    getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
-const AuthenticatedCzpOps9f2cSecurityRoute =
-  AuthenticatedCzpOps9f2cSecurityRouteImport.update({
-    id: '/security',
-    path: '/security',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cSettingsRoute =
-  AuthenticatedCzpOps9f2cSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cStaffRoute =
-  AuthenticatedCzpOps9f2cStaffRouteImport.update({
-    id: '/staff',
-    path: '/staff',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cInvoiceIdRoute =
-  AuthenticatedCzpOps9f2cInvoiceIdRouteImport.update({
+const AuthenticatedAdSecurityRoute = AuthenticatedAdSecurityRouteImport.update({
+  id: '/security',
+  path: '/security',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdStaffRoute = AuthenticatedAdStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdInvoiceIdRoute =
+  AuthenticatedAdInvoiceIdRouteImport.update({
     id: '/invoice/$id',
     path: '/invoice/$id',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+    getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
-const AuthenticatedCzpOps9f2cOrdersIndexRoute =
-  AuthenticatedCzpOps9f2cOrdersIndexRouteImport.update({
+const AuthenticatedAdOrdersIndexRoute =
+  AuthenticatedAdOrdersIndexRouteImport.update({
     id: '/orders/',
     path: '/orders/',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+    getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
-const AuthenticatedCzpOps9f2cOrdersIdRoute =
-  AuthenticatedCzpOps9f2cOrdersIdRouteImport.update({
-    id: '/orders/$id',
-    path: '/orders/$id',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
-  } as any)
-const AuthenticatedCzpOps9f2cOrdersNewRoute =
-  AuthenticatedCzpOps9f2cOrdersNewRouteImport.update({
+const AuthenticatedAdOrdersIdRoute = AuthenticatedAdOrdersIdRouteImport.update({
+  id: '/orders/$id',
+  path: '/orders/$id',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
+const AuthenticatedAdOrdersNewRoute =
+  AuthenticatedAdOrdersNewRouteImport.update({
     id: '/orders/new',
     path: '/orders/new',
-    getParentRoute: () => AuthenticatedCzpOps9f2cRouteRoute,
+    getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -228,26 +231,28 @@ export interface FileRoutesByFullPath {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
-  '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
+  '/ad': typeof AuthenticatedAdRouteRouteWithChildren
+  '/ad/denied': typeof AdDeniedRoute
+  '/ad/log': typeof AdLogRoute
+  '/ad/mfa': typeof AdMfaRoute
+  '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
-  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
-  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
-  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
-  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
+  '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/bike-models/': typeof BikeModelsIndexRoute
-  '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
-  '/czp-ops-9f2c/couriers': typeof AuthenticatedCzpOps9f2cCouriersRoute
-  '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
-  '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
-  '/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
-  '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
-  '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
-  '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
-  '/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
-  '/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
-  '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
-  '/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
-  '/czp-ops-9f2c/orders/': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
+  '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
+  '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
+  '/ad/couriers': typeof AuthenticatedAdCouriersRoute
+  '/ad/customers': typeof AuthenticatedAdCustomersRoute
+  '/ad/products': typeof AuthenticatedAdProductsRoute
+  '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
+  '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/ad/': typeof AuthenticatedAdIndexRoute
+  '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
+  '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
+  '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -261,25 +266,27 @@ export interface FileRoutesByTo {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
+  '/ad/denied': typeof AdDeniedRoute
+  '/ad/log': typeof AdLogRoute
+  '/ad/mfa': typeof AdMfaRoute
+  '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
-  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
-  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
-  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
-  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
+  '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/bike-models': typeof BikeModelsIndexRoute
-  '/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
-  '/czp-ops-9f2c/couriers': typeof AuthenticatedCzpOps9f2cCouriersRoute
-  '/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
-  '/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
-  '/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
-  '/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
-  '/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
-  '/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
-  '/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cIndexRoute
-  '/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
-  '/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
-  '/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
-  '/czp-ops-9f2c/orders': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
+  '/czp-ops-9f2c': typeof CzpOps9f2cIndexRoute
+  '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
+  '/ad/couriers': typeof AuthenticatedAdCouriersRoute
+  '/ad/customers': typeof AuthenticatedAdCustomersRoute
+  '/ad/products': typeof AuthenticatedAdProductsRoute
+  '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
+  '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/ad': typeof AuthenticatedAdIndexRoute
+  '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
+  '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
+  '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/ad/orders': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -295,26 +302,28 @@ export interface FileRoutesById {
   '/shipping': typeof ShippingRoute
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
-  '/_authenticated/czp-ops-9f2c': typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
+  '/_authenticated/ad': typeof AuthenticatedAdRouteRouteWithChildren
+  '/ad/denied': typeof AdDeniedRoute
+  '/ad/log': typeof AdLogRoute
+  '/ad/mfa': typeof AdMfaRoute
+  '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
-  '/czp-ops-9f2c/access': typeof CzpOps9f2cAccessRoute
-  '/czp-ops-9f2c/access-denied': typeof CzpOps9f2cAccessDeniedRoute
-  '/czp-ops-9f2c/mfa': typeof CzpOps9f2cMfaRoute
-  '/czp-ops-9f2c/reset-password': typeof CzpOps9f2cResetPasswordRoute
+  '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/bike-models/': typeof BikeModelsIndexRoute
-  '/_authenticated/czp-ops-9f2c/audit-log': typeof AuthenticatedCzpOps9f2cAuditLogRoute
-  '/_authenticated/czp-ops-9f2c/couriers': typeof AuthenticatedCzpOps9f2cCouriersRoute
-  '/_authenticated/czp-ops-9f2c/customers': typeof AuthenticatedCzpOps9f2cCustomersRoute
-  '/_authenticated/czp-ops-9f2c/products': typeof AuthenticatedCzpOps9f2cProductsRoute
-  '/_authenticated/czp-ops-9f2c/recycle-bin': typeof AuthenticatedCzpOps9f2cRecycleBinRoute
-  '/_authenticated/czp-ops-9f2c/security': typeof AuthenticatedCzpOps9f2cSecurityRoute
-  '/_authenticated/czp-ops-9f2c/settings': typeof AuthenticatedCzpOps9f2cSettingsRoute
-  '/_authenticated/czp-ops-9f2c/staff': typeof AuthenticatedCzpOps9f2cStaffRoute
-  '/_authenticated/czp-ops-9f2c/': typeof AuthenticatedCzpOps9f2cIndexRoute
-  '/_authenticated/czp-ops-9f2c/invoice/$id': typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
-  '/_authenticated/czp-ops-9f2c/orders/$id': typeof AuthenticatedCzpOps9f2cOrdersIdRoute
-  '/_authenticated/czp-ops-9f2c/orders/new': typeof AuthenticatedCzpOps9f2cOrdersNewRoute
-  '/_authenticated/czp-ops-9f2c/orders/': typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
+  '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
+  '/_authenticated/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
+  '/_authenticated/ad/couriers': typeof AuthenticatedAdCouriersRoute
+  '/_authenticated/ad/customers': typeof AuthenticatedAdCustomersRoute
+  '/_authenticated/ad/products': typeof AuthenticatedAdProductsRoute
+  '/_authenticated/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
+  '/_authenticated/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/_authenticated/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/_authenticated/ad/': typeof AuthenticatedAdIndexRoute
+  '/_authenticated/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
+  '/_authenticated/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
+  '/_authenticated/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/_authenticated/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -330,26 +339,28 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/terms'
-    | '/czp-ops-9f2c'
+    | '/ad'
+    | '/ad/denied'
+    | '/ad/log'
+    | '/ad/mfa'
+    | '/ad/reset-password'
     | '/bike-models/$slug'
-    | '/czp-ops-9f2c/access'
-    | '/czp-ops-9f2c/access-denied'
-    | '/czp-ops-9f2c/mfa'
-    | '/czp-ops-9f2c/reset-password'
+    | '/czp-ops-9f2c/$'
     | '/bike-models/'
-    | '/czp-ops-9f2c/audit-log'
-    | '/czp-ops-9f2c/couriers'
-    | '/czp-ops-9f2c/customers'
-    | '/czp-ops-9f2c/products'
-    | '/czp-ops-9f2c/recycle-bin'
-    | '/czp-ops-9f2c/security'
-    | '/czp-ops-9f2c/settings'
-    | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c/'
-    | '/czp-ops-9f2c/invoice/$id'
-    | '/czp-ops-9f2c/orders/$id'
-    | '/czp-ops-9f2c/orders/new'
-    | '/czp-ops-9f2c/orders/'
+    | '/ad/audit-log'
+    | '/ad/couriers'
+    | '/ad/customers'
+    | '/ad/products'
+    | '/ad/recycle-bin'
+    | '/ad/security'
+    | '/ad/settings'
+    | '/ad/staff'
+    | '/ad/'
+    | '/ad/invoice/$id'
+    | '/ad/orders/$id'
+    | '/ad/orders/new'
+    | '/ad/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -363,25 +374,27 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/terms'
+    | '/ad/denied'
+    | '/ad/log'
+    | '/ad/mfa'
+    | '/ad/reset-password'
     | '/bike-models/$slug'
-    | '/czp-ops-9f2c/access'
-    | '/czp-ops-9f2c/access-denied'
-    | '/czp-ops-9f2c/mfa'
-    | '/czp-ops-9f2c/reset-password'
+    | '/czp-ops-9f2c/$'
     | '/bike-models'
-    | '/czp-ops-9f2c/audit-log'
-    | '/czp-ops-9f2c/couriers'
-    | '/czp-ops-9f2c/customers'
-    | '/czp-ops-9f2c/products'
-    | '/czp-ops-9f2c/recycle-bin'
-    | '/czp-ops-9f2c/security'
-    | '/czp-ops-9f2c/settings'
-    | '/czp-ops-9f2c/staff'
     | '/czp-ops-9f2c'
-    | '/czp-ops-9f2c/invoice/$id'
-    | '/czp-ops-9f2c/orders/$id'
-    | '/czp-ops-9f2c/orders/new'
-    | '/czp-ops-9f2c/orders'
+    | '/ad/audit-log'
+    | '/ad/couriers'
+    | '/ad/customers'
+    | '/ad/products'
+    | '/ad/recycle-bin'
+    | '/ad/security'
+    | '/ad/settings'
+    | '/ad/staff'
+    | '/ad'
+    | '/ad/invoice/$id'
+    | '/ad/orders/$id'
+    | '/ad/orders/new'
+    | '/ad/orders'
   id:
     | '__root__'
     | '/'
@@ -396,26 +409,28 @@ export interface FileRouteTypes {
     | '/shipping'
     | '/shop'
     | '/terms'
-    | '/_authenticated/czp-ops-9f2c'
+    | '/_authenticated/ad'
+    | '/ad/denied'
+    | '/ad/log'
+    | '/ad/mfa'
+    | '/ad/reset-password'
     | '/bike-models/$slug'
-    | '/czp-ops-9f2c/access'
-    | '/czp-ops-9f2c/access-denied'
-    | '/czp-ops-9f2c/mfa'
-    | '/czp-ops-9f2c/reset-password'
+    | '/czp-ops-9f2c/$'
     | '/bike-models/'
-    | '/_authenticated/czp-ops-9f2c/audit-log'
-    | '/_authenticated/czp-ops-9f2c/couriers'
-    | '/_authenticated/czp-ops-9f2c/customers'
-    | '/_authenticated/czp-ops-9f2c/products'
-    | '/_authenticated/czp-ops-9f2c/recycle-bin'
-    | '/_authenticated/czp-ops-9f2c/security'
-    | '/_authenticated/czp-ops-9f2c/settings'
-    | '/_authenticated/czp-ops-9f2c/staff'
-    | '/_authenticated/czp-ops-9f2c/'
-    | '/_authenticated/czp-ops-9f2c/invoice/$id'
-    | '/_authenticated/czp-ops-9f2c/orders/$id'
-    | '/_authenticated/czp-ops-9f2c/orders/new'
-    | '/_authenticated/czp-ops-9f2c/orders/'
+    | '/czp-ops-9f2c/'
+    | '/_authenticated/ad/audit-log'
+    | '/_authenticated/ad/couriers'
+    | '/_authenticated/ad/customers'
+    | '/_authenticated/ad/products'
+    | '/_authenticated/ad/recycle-bin'
+    | '/_authenticated/ad/security'
+    | '/_authenticated/ad/settings'
+    | '/_authenticated/ad/staff'
+    | '/_authenticated/ad/'
+    | '/_authenticated/ad/invoice/$id'
+    | '/_authenticated/ad/orders/$id'
+    | '/_authenticated/ad/orders/new'
+    | '/_authenticated/ad/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -431,12 +446,14 @@ export interface RootRouteChildren {
   ShippingRoute: typeof ShippingRoute
   ShopRoute: typeof ShopRoute
   TermsRoute: typeof TermsRoute
+  AdDeniedRoute: typeof AdDeniedRoute
+  AdLogRoute: typeof AdLogRoute
+  AdMfaRoute: typeof AdMfaRoute
+  AdResetPasswordRoute: typeof AdResetPasswordRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
-  CzpOps9f2cAccessRoute: typeof CzpOps9f2cAccessRoute
-  CzpOps9f2cAccessDeniedRoute: typeof CzpOps9f2cAccessDeniedRoute
-  CzpOps9f2cMfaRoute: typeof CzpOps9f2cMfaRoute
-  CzpOps9f2cResetPasswordRoute: typeof CzpOps9f2cResetPasswordRoute
+  CzpOps9f2cSplatRoute: typeof CzpOps9f2cSplatRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
+  CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -525,12 +542,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/czp-ops-9f2c': {
-      id: '/_authenticated/czp-ops-9f2c'
-      path: '/czp-ops-9f2c'
-      fullPath: '/czp-ops-9f2c'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cRouteRouteImport
+    '/_authenticated/ad': {
+      id: '/_authenticated/ad'
+      path: '/ad'
+      fullPath: '/ad'
+      preLoaderRoute: typeof AuthenticatedAdRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/ad/denied': {
+      id: '/ad/denied'
+      path: '/ad/denied'
+      fullPath: '/ad/denied'
+      preLoaderRoute: typeof AdDeniedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ad/log': {
+      id: '/ad/log'
+      path: '/ad/log'
+      fullPath: '/ad/log'
+      preLoaderRoute: typeof AdLogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ad/mfa': {
+      id: '/ad/mfa'
+      path: '/ad/mfa'
+      fullPath: '/ad/mfa'
+      preLoaderRoute: typeof AdMfaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ad/reset-password': {
+      id: '/ad/reset-password'
+      path: '/ad/reset-password'
+      fullPath: '/ad/reset-password'
+      preLoaderRoute: typeof AdResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/bike-models/': {
       id: '/bike-models/'
@@ -546,178 +591,155 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BikeModelsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/czp-ops-9f2c/access': {
-      id: '/czp-ops-9f2c/access'
-      path: '/czp-ops-9f2c/access'
-      fullPath: '/czp-ops-9f2c/access'
-      preLoaderRoute: typeof CzpOps9f2cAccessRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/czp-ops-9f2c/access-denied': {
-      id: '/czp-ops-9f2c/access-denied'
-      path: '/czp-ops-9f2c/access-denied'
-      fullPath: '/czp-ops-9f2c/access-denied'
-      preLoaderRoute: typeof CzpOps9f2cAccessDeniedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/czp-ops-9f2c/mfa': {
-      id: '/czp-ops-9f2c/mfa'
-      path: '/czp-ops-9f2c/mfa'
-      fullPath: '/czp-ops-9f2c/mfa'
-      preLoaderRoute: typeof CzpOps9f2cMfaRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/czp-ops-9f2c/reset-password': {
-      id: '/czp-ops-9f2c/reset-password'
-      path: '/czp-ops-9f2c/reset-password'
-      fullPath: '/czp-ops-9f2c/reset-password'
-      preLoaderRoute: typeof CzpOps9f2cResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/czp-ops-9f2c/': {
-      id: '/_authenticated/czp-ops-9f2c/'
-      path: '/'
+    '/czp-ops-9f2c/': {
+      id: '/czp-ops-9f2c/'
+      path: '/czp-ops-9f2c'
       fullPath: '/czp-ops-9f2c/'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cIndexRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      preLoaderRoute: typeof CzpOps9f2cIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/czp-ops-9f2c/audit-log': {
-      id: '/_authenticated/czp-ops-9f2c/audit-log'
+    '/czp-ops-9f2c/$': {
+      id: '/czp-ops-9f2c/$'
+      path: '/czp-ops-9f2c/$'
+      fullPath: '/czp-ops-9f2c/$'
+      preLoaderRoute: typeof CzpOps9f2cSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/ad/': {
+      id: '/_authenticated/ad/'
+      path: '/'
+      fullPath: '/ad/'
+      preLoaderRoute: typeof AuthenticatedAdIndexRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
+    }
+    '/_authenticated/ad/audit-log': {
+      id: '/_authenticated/ad/audit-log'
       path: '/audit-log'
-      fullPath: '/czp-ops-9f2c/audit-log'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cAuditLogRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/audit-log'
+      preLoaderRoute: typeof AuthenticatedAdAuditLogRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/couriers': {
-      id: '/_authenticated/czp-ops-9f2c/couriers'
+    '/_authenticated/ad/couriers': {
+      id: '/_authenticated/ad/couriers'
       path: '/couriers'
-      fullPath: '/czp-ops-9f2c/couriers'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cCouriersRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/couriers'
+      preLoaderRoute: typeof AuthenticatedAdCouriersRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/customers': {
-      id: '/_authenticated/czp-ops-9f2c/customers'
+    '/_authenticated/ad/customers': {
+      id: '/_authenticated/ad/customers'
       path: '/customers'
-      fullPath: '/czp-ops-9f2c/customers'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cCustomersRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/customers'
+      preLoaderRoute: typeof AuthenticatedAdCustomersRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/products': {
-      id: '/_authenticated/czp-ops-9f2c/products'
+    '/_authenticated/ad/products': {
+      id: '/_authenticated/ad/products'
       path: '/products'
-      fullPath: '/czp-ops-9f2c/products'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cProductsRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/products'
+      preLoaderRoute: typeof AuthenticatedAdProductsRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/recycle-bin': {
-      id: '/_authenticated/czp-ops-9f2c/recycle-bin'
+    '/_authenticated/ad/recycle-bin': {
+      id: '/_authenticated/ad/recycle-bin'
       path: '/recycle-bin'
-      fullPath: '/czp-ops-9f2c/recycle-bin'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cRecycleBinRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/recycle-bin'
+      preLoaderRoute: typeof AuthenticatedAdRecycleBinRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/security': {
-      id: '/_authenticated/czp-ops-9f2c/security'
+    '/_authenticated/ad/security': {
+      id: '/_authenticated/ad/security'
       path: '/security'
-      fullPath: '/czp-ops-9f2c/security'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cSecurityRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/security'
+      preLoaderRoute: typeof AuthenticatedAdSecurityRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/settings': {
-      id: '/_authenticated/czp-ops-9f2c/settings'
+    '/_authenticated/ad/settings': {
+      id: '/_authenticated/ad/settings'
       path: '/settings'
-      fullPath: '/czp-ops-9f2c/settings'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cSettingsRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/settings'
+      preLoaderRoute: typeof AuthenticatedAdSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/staff': {
-      id: '/_authenticated/czp-ops-9f2c/staff'
+    '/_authenticated/ad/staff': {
+      id: '/_authenticated/ad/staff'
       path: '/staff'
-      fullPath: '/czp-ops-9f2c/staff'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cStaffRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/staff'
+      preLoaderRoute: typeof AuthenticatedAdStaffRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/invoice/$id': {
-      id: '/_authenticated/czp-ops-9f2c/invoice/$id'
+    '/_authenticated/ad/invoice/$id': {
+      id: '/_authenticated/ad/invoice/$id'
       path: '/invoice/$id'
-      fullPath: '/czp-ops-9f2c/invoice/$id'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cInvoiceIdRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/invoice/$id'
+      preLoaderRoute: typeof AuthenticatedAdInvoiceIdRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/orders/': {
-      id: '/_authenticated/czp-ops-9f2c/orders/'
+    '/_authenticated/ad/orders/': {
+      id: '/_authenticated/ad/orders/'
       path: '/orders'
-      fullPath: '/czp-ops-9f2c/orders/'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIndexRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/orders/'
+      preLoaderRoute: typeof AuthenticatedAdOrdersIndexRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/orders/$id': {
-      id: '/_authenticated/czp-ops-9f2c/orders/$id'
+    '/_authenticated/ad/orders/$id': {
+      id: '/_authenticated/ad/orders/$id'
       path: '/orders/$id'
-      fullPath: '/czp-ops-9f2c/orders/$id'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/orders/$id'
+      preLoaderRoute: typeof AuthenticatedAdOrdersIdRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/czp-ops-9f2c/orders/new': {
-      id: '/_authenticated/czp-ops-9f2c/orders/new'
+    '/_authenticated/ad/orders/new': {
+      id: '/_authenticated/ad/orders/new'
       path: '/orders/new'
-      fullPath: '/czp-ops-9f2c/orders/new'
-      preLoaderRoute: typeof AuthenticatedCzpOps9f2cOrdersNewRouteImport
-      parentRoute: typeof AuthenticatedCzpOps9f2cRouteRoute
+      fullPath: '/ad/orders/new'
+      preLoaderRoute: typeof AuthenticatedAdOrdersNewRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
     }
   }
 }
 
-interface AuthenticatedCzpOps9f2cRouteRouteChildren {
-  AuthenticatedCzpOps9f2cAuditLogRoute: typeof AuthenticatedCzpOps9f2cAuditLogRoute
-  AuthenticatedCzpOps9f2cCouriersRoute: typeof AuthenticatedCzpOps9f2cCouriersRoute
-  AuthenticatedCzpOps9f2cCustomersRoute: typeof AuthenticatedCzpOps9f2cCustomersRoute
-  AuthenticatedCzpOps9f2cProductsRoute: typeof AuthenticatedCzpOps9f2cProductsRoute
-  AuthenticatedCzpOps9f2cRecycleBinRoute: typeof AuthenticatedCzpOps9f2cRecycleBinRoute
-  AuthenticatedCzpOps9f2cSecurityRoute: typeof AuthenticatedCzpOps9f2cSecurityRoute
-  AuthenticatedCzpOps9f2cSettingsRoute: typeof AuthenticatedCzpOps9f2cSettingsRoute
-  AuthenticatedCzpOps9f2cStaffRoute: typeof AuthenticatedCzpOps9f2cStaffRoute
-  AuthenticatedCzpOps9f2cIndexRoute: typeof AuthenticatedCzpOps9f2cIndexRoute
-  AuthenticatedCzpOps9f2cInvoiceIdRoute: typeof AuthenticatedCzpOps9f2cInvoiceIdRoute
-  AuthenticatedCzpOps9f2cOrdersIdRoute: typeof AuthenticatedCzpOps9f2cOrdersIdRoute
-  AuthenticatedCzpOps9f2cOrdersNewRoute: typeof AuthenticatedCzpOps9f2cOrdersNewRoute
-  AuthenticatedCzpOps9f2cOrdersIndexRoute: typeof AuthenticatedCzpOps9f2cOrdersIndexRoute
+interface AuthenticatedAdRouteRouteChildren {
+  AuthenticatedAdAuditLogRoute: typeof AuthenticatedAdAuditLogRoute
+  AuthenticatedAdCouriersRoute: typeof AuthenticatedAdCouriersRoute
+  AuthenticatedAdCustomersRoute: typeof AuthenticatedAdCustomersRoute
+  AuthenticatedAdProductsRoute: typeof AuthenticatedAdProductsRoute
+  AuthenticatedAdRecycleBinRoute: typeof AuthenticatedAdRecycleBinRoute
+  AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
+  AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
+  AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
+  AuthenticatedAdIndexRoute: typeof AuthenticatedAdIndexRoute
+  AuthenticatedAdInvoiceIdRoute: typeof AuthenticatedAdInvoiceIdRoute
+  AuthenticatedAdOrdersIdRoute: typeof AuthenticatedAdOrdersIdRoute
+  AuthenticatedAdOrdersNewRoute: typeof AuthenticatedAdOrdersNewRoute
+  AuthenticatedAdOrdersIndexRoute: typeof AuthenticatedAdOrdersIndexRoute
 }
 
-const AuthenticatedCzpOps9f2cRouteRouteChildren: AuthenticatedCzpOps9f2cRouteRouteChildren =
-  {
-    AuthenticatedCzpOps9f2cAuditLogRoute: AuthenticatedCzpOps9f2cAuditLogRoute,
-    AuthenticatedCzpOps9f2cCouriersRoute: AuthenticatedCzpOps9f2cCouriersRoute,
-    AuthenticatedCzpOps9f2cCustomersRoute:
-      AuthenticatedCzpOps9f2cCustomersRoute,
-    AuthenticatedCzpOps9f2cProductsRoute: AuthenticatedCzpOps9f2cProductsRoute,
-    AuthenticatedCzpOps9f2cRecycleBinRoute:
-      AuthenticatedCzpOps9f2cRecycleBinRoute,
-    AuthenticatedCzpOps9f2cSecurityRoute: AuthenticatedCzpOps9f2cSecurityRoute,
-    AuthenticatedCzpOps9f2cSettingsRoute: AuthenticatedCzpOps9f2cSettingsRoute,
-    AuthenticatedCzpOps9f2cStaffRoute: AuthenticatedCzpOps9f2cStaffRoute,
-    AuthenticatedCzpOps9f2cIndexRoute: AuthenticatedCzpOps9f2cIndexRoute,
-    AuthenticatedCzpOps9f2cInvoiceIdRoute:
-      AuthenticatedCzpOps9f2cInvoiceIdRoute,
-    AuthenticatedCzpOps9f2cOrdersIdRoute: AuthenticatedCzpOps9f2cOrdersIdRoute,
-    AuthenticatedCzpOps9f2cOrdersNewRoute:
-      AuthenticatedCzpOps9f2cOrdersNewRoute,
-    AuthenticatedCzpOps9f2cOrdersIndexRoute:
-      AuthenticatedCzpOps9f2cOrdersIndexRoute,
-  }
+const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
+  AuthenticatedAdAuditLogRoute: AuthenticatedAdAuditLogRoute,
+  AuthenticatedAdCouriersRoute: AuthenticatedAdCouriersRoute,
+  AuthenticatedAdCustomersRoute: AuthenticatedAdCustomersRoute,
+  AuthenticatedAdProductsRoute: AuthenticatedAdProductsRoute,
+  AuthenticatedAdRecycleBinRoute: AuthenticatedAdRecycleBinRoute,
+  AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
+  AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
+  AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
+  AuthenticatedAdIndexRoute: AuthenticatedAdIndexRoute,
+  AuthenticatedAdInvoiceIdRoute: AuthenticatedAdInvoiceIdRoute,
+  AuthenticatedAdOrdersIdRoute: AuthenticatedAdOrdersIdRoute,
+  AuthenticatedAdOrdersNewRoute: AuthenticatedAdOrdersNewRoute,
+  AuthenticatedAdOrdersIndexRoute: AuthenticatedAdOrdersIndexRoute,
+}
 
-const AuthenticatedCzpOps9f2cRouteRouteWithChildren =
-  AuthenticatedCzpOps9f2cRouteRoute._addFileChildren(
-    AuthenticatedCzpOps9f2cRouteRouteChildren,
-  )
+const AuthenticatedAdRouteRouteWithChildren =
+  AuthenticatedAdRouteRoute._addFileChildren(AuthenticatedAdRouteRouteChildren)
 
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedCzpOps9f2cRouteRoute: typeof AuthenticatedCzpOps9f2cRouteRouteWithChildren
+  AuthenticatedAdRouteRoute: typeof AuthenticatedAdRouteRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedCzpOps9f2cRouteRoute:
-    AuthenticatedCzpOps9f2cRouteRouteWithChildren,
+  AuthenticatedAdRouteRoute: AuthenticatedAdRouteRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -736,23 +758,15 @@ const rootRouteChildren: RootRouteChildren = {
   ShippingRoute: ShippingRoute,
   ShopRoute: ShopRoute,
   TermsRoute: TermsRoute,
+  AdDeniedRoute: AdDeniedRoute,
+  AdLogRoute: AdLogRoute,
+  AdMfaRoute: AdMfaRoute,
+  AdResetPasswordRoute: AdResetPasswordRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
-  CzpOps9f2cAccessRoute: CzpOps9f2cAccessRoute,
-  CzpOps9f2cAccessDeniedRoute: CzpOps9f2cAccessDeniedRoute,
-  CzpOps9f2cMfaRoute: CzpOps9f2cMfaRoute,
-  CzpOps9f2cResetPasswordRoute: CzpOps9f2cResetPasswordRoute,
+  CzpOps9f2cSplatRoute: CzpOps9f2cSplatRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
+  CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

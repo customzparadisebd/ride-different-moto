@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/czp-ops-9f2c/access-denied")({
+export const Route = createFileRoute("/ad/denied")({
   head: () => ({
     meta: [
       { title: "Access denied" },
@@ -26,7 +26,7 @@ function AccessDenied() {
       </p>
       <div className="mt-6 flex flex-col gap-2">
         <Link
-          to="/czp-ops-9f2c/access"
+          to="/ad/log"
           className="text-sm uppercase tracking-wider text-primary underline"
         >
           Use a different account

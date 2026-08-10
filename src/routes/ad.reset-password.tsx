@@ -22,7 +22,7 @@ import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
 import { recordPasswordReset } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/czp-ops-9f2c/reset-password")({
+export const Route = createFileRoute("/ad/reset-password")({
   ssr: false,
   head: () => ({
     meta: [
@@ -115,7 +115,7 @@ function ResetPasswordPage() {
             variant="red"
             size="touch"
             className="mt-4 w-full"
-            onClick={() => void navigate({ to: "/czp-ops-9f2c/access", replace: true })}
+            onClick={() => void navigate({ to: "/ad/log", replace: true })}
           >
             Go to sign in
           </Button>
@@ -130,7 +130,7 @@ function ResetPasswordPage() {
             variant="steel"
             size="touch"
             className="mt-4 w-full"
-            onClick={() => void navigate({ to: "/czp-ops-9f2c/access", replace: true })}
+            onClick={() => void navigate({ to: "/ad/log", replace: true })}
           >
             Back to sign in
           </Button>

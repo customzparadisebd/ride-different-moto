@@ -34,7 +34,7 @@ import {
 
 type SortBy = "created_at" | "total" | "invoice_no";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/")({
+export const Route = createFileRoute("/_authenticated/ad/orders/")({
   head: () => adminHead("Orders — CZP Ops"),
   validateSearch: (search: Record<string, unknown>): { status?: OrderStatus } => {
     const status = String(search["status"] ?? "");
@@ -181,7 +181,7 @@ function AdminOrderList() {
           </Button>
           {canCreate ? (
             <Button variant="red" size="touch" asChild>
-              <Link to="/czp-ops-9f2c/orders/new">New manual order</Link>
+              <Link to="/ad/orders/new">New manual order</Link>
             </Button>
           ) : null}
         </div>
@@ -283,7 +283,7 @@ function AdminOrderList() {
                 ) : null}
                 <td className="p-3">
                   <Link
-                    to="/czp-ops-9f2c/orders/$id"
+                    to="/ad/orders/$id"
                     params={{ id: order.id }}
                     className="font-semibold text-primary underline"
                   >

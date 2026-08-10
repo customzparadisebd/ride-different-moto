@@ -23,7 +23,7 @@ import {
   statusLabel,
 } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/$id")({
+export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
   head: () => adminHead("Order — CZP Ops"),
   component: AdminOrderDetail,
 });
@@ -59,7 +59,7 @@ function AdminOrderDetail() {
       <section className="mx-auto max-w-md px-4 py-16 text-center">
         <p className="text-sm text-muted-foreground">Order not found.</p>
         <Button variant="steel" size="touch" className="mt-4" asChild>
-          <Link to="/czp-ops-9f2c/orders">Back to orders</Link>
+          <Link to="/ad/orders">Back to orders</Link>
         </Button>
       </section>
     );
@@ -77,13 +77,13 @@ function AdminOrderDetail() {
     <section className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
-          to="/czp-ops-9f2c/orders"
+          to="/ad/orders"
           className="text-xs uppercase tracking-wider text-muted-foreground underline"
         >
           ← All orders
         </Link>
         <Button variant="steel" size="sm" asChild>
-          <Link to="/czp-ops-9f2c/invoice/$id" params={{ id: order.id }}>
+          <Link to="/ad/invoice/$id" params={{ id: order.id }}>
             Print invoice
           </Link>
         </Button>

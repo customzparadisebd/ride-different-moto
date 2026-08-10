@@ -17,7 +17,7 @@ import { formatBDT } from "@/lib/format";
 import { getDashboardMetrics } from "@/lib/admin-data.functions";
 import { ORDER_STATUSES, statusLabel } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/")({
+export const Route = createFileRoute("/_authenticated/ad/")({
   head: () => adminHead("Dashboard — CZP Ops"),
   component: AdminDashboard,
 });
@@ -48,10 +48,10 @@ function AdminDashboard() {
         </div>
         <div className="flex gap-2">
           <Button variant="steel" size="touch" asChild>
-            <Link to="/czp-ops-9f2c/orders">All orders</Link>
+            <Link to="/ad/orders">All orders</Link>
           </Button>
           <Button variant="red" size="touch" asChild>
-            <Link to="/czp-ops-9f2c/orders/new">New manual order</Link>
+            <Link to="/ad/orders/new">New manual order</Link>
           </Button>
         </div>
       </div>
@@ -76,7 +76,7 @@ function AdminDashboard() {
         {ORDER_STATUSES.map((status) => (
           <Link
             key={status}
-            to="/czp-ops-9f2c/orders"
+            to="/ad/orders"
             search={{ status }}
             className="rounded-lg border border-border bg-card p-3 text-center shadow-card transition hover:border-primary"
           >
@@ -111,7 +111,7 @@ function AdminDashboard() {
               <tr key={order.id} className="border-b border-border last:border-0">
                 <td className="p-3">
                   <Link
-                    to="/czp-ops-9f2c/orders/$id"
+                    to="/ad/orders/$id"
                     params={{ id: order.id }}
                     className="font-semibold text-primary underline"
                   >

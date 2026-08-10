@@ -21,7 +21,7 @@ import { formatBDT } from "@/lib/format";
 import { listOrders } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/customers")({
+export const Route = createFileRoute("/_authenticated/ad/customers")({
   head: () => adminHead("Customers — CZP Ops"),
   component: AdminCustomers,
 });
@@ -148,7 +148,7 @@ function CustomerOrders({ phone }: { phone: string }) {
       {rows.map((order) => (
         <li key={order.id} className="flex flex-wrap items-center gap-3 text-sm">
           <Link
-            to="/czp-ops-9f2c/orders/$id"
+            to="/ad/orders/$id"
             params={{ id: order.id }}
             className="font-semibold text-primary underline"
           >

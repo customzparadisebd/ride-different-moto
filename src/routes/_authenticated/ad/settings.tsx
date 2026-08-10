@@ -27,7 +27,7 @@ import {
 } from "@/lib/settings.shared";
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/settings")({
+export const Route = createFileRoute("/_authenticated/ad/settings")({
   head: () => adminHead("Settings — CZP Ops"),
   component: AdminSettings,
 });

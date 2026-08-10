@@ -42,7 +42,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    void navigate({ to: "/czp-ops-9f2c/access", replace: true });
+    void navigate({ to: "/ad/log", replace: true });
   };
 
   return (

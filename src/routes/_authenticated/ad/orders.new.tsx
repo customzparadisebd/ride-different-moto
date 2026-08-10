@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { createManualOrder, getMyAccess } from "@/lib/orders.functions";
 import { newIdempotencyKey } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/orders/new")({
+export const Route = createFileRoute("/_authenticated/ad/orders/new")({
   head: () => adminHead("New order — CZP Ops"),
   component: NewManualOrder,
 });
@@ -40,7 +40,7 @@ function NewManualOrder() {
       setKey(newIdempotencyKey());
       void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       void queryClient.invalidateQueries({ queryKey: ["admin-dashboard"] });
-      void navigate({ to: "/czp-ops-9f2c/orders/$id", params: { id: result.orderId } });
+      void navigate({ to: "/ad/orders/$id", params: { id: result.orderId } });
     },
     onError: (error: Error) => toast.error(error.message || "Could not create the order."),
   });
@@ -48,7 +48,7 @@ function NewManualOrder() {
   return (
     <section className="mx-auto max-w-5xl">
       <Link
-        to="/czp-ops-9f2c/orders"
+        to="/ad/orders"
         className="text-xs uppercase tracking-wider text-muted-foreground underline"
       >
         ← All orders
@@ -74,7 +74,7 @@ function NewManualOrder() {
             Your role cannot create orders. Ask an admin for the “Create manual orders” permission.
           </p>
           <Button variant="steel" size="touch" className="mt-4" asChild>
-            <Link to="/czp-ops-9f2c/orders">Back to orders</Link>
+            <Link to="/ad/orders">Back to orders</Link>
           </Button>
         </div>
       )}
