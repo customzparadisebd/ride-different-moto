@@ -23,8 +23,26 @@ export const ROLE_LABELS: Record<Role, string> = {
   staff: "Staff",
 };
 
-export const ACCESS_STATUSES = ["pending", "approved", "suspended", "revoked"] as const;
+export const ACCESS_STATUSES = [
+  "pending",
+  "approved",
+  "inactive",
+  "suspended",
+  "revoked",
+] as const;
 export type AccessStatus = (typeof ACCESS_STATUSES)[number];
+
+/** Customer-facing wording for account states (Active/Inactive/Pending/Suspended). */
+export const ACCESS_STATUS_LABELS: Record<AccessStatus, string> = {
+  pending: "Pending",
+  approved: "Active",
+  inactive: "Inactive",
+  suspended: "Suspended",
+  revoked: "Revoked",
+};
+
+/** Only an approved (Active) account may use the panel. */
+export const ACTIVE_STATUS: AccessStatus = "approved";
 
 export const PERMISSIONS = {
   ordersView: "orders.view",
@@ -37,6 +55,11 @@ export const PERMISSIONS = {
   auditView: "audit.view",
   securityManage: "security.manage",
   apiManage: "api.manage",
+  couriersView: "couriers.view",
+  couriersManage: "couriers.manage",
+  shipmentsCreate: "shipments.create",
+  contentManage: "content.manage",
+  zonesManage: "zones.manage",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -52,6 +75,11 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   "audit.view": "View audit log",
   "security.manage": "Manage security settings",
   "api.manage": "Manage API integrations",
+  "couriers.view": "View couriers & tracking",
+  "couriers.manage": "Configure couriers & API keys",
+  "shipments.create": "Book courier shipments",
+  "content.manage": "Manage website content",
+  "zones.manage": "Manage delivery zones",
 };
 
 /** Permissions only a Super Admin may ever hold. Never grantable to Staff. */
@@ -59,6 +87,7 @@ export const SUPER_ADMIN_ONLY: Permission[] = [
   "roles.manage",
   "security.manage",
   "api.manage",
+  "couriers.manage",
 ];
 
 /** Permissions an Admin/Super Admin may assign to Staff or Managers. */
@@ -70,6 +99,10 @@ export const ASSIGNABLE_PERMISSIONS: Permission[] = [
   "customers.manage",
   "staff.manage",
   "audit.view",
+  "couriers.view",
+  "shipments.create",
+  "content.manage",
+  "zones.manage",
 ];
 
 /** Baseline permissions implied by a role, before explicit grants. */
@@ -83,9 +116,20 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "customers.manage",
     "staff.manage",
     "audit.view",
+    "couriers.view",
+    "shipments.create",
+    "content.manage",
+    "zones.manage",
   ],
-  manager: ["orders.view", "orders.manage", "orders.create", "products.manage"],
-  staff: ["orders.view"],
+  manager: [
+    "orders.view",
+    "orders.manage",
+    "orders.create",
+    "products.manage",
+    "couriers.view",
+    "shipments.create",
+  ],
+  staff: ["orders.view", "couriers.view"],
 };
 
 export const AUDIT_ACTIONS = {
@@ -121,6 +165,18 @@ export const AUDIT_ACTIONS = {
   courierShipmentCreated: "courier.shipment_created",
   courierStatusRefreshed: "courier.status_refreshed",
   courierConnectionTested: "courier.connection_tested",
+  courierCreated: "courier.created",
+  courierUpdated: "courier.updated",
+  courierActivated: "courier.activated",
+  courierDeactivated: "courier.deactivated",
+  courierDeleted: "courier.deleted",
+  courierCredentialsChanged: "courier.credentials_changed",
+  courierShipmentFailed: "courier.shipment_failed",
+  courierTrackingUpdated: "courier.tracking_updated",
+  contentUpdated: "content.updated",
+  zoneUpdated: "zone.updated",
+  userCreated: "user.created",
+  userDeleted: "user.deleted",
 } as const;
 
 export const staffStatusInput = z.object({
