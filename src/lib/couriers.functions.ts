@@ -107,8 +107,29 @@ export const saveCourier = createServerFn({ method: "POST" })
     };
 
     let courierId = data.id ?? null;
+
+    // A soft-deleted courier still holds its slug (unique index), so a plain
+    // insert would fail with 23505. Reuse the row instead, and give a clear
+    // message when a *live* courier already owns the code.
+    const { data: clash } = await supabaseAdmin
+      .from("couriers")
+      .select("id, name, deleted_at")
+      .eq("slug", data.slug)
+      .maybeSingle();
+
+    if (clash && clash.id !== courierId) {
+      if (clash.deleted_at) {
+        courierId = clash.id;
+      } else {
+        throw new Error(`The code "${data.slug}" is already used by ${clash.name}. Pick another code.`);
+      }
+    }
+
     if (courierId) {
-      const { error } = await supabaseAdmin.from("couriers").update(row).eq("id", courierId);
+      const { error } = await supabaseAdmin
+        .from("couriers")
+        .update({ ...row, deleted_at: null })
+        .eq("id", courierId);
       if (error) {
         throw new Error(
           error.code === "23505" ? "Another courier already uses that code." : "Could not save the courier.",
