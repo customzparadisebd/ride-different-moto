@@ -31,7 +31,7 @@ import {
 } from "@/lib/admin.functions";
 import { PERMISSIONS } from "@/lib/admin.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/security")({
+export const Route = createFileRoute("/_authenticated/ad/security")({
   head: () => adminHead("Security — CZP Ops"),
   component: SecurityPage,
 });
@@ -143,7 +143,7 @@ function SecurityPage() {
   };
 
   const panelUrl =
-    typeof window === "undefined" ? "/czp-ops-9f2c" : `${window.location.origin}/czp-ops-9f2c`;
+    typeof window === "undefined" ? "/ad" : `${window.location.origin}/ad`;
 
   return (
     <div className="space-y-8">

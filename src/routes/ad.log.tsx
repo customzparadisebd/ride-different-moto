@@ -30,7 +30,7 @@ import {
   reportLoginSuccess,
 } from "@/lib/admin.functions";
 
-export const Route = createFileRoute("/czp-ops-9f2c/access")({
+export const Route = createFileRoute("/ad/log")({
   // Client-only: the form depends on the browser auth session, and
   // server-rendering it caused a hydration mismatch on load.
   ssr: false,
@@ -67,10 +67,10 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) void navigate({ to: "/czp-ops-9f2c", replace: true });
+      if (event === "SIGNED_IN" && session) void navigate({ to: "/ad", replace: true });
     });
     void supabase.auth.getSession().then(({ data: s }) => {
-      if (s.session) void navigate({ to: "/czp-ops-9f2c", replace: true });
+      if (s.session) void navigate({ to: "/ad", replace: true });
     });
     return () => data.subscription.unsubscribe();
   }, [navigate]);
@@ -116,7 +116,7 @@ function AuthPage() {
   const handleGoogle = async () => {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/czp-ops-9f2c/access",
+      redirect_uri: window.location.origin + "/ad/log",
     });
     if (result.error) {
       toast.error("Google sign-in failed. Please try again.");
@@ -124,7 +124,7 @@ function AuthPage() {
       return;
     }
     if (result.redirected) return;
-    void navigate({ to: "/czp-ops-9f2c", replace: true });
+    void navigate({ to: "/ad", replace: true });
   };
 
   return (

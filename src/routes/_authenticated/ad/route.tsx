@@ -14,19 +14,19 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { getMyAccess } from "@/lib/orders.functions";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c")({
+export const Route = createFileRoute("/_authenticated/ad")({
   beforeLoad: async () => {
     let access: Awaited<ReturnType<typeof getMyAccess>>;
     try {
       access = await getMyAccess({});
     } catch {
-      throw redirect({ to: "/czp-ops-9f2c/access-denied" });
+      throw redirect({ to: "/ad/denied" });
     }
-    if (access.sessionRevoked) throw redirect({ to: "/czp-ops-9f2c/access-denied" });
-    if (!access.isStaff) throw redirect({ to: "/czp-ops-9f2c/access-denied" });
+    if (access.sessionRevoked) throw redirect({ to: "/ad/denied" });
+    if (!access.isStaff) throw redirect({ to: "/ad/denied" });
     // MFA step-up: privileged accounts must reach AAL2 before any screen loads.
     if (access.mfaRequired && !access.mfaSatisfied) {
-      throw redirect({ to: "/czp-ops-9f2c/mfa" });
+      throw redirect({ to: "/ad/mfa" });
     }
     return { access };
   },

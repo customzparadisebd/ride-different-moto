@@ -42,7 +42,7 @@ import {
 } from "@/lib/products.shared";
 import { getStoreSettings } from "@/lib/store-settings.functions";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/products")({
+export const Route = createFileRoute("/_authenticated/ad/products")({
   head: () => adminHead("Products — CZP Ops"),
   component: AdminProducts,
 });
@@ -175,7 +175,7 @@ function AdminProducts() {
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="steel" size="sm" asChild>
-            <Link to="/czp-ops-9f2c/recycle-bin">Recycle Bin</Link>
+            <Link to="/ad/recycle-bin">Recycle Bin</Link>
           </Button>
           {canManage ? (
             <Button

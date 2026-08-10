@@ -20,7 +20,7 @@ import { getMyAccess, listOrders } from "@/lib/orders.functions";
 import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/recycle-bin")({
+export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
   head: () => adminHead("Recycle Bin — CZP Ops"),
   component: RecycleBin,
 });

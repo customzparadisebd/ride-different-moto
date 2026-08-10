@@ -11,7 +11,7 @@
 // ============================================================
 import { z } from "zod";
 
-export const ADMIN_BASE = "/czp-ops-9f2c" as const;
+export const ADMIN_BASE = "/ad" as const;
 
 export const ROLES = ["super_admin", "admin", "manager", "staff"] as const;
 export type Role = (typeof ROLES)[number];

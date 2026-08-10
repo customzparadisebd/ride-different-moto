@@ -33,7 +33,7 @@ import {
 } from "@/lib/couriers.shared";
 import { formatBDT } from "@/lib/format";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/couriers")({
+export const Route = createFileRoute("/_authenticated/ad/couriers")({
   head: () => adminHead("Couriers — CZP Ops"),
   component: CouriersPage,
 });

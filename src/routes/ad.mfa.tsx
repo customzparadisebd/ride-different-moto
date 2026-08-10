@@ -22,7 +22,7 @@ import { Label } from "@/components/ui/label";
 import { completeMfaEnrolment, recoverWithBackupCode } from "@/lib/admin.functions";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/czp-ops-9f2c/mfa")({
+export const Route = createFileRoute("/ad/mfa")({
   ssr: false,
   head: () => ({
     meta: [
@@ -51,7 +51,7 @@ function MfaPage() {
     void (async () => {
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
-        void navigate({ to: "/czp-ops-9f2c/access", replace: true });
+        void navigate({ to: "/ad/log", replace: true });
         return;
       }
       const { data } = await supabase.auth.mfa.listFactors();
@@ -93,7 +93,7 @@ function MfaPage() {
         setBusy(false);
         return;
       }
-      void navigate({ to: "/czp-ops-9f2c", replace: true });
+      void navigate({ to: "/ad", replace: true });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "That code was not accepted.");
       setBusy(false);
@@ -131,7 +131,7 @@ function MfaPage() {
           variant="red"
           size="touch"
           className="mt-4 w-full"
-          onClick={() => void navigate({ to: "/czp-ops-9f2c", replace: true })}
+          onClick={() => void navigate({ to: "/ad", replace: true })}
         >
           I have saved them — continue
         </Button>

@@ -17,7 +17,7 @@ import { formatBDT } from "@/lib/format";
 import { getOrder } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
-export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/invoice/$id")({
+export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
   head: () => adminHead("Invoice — CZP Ops"),
   component: InvoicePage,
 });
@@ -44,7 +44,7 @@ function InvoicePage() {
     <div className="mx-auto max-w-3xl bg-background p-6 print:p-0">
       <div className="flex items-center justify-between gap-3 print:hidden">
         <Link
-          to="/czp-ops-9f2c/orders/$id"
+          to="/ad/orders/$id"
           params={{ id }}
           className="text-xs uppercase tracking-wider text-muted-foreground underline"
         >
