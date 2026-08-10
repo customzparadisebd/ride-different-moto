@@ -34,6 +34,7 @@ export const COURIER_STATUSES = [
   "delivered",
   "returned",
   "cancelled",
+  "failed",
 ] as const;
 
 /** Delivery zones used for pricing/filtering inside Bangladesh. */

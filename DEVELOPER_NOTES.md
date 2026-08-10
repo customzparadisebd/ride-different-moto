@@ -135,10 +135,16 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Done:** Deleted products and orders keep `deleted_at` / `deleted_by` / `delete_reason` instead of being removed. `/czp-ops-9f2c/recycle-bin` lists both, supports restore, and permanent purge is Super-Admin-only. Deleted rows are filtered out of every normal list and every action is audited.
 - **Next:** Optional auto-purge after a retention window.
 
-## Courier Integration (Steadfast)
+## Courier Integration (Steadfast — first version)
 - **Status:** Completed
 - **Done:** `courier_shipments` records every booking attempt with the consignment id, tracking code and raw response. The order detail page has a Courier panel to book the order to Steadfast (COD amount derived from the stored total minus advance) and to refresh delivery status, which writes back `courier_status`, `consignment_id` and `tracking_url` plus an order-history entry. Store settings has a Steadfast enable toggle and API base URL; the API key/secret live in server secrets only and are never returned to the browser.
-- **Next:** Optional scheduled status sync and bulk booking from the orders list.
+- **Next:** Superseded by "Courier Management (multi-courier)" below.
+
+## Courier Management (multi-courier)
+- **Status:** Completed
+- **Done:** New Couriers screen (`/czp-ops-9f2c/couriers`) to add, edit, switch on/off, connection-test and remove delivery partners. Each courier stores its own name, provider code, logo, support phone, API base URL, inside/outside Dhaka charge, COD %, display order and free-form extra settings (`store_id`, `pickup_store_id`, `item_weight`, …). Provider adapters ship for SteadFast, Pathao and RedX, plus a "custom" placeholder so a courier can be configured before its API is wired; new providers are added in one registry in `couriers.server.ts`. Booking, duplicate-shipment guard, tracking refresh, `courier_api_logs`, `courier_tracking_events` and audit entries all run through permission-checked server functions. New permissions: `couriers.view`, `couriers.manage` (Super Admin), `shipments.create`.
+- **Security:** API keys/secrets/tokens live in `courier_credentials`, a table with RLS on and no policies/grants, so only the service-role server client can read them. The panel can write credentials but never reads them back — it only sees a "saved" flag — and no credential is written to logs or audit metadata.
+- **Next:** Courier webhooks for automatic status sync and bulk booking from the orders list.
 
 ## Analytics & SEO Tracking
 - **Status:** Pending
