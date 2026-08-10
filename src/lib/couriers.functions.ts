@@ -455,6 +455,14 @@ export const refreshShipmentStatus = createServerFn({ method: "POST" })
 
     if (result.courierStatus !== order.courier_status) {
       const now = new Date().toISOString();
+      const { data: shipment } = await context.supabase
+        .from("courier_shipments")
+        .select("id")
+        .eq("order_id", order.id)
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
       await context.supabase
         .from("orders")
         .update({ courier_status: result.courierStatus })
@@ -464,12 +472,15 @@ export const refreshShipmentStatus = createServerFn({ method: "POST" })
         .update({ courier_status: result.courierStatus, last_status_at: now })
         .eq("order_id", order.id)
         .eq("is_active", true);
-      await context.supabase.from("courier_tracking_events").insert({
-        order_id: order.id,
-        courier_status: result.courierStatus,
-        message: result.raw ?? result.message,
-        source: "manual_refresh",
-      });
+      if (shipment?.id) {
+        await context.supabase.from("courier_tracking_events").insert({
+          shipment_id: shipment.id,
+          order_id: order.id,
+          courier_status: result.courierStatus,
+          message: result.raw ?? result.message,
+          source: "manual_refresh",
+        });
+      }
       await context.supabase.from("order_events").insert({
         order_id: order.id,
         event_type: "courier.status_synced",
