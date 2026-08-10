@@ -150,3 +150,16 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - **Status:** Pending
 - **Done:** Per-route meta tags and structured data only.
 - **Next:** Add analytics, sitemap and robots handling when the domain goes live.
+
+## Admin Hub integration (in progress)
+
+- **Phase 1 — DONE.** Admin panel moved from `/czp-ops-9f2c` to `/ad`, login at `/ad/log`,
+  denied at `/ad/denied`, MFA at `/ad/mfa`. Old `/czp-ops-9f2c*` URLs now redirect to `/ad`.
+  `robots.txt` disallows `/ad`; admin pages keep `noindex, nofollow`.
+- **Phase 2 — DONE.** Database extended for the merged panel: `brands`, `categories`,
+  `suppliers`, `customers` (backfilled from existing orders), append-only
+  `inventory_movements` and `payments`; products gained brand/category/supplier,
+  cost price, barcode, low-stock level, weight, dimensions, internal notes.
+  All new tables have GRANTs + RLS scoped to approved staff permissions.
+- **Next:** Phase 3 port Hub layout/table components, Phase 4 re-skin existing screens,
+  Phase 5 add Payments / Inventory / Reports / Invoices / Suppliers screens, Phase 6 verify.
