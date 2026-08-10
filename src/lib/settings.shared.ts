@@ -70,11 +70,9 @@ export function parseStoreSettingsRow(row: {
     supportPhone: row.support_phone,
     supportEmail: row.support_email ?? "",
     lowStockThreshold: row.low_stock_threshold,
-    steadfastEnabled: Boolean(row.steadfast_enabled),
-    steadfastBaseUrl: row.steadfast_base_url || DEFAULT_STORE_SETTINGS.steadfastBaseUrl,
   });
   return parsed.success ? parsed.data : DEFAULT_STORE_SETTINGS;
 }
 
 export const SETTINGS_COLUMNS =
-  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold, steadfast_enabled, steadfast_base_url";
+  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold";
