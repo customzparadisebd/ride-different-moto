@@ -165,6 +165,8 @@ function CouriersPage() {
                     <SafeImage
                       src={courier.logoUrl}
                       alt={`${courier.name} logo`}
+                      width={40}
+                      height={40}
                       className="h-10 w-10 rounded-lg object-contain"
                     />
                   ) : null}
