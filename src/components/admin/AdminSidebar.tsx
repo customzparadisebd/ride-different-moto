@@ -15,6 +15,7 @@ import {
   ScrollText,
   Settings,
   ShieldCheck,
+  Truck,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -45,6 +46,7 @@ const OPERATIONS: NavItem[] = [
   { to: "/czp-ops-9f2c/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
   { to: "/czp-ops-9f2c/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
   { to: "/czp-ops-9f2c/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
+  { to: "/czp-ops-9f2c/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
   { to: "/czp-ops-9f2c/recycle-bin", label: "Recycle Bin", icon: RotateCcw, permission: PERMISSIONS.ordersView },
 ];
 
