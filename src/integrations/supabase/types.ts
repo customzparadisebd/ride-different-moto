@@ -104,6 +104,89 @@ export type Database = {
         }
         Relationships: []
       }
+      brands: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          parent_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          parent_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courier_api_logs: {
         Row: {
           action: string
@@ -385,6 +468,66 @@ export type Database = {
         }
         Relationships: []
       }
+      customers: {
+        Row: {
+          address: string | null
+          alt_phone: string | null
+          area: string | null
+          created_at: string
+          district: string | null
+          email: string | null
+          id: string
+          is_blacklisted: boolean
+          is_favorite: boolean
+          is_fraud: boolean
+          lifetime_value: number
+          name: string
+          notes: string | null
+          phone: string
+          tags: string[]
+          total_orders: number
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          alt_phone?: string | null
+          area?: string | null
+          created_at?: string
+          district?: string | null
+          email?: string | null
+          id?: string
+          is_blacklisted?: boolean
+          is_favorite?: boolean
+          is_fraud?: boolean
+          lifetime_value?: number
+          name: string
+          notes?: string | null
+          phone: string
+          tags?: string[]
+          total_orders?: number
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          alt_phone?: string | null
+          area?: string | null
+          created_at?: string
+          district?: string | null
+          email?: string | null
+          id?: string
+          is_blacklisted?: boolean
+          is_favorite?: boolean
+          is_fraud?: boolean
+          lifetime_value?: number
+          name?: string
+          notes?: string | null
+          phone?: string
+          tags?: string[]
+          total_orders?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       delivery_zones: {
         Row: {
           charge: number
@@ -456,6 +599,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      inventory_movements: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          performed_by: string | null
+          performed_by_label: string
+          product_id: string
+          quantity: number
+          reference: string | null
+          stock_after: number | null
+          type: Database["public"]["Enums"]["movement_type"]
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          performed_by_label?: string
+          product_id: string
+          quantity: number
+          reference?: string | null
+          stock_after?: number | null
+          type: Database["public"]["Enums"]["movement_type"]
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          performed_by?: string | null
+          performed_by_label?: string
+          product_id?: string
+          quantity?: number
+          reference?: string | null
+          stock_after?: number | null
+          type?: Database["public"]["Enums"]["movement_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_attempts: {
         Row: {
@@ -781,6 +971,50 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          notes: string | null
+          order_id: string | null
+          received_by: string | null
+          received_by_label: string
+          reference: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          order_id?: string | null
+          received_by?: string | null
+          received_by_label?: string
+          reference?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          order_id?: string | null
+          received_by?: string | null
+          received_by_label?: string
+          reference?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_colors: {
         Row: {
           created_at: string
@@ -833,8 +1067,12 @@ export type Database = {
           badge_enabled: boolean
           badge_text: string | null
           badge_type: string | null
+          barcode: string | null
           bike_compatibility: string[]
+          brand_id: string | null
           category: string
+          category_id: string | null
+          cost_price: number
           created_at: string
           created_by: string | null
           delete_reason: string | null
@@ -842,15 +1080,18 @@ export type Database = {
           deleted_by: string | null
           description: string | null
           details: string | null
+          dimensions: string | null
           discount_percent: number
           id: string
           image_url: string | null
           images: Json
+          internal_notes: string | null
           is_active: boolean
           is_best_deal: boolean
           is_featured: boolean
           is_new_arrival: boolean
           is_universal: boolean
+          low_stock_threshold: number
           name: string
           offer_enabled: boolean
           offer_price: number | null
@@ -858,14 +1099,20 @@ export type Database = {
           sku: string
           slug: string
           stock_qty: number
+          supplier_id: string | null
           updated_at: string
+          weight: number | null
         }
         Insert: {
           badge_enabled?: boolean
           badge_text?: string | null
           badge_type?: string | null
+          barcode?: string | null
           bike_compatibility?: string[]
+          brand_id?: string | null
           category?: string
+          category_id?: string | null
+          cost_price?: number
           created_at?: string
           created_by?: string | null
           delete_reason?: string | null
@@ -873,15 +1120,18 @@ export type Database = {
           deleted_by?: string | null
           description?: string | null
           details?: string | null
+          dimensions?: string | null
           discount_percent?: number
           id?: string
           image_url?: string | null
           images?: Json
+          internal_notes?: string | null
           is_active?: boolean
           is_best_deal?: boolean
           is_featured?: boolean
           is_new_arrival?: boolean
           is_universal?: boolean
+          low_stock_threshold?: number
           name: string
           offer_enabled?: boolean
           offer_price?: number | null
@@ -889,14 +1139,20 @@ export type Database = {
           sku: string
           slug: string
           stock_qty?: number
+          supplier_id?: string | null
           updated_at?: string
+          weight?: number | null
         }
         Update: {
           badge_enabled?: boolean
           badge_text?: string | null
           badge_type?: string | null
+          barcode?: string | null
           bike_compatibility?: string[]
+          brand_id?: string | null
           category?: string
+          category_id?: string | null
+          cost_price?: number
           created_at?: string
           created_by?: string | null
           delete_reason?: string | null
@@ -904,15 +1160,18 @@ export type Database = {
           deleted_by?: string | null
           description?: string | null
           details?: string | null
+          dimensions?: string | null
           discount_percent?: number
           id?: string
           image_url?: string | null
           images?: Json
+          internal_notes?: string | null
           is_active?: boolean
           is_best_deal?: boolean
           is_featured?: boolean
           is_new_arrival?: boolean
           is_universal?: boolean
+          low_stock_threshold?: number
           name?: string
           offer_enabled?: boolean
           offer_price?: number | null
@@ -920,9 +1179,33 @@ export type Database = {
           sku?: string
           slug?: string
           stock_qty?: number
+          supplier_id?: string | null
           updated_at?: string
+          weight?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "products_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "suppliers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -1077,6 +1360,48 @@ export type Database = {
         }
         Relationships: []
       }
+      suppliers: {
+        Row: {
+          address: string | null
+          contact_person: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_person?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_permissions: {
         Row: {
           created_at: string
@@ -1144,6 +1469,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "staff" | "super_admin"
+      movement_type:
+        | "stock_in"
+        | "stock_out"
+        | "adjustment"
+        | "return"
+        | "damage"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1272,6 +1603,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "staff", "super_admin"],
+      movement_type: [
+        "stock_in",
+        "stock_out",
+        "adjustment",
+        "return",
+        "damage",
+      ],
     },
   },
 } as const
