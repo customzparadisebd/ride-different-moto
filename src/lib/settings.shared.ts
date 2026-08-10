@@ -31,9 +31,6 @@ export const storeSettingsInput = z.object({
   supportPhone: z.string().trim().min(6).max(40),
   supportEmail: z.string().trim().email().max(200).optional().or(z.literal("")),
   lowStockThreshold: z.number().int().min(0).max(999),
-  /** Steadfast courier integration (API credentials live in server secrets). */
-  steadfastEnabled: z.boolean(),
-  steadfastBaseUrl: z.string().trim().url().max(200),
 });
 
 export type StoreSettings = z.infer<typeof storeSettingsInput>;
@@ -45,8 +42,6 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   supportPhone: "+8801890722202",
   supportEmail: "",
   lowStockThreshold: 3,
-  steadfastEnabled: false,
-  steadfastBaseUrl: "https://portal.packzy.com/api/v1",
 };
 
 /** Normalises a database row (jsonb columns are `unknown`) into StoreSettings. */
@@ -57,8 +52,6 @@ export function parseStoreSettingsRow(row: {
   support_phone: string;
   support_email: string | null;
   low_stock_threshold: number;
-  steadfast_enabled?: boolean | null;
-  steadfast_base_url?: string | null;
 }): StoreSettings {
   const zones = (row.zone_charges ?? {}) as Partial<Record<ZoneKey, number>>;
   const methods = Array.isArray(row.payment_methods)
