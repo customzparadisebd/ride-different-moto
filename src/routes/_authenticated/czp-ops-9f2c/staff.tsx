@@ -39,6 +39,7 @@ export const Route = createFileRoute("/_authenticated/czp-ops-9f2c/staff")({
 const statusStyles: Record<AccessStatus, string> = {
   pending: "bg-yellow-500/15 text-yellow-500",
   approved: "bg-green-500/15 text-green-500",
+  inactive: "bg-muted text-muted-foreground",
   suspended: "bg-orange-500/15 text-orange-500",
   revoked: "bg-destructive/15 text-destructive",
 };
