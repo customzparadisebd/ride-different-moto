@@ -40,6 +40,11 @@ export const productInput = z.object({
   bikeCompatibility: z.array(z.string().trim().min(1).max(80)).max(40).default([]),
   isUniversal: z.boolean().default(false),
   description: blankable(2000),
+  details: blankable(4000),
+  /** Extra gallery images (main image stays `imageUrl`). */
+  images: z.array(z.string().trim().min(1).max(600)).max(12).default([]),
+  badgeEnabled: z.boolean().default(false),
+  badgeText: blankable(40),
   price: money,
   offerPrice: money.optional().nullable(),
   stockQty: z.number().int().min(0).max(999999),
@@ -49,6 +54,47 @@ export const productInput = z.object({
   isActive: z.boolean().default(true),
 });
 export type ProductInput = z.input<typeof productInput>;
+
+// PRODUCT COLOR VARIATIONS (admin contracts)
+// Purpose: Add/edit/enable/reorder colour options with their own
+//          price difference and colour-specific image.
+// Status: COMPLETED
+export const productColorInput = z.object({
+  id: z.string().uuid().optional(),
+  productId: z.string().uuid(),
+  name: z.string().trim().min(1).max(60),
+  swatch: z
+    .string()
+    .trim()
+    .regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a hex colour like #1D3F8F"),
+  priceDelta: z.number().finite().min(-1_000_000).max(1_000_000).default(0),
+  imageUrl: blankable(600),
+  isActive: z.boolean().default(true),
+  sortOrder: z.number().int().min(0).max(999).default(0),
+});
+export type ProductColorInput = z.input<typeof productColorInput>;
+
+export const productColorListInput = z.object({ productId: z.string().uuid() });
+export const productColorDeleteInput = z.object({ id: z.string().uuid() });
+export const productColorReorderInput = z.object({
+  productId: z.string().uuid(),
+  ids: z.array(z.string().uuid()).min(1).max(40),
+});
+
+export const PRODUCT_COLOR_COLUMNS =
+  "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
+
+export function productColorToRow(data: ReturnType<typeof productColorInput.parse>) {
+  return {
+    product_id: data.productId,
+    name: data.name,
+    swatch: data.swatch,
+    price_delta: data.priceDelta,
+    image_url: data.imageUrl || null,
+    is_active: data.isActive,
+    sort_order: data.sortOrder,
+  };
+}
 
 export const productUpdateInput = productInput.extend({ id: z.string().uuid() });
 
@@ -104,7 +150,7 @@ export const categoryLabel = (value: string) =>
 
 /** Column list + row mappers live here so the server-function module stays a thin wrapper. */
 export const PRODUCT_COLUMNS =
-  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, deleted_at, deleted_by, delete_reason, created_at, updated_at";
+  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, details, images, badge_enabled, badge_text, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, deleted_at, deleted_by, delete_reason, created_at, updated_at";
 
 export const PRODUCT_TOGGLE_COLUMNS = {
   isActive: "is_active",
@@ -123,6 +169,10 @@ export function productToRow(data: ReturnType<typeof productInput.parse>) {
     bike_compatibility: data.bikeCompatibility,
     is_universal: data.isUniversal,
     description: data.description || null,
+    details: data.details || null,
+    images: data.images,
+    badge_enabled: data.badgeEnabled,
+    badge_text: data.badgeText || null,
     price: data.price,
     offer_price: data.offerPrice ?? null,
     stock_qty: data.stockQty,
