@@ -189,3 +189,17 @@ Status values: `Completed` / `In Progress` / `Pending`.
   name search, bike model, category, min/max price and sorting, with a result count and
   clear-filters action.
 - **Next:** image uploads once storage is enabled; admin-managed hero/nav/social content.
+
+## SteadFast bulk shipment — COMPLETED
+- **Settings → SteadFast API integration:** base URL, API key, API secret and an
+  active/inactive switch. Visible only to Admin / Super Admin (the server function rejects
+  Staff and Managers); keys are write-only — the panel only receives "stored / not stored".
+- **Orders list:** checkbox selection now also drives a **Send to SteadFast** bulk action
+  (needs `shipments.create`). A confirmation modal shows the selected count, then orders are
+  sent in batches of 5 with a progress bar and a success/skipped/failed line per order.
+- **Duplicate protection:** orders that already hold a consignment are excluded from the
+  selection count and skipped server-side; failed orders stay selected for retry.
+- **Saved & shown per order:** courier name, consignment ID, tracking code/URL, courier
+  status and submission date/time (order row, `courier_shipments`, tracking event, order
+  timeline and `courier_api_logs`).
+- **Next:** SteadFast status webhook for automatic tracking updates.

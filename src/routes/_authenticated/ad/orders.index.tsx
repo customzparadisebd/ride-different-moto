@@ -20,6 +20,7 @@ import {
   type OrderFilters,
 } from "@/components/admin/orders/OrderFilterBar";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
+import { SteadfastBulkDialog } from "@/components/admin/orders/SteadfastBulkDialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatBDT } from "@/lib/format";
@@ -60,6 +61,8 @@ function AdminOrderList() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<OrderStatus>("processing");
+  // SEND TO STEADFAST — confirmation modal state
+  const [steadfastOpen, setSteadfastOpen] = useState(false);
 
   // Only non-empty filters are sent, so the server-side Zod schema keeps defaults.
   const activeFilters = useMemo(
@@ -91,6 +94,8 @@ function AdminOrderList() {
   const totalPages = Math.max(Math.ceil(totalCount / pageSize), 1);
   const canManage = accessQuery.data?.permissions.includes("orders.manage") ?? false;
   const canCreate = accessQuery.data?.permissions.includes("orders.create") ?? false;
+  const canShip = accessQuery.data?.permissions.includes("shipments.create") ?? false;
+  const canSelect = canManage || canShip;
   const pageValue = rows.reduce((sum, row) => sum + Number(row.total), 0);
 
   const applyFilters = (next: OrderFilters) => {
@@ -110,6 +115,11 @@ function AdminOrderList() {
   };
 
   const allOnPageSelected = rows.length > 0 && rows.every((row) => selected.includes(row.id));
+  // Only orders without a consignment can be sent (duplicate protection).
+  const sendableSelected = selected.filter((id) => {
+    const row = rows.find((order) => order.id === id);
+    return !row || !row.consignment_id;
+  });
 
   const exportCsv = () => {
     const header = [
@@ -192,9 +202,11 @@ function AdminOrderList() {
         isLoading={ordersQuery.isFetching}
       />
 
-      {canManage && selected.length > 0 ? (
+      {canSelect && selected.length > 0 ? (
         <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-primary/40 bg-card p-3 shadow-card">
           <span className="text-sm font-semibold">{selected.length} selected</span>
+          {canManage ? (
+            <>
           <select
             value={bulkStatus}
             onChange={(event) => setBulkStatus(event.target.value as OrderStatus)}
@@ -216,17 +228,45 @@ function AdminOrderList() {
           >
             {bulkMutation.isPending ? "Updating…" : "Apply status"}
           </Button>
+            </>
+          ) : null}
+          {/* SEND TO STEADFAST — bulk action */}
+          {canShip ? (
+            <Button
+              variant="steel"
+              size="sm"
+              onClick={() => {
+                if (sendableSelected.length === 0) {
+                  toast.error("All selected orders already have a SteadFast consignment.");
+                  return;
+                }
+                setSteadfastOpen(true);
+              }}
+            >
+              Send to SteadFast ({sendableSelected.length})
+            </Button>
+          ) : null}
           <Button variant="steel" size="sm" onClick={() => setSelected([])}>
             Clear
           </Button>
         </div>
       ) : null}
 
+      <SteadfastBulkDialog
+        open={steadfastOpen}
+        orderIds={sendableSelected}
+        onOpenChange={setSteadfastOpen}
+        onFinished={(successIds) =>
+          // Failed orders stay selected so they can be retried.
+          setSelected((current) => current.filter((id) => !successIds.includes(id)))
+        }
+      />
+
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[1100px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
-              {canManage ? (
+              {canSelect ? (
                 <th className="p-3">
                   <Checkbox
                     checked={allOnPageSelected}
@@ -285,7 +325,7 @@ function AdminOrderList() {
             )}
             {rows.map((order) => (
               <tr key={order.id} className="border-b border-border last:border-0">
-                {canManage ? (
+                {canSelect ? (
                   <td className="p-3">
                     <Checkbox
                       checked={selected.includes(order.id)}
@@ -336,6 +376,24 @@ function AdminOrderList() {
                 </td>
                 <td className="p-3">
                   <StatusBadge value={order.courier_status} />
+                  {order.consignment_id ? (
+                    <span className="mt-1 block text-xs text-muted-foreground">
+                      {order.courier_name ?? "SteadFast"} · {order.consignment_id}
+                      {order.shipment_at
+                        ? ` · ${new Date(order.shipment_at).toLocaleString("en-GB")}`
+                        : ""}
+                      {order.tracking_url ? (
+                        <a
+                          href={order.tracking_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="ml-1 text-primary underline"
+                        >
+                          Track
+                        </a>
+                      ) : null}
+                    </span>
+                  ) : null}
                 </td>
                 <td className="p-3 text-muted-foreground">{statusLabel(order.order_source)}</td>
               </tr>
