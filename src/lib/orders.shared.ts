@@ -83,7 +83,14 @@ export const checkoutInput = z.object({
  */
 export const checkoutSubmitInput = checkoutInput.omit({ items: true }).extend({
   items: z
-    .array(z.object({ productId: z.string().trim().min(1).max(120), quantity: z.number().int().min(1).max(999) }))
+    .array(
+      z.object({
+        productId: z.string().trim().min(1).max(120),
+        /** Selected colour variation, revalidated and repriced server-side. */
+        colorId: z.string().uuid().optional(),
+        quantity: z.number().int().min(1).max(999),
+      }),
+    )
     .min(1, "Your cart is empty")
     .max(50),
 });
