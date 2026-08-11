@@ -1,8 +1,9 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { SectionHeading } from "@/components/home/SectionHeading";
-import { getProducts } from "@/data/catalog";
+import { storefrontProductsQuery } from "@/lib/storefront.queries";
 
 const title = "Shop Modification Parts — Customz Paradise BD";
 const description =
@@ -20,11 +21,24 @@ export const Route = createFileRoute("/shop")({
     ],
     links: [{ rel: "canonical", href: "/shop" }],
   }),
+  loader: ({ context }) => {
+    void context.queryClient.ensureQueryData(storefrontProductsQuery());
+  },
   component: ShopPage,
+  errorComponent: ({ error }) => (
+    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      {error.message}
+    </p>
+  ),
+  notFoundComponent: () => (
+    <p className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      No products found.
+    </p>
+  ),
 });
 
 function ShopPage() {
-  const products = getProducts();
+  const { data: products } = useSuspenseQuery(storefrontProductsQuery());
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">

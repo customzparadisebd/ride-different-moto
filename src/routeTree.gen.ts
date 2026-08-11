@@ -30,6 +30,7 @@ import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 import { Route as CzpOps9f2cIndexRouteImport } from './routes/czp-ops-9f2c.index'
 import { Route as CzpOps9f2cSplatRouteImport } from './routes/czp-ops-9f2c.$'
+import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as AuthenticatedAdIndexRouteImport } from './routes/_authenticated/ad/index'
 import { Route as AuthenticatedAdAuditLogRouteImport } from './routes/_authenticated/ad/audit-log'
 import { Route as AuthenticatedAdCouriersRouteImport } from './routes/_authenticated/ad/couriers'
@@ -148,6 +149,11 @@ const CzpOps9f2cSplatRoute = CzpOps9f2cSplatRouteImport.update({
   path: '/czp-ops-9f2c/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsSlugRoute = ProductsSlugRouteImport.update({
+  id: '/products/$slug',
+  path: '/products/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdIndexRoute = AuthenticatedAdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -238,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
   '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByTo {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c': typeof CzpOps9f2cIndexRoute
   '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -309,6 +317,7 @@ export interface FileRoutesById {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/products/$slug': typeof ProductsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
   '/_authenticated/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -346,6 +355,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/products/$slug'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
     | '/ad/audit-log'
@@ -380,6 +390,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/products/$slug'
     | '/bike-models'
     | '/czp-ops-9f2c'
     | '/ad/audit-log'
@@ -416,6 +427,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/products/$slug'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
     | '/_authenticated/ad/audit-log'
@@ -452,6 +464,7 @@ export interface RootRouteChildren {
   AdResetPasswordRoute: typeof AdResetPasswordRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
   CzpOps9f2cSplatRoute: typeof CzpOps9f2cSplatRoute
+  ProductsSlugRoute: typeof ProductsSlugRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
 }
@@ -603,6 +616,13 @@ declare module '@tanstack/react-router' {
       path: '/czp-ops-9f2c/$'
       fullPath: '/czp-ops-9f2c/$'
       preLoaderRoute: typeof CzpOps9f2cSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/products/$slug': {
+      id: '/products/$slug'
+      path: '/products/$slug'
+      fullPath: '/products/$slug'
+      preLoaderRoute: typeof ProductsSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/ad/': {
@@ -764,19 +784,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdResetPasswordRoute: AdResetPasswordRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
   CzpOps9f2cSplatRoute: CzpOps9f2cSplatRoute,
+  ProductsSlugRoute: ProductsSlugRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

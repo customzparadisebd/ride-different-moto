@@ -1,3 +1,4 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
@@ -6,18 +7,11 @@ import { AboutSection } from "@/components/home/AboutSection";
 import { BikeModelCarousel } from "@/components/home/BikeModelCarousel";
 import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSlider } from "@/components/home/HeroSlider";
-import { ReviewsSection } from "@/components/home/ReviewsSection";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { SocialSection } from "@/components/home/SocialSection";
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
-import { TrustSection } from "@/components/home/TrustSection";
-import {
-  getBestDeals,
-  getBikeModels,
-  getHeroSlides,
-  getReviews,
-  getUniversalProducts,
-} from "@/data/catalog";
+import { getBikeModels, getHeroSlides } from "@/data/catalog";
+import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
 const title = "Customz Paradise BD — Premium Motorcycle Modification Parts";
@@ -54,15 +48,31 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) => {
+    void context.queryClient.ensureQueryData(storefrontProductsQuery());
+  },
   component: Index,
+  errorComponent: ({ error }) => (
+    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      {error.message}
+    </p>
+  ),
+  notFoundComponent: () => (
+    <p className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      Page not found.
+    </p>
+  ),
 });
 
 function Index() {
   const heroSlides = getHeroSlides();
   const bikeModels = getBikeModels();
-  const universalProducts = getUniversalProducts();
-  const bestDeals = getBestDeals();
-  const reviews = getReviews();
+  // ALL PRODUCTS SECTION
+  // Purpose: Displays all active products dynamically from the database.
+  // Status: COMPLETED
+  const { data: products } = useSuspenseQuery(storefrontProductsQuery());
+  const universalProducts = products.filter((product) => product.universal);
+  const bestDeals = products.filter((product) => product.bestDeal || product.featured);
 
   return (
     <>
@@ -92,12 +102,14 @@ function Index() {
         </section>
       </SectionBoundary>
 
-      <SectionBoundary label="trust">
-        <TrustSection />
-      </SectionBoundary>
-
-      <SectionBoundary label="reviews">
-        <ReviewsSection reviews={reviews} />
+      <SectionBoundary label="all-products">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+          <SectionHeading
+            eyebrow={`${products.length} products`}
+            title="All Products"
+          />
+          <ProductGrid products={products} />
+        </section>
       </SectionBoundary>
 
       <SectionBoundary label="store">
