@@ -57,6 +57,10 @@ type ProductRow = {
   bike_compatibility: string[];
   is_universal: boolean;
   description: string | null;
+  details: string | null;
+  images: unknown;
+  badge_enabled: boolean;
+  badge_text: string | null;
   price: number | string;
   offer_price: number | string | null;
   stock_qty: number;
@@ -76,6 +80,10 @@ function toFormValue(row: ProductRow): ProductFormValue {
     bikeCompatibility: (row.bike_compatibility ?? []).join(", "),
     isUniversal: row.is_universal,
     description: row.description ?? "",
+    details: row.details ?? "",
+    images: Array.isArray(row.images) ? (row.images as string[]).join("\n") : "",
+    badgeEnabled: row.badge_enabled ?? false,
+    badgeText: row.badge_text ?? "",
     price: String(Number(row.price)),
     offerPrice: row.offer_price === null ? "" : String(Number(row.offer_price)),
     stockQty: String(row.stock_qty),
