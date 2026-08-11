@@ -14,13 +14,14 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { adminHead } from "@/components/admin/AdminShell";
+import { CitiesPanel } from "@/components/admin/checkout/CitiesPanel";
+import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { formatBDT } from "@/lib/format";
 import { getMyAccess } from "@/lib/orders.functions";
-import { DELIVERY_ZONES, PAYMENT_METHODS } from "@/lib/orders.shared";
-import { DEFAULT_STORE_SETTINGS, type StoreSettings, type ZoneKey } from "@/lib/settings.shared";
+import { PAYMENT_METHODS } from "@/lib/orders.shared";
+import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.shared";
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
@@ -36,6 +37,7 @@ function AdminSettings() {
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
+  const canManageZones = accessQuery.data?.permissions.includes("zones.manage") ?? false;
 
   const settingsQuery = useQuery({ queryKey: ["store-settings"], queryFn: () => load() });
   const [draft, setDraft] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
@@ -52,12 +54,6 @@ function AdminSettings() {
     },
     onError: (error: Error) => toast.error(error.message || "Could not save the settings."),
   });
-
-  const setZone = (zone: ZoneKey, value: number) =>
-    setDraft((current) => ({
-      ...current,
-      zoneCharges: { ...current.zoneCharges, [zone]: value },
-    }));
 
   const togglePayment = (value: StoreSettings["paymentMethods"][number]) =>
     setDraft((current) => ({
@@ -88,44 +84,6 @@ function AdminSettings() {
             disabled={!canManage || mutation.isPending}
             className="space-y-6 disabled:opacity-70"
           >
-            <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-              <h2 className="font-display text-sm font-bold uppercase">Delivery charges</h2>
-              <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                <div>
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Default flat charge (৳)
-                  </Label>
-                  <Input
-                    className="mt-1.5 h-11"
-                    inputMode="numeric"
-                    value={String(draft.shippingFlat)}
-                    onChange={(event) =>
-                      setDraft((current) => ({
-                        ...current,
-                        shippingFlat: Number(event.target.value) || 0,
-                      }))
-                    }
-                  />
-                </div>
-                {DELIVERY_ZONES.map((zone) => (
-                  <div key={zone.value}>
-                    <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                      {zone.label} (৳)
-                    </Label>
-                    <Input
-                      className="mt-1.5 h-11"
-                      inputMode="numeric"
-                      value={String(draft.zoneCharges[zone.value])}
-                      onChange={(event) => setZone(zone.value, Number(event.target.value) || 0)}
-                    />
-                  </div>
-                ))}
-              </div>
-              <p className="mt-2 text-xs text-muted-foreground">
-                Checkout currently charges {formatBDT(draft.zoneCharges.inside_dhaka)} inside Dhaka.
-              </p>
-            </div>
-
             <div className="rounded-xl border border-border bg-card p-4 shadow-card">
               <h2 className="font-display text-sm font-bold uppercase">Payment methods</h2>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
@@ -192,6 +150,40 @@ function AdminSettings() {
               </div>
             </div>
 
+            {/* WHATSAPP SUPPORT — COMPLETED */}
+            <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+              <h2 className="font-display text-sm font-bold uppercase">WhatsApp support</h2>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Shown under the Place Order button at checkout.
+              </p>
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <div>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                    WhatsApp number
+                  </Label>
+                  <Input
+                    className="mt-1.5 h-11"
+                    value={draft.whatsappPhone}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, whatsappPhone: event.target.value }))
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Support message
+                  </Label>
+                  <Input
+                    className="mt-1.5 h-11"
+                    value={draft.whatsappMessage}
+                    onChange={(event) =>
+                      setDraft((current) => ({ ...current, whatsappMessage: event.target.value }))
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
             {/* ---- Couriers moved to their own screen ---- */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-card">
               <h2 className="font-display text-sm font-bold uppercase">Couriers</h2>
@@ -214,6 +206,17 @@ function AdminSettings() {
           ) : null}
         </form>
       )}
+
+      {/* CITY & DELIVERY ZONES — COMPLETED */}
+      <div className="mt-6 space-y-6">
+        <DeliveryZonesPanel canManage={canManageZones} />
+        <CitiesPanel canManage={canManageZones} />
+        {!canManageZones ? (
+          <p className="text-xs text-muted-foreground">
+            Only accounts with the “Manage delivery zones” permission can change cities and zones.
+          </p>
+        ) : null}
+      </div>
     </section>
   );
 }

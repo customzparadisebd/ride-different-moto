@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
-import { ProductGrid } from "@/components/ProductCard";
+import { ProductBrowser } from "@/components/ProductBrowser";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 
@@ -51,7 +51,8 @@ function ShopPage() {
       </p>
       <div className="mt-8">
         <SectionHeading eyebrow={`${products.length} products`} title="All Products" />
-        <ProductGrid products={products} />
+        {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
+        <ProductBrowser products={products} />
       </div>
     </div>
   );

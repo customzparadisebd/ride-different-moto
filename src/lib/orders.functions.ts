@@ -8,7 +8,6 @@ import {
   orderBulkStatusInput,
   orderFilterInput,
   orderStatusUpdateInput,
-  SHIPPING_FLAT_BDT,
 } from "./orders.shared";
 
 // ============================================================
@@ -24,20 +23,26 @@ import {
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => checkoutSubmitInput.parse(input))
   .handler(async ({ data }) => {
-    const [{ createOrder }, { priceCartLines }] = await Promise.all([
+    const [{ createOrder }, { priceCartLines }, checkoutConfig] = await Promise.all([
       import("./orders.server"),
       import("./storefront.server"),
+      import("./checkout-config.server"),
     ]);
 
     // SERVER-SIDE PRICING
     // Purpose: Reprices every line (including the colour variation) from the
-    //          database so a tampered cart cannot change what is charged.
+    //          database and resolves the delivery charge from the admin-managed
+    //          zone, so a tampered cart cannot change what is charged.
     // Status: COMPLETED
-    const items = await priceCartLines(data.items);
+    const [items, shipping] = await Promise.all([
+      priceCartLines(data.items),
+      checkoutConfig.resolveZoneCharge(data.deliveryZone),
+    ]);
+    await checkoutConfig.assertCityAllowed(data.city);
 
     const order = await createOrder(
       { ...data, items },
-      { source: "website", shipping: SHIPPING_FLAT_BDT, actorLabel: "customer" },
+      { source: "website", shipping, actorLabel: "customer" },
     );
     return { invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
   });
