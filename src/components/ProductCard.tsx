@@ -1,40 +1,65 @@
-import { useNavigate } from "@tanstack/react-router";
+// ============================================================
+// PRODUCT CARD / GRID
+// Purpose: Mobile-first product card for the database-backed
+//          catalogue — image, name, price, offer badge, colour
+//          indicator and Add to Cart. The card links to the
+//          dedicated product detail page.
+// Status: COMPLETED
+// Security: Presentation only; order prices come from the server.
+// ============================================================
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
-import type { Product } from "@/data/types";
 import { useCart } from "@/lib/cart";
 import { discountPercent, formatBDT } from "@/lib/format";
+import { basePrice, type StorefrontProduct } from "@/lib/storefront.shared";
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product }: { product: StorefrontProduct }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
-  const discount = discountPercent(product.price, product.offerPrice);
-  const activePrice = product.offerPrice ?? product.price;
+
+  const activePrice = basePrice(product);
+  const discount = discountPercent(product.price, product.offerPrice ?? undefined);
+  const hasColors = product.colors.length > 0;
 
   const handleAdd = () => {
     if (busy || !product.inStock) return;
+    // Products with colour variations must be configured on the detail page.
+    if (hasColors) {
+      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
+      return;
+    }
     setBusy(true);
-    addItem(product);
+    addItem({ product });
     toast.success("Added to cart", { description: product.name });
     window.setTimeout(() => setBusy(false), 600);
   };
 
   const handleOrderNow = () => {
     if (!product.inStock) return;
-    addItem(product);
+    if (hasColors) {
+      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
+      return;
+    }
+    addItem({ product });
     void navigate({ to: "/checkout" });
   };
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card">
-      <div className="relative">
+      <Link
+        to="/products/$slug"
+        params={{ slug: product.slug }}
+        className="relative block"
+        aria-label={`View ${product.name}`}
+      >
         <SafeImage
-          src={product.image}
-          alt={product.alt}
+          src={product.image ?? ""}
+          alt={product.name}
           width={800}
           height={800}
           sizes="(max-width: 640px) 50vw, 25vw"
@@ -46,6 +71,11 @@ export function ProductCard({ product }: { product: Product }) {
               -{discount}% Off
             </span>
           )}
+          {product.badgeText ? (
+            <span className="rounded bg-onyx px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-onyx-foreground">
+              {product.badgeText}
+            </span>
+          ) : null}
           {product.bestDeal && (
             <span className="rounded bg-onyx px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-onyx-foreground">
               Best Deal
@@ -62,11 +92,13 @@ export function ProductCard({ product }: { product: Product }) {
             Out of Stock
           </span>
         )}
-      </div>
+      </Link>
 
       <div className="flex flex-1 flex-col p-3">
         <h3 className="font-display text-base font-bold uppercase leading-tight tracking-wide">
-          {product.name}
+          <Link to="/products/$slug" params={{ slug: product.slug }} className="hover:text-primary">
+            {product.name}
+          </Link>
         </h3>
         {product.description && (
           <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
@@ -76,12 +108,30 @@ export function ProductCard({ product }: { product: Product }) {
           <span className="font-display text-lg font-bold text-primary">
             {formatBDT(activePrice)}
           </span>
-          {product.offerPrice && (
+          {discount !== null && (
             <span className="text-sm text-muted-foreground line-through">
               {formatBDT(product.price)}
             </span>
           )}
         </div>
+
+        {/* Colour indicator — full selection happens on the detail page. */}
+        {hasColors ? (
+          <div className="mt-2 flex items-center gap-1.5">
+            {product.colors.slice(0, 4).map((color) => (
+              <span
+                key={color.id}
+                title={color.name}
+                aria-label={color.name}
+                className="size-4 rounded-full border border-border"
+                style={{ backgroundColor: color.swatch }}
+              />
+            ))}
+            <span className="text-[11px] text-muted-foreground">
+              {product.colors.length} color{product.colors.length > 1 ? "s" : ""}
+            </span>
+          </div>
+        ) : null}
 
         <div className="mt-3 grid grid-cols-2 gap-2 pt-1">
           <Button
@@ -91,7 +141,7 @@ export function ProductCard({ product }: { product: Product }) {
             disabled={busy || !product.inStock}
             className="min-w-0"
           >
-            <span className="truncate">Add to Cart</span>
+            <span className="truncate">{hasColors ? "Choose Color" : "Add to Cart"}</span>
           </Button>
           <Button
             variant="red"
@@ -108,7 +158,7 @@ export function ProductCard({ product }: { product: Product }) {
   );
 }
 
-export function ProductGrid({ products }: { products: Product[] }) {
+export function ProductGrid({ products }: { products: StorefrontProduct[] }) {
   if (!products.length) {
     return (
       <p className="rounded-lg border border-border bg-secondary px-4 py-8 text-center text-sm text-muted-foreground">
