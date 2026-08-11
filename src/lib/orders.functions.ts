@@ -93,6 +93,10 @@ type AdminOrderRow = {
   payment_status: string;
   payment_method: string;
   courier_status: string;
+  courier_name: string | null;
+  consignment_id: string | null;
+  tracking_url: string | null;
+  shipment_at: string | null;
   order_source: string;
   created_at: string;
 };
