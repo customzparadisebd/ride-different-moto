@@ -114,7 +114,7 @@ export const listOrders = createServerFn({ method: "POST" })
 
     let query = context.supabase.from("orders").select(
       sel(
-        "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, order_source, created_at",
+        "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, courier_name, consignment_id, tracking_url, shipment_at, order_source, created_at",
       ),
       // exact count powers the pagination footer
       { count: "exact" },

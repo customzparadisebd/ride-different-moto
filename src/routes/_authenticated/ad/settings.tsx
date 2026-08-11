@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { adminHead } from "@/components/admin/AdminShell";
 import { CitiesPanel } from "@/components/admin/checkout/CitiesPanel";
 import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPanel";
+import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSettingsPanel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -206,6 +207,11 @@ function AdminSettings() {
           ) : null}
         </form>
       )}
+
+      {/* STEADFAST API INTEGRATION — COMPLETED (Admin / Super Admin only) */}
+      <div className="mt-6 space-y-6">
+        <SteadfastSettingsPanel />
+      </div>
 
       {/* CITY & DELIVERY ZONES — COMPLETED */}
       <div className="mt-6 space-y-6">
