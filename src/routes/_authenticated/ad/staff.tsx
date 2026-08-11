@@ -18,7 +18,12 @@ import { toast } from "sonner";
 
 import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
-import { listStaff, setStaffPermissions, setStaffRole, setStaffStatus } from "@/lib/admin.functions";
+import {
+  listStaff,
+  setStaffPermissions,
+  setStaffRole,
+  setStaffStatus,
+} from "@/lib/admin.functions";
 import {
   ACCESS_STATUSES,
   ASSIGNABLE_PERMISSIONS,
@@ -50,7 +55,8 @@ function StaffPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const staff = useQuery({ queryKey: ["admin-staff"], queryFn: () => listStaff({}) });
-  const canManageRoles = access.permissions.includes(PERMISSIONS.rolesManage) && access.isSuperAdmin;
+  const canManageRoles =
+    access.permissions.includes(PERMISSIONS.rolesManage) && access.isSuperAdmin;
 
   const run = async (userId: string, action: () => Promise<unknown>, message: string) => {
     setBusyId(userId);

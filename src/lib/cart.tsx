@@ -1,3 +1,11 @@
+// ============================================================
+// CART WITH PRODUCT VARIATIONS
+// Purpose: Local cart that keeps the selected colour variation and
+//          its variation price attached to every line.
+// Status: COMPLETED
+// Security: Display only. Prices are re-resolved server-side at
+//          checkout, so a tampered cart cannot change what is charged.
+// ============================================================
 import {
   createContext,
   useCallback,
@@ -8,27 +16,40 @@ import {
   type ReactNode,
 } from "react";
 
-import type { Product } from "@/data/types";
+import { colorPrice, type StorefrontColor, type StorefrontProduct } from "@/lib/storefront.shared";
 
 export type CartLine = {
-  id: string;
+  /** Unique per product + colour, so two colours of one product are separate lines. */
+  key: string;
+  productId: string;
   slug: string;
   name: string;
   image: string;
+  colorId: string | null;
+  colorName: string | null;
   unitPrice: number;
   qty: number;
 };
 
-const STORAGE_KEY = "czp-cart";
+const STORAGE_KEY = "czp-cart-v2";
 const MAX_QTY = 20;
+
+export const cartLineKey = (productId: string, colorId?: string | null) =>
+  `${productId}::${colorId ?? ""}`;
+
+type AddItemInput = {
+  product: StorefrontProduct;
+  color?: StorefrontColor | null;
+  qty?: number;
+};
 
 type CartContextValue = {
   lines: CartLine[];
   count: number;
   subtotal: number;
-  addItem: (product: Product) => void;
-  setQty: (id: string, qty: number) => void;
-  removeItem: (id: string) => void;
+  addItem: (input: AddItemInput) => void;
+  setQty: (key: string, qty: number) => void;
+  removeItem: (key: string) => void;
   clear: () => void;
 };
 
@@ -38,10 +59,9 @@ const isCartLine = (value: unknown): value is CartLine => {
   if (!value || typeof value !== "object") return false;
   const line = value as Record<string, unknown>;
   return (
-    typeof line["id"] === "string" &&
-    typeof line["slug"] === "string" &&
+    typeof line["key"] === "string" &&
+    typeof line["productId"] === "string" &&
     typeof line["name"] === "string" &&
-    typeof line["image"] === "string" &&
     typeof line["unitPrice"] === "number" &&
     typeof line["qty"] === "number"
   );
@@ -71,41 +91,44 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [lines, hydrated]);
 
-  const addItem = useCallback((product: Product) => {
+  const addItem = useCallback(({ product, color, qty = 1 }: AddItemInput) => {
+    const key = cartLineKey(product.id, color?.id ?? null);
     setLines((current) => {
-      const unitPrice = product.offerPrice ?? product.price;
-      const existing = current.find((line) => line.id === product.id);
+      const existing = current.find((line) => line.key === key);
       if (existing) {
         return current.map((line) =>
-          line.id === product.id ? { ...line, qty: Math.min(MAX_QTY, line.qty + 1) } : line,
+          line.key === key ? { ...line, qty: Math.min(MAX_QTY, line.qty + qty) } : line,
         );
       }
       return [
         ...current,
         {
-          id: product.id,
+          key,
+          productId: product.id,
           slug: product.slug,
           name: product.name,
-          image: product.image,
-          unitPrice,
-          qty: 1,
+          image: color?.image ?? product.image ?? "",
+          colorId: color?.id ?? null,
+          colorName: color?.name ?? null,
+          unitPrice: colorPrice(product, color),
+          qty: Math.min(MAX_QTY, Math.max(1, qty)),
         },
       ];
     });
   }, []);
 
-  const setQty = useCallback((id: string, qty: number) => {
+  const setQty = useCallback((key: string, qty: number) => {
     setLines((current) =>
       current
         .map((line) =>
-          line.id === id ? { ...line, qty: Math.max(0, Math.min(MAX_QTY, qty)) } : line,
+          line.key === key ? { ...line, qty: Math.max(0, Math.min(MAX_QTY, qty)) } : line,
         )
         .filter((line) => line.qty > 0),
     );
   }, []);
 
-  const removeItem = useCallback((id: string) => {
-    setLines((current) => current.filter((line) => line.id !== id));
+  const removeItem = useCallback((key: string) => {
+    setLines((current) => current.filter((line) => line.key !== key));
   }, []);
 
   const clear = useCallback(() => setLines([]), []);

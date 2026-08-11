@@ -23,13 +23,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   staff: "Staff",
 };
 
-export const ACCESS_STATUSES = [
-  "pending",
-  "approved",
-  "inactive",
-  "suspended",
-  "revoked",
-] as const;
+export const ACCESS_STATUSES = ["pending", "approved", "inactive", "suspended", "revoked"] as const;
 export type AccessStatus = (typeof ACCESS_STATUSES)[number];
 
 /** Customer-facing wording for account states (Active/Inactive/Pending/Suspended). */

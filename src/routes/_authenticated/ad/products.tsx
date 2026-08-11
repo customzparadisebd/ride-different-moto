@@ -21,6 +21,7 @@ import {
   type ProductFormValue,
   toProductInput,
 } from "@/components/admin/products/ProductForm";
+import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,10 @@ type ProductRow = {
   bike_compatibility: string[];
   is_universal: boolean;
   description: string | null;
+  details: string | null;
+  images: unknown;
+  badge_enabled: boolean;
+  badge_text: string | null;
   price: number | string;
   offer_price: number | string | null;
   stock_qty: number;
@@ -76,6 +81,10 @@ function toFormValue(row: ProductRow): ProductFormValue {
     bikeCompatibility: (row.bike_compatibility ?? []).join(", "),
     isUniversal: row.is_universal,
     description: row.description ?? "",
+    details: row.details ?? "",
+    images: Array.isArray(row.images) ? (row.images as string[]).join("\n") : "",
+    badgeEnabled: row.badge_enabled ?? false,
+    badgeText: row.badge_text ?? "",
     price: String(Number(row.price)),
     offerPrice: row.offer_price === null ? "" : String(Number(row.offer_price)),
     stockQty: String(row.stock_qty),
@@ -103,6 +112,8 @@ function AdminProducts() {
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [creating, setCreating] = useState(false);
+  // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
+  const [colorsFor, setColorsFor] = useState<ProductRow | null>(null);
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
@@ -225,6 +236,19 @@ function AdminProducts() {
             />
           </div>
         </div>
+      ) : null}
+
+      {colorsFor ? (
+        <ProductColorsPanel
+          key={colorsFor.id}
+          productId={colorsFor.id}
+          productName={colorsFor.name}
+          basePrice={
+            colorsFor.offer_price === null ? Number(colorsFor.price) : Number(colorsFor.offer_price)
+          }
+          canManage={canManage}
+          onClose={() => setColorsFor(null)}
+        />
       ) : null}
 
       {/* ---- Filters ---- */}
@@ -408,6 +432,9 @@ function AdminProducts() {
                         }}
                       >
                         Edit
+                      </Button>
+                      <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
+                        Colours
                       </Button>
                       <Button
                         variant="steel"

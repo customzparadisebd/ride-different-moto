@@ -29,7 +29,11 @@ export function PasswordInput({ className, id, ...props }: PasswordInputProps) {
         aria-controls={inputId}
         className="absolute inset-y-0 right-0 flex w-12 items-center justify-center text-muted-foreground transition-colors hover:text-foreground"
       >
-        {visible ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
+        {visible ? (
+          <EyeOff className="size-5" aria-hidden />
+        ) : (
+          <Eye className="size-5" aria-hidden />
+        )}
       </button>
     </div>
   );

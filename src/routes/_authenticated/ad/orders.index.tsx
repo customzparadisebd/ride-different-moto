@@ -38,9 +38,7 @@ export const Route = createFileRoute("/_authenticated/ad/orders/")({
   head: () => adminHead("Orders — CZP Ops"),
   validateSearch: (search: Record<string, unknown>): { status?: OrderStatus } => {
     const status = String(search["status"] ?? "");
-    return ORDER_STATUSES.includes(status as OrderStatus)
-      ? { status: status as OrderStatus }
-      : {};
+    return ORDER_STATUSES.includes(status as OrderStatus) ? { status: status as OrderStatus } : {};
   },
   component: AdminOrderList,
 });
@@ -212,7 +210,9 @@ function AdminOrderList() {
             variant="red"
             size="sm"
             disabled={bulkMutation.isPending}
-            onClick={() => bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })}
+            onClick={() =>
+              bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })
+            }
           >
             {bulkMutation.isPending ? "Updating…" : "Apply status"}
           </Button>
@@ -237,11 +237,30 @@ function AdminOrderList() {
                   />
                 </th>
               ) : null}
-              <SortHeader label="Invoice" column="invoice_no" active={sortBy} dir={sortDir} onSort={toggleSort} />
-              <SortHeader label="Date" column="created_at" active={sortBy} dir={sortDir} onSort={toggleSort} />
+              <SortHeader
+                label="Invoice"
+                column="invoice_no"
+                active={sortBy}
+                dir={sortDir}
+                onSort={toggleSort}
+              />
+              <SortHeader
+                label="Date"
+                column="created_at"
+                active={sortBy}
+                dir={sortDir}
+                onSort={toggleSort}
+              />
               <th className="p-3">Customer</th>
               <th className="p-3">Zone</th>
-              <SortHeader label="Total" column="total" active={sortBy} dir={sortDir} onSort={toggleSort} align="right" />
+              <SortHeader
+                label="Total"
+                column="total"
+                active={sortBy}
+                dir={sortDir}
+                onSort={toggleSort}
+                align="right"
+              />
               <th className="p-3 text-right">Due</th>
               <th className="p-3">Payment</th>
               <th className="p-3">Status</th>

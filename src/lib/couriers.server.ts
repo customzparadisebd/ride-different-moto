@@ -228,7 +228,11 @@ const steadfast: ProviderAdapter = {
   requires: ["API key", "API secret", "Base URL"],
   async ping(ctx) {
     if (!ctx.credentials.api_key || !ctx.credentials.api_secret || !ctx.baseUrl) {
-      return { ok: false, message: "Add the base URL, API key and API secret first.", status: "config" };
+      return {
+        ok: false,
+        message: "Add the base URL, API key and API secret first.",
+        status: "config",
+      };
     }
     const res = await request(`${ctx.baseUrl}/get_balance`, {
       method: "GET",
@@ -259,7 +263,9 @@ const steadfast: ProviderAdapter = {
       },
     });
     const consignment = (res.payload["consignment"] ?? {}) as Record<string, unknown>;
-    const consignmentId = consignment["consignment_id"] ? String(consignment["consignment_id"]) : null;
+    const consignmentId = consignment["consignment_id"]
+      ? String(consignment["consignment_id"])
+      : null;
     const trackingCode = (consignment["tracking_code"] as string) ?? null;
     const success = res.ok && Boolean(consignmentId);
     return {
@@ -267,7 +273,9 @@ const steadfast: ProviderAdapter = {
       status: String(res.status),
       message: success
         ? `Shipment created · consignment ${consignmentId}`
-        : String(res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`),
+        : String(
+            res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`,
+          ),
       consignmentId,
       trackingCode,
       trackingUrl: trackingCode ? `https://steadfast.com.bd/t/${trackingCode}` : null,
@@ -275,7 +283,8 @@ const steadfast: ProviderAdapter = {
     };
   },
   async track(ctx, ref) {
-    if (!ref.consignmentId) return { ok: false, courierStatus: "not_booked", raw: null, message: "No consignment yet." };
+    if (!ref.consignmentId)
+      return { ok: false, courierStatus: "not_booked", raw: null, message: "No consignment yet." };
     const res = await request(
       `${ctx.baseUrl}/status_by_cid/${encodeURIComponent(ref.consignmentId)}`,
       {
@@ -291,7 +300,9 @@ const steadfast: ProviderAdapter = {
       ok: res.ok,
       courierStatus: mapCourierStatus(raw),
       raw,
-      message: res.ok ? "Tracking updated." : `Courier returned HTTP ${res.status || "network error"}.`,
+      message: res.ok
+        ? "Tracking updated."
+        : `Courier returned HTTP ${res.status || "network error"}.`,
     };
   },
 };
@@ -314,11 +325,23 @@ async function pathaoToken(ctx: CourierContext) {
 }
 
 const pathao: ProviderAdapter = {
-  requires: ["Base URL", "Client ID (API key)", "Client secret", "Username", "Password", "store_id extra field"],
+  requires: [
+    "Base URL",
+    "Client ID (API key)",
+    "Client secret",
+    "Username",
+    "Password",
+    "store_id extra field",
+  ],
   async ping(ctx) {
     if (!ctx.baseUrl) return { ok: false, message: "Add the base URL first.", status: "config" };
     const token = await pathaoToken(ctx);
-    if (!token) return { ok: false, message: "Could not get a token — check the credentials.", status: "auth" };
+    if (!token)
+      return {
+        ok: false,
+        message: "Could not get a token — check the credentials.",
+        status: "auth",
+      };
     const res = await request(`${ctx.baseUrl}/aladdin/api/v1/city-list`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -326,12 +349,15 @@ const pathao: ProviderAdapter = {
     return {
       ok: res.ok,
       status: String(res.status),
-      message: res.ok ? "Connected successfully." : `Connection failed (HTTP ${res.status || "network"}).`,
+      message: res.ok
+        ? "Connected successfully."
+        : `Connection failed (HTTP ${res.status || "network"}).`,
     };
   },
   async book(ctx, order) {
     const storeId = ctx.extra["store_id"] ?? ctx.credentials.extra["store_id"];
-    if (!ctx.baseUrl || !storeId) return notConfigured("Add the base URL and a store_id extra field.");
+    if (!ctx.baseUrl || !storeId)
+      return notConfigured("Add the base URL and a store_id extra field.");
     const token = await pathaoToken(ctx);
     if (!token) return notConfigured("Courier authentication failed.");
     const res = await request(`${ctx.baseUrl}/aladdin/api/v1/orders`, {
@@ -359,17 +385,28 @@ const pathao: ProviderAdapter = {
       status: String(res.status),
       message: success
         ? `Shipment created · consignment ${consignmentId}`
-        : String(res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`),
+        : String(
+            res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`,
+          ),
       consignmentId,
       trackingCode: consignmentId,
-      trackingUrl: consignmentId ? `https://merchant.pathao.com/tracking?consignment_id=${consignmentId}` : null,
+      trackingUrl: consignmentId
+        ? `https://merchant.pathao.com/tracking?consignment_id=${consignmentId}`
+        : null,
       courierStatus: success ? "booked" : "failed",
     };
   },
   async track(ctx, ref) {
-    if (!ref.consignmentId) return { ok: false, courierStatus: "not_booked", raw: null, message: "No consignment yet." };
+    if (!ref.consignmentId)
+      return { ok: false, courierStatus: "not_booked", raw: null, message: "No consignment yet." };
     const token = await pathaoToken(ctx);
-    if (!token) return { ok: false, courierStatus: "booked", raw: null, message: "Courier authentication failed." };
+    if (!token)
+      return {
+        ok: false,
+        courierStatus: "booked",
+        raw: null,
+        message: "Courier authentication failed.",
+      };
     const res = await request(
       `${ctx.baseUrl}/aladdin/api/v1/orders/${encodeURIComponent(ref.consignmentId)}/info`,
       { method: "GET", headers: { Authorization: `Bearer ${token}` } },
@@ -380,7 +417,9 @@ const pathao: ProviderAdapter = {
       ok: res.ok,
       courierStatus: mapCourierStatus(raw),
       raw,
-      message: res.ok ? "Tracking updated." : `Courier returned HTTP ${res.status || "network error"}.`,
+      message: res.ok
+        ? "Tracking updated."
+        : `Courier returned HTTP ${res.status || "network error"}.`,
     };
   },
 };
@@ -398,7 +437,9 @@ const redx: ProviderAdapter = {
     return {
       ok: res.ok,
       status: String(res.status),
-      message: res.ok ? "Connected successfully." : `Connection failed (HTTP ${res.status || "network"}).`,
+      message: res.ok
+        ? "Connected successfully."
+        : `Connection failed (HTTP ${res.status || "network"}).`,
     };
   },
   async book(ctx, order) {
@@ -429,16 +470,21 @@ const redx: ProviderAdapter = {
       status: String(res.status),
       message: success
         ? `Shipment created · tracking ${trackingId}`
-        : String(res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`),
+        : String(
+            res.payload["message"] ?? `Courier returned HTTP ${res.status || "network error"}.`,
+          ),
       consignmentId: trackingId,
       trackingCode: trackingId,
-      trackingUrl: trackingId ? `https://redx.com.bd/track-a-parcel/?trackingId=${trackingId}` : null,
+      trackingUrl: trackingId
+        ? `https://redx.com.bd/track-a-parcel/?trackingId=${trackingId}`
+        : null,
       courierStatus: success ? "booked" : "failed",
     };
   },
   async track(ctx, ref) {
     const id = ref.trackingCode ?? ref.consignmentId;
-    if (!id) return { ok: false, courierStatus: "not_booked", raw: null, message: "No tracking id yet." };
+    if (!id)
+      return { ok: false, courierStatus: "not_booked", raw: null, message: "No tracking id yet." };
     const res = await request(`${ctx.baseUrl}/parcel/track/${encodeURIComponent(id)}`, {
       method: "GET",
       headers: { "API-ACCESS-TOKEN": `Bearer ${ctx.credentials.token ?? ""}` },
@@ -449,7 +495,9 @@ const redx: ProviderAdapter = {
       ok: res.ok,
       courierStatus: mapCourierStatus(raw),
       raw,
-      message: res.ok ? "Tracking updated." : `Courier returned HTTP ${res.status || "network error"}.`,
+      message: res.ok
+        ? "Tracking updated."
+        : `Courier returned HTTP ${res.status || "network error"}.`,
     };
   },
 };
@@ -460,7 +508,8 @@ const custom: ProviderAdapter = {
   ping: async () => ({
     ok: false,
     status: "unsupported",
-    message: "No API adapter for this provider yet — configuration is saved and charges still apply.",
+    message:
+      "No API adapter for this provider yet — configuration is saved and charges still apply.",
   }),
   book: async () => notConfigured("No API adapter for this provider yet. Book manually for now."),
   track: async () => ({

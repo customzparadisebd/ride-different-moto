@@ -55,9 +55,7 @@ export function OrderItemsTable({ items }: { items: AdminOrderItem[] }) {
               <td className="p-3 text-muted-foreground">{item.variant || "—"}</td>
               <td className="p-3 text-right">{formatBDT(Number(item.unit_price))}</td>
               <td className="p-3 text-right">{item.quantity}</td>
-              <td className="p-3 text-right font-semibold">
-                {formatBDT(Number(item.line_total))}
-              </td>
+              <td className="p-3 text-right font-semibold">{formatBDT(Number(item.line_total))}</td>
             </tr>
           ))}
         </tbody>

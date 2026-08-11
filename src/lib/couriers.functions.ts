@@ -121,7 +121,9 @@ export const saveCourier = createServerFn({ method: "POST" })
       if (clash.deleted_at) {
         courierId = clash.id;
       } else {
-        throw new Error(`The code "${data.slug}" is already used by ${clash.name}. Pick another code.`);
+        throw new Error(
+          `The code "${data.slug}" is already used by ${clash.name}. Pick another code.`,
+        );
       }
     }
 
@@ -132,7 +134,9 @@ export const saveCourier = createServerFn({ method: "POST" })
         .eq("id", courierId);
       if (error) {
         throw new Error(
-          error.code === "23505" ? "Another courier already uses that code." : "Could not save the courier.",
+          error.code === "23505"
+            ? "Another courier already uses that code."
+            : "Could not save the courier.",
         );
       }
     } else {
@@ -143,7 +147,9 @@ export const saveCourier = createServerFn({ method: "POST" })
         .single();
       if (error || !created) {
         throw new Error(
-          error?.code === "23505" ? "Another courier already uses that code." : "Could not create the courier.",
+          error?.code === "23505"
+            ? "Another courier already uses that code."
+            : "Could not create the courier.",
         );
       }
       courierId = created.id;
@@ -419,7 +425,9 @@ export const bookShipment = createServerFn({ method: "POST" })
       actorId: context.userId,
     });
     await auditFromActor(actor, {
-      action: result.success ? AUDIT_ACTIONS.courierShipmentCreated : AUDIT_ACTIONS.courierShipmentFailed,
+      action: result.success
+        ? AUDIT_ACTIONS.courierShipmentCreated
+        : AUDIT_ACTIONS.courierShipmentFailed,
       targetType: "order",
       targetId: order.id,
       targetLabel: order.invoice_no,

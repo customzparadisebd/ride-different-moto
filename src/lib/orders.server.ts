@@ -24,7 +24,12 @@ type CreateOptions = {
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
-export type CreatedOrder = { orderId: string; invoiceNo: string; total: number; duplicate: boolean };
+export type CreatedOrder = {
+  orderId: string;
+  invoiceNo: string;
+  total: number;
+  duplicate: boolean;
+};
 
 export async function createOrder(
   raw: CheckoutInput,
@@ -174,11 +179,17 @@ export async function assertStaff(
  * Keeps a profile row for the signed-in staff account and grants the owner
  * account the admin role the first time it signs in.
  */
-export async function ensureAccount(userId: string, email: string | null, fullName?: string | null) {
-  await supabaseAdmin.from("profiles").upsert(
-    { id: userId, email, full_name: fullName ?? null, updated_at: new Date().toISOString() },
-    { onConflict: "id" },
-  );
+export async function ensureAccount(
+  userId: string,
+  email: string | null,
+  fullName?: string | null,
+) {
+  await supabaseAdmin
+    .from("profiles")
+    .upsert(
+      { id: userId, email, full_name: fullName ?? null, updated_at: new Date().toISOString() },
+      { onConflict: "id" },
+    );
 
   if (email && email.toLowerCase() === ADMIN_BOOTSTRAP_EMAIL) {
     await supabaseAdmin

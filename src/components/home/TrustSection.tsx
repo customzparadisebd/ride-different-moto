@@ -7,10 +7,7 @@ export function TrustSection() {
       <SectionHeading eyebrow="Why riders choose us" title="Why Customz Paradise" />
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {trustPoints.map((point, index) => (
-          <li
-            key={point.title}
-            className="rounded-xl border border-border bg-card p-4 shadow-card"
-          >
+          <li key={point.title} className="rounded-xl border border-border bg-card p-4 shadow-card">
             <span className="font-display text-sm font-bold text-primary">
               {String(index + 1).padStart(2, "0")}
             </span>

@@ -47,13 +47,23 @@ const OPERATIONS: NavItem[] = [
   { to: "/ad/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
   { to: "/ad/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
   { to: "/ad/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
-  { to: "/ad/recycle-bin", label: "Recycle Bin", icon: RotateCcw, permission: PERMISSIONS.ordersView },
+  {
+    to: "/ad/recycle-bin",
+    label: "Recycle Bin",
+    icon: RotateCcw,
+    permission: PERMISSIONS.ordersView,
+  },
 ];
 
 const ADMINISTRATION: NavItem[] = [
   { to: "/ad/staff", label: "Staff & roles", icon: Users, permission: PERMISSIONS.staffManage },
   { to: "/ad/audit-log", label: "Audit log", icon: ScrollText, permission: PERMISSIONS.auditView },
-  { to: "/ad/settings", label: "Store settings", icon: Settings, permission: PERMISSIONS.productsManage },
+  {
+    to: "/ad/settings",
+    label: "Store settings",
+    icon: Settings,
+    permission: PERMISSIONS.productsManage,
+  },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
 ];
 

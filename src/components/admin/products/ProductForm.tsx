@@ -28,6 +28,10 @@ export type ProductFormValue = {
   bikeCompatibility: string;
   isUniversal: boolean;
   description: string;
+  details: string;
+  images: string;
+  badgeEnabled: boolean;
+  badgeText: string;
   price: string;
   offerPrice: string;
   stockQty: string;
@@ -46,6 +50,10 @@ export const emptyProductForm: ProductFormValue = {
   bikeCompatibility: "",
   isUniversal: false,
   description: "",
+  details: "",
+  images: "",
+  badgeEnabled: false,
+  badgeText: "",
   price: "",
   offerPrice: "",
   stockQty: "0",
@@ -68,6 +76,14 @@ export function toProductInput(value: ProductFormValue): ProductInput {
       .filter(Boolean),
     isUniversal: value.isUniversal,
     description: value.description.trim(),
+    details: value.details.trim(),
+    // One gallery image URL per line.
+    images: value.images
+      .split(/\r?\n/)
+      .map((entry) => entry.trim())
+      .filter(Boolean),
+    badgeEnabled: value.badgeEnabled,
+    badgeText: value.badgeText.trim(),
     price: Number(value.price) || 0,
     offerPrice: value.offerPrice.trim() ? Number(value.offerPrice) : null,
     stockQty: Number(value.stockQty) || 0,
@@ -185,12 +201,31 @@ export function ProductForm({
             onChange={(e) => set("stockQty", e.target.value)}
           />
         </Field>
+        <Field label="Custom badge text (optional)">
+          <Input
+            className="h-11"
+            placeholder="Top Seller"
+            value={value.badgeText}
+            onChange={(e) => set("badgeText", e.target.value)}
+          />
+        </Field>
         <Field label="Description" className="sm:col-span-2">
           <Textarea
             rows={3}
             value={value.description}
             onChange={(e) => set("description", e.target.value)}
           />
+        </Field>
+        <Field label="Full product details" className="sm:col-span-2">
+          <Textarea
+            rows={4}
+            placeholder="Materials, fitment notes, what is in the box…"
+            value={value.details}
+            onChange={(e) => set("details", e.target.value)}
+          />
+        </Field>
+        <Field label="Gallery image URLs (one per line)" className="sm:col-span-2">
+          <Textarea rows={3} value={value.images} onChange={(e) => set("images", e.target.value)} />
         </Field>
       </div>
 
@@ -200,10 +235,27 @@ export function ProductForm({
           checked={value.isActive}
           onChange={(v) => set("isActive", v)}
         />
-        <Check label="Universal fit" checked={value.isUniversal} onChange={(v) => set("isUniversal", v)} />
-        <Check label="Best deal" checked={value.isBestDeal} onChange={(v) => set("isBestDeal", v)} />
+        <Check
+          label="Universal fit"
+          checked={value.isUniversal}
+          onChange={(v) => set("isUniversal", v)}
+        />
+        <Check
+          label="Best deal"
+          checked={value.isBestDeal}
+          onChange={(v) => set("isBestDeal", v)}
+        />
         <Check label="Featured" checked={value.isFeatured} onChange={(v) => set("isFeatured", v)} />
-        <Check label="New arrival" checked={value.isNewArrival} onChange={(v) => set("isNewArrival", v)} />
+        <Check
+          label="New arrival"
+          checked={value.isNewArrival}
+          onChange={(v) => set("isNewArrival", v)}
+        />
+        <Check
+          label="Show custom badge"
+          checked={value.badgeEnabled}
+          onChange={(v) => set("badgeEnabled", v)}
+        />
       </div>
 
       {value.offerPrice.trim() && Number(value.price) > 0 ? (

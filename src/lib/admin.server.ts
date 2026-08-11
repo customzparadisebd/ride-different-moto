@@ -136,7 +136,10 @@ export async function resolveActor(
   const roles = (roleRows.data ?? []).map((r) => r.role as Role);
   const status = (profile.data?.access_status ?? "pending") as AccessStatus;
   const primaryRole = ROLE_RANK.find((r) => roles.includes(r)) ?? null;
-  const permissions = effectivePermissions(roles, (permRows.data ?? []).map((p) => p.permission));
+  const permissions = effectivePermissions(
+    roles,
+    (permRows.data ?? []).map((p) => p.permission),
+  );
   const isSuperAdmin = roles.includes("super_admin");
 
   const sessionId = claims?.session_id ?? null;
@@ -254,7 +257,10 @@ export async function writeAudit(entry: {
 
 export async function auditFromActor(
   actor: AdminActor,
-  entry: Omit<Parameters<typeof writeAudit>[0], "actorId" | "actorEmail" | "actorRole" | "sessionId">,
+  entry: Omit<
+    Parameters<typeof writeAudit>[0],
+    "actorId" | "actorEmail" | "actorRole" | "sessionId"
+  >,
 ) {
   await writeAudit({
     ...entry,

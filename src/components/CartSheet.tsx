@@ -13,14 +13,22 @@ import { site } from "@/data/site";
 import { useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/format";
 
-export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function CartSheet({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const { lines, subtotal, setQty, removeItem } = useCart();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b border-border p-4 text-left">
-          <SheetTitle className="font-display text-xl uppercase tracking-wide">Your Cart</SheetTitle>
+          <SheetTitle className="font-display text-xl uppercase tracking-wide">
+            Your Cart
+          </SheetTitle>
           <SheetDescription className="text-xs">
             Checkout in a minute — no account needed.
           </SheetDescription>
@@ -36,7 +44,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
             <ul className="space-y-3">
               {lines.map((line) => (
                 <li
-                  key={line.id}
+                  key={line.key}
                   className="grid grid-cols-[64px_minmax(0,1fr)] gap-3 rounded-lg border border-border p-2"
                 >
                   <img
@@ -49,6 +57,11 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                   />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{line.name}</p>
+                    {line.colorName ? (
+                      <p className="truncate text-xs text-muted-foreground">
+                        Color: {line.colorName}
+                      </p>
+                    ) : null}
                     <p className="text-sm text-primary">{formatBDT(line.unitPrice)}</p>
                     <div className="mt-2 flex items-center gap-2">
                       <Button
@@ -56,7 +69,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                         size="icon"
                         className="size-8"
                         aria-label={`Decrease quantity of ${line.name}`}
-                        onClick={() => setQty(line.id, line.qty - 1)}
+                        onClick={() => setQty(line.key, line.qty - 1)}
                       >
                         <Minus />
                       </Button>
@@ -66,7 +79,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                         size="icon"
                         className="size-8"
                         aria-label={`Increase quantity of ${line.name}`}
-                        onClick={() => setQty(line.id, line.qty + 1)}
+                        onClick={() => setQty(line.key, line.qty + 1)}
                       >
                         <Plus />
                       </Button>
@@ -75,7 +88,7 @@ export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
                         size="icon"
                         className="ml-auto size-8 text-muted-foreground"
                         aria-label={`Remove ${line.name}`}
-                        onClick={() => removeItem(line.id)}
+                        onClick={() => removeItem(line.key)}
                       >
                         <Trash2 />
                       </Button>

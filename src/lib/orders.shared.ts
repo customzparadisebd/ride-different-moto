@@ -67,7 +67,13 @@ export const checkoutInput = z.object({
     .string()
     .trim()
     .regex(/^(?:\+?880|0)1[3-9]\d{8}$/, "Enter a valid Bangladeshi mobile number"),
-  customerEmail: z.string().trim().email("Enter a valid email").max(200).optional().or(z.literal("")),
+  customerEmail: z
+    .string()
+    .trim()
+    .email("Enter a valid email")
+    .max(200)
+    .optional()
+    .or(z.literal("")),
   addressLine: z.string().trim().min(6, "Please enter your full address").max(400),
   city: z.string().trim().min(2, "Please enter your city").max(120),
   deliveryZone: z.enum(["inside_dhaka", "dhaka_suburb", "outside_dhaka"]).default("inside_dhaka"),
@@ -83,7 +89,14 @@ export const checkoutInput = z.object({
  */
 export const checkoutSubmitInput = checkoutInput.omit({ items: true }).extend({
   items: z
-    .array(z.object({ productId: z.string().trim().min(1).max(120), quantity: z.number().int().min(1).max(999) }))
+    .array(
+      z.object({
+        productId: z.string().trim().min(1).max(120),
+        /** Selected colour variation, revalidated and repriced server-side. */
+        colorId: z.string().uuid().optional(),
+        quantity: z.number().int().min(1).max(999),
+      }),
+    )
     .min(1, "Your cart is empty")
     .max(50),
 });

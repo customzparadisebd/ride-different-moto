@@ -4,10 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
 import { adminHead } from "@/components/admin/AdminShell";
-import {
-  type AdminOrderItem,
-  OrderItemsTable,
-} from "@/components/admin/orders/OrderItemsTable";
+import { type AdminOrderItem, OrderItemsTable } from "@/components/admin/orders/OrderItemsTable";
 import { CourierPanel } from "@/components/admin/orders/CourierPanel";
 import {
   OrderManagePanel,
@@ -17,11 +14,7 @@ import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions";
-import {
-  deliveryZoneLabel,
-  paymentMethodLabel,
-  statusLabel,
-} from "@/lib/orders.shared";
+import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
   head: () => adminHead("Order — CZP Ops"),

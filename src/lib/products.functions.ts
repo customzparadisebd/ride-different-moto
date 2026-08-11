@@ -22,6 +22,12 @@ import {
   productStockInput,
   productToggleInput,
   productUpdateInput,
+  productColorInput,
+  productColorListInput,
+  productColorDeleteInput,
+  productColorReorderInput,
+  PRODUCT_COLOR_COLUMNS,
+  productColorToRow,
   PRODUCT_COLUMNS,
   PRODUCT_TOGGLE_COLUMNS,
   productToRow,
@@ -50,9 +56,11 @@ export const listProducts = createServerFn({ method: "POST" })
     if (data.stock === "in_stock") query = query.gt("stock_qty", 0);
 
     const from = (data.page - 1) * data.pageSize;
-    const { data: rows, count, error } = await query
-      .order("updated_at", { ascending: false })
-      .range(from, from + data.pageSize - 1);
+    const {
+      data: rows,
+      count,
+      error,
+    } = await query.order("updated_at", { ascending: false }).range(from, from + data.pageSize - 1);
     if (error) throw new Error("Could not load products.");
 
     return { rows: rows ?? [], total: count ?? 0, page: data.page, pageSize: data.pageSize };
@@ -105,7 +113,10 @@ export const updateProduct = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!before.data) throw new Error("Product not found.");
 
-    const { error } = await context.supabase.from("products").update(productToRow(rest)).eq("id", id);
+    const { error } = await context.supabase
+      .from("products")
+      .update(productToRow(rest))
+      .eq("id", id);
     if (error) {
       throw new Error(
         error.message.includes("duplicate")
@@ -277,3 +288,106 @@ export const purgeProduct = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ============================================================
+// PRODUCT COLOR VARIATIONS (admin)
+// Purpose: Manage colour options per product — add, edit, enable /
+//          disable, colour-specific price and image, reorder, remove.
+// Status: COMPLETED
+// Security: Reads need orders.view, writes need products.manage, and
+//          every write is recorded in the append-only audit log.
+// ============================================================
+export const listProductColors = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => productColorListInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
+
+    const { data: rows, error } = await context.supabase
+      .from("product_colors")
+      .select(PRODUCT_COLOR_COLUMNS)
+      .eq("product_id", data.productId)
+      .order("sort_order");
+    if (error) throw new Error("Could not load the colour options.");
+    return { rows: rows ?? [] };
+  });
+
+export const saveProductColor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => productColorInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const row = productColorToRow(data);
+    if (data.id) {
+      const { error } = await context.supabase.from("product_colors").update(row).eq("id", data.id);
+      if (error) throw new Error("Could not save the colour option.");
+    } else {
+      const { error } = await context.supabase.from("product_colors").insert(row);
+      if (error) throw new Error("Could not add the colour option.");
+    }
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product_color",
+      targetId: data.id ?? data.productId,
+      targetLabel: data.name,
+      newValue: row,
+    });
+    return { ok: true };
+  });
+
+export const deleteProductColor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => productColorDeleteInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const before = await context.supabase
+      .from("product_colors")
+      .select(PRODUCT_COLOR_COLUMNS)
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!before.data) throw new Error("Colour option not found.");
+
+    const { error } = await context.supabase.from("product_colors").delete().eq("id", data.id);
+    if (error) throw new Error("Could not remove the colour option.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product_color",
+      targetId: data.id,
+      targetLabel: before.data.name,
+      oldValue: before.data,
+    });
+    return { ok: true };
+  });
+
+export const reorderProductColors = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => productColorReorderInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.productsManage,
+    );
+
+    await Promise.all(
+      data.ids.map((id, index) =>
+        context.supabase
+          .from("product_colors")
+          .update({ sort_order: index })
+          .eq("id", id)
+          .eq("product_id", data.productId),
+      ),
+    );
+    return { ok: true };
+  });

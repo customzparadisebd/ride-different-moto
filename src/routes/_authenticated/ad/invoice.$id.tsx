@@ -57,12 +57,8 @@ function InvoicePage() {
 
       <header className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">
-            {site.name}
-          </h1>
-          <p className="text-xs uppercase tracking-widest text-muted-foreground">
-            {site.tagline}
-          </p>
+          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">{site.name}</h1>
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">{site.tagline}</p>
           <p className="mt-1 text-xs text-muted-foreground">{site.phoneDisplay}</p>
         </div>
         <div className="text-right">
@@ -100,9 +96,7 @@ function InvoicePage() {
           {order.transaction_id ? (
             <p className="text-sm text-muted-foreground">TxID: {order.transaction_id}</p>
           ) : null}
-          <p className="text-sm text-muted-foreground">
-            Source: {statusLabel(order.order_source)}
-          </p>
+          <p className="text-sm text-muted-foreground">Source: {statusLabel(order.order_source)}</p>
           {order.courier_name ? (
             <p className="text-sm text-muted-foreground">
               Courier: {order.courier_name}

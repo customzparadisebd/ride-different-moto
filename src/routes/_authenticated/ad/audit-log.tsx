@@ -64,7 +64,8 @@ function AuditLogPage() {
               {row.target_type ? ` · ${row.target_type}` : ""}
             </p>
             <p className="text-xs text-muted-foreground">
-              IP {row.ip_address ?? "n/a"} · {row.user_agent ? row.user_agent.slice(0, 80) : "device n/a"}
+              IP {row.ip_address ?? "n/a"} ·{" "}
+              {row.user_agent ? row.user_agent.slice(0, 80) : "device n/a"}
             </p>
             {row.old_value || row.new_value ? (
               <pre className="mt-2 overflow-x-auto rounded bg-secondary p-2 text-[11px] leading-snug">

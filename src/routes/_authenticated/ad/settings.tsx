@@ -20,11 +20,7 @@ import { Label } from "@/components/ui/label";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess } from "@/lib/orders.functions";
 import { DELIVERY_ZONES, PAYMENT_METHODS } from "@/lib/orders.shared";
-import {
-  DEFAULT_STORE_SETTINGS,
-  type StoreSettings,
-  type ZoneKey,
-} from "@/lib/settings.shared";
+import { DEFAULT_STORE_SETTINGS, type StoreSettings, type ZoneKey } from "@/lib/settings.shared";
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
@@ -212,8 +208,8 @@ function AdminSettings() {
 
           {!canManage ? (
             <p className="text-xs text-muted-foreground">
-              You can view these settings but only accounts with the “Manage products &
-              settings” permission can change them.
+              You can view these settings but only accounts with the “Manage products & settings”
+              permission can change them.
             </p>
           ) : null}
         </form>
