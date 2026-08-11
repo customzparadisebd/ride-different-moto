@@ -1,5 +1,6 @@
-import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { Mail, Phone, Store } from "lucide-react";
 
+import { WhatsAppIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
 
@@ -14,7 +15,7 @@ export function ContactSection() {
           rel="noopener noreferrer"
           className="group rounded-xl border border-border bg-card p-4 shadow-card transition-colors hover:border-primary/60"
         >
-          <MessageCircle className="size-5 text-primary" aria-hidden="true" />
+          <WhatsAppIcon className="size-5 text-brand-whatsapp" />
           <p className="mt-2 font-display text-base font-bold uppercase tracking-wide">WhatsApp</p>
           <p className="truncate text-sm text-muted-foreground">{site.phoneDisplay}</p>
         </a>
@@ -35,7 +36,7 @@ export function ContactSection() {
           <p className="truncate text-sm text-muted-foreground">{site.email}</p>
         </a>
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-          <MapPin className="size-5 text-primary" aria-hidden="true" />
+          <Store className="size-5 text-primary" aria-hidden="true" />
           <p className="mt-2 font-display text-base font-bold uppercase tracking-wide">Location</p>
           <p className="text-sm text-muted-foreground">{site.address}</p>
         </div>

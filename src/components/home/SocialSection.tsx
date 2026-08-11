@@ -1,13 +1,13 @@
-import { Facebook, Instagram, Youtube } from "lucide-react";
 import type { ComponentType } from "react";
 
+import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
 
-const icons: Record<string, ComponentType<{ className?: string }>> = {
-  Facebook,
-  Instagram,
-  YouTube: Youtube,
+const icons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> = {
+  Facebook: { Icon: FacebookIcon, color: "text-brand-facebook" },
+  Instagram: { Icon: InstagramIcon, color: "text-brand-instagram" },
+  YouTube: { Icon: YouTubeIcon, color: "text-brand-youtube" },
 };
 
 export function SocialSection() {
@@ -16,7 +16,8 @@ export function SocialSection() {
       <SectionHeading eyebrow="Follow the builds" title="Social Media" />
       <div className="grid gap-3 sm:grid-cols-3">
         {site.socials.map((social) => {
-          const Icon = icons[social.name];
+          const entry = icons[social.name];
+          const Icon = entry?.Icon;
           return (
             <a
               key={social.name}
@@ -25,7 +26,7 @@ export function SocialSection() {
               rel="noopener noreferrer"
               className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 shadow-card transition-colors hover:border-primary/60"
             >
-              {Icon && <Icon className="size-5 shrink-0 text-primary" />}
+              {Icon && <Icon className={`size-5 shrink-0 ${entry?.color ?? "text-primary"}`} />}
               <span className="min-w-0">
                 <span className="block font-display text-base font-bold uppercase tracking-wide">
                   {social.name}
