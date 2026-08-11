@@ -433,11 +433,7 @@ function AdminProducts() {
                       >
                         Edit
                       </Button>
-                      <Button
-                        variant="steel"
-                        size="sm"
-                        onClick={() => setColorsFor(row)}
-                      >
+                      <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
                         Colours
                       </Button>
                       <Button

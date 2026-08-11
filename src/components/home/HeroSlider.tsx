@@ -68,9 +68,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-4 pb-16 sm:p-8 sm:pb-20">
-                  {slide.label && (
-                    <p className="eyebrow text-white/70">{slide.label}</p>
-                  )}
+                  {slide.label && <p className="eyebrow text-white/70">{slide.label}</p>}
                   <h2 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">
                     {slide.bikeName}
                   </h2>

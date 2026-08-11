@@ -25,7 +25,10 @@ export const Route = createFileRoute("/new-arrivals")({
   },
   component: NewArrivalsPage,
   errorComponent: ({ error }) => (
-    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+    <p
+      role="alert"
+      className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground"
+    >
       {error.message}
     </p>
   ),

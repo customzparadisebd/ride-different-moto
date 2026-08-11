@@ -58,8 +58,9 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                   Customz Paradise BD — Operations
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {access.email} · {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "No role"}{" "}
-                  · {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
+                  {access.email} ·{" "}
+                  {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "No role"} ·{" "}
+                  {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
                 </p>
               </div>
             </div>

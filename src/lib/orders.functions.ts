@@ -107,19 +107,15 @@ export const listOrders = createServerFn({ method: "POST" })
       PERMISSIONS.ordersView,
     );
 
-    let query = context.supabase
-      .from("orders")
-      .select(
-        sel(
-          "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, order_source, created_at",
-        ),
-        // exact count powers the pagination footer
-        { count: "exact" },
-      );
+    let query = context.supabase.from("orders").select(
+      sel(
+        "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, order_source, created_at",
+      ),
+      // exact count powers the pagination footer
+      { count: "exact" },
+    );
 
-    query = data.deleted
-      ? query.not("deleted_at", "is", null)
-      : query.is("deleted_at", null);
+    query = data.deleted ? query.not("deleted_at", "is", null) : query.is("deleted_at", null);
 
     if (data.invoiceNo) query = query.ilike("invoice_no", likeTerm(data.invoiceNo));
     if (data.customerName) query = query.ilike("customer_name", likeTerm(data.customerName));

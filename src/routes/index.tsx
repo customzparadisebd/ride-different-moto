@@ -53,7 +53,10 @@ export const Route = createFileRoute("/")({
   },
   component: Index,
   errorComponent: ({ error }) => (
-    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+    <p
+      role="alert"
+      className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground"
+    >
       {error.message}
     </p>
   ),
@@ -104,10 +107,7 @@ function Index() {
 
       <SectionBoundary label="all-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading
-            eyebrow={`${products.length} products`}
-            title="All Products"
-          />
+          <SectionHeading eyebrow={`${products.length} products`} title="All Products" />
           <ProductGrid products={products} />
         </section>
       </SectionBoundary>

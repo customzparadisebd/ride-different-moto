@@ -85,7 +85,11 @@ export const recordSignOut = createServerFn({ method: "POST" })
         .update({ revoked_at: new Date().toISOString(), revoked_by: actor.userId })
         .eq("session_id", actor.sessionId);
     }
-    await auditFromActor(actor, { action: AUDIT_ACTIONS.logout, targetType: "account", targetId: actor.userId });
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.logout,
+      targetType: "account",
+      targetId: actor.userId,
+    });
     return { ok: true };
   });
 
@@ -172,9 +176,8 @@ export const completeMfaEnrolment = createServerFn({ method: "POST" })
 export const regenerateBackupCodes = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolveActor, assertAccess, auditFromActor, issueBackupCodes } = await import(
-      "./admin.server"
-    );
+    const { resolveActor, assertAccess, auditFromActor, issueBackupCodes } =
+      await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor);
     const codes = await issueBackupCodes(actor.userId);
@@ -248,9 +251,7 @@ export const listAuditLog = createServerFn({ method: "POST" })
       .limit(data.limit ?? 100);
     if (data.search) {
       const term = `%${data.search.replace(/[%_]/g, "")}%`;
-      query = query.or(
-        `action.ilike.${term},actor_email.ilike.${term},target_label.ilike.${term}`,
-      );
+      query = query.or(`action.ilike.${term},actor_email.ilike.${term},target_label.ilike.${term}`);
     }
     const { data: rows, error } = await query;
     if (error) throw new Error("Could not load the audit log.");
@@ -269,7 +270,9 @@ export const listStaff = createServerFn({ method: "POST" })
     const [profiles, roles, perms] = await Promise.all([
       supabaseAdmin
         .from("profiles")
-        .select("id, email, full_name, access_status, access_note, mfa_required, last_login_at, created_at")
+        .select(
+          "id, email, full_name, access_status, access_note, mfa_required, last_login_at, created_at",
+        )
         .order("created_at", { ascending: true }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
       supabaseAdmin.from("user_permissions").select("user_id, permission"),
@@ -355,10 +358,7 @@ export const setStaffRole = createServerFn({ method: "POST" })
     if (!actor.isSuperAdmin) throw new Error("Only a Super Admin can change roles.");
     if (data.userId === actor.userId) throw new Error("You cannot change your own role.");
 
-    const before = await supabaseAdmin
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", data.userId);
+    const before = await supabaseAdmin.from("user_roles").select("role").eq("user_id", data.userId);
     const profile = await supabaseAdmin
       .from("profiles")
       .select("email")
@@ -440,7 +440,9 @@ export const listAdminSessions = createServerFn({ method: "POST" })
     // Staff see only their own sessions; Super Admins see all.
     let query = supabaseAdmin
       .from("admin_sessions")
-      .select("id, user_id, session_id, ip_address, user_agent, created_at, last_seen_at, revoked_at")
+      .select(
+        "id, user_id, session_id, ip_address, user_agent, created_at, last_seen_at, revoked_at",
+      )
       .order("last_seen_at", { ascending: false })
       .limit(100);
     if (!actor.isSuperAdmin) query = query.eq("user_id", actor.userId);
@@ -499,9 +501,8 @@ export const revokeAdminSession = createServerFn({ method: "POST" })
 export const getAdminAccessInfo = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolveActor, assertAccess, backupCodeStats, OWNER_EMAIL } = await import(
-      "./admin.server"
-    );
+    const { resolveActor, assertAccess, backupCodeStats, OWNER_EMAIL } =
+      await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.securityManage);

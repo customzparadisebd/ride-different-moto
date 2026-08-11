@@ -171,7 +171,11 @@ export function ManualOrderForm({
         <legend className="px-1 font-display text-sm font-bold uppercase">Customer</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Full name">
-            <Input value={form.customerName} onChange={(e) => set("customerName")(e.target.value)} className="h-11" />
+            <Input
+              value={form.customerName}
+              onChange={(e) => set("customerName")(e.target.value)}
+              className="h-11"
+            />
           </Field>
           <Field label="Mobile number">
             <Input
@@ -191,7 +195,11 @@ export function ManualOrderForm({
             />
           </Field>
           <Field label="City">
-            <Input value={form.city} onChange={(e) => set("city")(e.target.value)} className="h-11" />
+            <Input
+              value={form.city}
+              onChange={(e) => set("city")(e.target.value)}
+              className="h-11"
+            />
           </Field>
           <Field label="Delivery zone">
             <SelectInput value={form.deliveryZone} onChange={set("deliveryZone")}>
@@ -203,7 +211,11 @@ export function ManualOrderForm({
             </SelectInput>
           </Field>
           <Field label="Full address">
-            <Input value={form.addressLine} onChange={(e) => set("addressLine")(e.target.value)} className="h-11" />
+            <Input
+              value={form.addressLine}
+              onChange={(e) => set("addressLine")(e.target.value)}
+              className="h-11"
+            />
           </Field>
         </div>
       </fieldset>
@@ -213,12 +225,18 @@ export function ManualOrderForm({
         <legend className="px-1 font-display text-sm font-bold uppercase">Products</legend>
         <div className="space-y-3">
           {items.map((line, index) => (
-            <div key={line.key} className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-6">
+            <div
+              key={line.key}
+              className="grid gap-3 rounded-lg border border-border p-3 sm:grid-cols-6"
+            >
               <div className="sm:col-span-2">
                 <Label className="text-xs uppercase tracking-wider text-muted-foreground">
                   Pick from catalog
                 </Label>
-                <SelectInput value={line.productId} onChange={(value) => pickProduct(line.key, value)}>
+                <SelectInput
+                  value={line.productId}
+                  onChange={(value) => pickProduct(line.key, value)}
+                >
                   <option value="">Custom item…</option>
                   {catalog.map((product) => (
                     <option key={product.id} value={product.id}>
@@ -269,7 +287,9 @@ export function ManualOrderForm({
                     type="button"
                     variant="steel"
                     size="sm"
-                    onClick={() => setItems((current) => current.filter((entry) => entry.key !== line.key))}
+                    onClick={() =>
+                      setItems((current) => current.filter((entry) => entry.key !== line.key))
+                    }
                   >
                     Remove item {index + 1}
                   </Button>
@@ -294,13 +314,28 @@ export function ManualOrderForm({
         <legend className="px-1 font-display text-sm font-bold uppercase">Payment & pricing</legend>
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Discount (৳)">
-            <Input value={form.discount} onChange={(e) => set("discount")(e.target.value)} inputMode="numeric" className="h-11" />
+            <Input
+              value={form.discount}
+              onChange={(e) => set("discount")(e.target.value)}
+              inputMode="numeric"
+              className="h-11"
+            />
           </Field>
           <Field label="Delivery charge (৳)">
-            <Input value={form.shipping} onChange={(e) => set("shipping")(e.target.value)} inputMode="numeric" className="h-11" />
+            <Input
+              value={form.shipping}
+              onChange={(e) => set("shipping")(e.target.value)}
+              inputMode="numeric"
+              className="h-11"
+            />
           </Field>
           <Field label="Advance paid (৳)">
-            <Input value={form.advancePaid} onChange={(e) => set("advancePaid")(e.target.value)} inputMode="numeric" className="h-11" />
+            <Input
+              value={form.advancePaid}
+              onChange={(e) => set("advancePaid")(e.target.value)}
+              inputMode="numeric"
+              className="h-11"
+            />
           </Field>
           <Field label="Payment method">
             <SelectInput value={form.paymentMethod} onChange={set("paymentMethod")}>
@@ -321,7 +356,11 @@ export function ManualOrderForm({
             </SelectInput>
           </Field>
           <Field label="Transaction ID (bKash/Nagad)">
-            <Input value={form.transactionId} onChange={(e) => set("transactionId")(e.target.value)} className="h-11" />
+            <Input
+              value={form.transactionId}
+              onChange={(e) => set("transactionId")(e.target.value)}
+              className="h-11"
+            />
           </Field>
           <Field label="Order status">
             <SelectInput value={form.status} onChange={set("status")}>

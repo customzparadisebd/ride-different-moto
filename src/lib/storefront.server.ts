@@ -43,7 +43,9 @@ const num = (value: unknown) => (value === null || value === undefined ? 0 : Num
 
 const galleryOf = (images: unknown, main: string | null): string[] => {
   const list = Array.isArray(images)
-    ? images.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+    ? images.filter(
+        (entry): entry is string => typeof entry === "string" && entry.trim().length > 0,
+      )
     : [];
   const all = [main, ...list].filter((entry): entry is string => Boolean(entry));
   return Array.from(new Set(all));

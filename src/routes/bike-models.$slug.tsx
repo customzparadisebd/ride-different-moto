@@ -16,7 +16,10 @@ export const Route = createFileRoute("/bike-models/$slug")({
   head: ({ loaderData, params }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Bike model unavailable — Customz Paradise BD" }, { name: "robots", content: "noindex" }],
+        meta: [
+          { title: "Bike model unavailable — Customz Paradise BD" },
+          { name: "robots", content: "noindex" },
+        ],
       };
     }
     const title = `${loaderData.model.name} Modification Parts — Customz Paradise BD`;
@@ -35,7 +38,10 @@ export const Route = createFileRoute("/bike-models/$slug")({
   },
   component: BikeModelPage,
   errorComponent: ({ error }) => (
-    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+    <p
+      role="alert"
+      className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground"
+    >
       {error.message}
     </p>
   ),

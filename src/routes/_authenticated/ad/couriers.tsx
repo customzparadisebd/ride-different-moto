@@ -26,11 +26,7 @@ import {
   setCourierActive,
   testCourierConnection,
 } from "@/lib/couriers.functions";
-import {
-  emptyCourier,
-  type CourierInput,
-  type CourierSummary,
-} from "@/lib/couriers.shared";
+import { emptyCourier, type CourierInput, type CourierSummary } from "@/lib/couriers.shared";
 import { formatBDT } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/ad/couriers")({

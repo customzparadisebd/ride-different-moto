@@ -225,11 +225,7 @@ export function ProductForm({
           />
         </Field>
         <Field label="Gallery image URLs (one per line)" className="sm:col-span-2">
-          <Textarea
-            rows={3}
-            value={value.images}
-            onChange={(e) => set("images", e.target.value)}
-          />
+          <Textarea rows={3} value={value.images} onChange={(e) => set("images", e.target.value)} />
         </Field>
       </div>
 
@@ -239,10 +235,22 @@ export function ProductForm({
           checked={value.isActive}
           onChange={(v) => set("isActive", v)}
         />
-        <Check label="Universal fit" checked={value.isUniversal} onChange={(v) => set("isUniversal", v)} />
-        <Check label="Best deal" checked={value.isBestDeal} onChange={(v) => set("isBestDeal", v)} />
+        <Check
+          label="Universal fit"
+          checked={value.isUniversal}
+          onChange={(v) => set("isUniversal", v)}
+        />
+        <Check
+          label="Best deal"
+          checked={value.isBestDeal}
+          onChange={(v) => set("isBestDeal", v)}
+        />
         <Check label="Featured" checked={value.isFeatured} onChange={(v) => set("isFeatured", v)} />
-        <Check label="New arrival" checked={value.isNewArrival} onChange={(v) => set("isNewArrival", v)} />
+        <Check
+          label="New arrival"
+          checked={value.isNewArrival}
+          onChange={(v) => set("isNewArrival", v)}
+        />
         <Check
           label="Show custom badge"
           checked={value.badgeEnabled}

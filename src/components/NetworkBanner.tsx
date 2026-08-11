@@ -24,9 +24,16 @@ export function NetworkBanner() {
         <div className="mx-auto flex max-w-3xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-sm font-semibold">No Internet Connection</p>
-            <p className="text-xs opacity-80">Please check your internet connection and try again.</p>
+            <p className="text-xs opacity-80">
+              Please check your internet connection and try again.
+            </p>
           </div>
-          <Button variant="red" size="sm" onClick={() => void navigator.onLine} className="shrink-0">
+          <Button
+            variant="red"
+            size="sm"
+            onClick={() => void navigator.onLine}
+            className="shrink-0"
+          >
             Retry
           </Button>
         </div>

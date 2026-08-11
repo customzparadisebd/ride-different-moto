@@ -31,7 +31,10 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
   if (!models.length) return null;
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14" aria-labelledby="bike-models">
+    <section
+      className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14"
+      aria-labelledby="bike-models"
+    >
       <SectionHeading
         eyebrow="Find your fit"
         title="Explore by Bike Model"
@@ -69,7 +72,10 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
       <div className="overflow-hidden" ref={emblaRef}>
         <ul className="flex touch-pan-y gap-3 sm:gap-4">
           {models.map((model) => (
-            <li key={model.id} className="min-w-0 flex-[0_0_68%] sm:flex-[0_0_38%] lg:flex-[0_0_24%]">
+            <li
+              key={model.id}
+              className="min-w-0 flex-[0_0_68%] sm:flex-[0_0_38%] lg:flex-[0_0_24%]"
+            >
               <Link
                 to="/bike-models/$slug"
                 params={{ slug: model.slug }}

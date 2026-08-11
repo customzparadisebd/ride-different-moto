@@ -267,7 +267,10 @@ export function ProductColorsPanel({
       </div>
 
       {canManage ? (
-        <form onSubmit={submit} className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+        <form
+          onSubmit={submit}
+          className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2"
+        >
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">
               Colour name

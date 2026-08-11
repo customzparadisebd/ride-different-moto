@@ -142,8 +142,7 @@ function SecurityPage() {
     }
   };
 
-  const panelUrl =
-    typeof window === "undefined" ? "/ad" : `${window.location.origin}/ad`;
+  const panelUrl = typeof window === "undefined" ? "/ad" : `${window.location.origin}/ad`;
 
   return (
     <div className="space-y-8">
@@ -179,13 +178,17 @@ function SecurityPage() {
               <dd>Email + password, then authenticator code (TOTP)</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-wider text-muted-foreground">Owner account</dt>
+              <dt className="text-xs uppercase tracking-wider text-muted-foreground">
+                Owner account
+              </dt>
               <dd className="break-all">{accessInfo.data.ownerEmail}</dd>
             </div>
             <div>
               <dt className="text-xs uppercase tracking-wider text-muted-foreground">MFA status</dt>
               <dd>
-                {accessInfo.data.mfaEnrolled ? "Enrolled & enforced" : "Not enrolled — set up below"}
+                {accessInfo.data.mfaEnrolled
+                  ? "Enrolled & enforced"
+                  : "Not enrolled — set up below"}
               </dd>
             </div>
             <div>
@@ -201,8 +204,8 @@ function SecurityPage() {
               <li>Open the login page above and sign in with the owner email and password.</li>
               <li>
                 Lost your authenticator? Choose “Use a recovery code” on the verification step and
-                enter one saved backup code — it removes the old authenticator so you can enrol a new
-                device here.
+                enter one saved backup code — it removes the old authenticator so you can enrol a
+                new device here.
               </li>
               <li>
                 Forgot the password? Use “Forgot password” on the login page; the reset link goes to
@@ -256,8 +259,8 @@ function SecurityPage() {
         ) : enrolling ? (
           <div className="mt-4 space-y-3">
             <p className="text-sm">
-              Scan this QR code with Google Authenticator, Authy or 1Password, then enter the 6-digit
-              code.
+              Scan this QR code with Google Authenticator, Authy or 1Password, then enter the
+              6-digit code.
             </p>
             <img
               src={enrolling.qr}
@@ -296,7 +299,13 @@ function SecurityPage() {
             <p className="text-sm">
               Recovery codes remaining: <strong>{overview.data?.backupCodes.remaining ?? 0}</strong>
             </p>
-            <Button variant="steel" size="sm" className="mt-2" disabled={busy} onClick={() => void newCodes()}>
+            <Button
+              variant="steel"
+              size="sm"
+              className="mt-2"
+              disabled={busy}
+              onClick={() => void newCodes()}
+            >
               Generate new recovery codes
             </Button>
           </div>

@@ -55,16 +55,16 @@ export function parseStoreSettingsRow(row: {
 }): StoreSettings {
   const zones = (row.zone_charges ?? {}) as Partial<Record<ZoneKey, number>>;
   const methods = Array.isArray(row.payment_methods)
-    ? (row.payment_methods as string[]).filter((m) =>
-        PAYMENT_METHODS.some((p) => p.value === m),
-      )
+    ? (row.payment_methods as string[]).filter((m) => PAYMENT_METHODS.some((p) => p.value === m))
     : [];
   const parsed = storeSettingsInput.safeParse({
     shippingFlat: Number(row.shipping_flat),
     zoneCharges: {
       inside_dhaka: Number(zones.inside_dhaka ?? DEFAULT_STORE_SETTINGS.zoneCharges.inside_dhaka),
       dhaka_suburb: Number(zones.dhaka_suburb ?? DEFAULT_STORE_SETTINGS.zoneCharges.dhaka_suburb),
-      outside_dhaka: Number(zones.outside_dhaka ?? DEFAULT_STORE_SETTINGS.zoneCharges.outside_dhaka),
+      outside_dhaka: Number(
+        zones.outside_dhaka ?? DEFAULT_STORE_SETTINGS.zoneCharges.outside_dhaka,
+      ),
     },
     paymentMethods: methods.length ? methods : DEFAULT_STORE_SETTINGS.paymentMethods,
     supportPhone: row.support_phone,

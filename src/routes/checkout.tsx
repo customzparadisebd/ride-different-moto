@@ -156,7 +156,10 @@ function CheckoutPage() {
           </Button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <form
+          onSubmit={handleSubmit}
+          className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px]"
+        >
           <div className="space-y-4">
             <Field
               id="customerName"
@@ -250,7 +253,9 @@ function CheckoutPage() {
           </div>
 
           <aside className="h-fit rounded-xl border border-border bg-card p-4 shadow-card">
-            <h2 className="font-display text-lg font-bold uppercase tracking-wide">Order Summary</h2>
+            <h2 className="font-display text-lg font-bold uppercase tracking-wide">
+              Order Summary
+            </h2>
             <ul className="mt-3 space-y-2 text-sm">
               {lines.map((line) => (
                 <li key={line.key} className="flex justify-between gap-3">

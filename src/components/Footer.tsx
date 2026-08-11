@@ -43,12 +43,18 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href={site.phoneHref} className="opacity-80 hover:text-primary hover:opacity-100">
+                <a
+                  href={site.phoneHref}
+                  className="opacity-80 hover:text-primary hover:opacity-100"
+                >
                   {site.phoneDisplay}
                 </a>
               </li>
               <li>
-                <a href={site.emailHref} className="break-all opacity-80 hover:text-primary hover:opacity-100">
+                <a
+                  href={site.emailHref}
+                  className="break-all opacity-80 hover:text-primary hover:opacity-100"
+                >
                   {site.email}
                 </a>
               </li>

@@ -107,15 +107,23 @@ function RecycleBin() {
     <section className="mx-auto max-w-5xl">
       <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Recycle Bin</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Deleted records stay here so nothing is lost by accident. Restore anytime; only a Super Admin
-        can delete permanently.
+        Deleted records stay here so nothing is lost by accident. Restore anytime; only a Super
+        Admin can delete permanently.
       </p>
 
       <div className="mt-4 flex gap-2">
-        <Button variant={tab === "products" ? "red" : "steel"} size="sm" onClick={() => setTab("products")}>
+        <Button
+          variant={tab === "products" ? "red" : "steel"}
+          size="sm"
+          onClick={() => setTab("products")}
+        >
           Products ({productRows.length})
         </Button>
-        <Button variant={tab === "orders" ? "red" : "steel"} size="sm" onClick={() => setTab("orders")}>
+        <Button
+          variant={tab === "orders" ? "red" : "steel"}
+          size="sm"
+          onClick={() => setTab("orders")}
+        >
           Orders ({orderRows.length})
         </Button>
       </div>

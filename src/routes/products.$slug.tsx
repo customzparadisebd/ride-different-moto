@@ -40,7 +40,9 @@ export const Route = createFileRoute("/products/$slug")({
   },
   head: ({ loaderData, params }) => {
     if (!loaderData) {
-      return { meta: [{ title: `Product — ${site.name}` }, { name: "robots", content: "noindex" }] };
+      return {
+        meta: [{ title: `Product — ${site.name}` }, { name: "robots", content: "noindex" }],
+      };
     }
     const title = `${loaderData.name} — ${site.name}`;
     const description =
@@ -240,7 +242,9 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
                         aria-hidden="true"
                       />
                       <span className="truncate">{entry.name}</span>
-                      {selected ? <Check className="size-4 text-primary" aria-hidden="true" /> : null}
+                      {selected ? (
+                        <Check className="size-4 text-primary" aria-hidden="true" />
+                      ) : null}
                     </button>
                   );
                 })}
@@ -285,7 +289,12 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
             >
               Add to Cart
             </Button>
-            <Button variant="red" size="touch" disabled={!product.inStock} onClick={() => add(true)}>
+            <Button
+              variant="red"
+              size="touch"
+              disabled={!product.inStock}
+              onClick={() => add(true)}
+            >
               Buy Now
             </Button>
           </div>
@@ -321,7 +330,13 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
   );
 }
 
-function Badge({ tone, children }: { tone: "red" | "dark" | "outline"; children: React.ReactNode }) {
+function Badge({
+  tone,
+  children,
+}: {
+  tone: "red" | "dark" | "outline";
+  children: React.ReactNode;
+}) {
   const styles = {
     red: "bg-gradient-red text-primary-foreground",
     dark: "bg-onyx text-onyx-foreground",

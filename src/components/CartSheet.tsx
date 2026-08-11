@@ -13,14 +13,22 @@ import { site } from "@/data/site";
 import { useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/format";
 
-export function CartSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+export function CartSheet({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+}) {
   const { lines, subtotal, setQty, removeItem } = useCart();
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
         <SheetHeader className="border-b border-border p-4 text-left">
-          <SheetTitle className="font-display text-xl uppercase tracking-wide">Your Cart</SheetTitle>
+          <SheetTitle className="font-display text-xl uppercase tracking-wide">
+            Your Cart
+          </SheetTitle>
           <SheetDescription className="text-xs">
             Checkout in a minute — no account needed.
           </SheetDescription>

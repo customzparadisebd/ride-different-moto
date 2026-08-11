@@ -115,7 +115,10 @@ function AdminCustomers() {
                   </td>
                 </tr>
                 {openPhone === customer.phone ? (
-                  <tr key={`${customer.phone}-orders`} className="border-b border-border bg-secondary/40">
+                  <tr
+                    key={`${customer.phone}-orders`}
+                    className="border-b border-border bg-secondary/40"
+                  >
                     <td colSpan={7} className="p-3">
                       <CustomerOrders phone={customer.phone} />
                     </td>
