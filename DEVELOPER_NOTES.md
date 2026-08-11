@@ -163,3 +163,12 @@ Status values: `Completed` / `In Progress` / `Pending`.
   All new tables have GRANTs + RLS scoped to approved staff permissions.
 - **Next:** Phase 3 port Hub layout/table components, Phase 4 re-skin existing screens,
   Phase 5 add Payments / Inventory / Reports / Invoices / Suppliers screens, Phase 6 verify.
+
+## Storefront product system (database-backed) — COMPLETED
+- Removed "Why Riders Choose Us" and "Customer Reviews" from the home page; replaced with a dynamic **All Products** section.
+- Home, Shop, New Arrivals and bike-model pages now read active products from the database (`storefront.functions.ts` / `storefront.server.ts`), not the static catalogue.
+- New product detail page `/products/:slug`: gallery, badges, stock, colour chips with colour-specific pricing, quantity, Add to Cart and Buy Now.
+- Cart lines carry `colorId` + `colorName` and the variation price; colour is shown in the cart, checkout summary and the admin order items.
+- `placeOrder` reprices every line server-side from the database (colour price delta included) — frontend prices are never trusted.
+- Admin: Products screen has a **Colours** panel (add/edit/enable/disable/price/image/reorder/remove) plus new product fields — full details, gallery image URLs and a custom badge.
+- Next steps: image uploads once storage is enabled; admin-managed hero/nav/social/reviews content.
