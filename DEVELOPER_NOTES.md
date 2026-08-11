@@ -172,3 +172,20 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - `placeOrder` reprices every line server-side from the database (colour price delta included) — frontend prices are never trusted.
 - Admin: Products screen has a **Colours** panel (add/edit/enable/disable/price/image/reorder/remove) plus new product fields — full details, gallery image URLs and a custom badge.
 - Next steps: image uploads once storage is enabled; admin-managed hero/nav/social/reviews content.
+
+## Checkout rebuild + product search/filters — COMPLETED
+- **Checkout:** email removed; required fields are name, Bangladesh mobile, city/district
+  (dropdown), full address, delivery zone. Notes optional. Payment is fixed to
+  **Cash on Delivery** (no dropdown). WhatsApp support button under Place Order.
+- **Cities:** new `cities` table seeded with all 64 districts. Admin can add, edit,
+  enable/disable and reorder cities (Settings → Cities).
+- **Delivery zones:** `delivery_zones` drives Inside Dhaka / Suburban Dhaka / Outside Dhaka,
+  all at ৳200 by default. Names, charges and active state are admin-editable; the checkout
+  total updates from the selected zone. Nothing is hardcoded — the server re-resolves the
+  charge and validates the city on `placeOrder`.
+- **WhatsApp:** support number and prefilled message are stored in store settings and
+  editable from the admin Settings screen.
+- **Search & filters:** new `ProductBrowser` on the All Products section (home + /shop) —
+  name search, bike model, category, min/max price and sorting, with a result count and
+  clear-filters action.
+- **Next:** image uploads once storage is enabled; admin-managed hero/nav/social content.

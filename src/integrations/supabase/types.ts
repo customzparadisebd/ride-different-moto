@@ -187,6 +187,33 @@ export type Database = {
           },
         ]
       }
+      cities: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       courier_api_logs: {
         Row: {
           action: string
@@ -1330,6 +1357,8 @@ export type Database = {
           support_email: string | null
           support_phone: string
           updated_at: string
+          whatsapp_message: string
+          whatsapp_phone: string
           zone_charges: Json
         }
         Insert: {
@@ -1343,6 +1372,8 @@ export type Database = {
           support_email?: string | null
           support_phone?: string
           updated_at?: string
+          whatsapp_message?: string
+          whatsapp_phone?: string
           zone_charges?: Json
         }
         Update: {
@@ -1356,6 +1387,8 @@ export type Database = {
           support_email?: string | null
           support_phone?: string
           updated_at?: string
+          whatsapp_message?: string
+          whatsapp_phone?: string
           zone_charges?: Json
         }
         Relationships: []

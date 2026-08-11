@@ -86,8 +86,12 @@ export const checkoutInput = z.object({
 /**
  * What the storefront actually submits: product ids + quantity only.
  * Prices are resolved server-side from the catalog so they can't be tampered with.
+ * Email is not collected on the storefront; payment is Cash on Delivery only.
  */
-export const checkoutSubmitInput = checkoutInput.omit({ items: true }).extend({
+export const checkoutSubmitInput = checkoutInput
+  .omit({ items: true, customerEmail: true, paymentMethod: true })
+  .extend({
+  paymentMethod: z.literal("cash_on_delivery").default("cash_on_delivery"),
   items: z
     .array(
       z.object({

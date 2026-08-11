@@ -74,6 +74,8 @@ export const saveStoreSettings = createServerFn({ method: "POST" })
         support_phone: data.supportPhone,
         support_email: data.supportEmail || null,
         low_stock_threshold: data.lowStockThreshold,
+        whatsapp_phone: data.whatsappPhone,
+        whatsapp_message: data.whatsappMessage,
       })
       .eq("id", "default");
     if (error) throw new Error("Could not save the store settings.");

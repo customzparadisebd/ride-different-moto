@@ -1,0 +1,2 @@
+UPDATE public.delivery_zones SET charge = 200, is_active = true WHERE slug IN ('inside_dhaka','dhaka_suburb','outside_dhaka');
+UPDATE public.delivery_zones SET name = 'Suburban Dhaka' WHERE slug = 'dhaka_suburb';

@@ -31,6 +31,9 @@ export const storeSettingsInput = z.object({
   supportPhone: z.string().trim().min(6).max(40),
   supportEmail: z.string().trim().email().max(200).optional().or(z.literal("")),
   lowStockThreshold: z.number().int().min(0).max(999),
+  // WHATSAPP SUPPORT — COMPLETED
+  whatsappPhone: z.string().trim().min(6).max(40),
+  whatsappMessage: z.string().trim().min(4).max(200),
 });
 
 export type StoreSettings = z.infer<typeof storeSettingsInput>;
@@ -42,6 +45,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   supportPhone: "+8801890722202",
   supportEmail: "",
   lowStockThreshold: 3,
+  whatsappPhone: "+8801890722202",
+  whatsappMessage: "Having any problem with your order? Contact us on WhatsApp.",
 };
 
 /** Normalises a database row (jsonb columns are `unknown`) into StoreSettings. */
@@ -52,6 +57,8 @@ export function parseStoreSettingsRow(row: {
   support_phone: string;
   support_email: string | null;
   low_stock_threshold: number;
+  whatsapp_phone?: string | null;
+  whatsapp_message?: string | null;
 }): StoreSettings {
   const zones = (row.zone_charges ?? {}) as Partial<Record<ZoneKey, number>>;
   const methods = Array.isArray(row.payment_methods)
@@ -70,9 +77,11 @@ export function parseStoreSettingsRow(row: {
     supportPhone: row.support_phone,
     supportEmail: row.support_email ?? "",
     lowStockThreshold: row.low_stock_threshold,
+    whatsappPhone: row.whatsapp_phone || DEFAULT_STORE_SETTINGS.whatsappPhone,
+    whatsappMessage: row.whatsapp_message || DEFAULT_STORE_SETTINGS.whatsappMessage,
   });
   return parsed.success ? parsed.data : DEFAULT_STORE_SETTINGS;
 }
 
 export const SETTINGS_COLUMNS =
-  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold";
+  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold, whatsapp_phone, whatsapp_message";

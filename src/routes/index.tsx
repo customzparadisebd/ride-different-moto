@@ -1,6 +1,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ProductBrowser } from "@/components/ProductBrowser";
 import { ProductGrid } from "@/components/ProductCard";
 import { SectionBoundary } from "@/components/SectionBoundary";
 import { AboutSection } from "@/components/home/AboutSection";
@@ -108,7 +109,8 @@ function Index() {
       <SectionBoundary label="all-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
           <SectionHeading eyebrow={`${products.length} products`} title="All Products" />
-          <ProductGrid products={products} />
+          {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
+          <ProductBrowser products={products} />
         </section>
       </SectionBoundary>
 
