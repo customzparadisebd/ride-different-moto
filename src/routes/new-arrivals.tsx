@@ -1,7 +1,8 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
-import { getNewArrivals } from "@/data/catalog";
+import { storefrontProductsQuery } from "@/lib/storefront.queries";
 
 const title = "New Arrivals — Customz Paradise BD";
 const description =
@@ -19,10 +20,26 @@ export const Route = createFileRoute("/new-arrivals")({
     ],
     links: [{ rel: "canonical", href: "/new-arrivals" }],
   }),
+  loader: ({ context }) => {
+    void context.queryClient.ensureQueryData(storefrontProductsQuery());
+  },
   component: NewArrivalsPage,
+  errorComponent: ({ error }) => (
+    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      {error.message}
+    </p>
+  ),
+  notFoundComponent: () => (
+    <p className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      No new arrivals yet.
+    </p>
+  ),
 });
 
 function NewArrivalsPage() {
+  const { data: products } = useSuspenseQuery(storefrontProductsQuery());
+  const newArrivals = products.filter((product) => product.newArrival);
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <p className="eyebrow text-primary">Just landed</p>
@@ -30,7 +47,7 @@ function NewArrivalsPage() {
         New Arrivals
       </h1>
       <div className="mt-8">
-        <ProductGrid products={getNewArrivals()} />
+        <ProductGrid products={newArrivals} />
       </div>
     </div>
   );

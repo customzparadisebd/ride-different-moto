@@ -86,7 +86,12 @@ function CheckoutPage() {
     const parsed = checkoutSubmitInput.safeParse({
       ...form,
       idempotencyKey,
-      items: lines.map((line) => ({ productId: line.id, quantity: line.qty })),
+      items: lines.map((line) => ({
+        productId: line.productId,
+        // Selected colour travels with the line so the order keeps the variation.
+        ...(line.colorId ? { colorId: line.colorId } : {}),
+        quantity: line.qty,
+      })),
     });
     if (!parsed.success) {
       const fieldErrors: Record<string, string> = {};
@@ -248,9 +253,16 @@ function CheckoutPage() {
             <h2 className="font-display text-lg font-bold uppercase tracking-wide">Order Summary</h2>
             <ul className="mt-3 space-y-2 text-sm">
               {lines.map((line) => (
-                <li key={line.id} className="flex justify-between gap-3">
-                  <span className="min-w-0 truncate">
-                    {line.name} <span className="text-muted-foreground">x{line.qty}</span>
+                <li key={line.key} className="flex justify-between gap-3">
+                  <span className="min-w-0">
+                    <span className="block truncate">
+                      {line.name} <span className="text-muted-foreground">x{line.qty}</span>
+                    </span>
+                    {line.colorName ? (
+                      <span className="block truncate text-xs text-muted-foreground">
+                        Color: {line.colorName}
+                      </span>
+                    ) : null}
                   </span>
                   <span className="shrink-0">{formatBDT(line.unitPrice * line.qty)}</span>
                 </li>

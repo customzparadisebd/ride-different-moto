@@ -24,29 +24,16 @@ import {
 export const placeOrder = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => checkoutSubmitInput.parse(input))
   .handler(async ({ data }) => {
-    const [{ createOrder }, { getProducts }] = await Promise.all([
+    const [{ createOrder }, { priceCartLines }] = await Promise.all([
       import("./orders.server"),
-      import("@/data/catalog"),
+      import("./storefront.server"),
     ]);
 
-    const catalog = getProducts();
-    const items = data.items.map((line) => {
-      const product = catalog.find((p) => p.id === line.productId);
-      if (!product || !product.inStock) {
-        throw new Error("One of the products in your cart is no longer available.");
-      }
-      return {
-        productId: product.id,
-        productSlug: product.slug,
-        productName: product.name,
-        // Snapshot of what the customer saw, so admin order views keep the
-        // right image and variant text even if the catalog changes later.
-        imageUrl: product.image,
-        variant: product.category,
-        unitPrice: product.offerPrice ?? product.price,
-        quantity: line.quantity,
-      };
-    });
+    // SERVER-SIDE PRICING
+    // Purpose: Reprices every line (including the colour variation) from the
+    //          database so a tampered cart cannot change what is charged.
+    // Status: COMPLETED
+    const items = await priceCartLines(data.items);
 
     const order = await createOrder(
       { ...data, items },

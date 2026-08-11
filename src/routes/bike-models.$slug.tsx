@@ -1,13 +1,16 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { SafeImage } from "@/components/SafeImage";
-import { getBikeModel, getProductsForBike } from "@/data/catalog";
+import { getBikeModel } from "@/data/catalog";
+import { storefrontProductsQuery } from "@/lib/storefront.queries";
 
 export const Route = createFileRoute("/bike-models/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params, context }) => {
     const model = getBikeModel(params.slug);
     if (!model) throw notFound();
+    void context.queryClient.ensureQueryData(storefrontProductsQuery());
     return { model };
   },
   head: ({ loaderData, params }) => {
@@ -31,12 +34,21 @@ export const Route = createFileRoute("/bike-models/$slug")({
     };
   },
   component: BikeModelPage,
+  errorComponent: ({ error }) => (
+    <p role="alert" className="mx-auto max-w-xl px-4 py-20 text-center text-sm text-muted-foreground">
+      {error.message}
+    </p>
+  ),
   notFoundComponent: ModelNotFound,
 });
 
 function BikeModelPage() {
   const { model } = Route.useLoaderData();
-  const products = getProductsForBike(model.slug);
+  const { data: catalog } = useSuspenseQuery(storefrontProductsQuery());
+  // Model page shows universal parts plus anything listing this bike.
+  const products = catalog.filter(
+    (product) => product.universal || product.bikeCompatibility.includes(model.name),
+  );
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10">
