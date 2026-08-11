@@ -1,7 +1,21 @@
 import { Link } from "@tanstack/react-router";
+import type { ComponentType } from "react";
+import { Mail, Phone, Store } from "lucide-react";
 
+import {
+  FacebookIcon,
+  InstagramIcon,
+  WhatsAppIcon,
+  YouTubeIcon,
+} from "@/components/BrandIcons";
 import { Logo } from "@/components/Logo";
 import { legalLinks, navLinks, site } from "@/data/site";
+
+const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> = {
+  Facebook: { Icon: FacebookIcon, color: "text-brand-facebook" },
+  Instagram: { Icon: InstagramIcon, color: "text-brand-instagram" },
+  YouTube: { Icon: YouTubeIcon, color: "text-brand-youtube" },
+};
 
 export function Footer() {
   return (
@@ -37,49 +51,60 @@ export function Footer() {
                   href={site.whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="opacity-80 hover:text-primary hover:opacity-100"
+                  className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
                 >
-                  WhatsApp
+                  <WhatsAppIcon className="size-4 shrink-0 text-brand-whatsapp" />
+                  <span>WhatsApp</span>
                 </a>
               </li>
               <li>
                 <a
                   href={site.phoneHref}
-                  className="opacity-80 hover:text-primary hover:opacity-100"
+                  className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
                 >
-                  {site.phoneDisplay}
+                  <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
+                  <span>{site.phoneDisplay}</span>
                 </a>
               </li>
               <li>
                 <a
                   href={site.emailHref}
-                  className="break-all opacity-80 hover:text-primary hover:opacity-100"
+                  className="flex items-start gap-2 opacity-80 hover:text-primary hover:opacity-100"
                 >
-                  {site.email}
+                  <Mail className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                  <span className="break-all">{site.email}</span>
                 </a>
               </li>
             </ul>
 
             <h2 className="eyebrow mt-6 text-primary">Store</h2>
-            <p className="mt-3 text-sm opacity-80">{site.address}</p>
+            <p className="mt-3 flex items-start gap-2 text-sm opacity-80">
+              <Store className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+              <span>{site.address}</span>
+            </p>
             <p className="text-sm text-primary">Physical Store Coming Soon</p>
           </div>
 
           <div>
             <h2 className="eyebrow text-primary">Social</h2>
             <ul className="mt-4 space-y-2.5 text-sm">
-              {site.socials.map((social) => (
-                <li key={social.name}>
-                  <a
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="opacity-80 hover:text-primary hover:opacity-100"
-                  >
-                    {social.name}
-                  </a>
-                </li>
-              ))}
+              {site.socials.map((social) => {
+                const entry = socialIcons[social.name];
+                const Icon = entry?.Icon;
+                return (
+                  <li key={social.name}>
+                    <a
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
+                    >
+                      {Icon && <Icon className={`size-4 shrink-0 ${entry?.color}`} />}
+                      <span>{social.name}</span>
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
 
             <h2 className="eyebrow mt-6 text-primary">Legal</h2>
