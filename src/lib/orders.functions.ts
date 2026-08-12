@@ -324,7 +324,7 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
         .select("id", { count: "exact", head: true })
         .is("deleted_at", null);
 
-    const counters: Partial<Record<OrderTab, Promise<{ count: number | null }>>> = {
+    const counters: Record<string, PromiseLike<{ count: number | null }>> = {
       all: base(),
       confirmed: base().eq("status", "confirmed"),
       pending: base().eq("status", "pending"),
