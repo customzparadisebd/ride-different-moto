@@ -203,3 +203,11 @@ Status values: `Completed` / `In Progress` / `Pending`.
   status and submission date/time (order row, `courier_shipments`, tracking event, order
   timeline and `courier_api_logs`).
 - **Next:** SteadFast status webhook for automatic tracking updates.
+
+## Admin → Orders redesign (COMPLETED)
+- Status tab strip with live counts (All/Confirm/Today/Completed/Website/Page/Pending/New/Duplicate/Hold/Cancelled/Same phone).
+- Search + advanced filters (assigned user, created by, status, payment, source, courier, zone, dates, pinned, latest/oldest).
+- New table columns: SL, Invoice (copy/print/edit/activity/pin + source & print badges), Placed & Assigned, Date, Customer (copy/WhatsApp/fraud check/total orders), Products, Payment info, Courier, Amounts, Status.
+- Bulk actions: Print, Assign User, Change Status, Send to SteadFast. Exports: CSV / Excel / PDF / Print.
+- Server side: listOrders extended (items, labels, repeat-phone counts), new getOrderTabCounts, listOrderStaff, setOrderPinned, assignOrders, markOrdersPrinted, getOrderActivity — all permission-checked and audited.
+- Next: no "hold" order status or "page" source exists in the DB yet (tabs resolve to zero); no tax column on orders (shown as 0); fraud check is an external lookup link.
