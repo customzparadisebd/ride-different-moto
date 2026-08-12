@@ -1,36 +1,66 @@
 // ============================================================
-// ADMIN ORDER LIST
-// Purpose: Filterable, sortable, paginated order list with bulk
-//          status updates and CSV export of the filtered result.
+// ADMIN ORDER LIST (redesigned)
+// Purpose: Operational order board — status tabs with live counts,
+//          professional search/filter area, bulk actions (print,
+//          assign, change status, courier), a dense desktop table and
+//          stacked order cards on mobile.
 // Status: COMPLETED
 // Security: Filtering, paging and every write happen in permission
-//          checked server functions; the export only contains rows
-//          the signed-in account was already allowed to read.
+//          checked server functions; exports only contain rows the
+//          signed-in account was already allowed to read.
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { FileSpreadsheet, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { adminHead } from "@/components/admin/AdminShell";
+import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
+import {
+  AmountsCell,
+  AssignmentCell,
+  CourierCell,
+  CustomerCell,
+  InvoiceCell,
+  PaymentCell,
+  ProductsCell,
+} from "@/components/admin/orders/OrderCells";
 import {
   EMPTY_ORDER_FILTERS,
   OrderFilterBar,
   type OrderFilters,
 } from "@/components/admin/orders/OrderFilterBar";
+import { OrderStatusTabs } from "@/components/admin/orders/OrderStatusTabs";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { SteadfastBulkDialog } from "@/components/admin/orders/SteadfastBulkDialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { formatBDT } from "@/lib/format";
-import { bulkUpdateOrderStatus, getMyAccess, listOrders } from "@/lib/orders.functions";
 import {
-  deliveryZoneLabel,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { formatBDT } from "@/lib/format";
+import { exportOrdersCsv, exportOrdersExcel, printOrders } from "@/lib/orders-export";
+import {
+  assignOrders,
+  bulkUpdateOrderStatus,
+  getMyAccess,
+  getOrderTabCounts,
+  listOrders,
+  listOrderStaff,
+  markOrdersPrinted,
+  setOrderPinned,
+  type AdminOrderListRow,
+} from "@/lib/orders.functions";
+import {
   ORDER_STATUSES,
-  paymentMethodLabel,
   statusLabel,
   type OrderStatus,
+  type OrderTab,
 } from "@/lib/orders.shared";
 
 type SortBy = "created_at" | "total" | "invoice_no";
@@ -50,19 +80,28 @@ function AdminOrderList() {
   const fetchOrders = useServerFn(listOrders);
   const access = useServerFn(getMyAccess);
   const bulkUpdate = useServerFn(bulkUpdateOrderStatus);
+  const fetchCounts = useServerFn(getOrderTabCounts);
+  const fetchStaff = useServerFn(listOrderStaff);
+  const assign = useServerFn(assignOrders);
+  const markPrinted = useServerFn(markOrdersPrinted);
+  const pinOrder = useServerFn(setOrderPinned);
 
   const [filters, setFilters] = useState<OrderFilters>({
     ...EMPTY_ORDER_FILTERS,
     status: initialStatus ?? "",
   });
+  const [tab, setTab] = useState<OrderTab>("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
   const [sortBy, setSortBy] = useState<SortBy>("created_at");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [selected, setSelected] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<OrderStatus>("processing");
+  const [bulkAssignee, setBulkAssignee] = useState("");
+  const [activityOrder, setActivityOrder] = useState<AdminOrderListRow | null>(null);
   // SEND TO STEADFAST — confirmation modal state
   const [steadfastOpen, setSteadfastOpen] = useState(false);
+
+  const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
 
   // Only non-empty filters are sent, so the server-side Zod schema keeps defaults.
   const activeFilters = useMemo(
@@ -71,23 +110,50 @@ function AdminOrderList() {
   );
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  const countsQuery = useQuery({ queryKey: ["admin-order-tab-counts"], queryFn: () => fetchCounts({}) });
+  const staffQuery = useQuery({ queryKey: ["admin-order-staff"], queryFn: () => fetchStaff({}) });
   const ordersQuery = useQuery({
-    queryKey: ["admin-orders", activeFilters, page, pageSize, sortBy, sortDir],
+    queryKey: ["admin-orders", activeFilters, tab, page, pageSize, sortBy, sortDir],
     queryFn: () =>
-      fetchOrders({ data: { ...activeFilters, page, pageSize, sortBy, sortDir } as never }),
+      fetchOrders({ data: { ...activeFilters, tab, page, pageSize, sortBy, sortDir } as never }),
     placeholderData: (previous) => previous,
   });
+
+  const refreshOrders = () => {
+    void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+    void queryClient.invalidateQueries({ queryKey: ["admin-order-tab-counts"] });
+    void queryClient.invalidateQueries({ queryKey: ["admin-dashboard"] });
+  };
 
   const bulkMutation = useMutation({
     mutationFn: bulkUpdate,
     onSuccess: (result) => {
       toast.success(`${result.updated} order(s) updated`);
       setSelected([]);
-      void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
-      void queryClient.invalidateQueries({ queryKey: ["admin-dashboard"] });
+      refreshOrders();
     },
     onError: (error: Error) => toast.error(error.message || "Could not update the orders."),
   });
+
+  // BULK ASSIGN USER
+  const assignMutation = useMutation({
+    mutationFn: assign,
+    onSuccess: (result) => {
+      toast.success(`${result.updated} order(s) assigned`);
+      setSelected([]);
+      refreshOrders();
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not assign the orders."),
+  });
+
+  // PIN / UNPIN a single order
+  const pinMutation = useMutation({
+    mutationFn: pinOrder,
+    onSuccess: () => refreshOrders(),
+    onError: (error: Error) => toast.error(error.message || "Could not update the pin state."),
+  });
+
+  const printMutation = useMutation({ mutationFn: markPrinted, onSuccess: () => refreshOrders() });
 
   const rows = ordersQuery.data?.rows ?? [];
   const totalCount = ordersQuery.data?.count ?? 0;
@@ -97,6 +163,11 @@ function AdminOrderList() {
   const canShip = accessQuery.data?.permissions.includes("shipments.create") ?? false;
   const canSelect = canManage || canShip;
   const pageValue = rows.reduce((sum, row) => sum + Number(row.total), 0);
+  const courierOptions = useMemo(
+    () => [...new Set(rows.map((row) => row.courier_name).filter(Boolean) as string[])],
+    [rows],
+  );
+  const selectedRows = rows.filter((row) => selected.includes(row.id));
 
   const applyFilters = (next: OrderFilters) => {
     setFilters(next);
@@ -104,13 +175,18 @@ function AdminOrderList() {
     setSelected([]);
   };
 
+  const applyTab = (next: OrderTab) => {
+    setTab(next);
+    setPage(1);
+    setSelected([]);
+  };
+
   const toggleSort = (column: SortBy) => {
     if (sortBy === column) {
-      setSortDir(sortDir === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(column);
-      setSortDir("desc");
+      applyFilters({ ...filters, sortDir: sortDir === "asc" ? "desc" : "asc" });
+      return;
     }
+    setSortBy(column);
     setPage(1);
   };
 
@@ -121,96 +197,137 @@ function AdminOrderList() {
     return !row || !row.consignment_id;
   });
 
-  const exportCsv = () => {
-    const header = [
-      "Invoice",
-      "Date",
-      "Customer",
-      "Phone",
-      "City",
-      "Zone",
-      "Subtotal",
-      "Discount",
-      "Shipping",
-      "Advance paid",
-      "Total",
-      "Payment method",
-      "Payment status",
-      "Order status",
-      "Courier status",
-      "Source",
-    ];
-    const csvCell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
-    const body = rows.map((row) =>
-      [
-        row.invoice_no,
-        new Date(row.created_at).toLocaleString("en-GB"),
-        row.customer_name,
-        row.customer_phone,
-        row.city,
-        deliveryZoneLabel(row.delivery_zone),
-        row.subtotal,
-        row.discount,
-        row.shipping,
-        row.advance_paid ?? 0,
-        row.total,
-        paymentMethodLabel(row.payment_method),
-        row.payment_status,
-        row.status,
-        row.courier_status,
-        row.order_source,
-      ]
-        .map(csvCell)
-        .join(","),
-    );
-    const blob = new Blob([[header.map(csvCell).join(","), ...body].join("\n")], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `czp-orders-page-${page}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
+  const exportName = `czp-orders-page-${page}`;
 
   return (
-    <section className="mx-auto max-w-6xl">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Orders</h1>
+    <section className="mx-auto max-w-[1600px]">
+      {/* HEADER — title + top actions (Export, Order Status, Create Order) */}
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="truncate font-display text-2xl font-bold uppercase tracking-wide sm:text-3xl">
+            Orders
+          </h1>
           <p className="text-xs text-muted-foreground">
             {totalCount} order(s) match · {formatBDT(pageValue)} on this page
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="steel" size="touch" onClick={exportCsv} disabled={!rows.length}>
-            Export CSV
-          </Button>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          {/* EXPORT — CSV / Excel / PDF / Print */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="steel" size="touch" disabled={!rows.length}>
+                <FileSpreadsheet />
+                Export Excel
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => exportOrdersExcel(rows, exportName)}>
+                Excel (.xls)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportOrdersCsv(rows, exportName)}>
+                CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => printOrders(rows, "Orders (PDF)")}>
+                PDF (save from print)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => printOrders(rows, "Orders")}>Print</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {/* ORDER STATUS — jump straight to a status tab */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="steel" size="touch">
+                Order Status
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {ORDER_STATUSES.map((status) => (
+                <DropdownMenuItem
+                  key={status}
+                  onClick={() => applyFilters({ ...filters, status })}
+                >
+                  {statusLabel(status)}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuItem onClick={() => applyFilters({ ...filters, status: "" })}>
+                All statuses
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           {canCreate ? (
             <Button variant="red" size="touch" asChild>
-              <Link to="/ad/orders/new">New manual order</Link>
+              <Link to="/ad/orders/new">
+                <Plus />
+                Create Order
+              </Link>
             </Button>
           ) : null}
         </div>
       </div>
+
+      {/* STATUS TABS with live counts */}
+      <OrderStatusTabs value={tab} counts={countsQuery.data} onChange={applyTab} />
 
       <OrderFilterBar
         value={filters}
         onChange={applyFilters}
         onReset={() => applyFilters(EMPTY_ORDER_FILTERS)}
         isLoading={ordersQuery.isFetching}
+        staff={staffQuery.data ?? []}
+        couriers={courierOptions}
       />
 
       {canSelect && selected.length > 0 ? (
-        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-primary/40 bg-card p-3 shadow-card">
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/40 bg-card p-3 shadow-card">
           <span className="text-sm font-semibold">{selected.length} selected</span>
+          {/* BULK PRINT */}
+          <Button
+            variant="steel"
+            size="sm"
+            onClick={() => {
+              printOrders(selectedRows, "Selected orders");
+              if (canManage) printMutation.mutate({ data: { orderIds: selected } });
+            }}
+          >
+            Print
+          </Button>
+          {/* BULK ASSIGN USER */}
+          {canManage ? (
+            <>
+              <select
+                value={bulkAssignee}
+                onChange={(event) => setBulkAssignee(event.target.value)}
+                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                aria-label="Assign to"
+              >
+                <option value="">Unassign</option>
+                {(staffQuery.data ?? []).map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.label}
+                  </option>
+                ))}
+              </select>
+              <Button
+                variant="steel"
+                size="sm"
+                disabled={assignMutation.isPending}
+                onClick={() =>
+                  assignMutation.mutate({
+                    data: { orderIds: selected, assignedTo: bulkAssignee || null },
+                  })
+                }
+              >
+                {assignMutation.isPending ? "Assigning…" : "Assign User"}
+              </Button>
+            </>
+          ) : null}
           {canManage ? (
             <>
           <select
             value={bulkStatus}
             onChange={(event) => setBulkStatus(event.target.value as OrderStatus)}
             className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            aria-label="Change status to"
           >
             {ORDER_STATUSES.map((status) => (
               <option key={status} value={status}>
@@ -226,7 +343,7 @@ function AdminOrderList() {
               bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })
             }
           >
-            {bulkMutation.isPending ? "Updating…" : "Apply status"}
+            {bulkMutation.isPending ? "Updating…" : "Change Status"}
           </Button>
             </>
           ) : null}
@@ -262,12 +379,18 @@ function AdminOrderList() {
         }
       />
 
-      <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
-        <table className="w-full min-w-[1100px] text-sm">
+      <OrderActivityDialog
+        order={activityOrder}
+        onOpenChange={(open) => (open ? null : setActivityOrder(null))}
+      />
+
+      {/* DESKTOP TABLE — full column layout */}
+      <div className="mt-3 hidden overflow-x-auto rounded-xl border border-border bg-card shadow-card lg:block">
+        <table className="w-full min-w-[1500px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
               {canSelect ? (
-                <th className="p-3">
+                <th className="p-2.5">
                   <Checkbox
                     checked={allOnPageSelected}
                     onCheckedChange={(checked) =>
@@ -277,35 +400,34 @@ function AdminOrderList() {
                   />
                 </th>
               ) : null}
+              <th className="p-2.5">SL</th>
               <SortHeader
-                label="Invoice"
+                label="Invoice No"
                 column="invoice_no"
                 active={sortBy}
                 dir={sortDir}
                 onSort={toggleSort}
               />
+              <th className="p-2.5">Placed &amp; Assigned</th>
               <SortHeader
-                label="Date"
+                label="Date &amp; Time"
                 column="created_at"
                 active={sortBy}
                 dir={sortDir}
                 onSort={toggleSort}
               />
-              <th className="p-3">Customer</th>
-              <th className="p-3">Zone</th>
+              <th className="p-2.5">Customer</th>
+              <th className="p-2.5">Products</th>
+              <th className="p-2.5">Payment Info</th>
+              <th className="p-2.5">Courier</th>
               <SortHeader
-                label="Total"
+                label="Amounts"
                 column="total"
                 active={sortBy}
                 dir={sortDir}
                 onSort={toggleSort}
-                align="right"
               />
-              <th className="p-3 text-right">Due</th>
-              <th className="p-3">Payment</th>
-              <th className="p-3">Status</th>
-              <th className="p-3">Courier</th>
-              <th className="p-3">Source</th>
+              <th className="p-2.5">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -323,10 +445,15 @@ function AdminOrderList() {
                 </td>
               </tr>
             )}
-            {rows.map((order) => (
-              <tr key={order.id} className="border-b border-border last:border-0">
+            {rows.map((order, index) => (
+              <tr
+                key={order.id}
+                className={`border-b border-border align-top last:border-0 ${
+                  order.is_pinned ? "bg-primary/5" : ""
+                }`}
+              >
                 {canSelect ? (
-                  <td className="p-3">
+                  <td className="p-2.5">
                     <Checkbox
                       checked={selected.includes(order.id)}
                       onCheckedChange={(checked) =>
@@ -340,66 +467,119 @@ function AdminOrderList() {
                     />
                   </td>
                 ) : null}
-                <td className="p-3">
-                  <Link
-                    to="/ad/orders/$id"
-                    params={{ id: order.id }}
-                    className="font-semibold text-primary underline"
-                  >
-                    {order.invoice_no}
-                  </Link>
+                <td className="p-2.5 text-xs text-muted-foreground">
+                  {(page - 1) * pageSize + index + 1}
                 </td>
-                <td className="p-3 whitespace-nowrap text-muted-foreground">
+                <td className="p-2.5">
+                  <InvoiceCell
+                    order={order}
+                    canManage={canManage}
+                    onActivity={() => setActivityOrder(order)}
+                    onTogglePin={() =>
+                      pinMutation.mutate({
+                        data: { orderId: order.id, pinned: !order.is_pinned },
+                      })
+                    }
+                  />
+                </td>
+                <td className="p-2.5">
+                  <AssignmentCell order={order} />
+                </td>
+                <td className="whitespace-nowrap p-2.5 text-xs text-muted-foreground">
                   {new Date(order.created_at).toLocaleString("en-GB")}
                 </td>
-                <td className="p-3">
-                  {order.customer_name}
-                  <span className="block text-xs text-muted-foreground">
-                    {order.customer_phone} · {order.city}
-                  </span>
+                <td className="min-w-[240px] p-2.5">
+                  <CustomerCell order={order} />
                 </td>
-                <td className="p-3 text-muted-foreground">
-                  {deliveryZoneLabel(order.delivery_zone)}
+                <td className="min-w-[220px] p-2.5">
+                  <ProductsCell order={order} />
                 </td>
-                <td className="p-3 text-right font-semibold">{formatBDT(Number(order.total))}</td>
-                <td className="p-3 text-right text-muted-foreground">
-                  {formatBDT(Math.max(Number(order.total) - Number(order.advance_paid ?? 0), 0))}
+                <td className="p-2.5">
+                  <PaymentCell order={order} />
                 </td>
-                <td className="p-3">
-                  {paymentMethodLabel(order.payment_method)}
-                  <span className="mt-1 block">
-                    <StatusBadge value={order.payment_status} />
-                  </span>
+                <td className="p-2.5">
+                  <CourierCell order={order} />
                 </td>
-                <td className="p-3">
+                <td className="min-w-[170px] p-2.5">
+                  <AmountsCell order={order} />
+                </td>
+                <td className="p-2.5">
                   <StatusBadge value={order.status} />
                 </td>
-                <td className="p-3">
-                  <StatusBadge value={order.courier_status} />
-                  {order.consignment_id ? (
-                    <span className="mt-1 block text-xs text-muted-foreground">
-                      {order.courier_name ?? "SteadFast"} · {order.consignment_id}
-                      {order.shipment_at
-                        ? ` · ${new Date(order.shipment_at).toLocaleString("en-GB")}`
-                        : ""}
-                      {order.tracking_url ? (
-                        <a
-                          href={order.tracking_url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="ml-1 text-primary underline"
-                        >
-                          Track
-                        </a>
-                      ) : null}
-                    </span>
-                  ) : null}
-                </td>
-                <td className="p-3 text-muted-foreground">{statusLabel(order.order_source)}</td>
               </tr>
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* MOBILE / TABLET — stacked order cards with the same information */}
+      <div className="mt-3 space-y-3 lg:hidden">
+        {ordersQuery.isLoading ? (
+          <p className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            Loading orders…
+          </p>
+        ) : null}
+        {!ordersQuery.isLoading && rows.length === 0 ? (
+          <p className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+            No orders match these filters.
+          </p>
+        ) : null}
+        {rows.map((order, index) => (
+          <article
+            key={order.id}
+            className={`rounded-xl border border-border bg-card p-3 shadow-card ${
+              order.is_pinned ? "border-primary/50" : ""
+            }`}
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex min-w-0 items-start gap-2">
+                {canSelect ? (
+                  <Checkbox
+                    className="mt-1 shrink-0"
+                    checked={selected.includes(order.id)}
+                    onCheckedChange={(checked) =>
+                      setSelected((current) =>
+                        checked
+                          ? [...current, order.id]
+                          : current.filter((id) => id !== order.id),
+                      )
+                    }
+                    aria-label={`Select order ${order.invoice_no}`}
+                  />
+                ) : null}
+                <div className="min-w-0">
+                  <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                    #{(page - 1) * pageSize + index + 1}
+                  </span>
+                  <InvoiceCell
+                    order={order}
+                    canManage={canManage}
+                    onActivity={() => setActivityOrder(order)}
+                    onTogglePin={() =>
+                      pinMutation.mutate({
+                        data: { orderId: order.id, pinned: !order.is_pinned },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+              <div className="shrink-0 text-right">
+                <StatusBadge value={order.status} />
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {new Date(order.created_at).toLocaleString("en-GB")}
+                </p>
+              </div>
+            </div>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <CustomerCell order={order} />
+              <ProductsCell order={order} />
+              <PaymentCell order={order} />
+              <CourierCell order={order} />
+              <AmountsCell order={order} />
+              <AssignmentCell order={order} />
+            </div>
+          </article>
+        ))}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
