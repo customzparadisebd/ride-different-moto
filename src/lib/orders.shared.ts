@@ -148,6 +148,35 @@ export const orderFilterInput = z.object({
   deliveryZone: z.enum(["inside_dhaka", "dhaka_suburb", "outside_dhaka"]).optional(),
   dateFrom: optionalText(30),
   dateTo: optionalText(30),
+  /** Free-text search across customer name, phone and invoice number. */
+  search: optionalText(120),
+  /** Order source (website / admin / page …). */
+  source: optionalText(40),
+  /** Courier name as stored on the order. */
+  courier: optionalText(120),
+  /** Staff uuid, or "none" for unassigned orders. */
+  assignedTo: optionalText(60),
+  /** Staff uuid of the account that created the order. */
+  createdBy: optionalText(60),
+  /** Pinned filter: "" (all) | "pinned" | "unpinned". */
+  pinned: z.enum(["", "pinned", "unpinned"]).default(""),
+  /** Status tab (see ORDER_TABS). */
+  tab: z
+    .enum([
+      "all",
+      "confirmed",
+      "today",
+      "completed",
+      "website",
+      "page",
+      "pending",
+      "new",
+      "duplicate",
+      "hold",
+      "cancelled",
+      "same_phone",
+    ])
+    .default("all"),
   /** Pagination (1-based page number). */
   page: z.coerce.number().int().min(1).max(10_000).default(1),
   pageSize: z.coerce.number().int().min(10).max(200).default(25),
@@ -155,6 +184,47 @@ export const orderFilterInput = z.object({
   sortDir: z.enum(["asc", "desc"]).default("desc"),
   /** Recycle Bin view: when true, only soft-deleted orders are returned. */
   deleted: z.boolean().default(false),
+});
+
+/**
+ * ORDER STATUS TABS
+ * Compact status navigation above the order table. Each tab is resolved
+ * server-side (see listOrders / getOrderTabCounts) so counts and rows agree.
+ * TODO: "hold" and "page" have no dedicated status/source value in the
+ * database yet — they resolve to zero rows until those values are written.
+ */
+export const ORDER_TABS = [
+  { value: "all", label: "All Orders" },
+  { value: "confirmed", label: "Confirm" },
+  { value: "today", label: "Today Order" },
+  { value: "completed", label: "Completed" },
+  { value: "website", label: "Website Order" },
+  { value: "page", label: "Page Order" },
+  { value: "pending", label: "Pending" },
+  { value: "new", label: "New Order" },
+  { value: "duplicate", label: "Duplicate Orders" },
+  { value: "hold", label: "Hold" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "same_phone", label: "Same Phone" },
+] as const;
+
+export type OrderTab = (typeof ORDER_TABS)[number]["value"];
+
+/** Pin / unpin a single order (kept on top of the list). */
+export const orderPinInput = z.object({
+  orderId: z.string().uuid(),
+  pinned: z.boolean(),
+});
+
+/** Assign one or more orders to a staff account (null = unassign). */
+export const orderAssignInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(100),
+  assignedTo: z.string().uuid().nullable(),
+});
+
+/** Mark orders as printed (increments print_count, stamps printed_at). */
+export const orderPrintInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(100),
 });
 
 /** Recycle Bin actions on orders. */
