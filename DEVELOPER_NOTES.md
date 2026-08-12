@@ -211,3 +211,5 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - Bulk actions: Print, Assign User, Change Status, Send to SteadFast. Exports: CSV / Excel / PDF / Print.
 - Server side: listOrders extended (items, labels, repeat-phone counts), new getOrderTabCounts, listOrderStaff, setOrderPinned, assignOrders, markOrdersPrinted, getOrderActivity — all permission-checked and audited.
 - Next: no "hold" order status or "page" source exists in the DB yet (tabs resolve to zero); no tax column on orders (shown as 0); fraud check is an external lookup link.
+
+- Office map: compact near-square map card moved into the footer right column with "Customz Paradise BD" labelled pin (keyless embed) — COMPLETED.
