@@ -5,9 +5,14 @@ import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
   adminOrderInput,
   checkoutSubmitInput,
+  orderAssignInput,
   orderBulkStatusInput,
   orderFilterInput,
+  orderPinInput,
+  orderPrintInput,
   orderStatusUpdateInput,
+  ORDER_TABS,
+  type OrderTab,
 } from "./orders.shared";
 
 // ============================================================
@@ -77,28 +82,67 @@ export const getMyAccess = createServerFn({ method: "POST" })
 //          and the read runs as the signed-in user so RLS still
 //          restricts it to approved staff.
 // ============================================================
+export type AdminOrderItemRow = {
+  id: string;
+  product_name: string;
+  variant: string | null;
+  image_url: string | null;
+  unit_price: number;
+  quantity: number;
+  line_total: number;
+};
+
 type AdminOrderRow = {
   id: string;
   invoice_no: string;
   customer_name: string;
   customer_phone: string;
   city: string;
+  address_line: string;
   delivery_zone: string | null;
   subtotal: number;
   discount: number;
   shipping: number;
   advance_paid: number;
   total: number;
+  cod_amount: number;
   status: string;
   payment_status: string;
   payment_method: string;
+  transaction_id: string | null;
   courier_status: string;
   courier_name: string | null;
+  courier_tracking_id: string | null;
   consignment_id: string | null;
   tracking_url: string | null;
   shipment_at: string | null;
   order_source: string;
   created_at: string;
+  created_by: string | null;
+  assigned_to: string | null;
+  is_pinned: boolean;
+  is_duplicate: boolean;
+  printed_at: string | null;
+  print_count: number;
+  notes: string | null;
+  order_items: AdminOrderItemRow[];
+};
+
+/** Row shape the admin table consumes (server row + resolved labels). */
+export type AdminOrderListRow = AdminOrderRow & {
+  created_by_label: string | null;
+  assigned_to_label: string | null;
+  customer_order_count: number;
+};
+
+const LIST_COLUMNS =
+  "id, invoice_no, customer_name, customer_phone, city, address_line, delivery_zone, subtotal, discount, shipping, advance_paid, total, cod_amount, status, payment_status, payment_method, transaction_id, courier_status, courier_name, courier_tracking_id, consignment_id, tracking_url, shipment_at, order_source, created_at, created_by, assigned_to, is_pinned, is_duplicate, printed_at, print_count, notes, order_items(id, product_name, variant, image_url, unit_price, quantity, line_total)";
+
+/** Start of the current day as an ISO timestamp (used by the "Today" tab). */
+const startOfTodayISO = () => {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  return date.toISOString();
 };
 
 const sel = (columns: string): string => columns;
@@ -116,15 +160,69 @@ export const listOrders = createServerFn({ method: "POST" })
       PERMISSIONS.ordersView,
     );
 
+    // CUSTOMER ORDER COUNTS
+    // Purpose: powers the "Total orders" figure in the customer column and the
+    //          "Multiple orders with same phone" tab.
+    const phoneRows = await context.supabase
+      .from("orders")
+      .select("customer_phone")
+      .is("deleted_at", null)
+      .limit(5000)
+      .returns<{ customer_phone: string }[]>();
+    const phoneCounts: Record<string, number> = {};
+    for (const row of phoneRows.data ?? [])
+      phoneCounts[row.customer_phone] = (phoneCounts[row.customer_phone] ?? 0) + 1;
+    const repeatPhones = Object.entries(phoneCounts)
+      .filter(([, count]) => count > 1)
+      .map(([phone]) => phone);
+
     let query = context.supabase.from("orders").select(
-      sel(
-        "id, invoice_no, customer_name, customer_phone, city, delivery_zone, subtotal, discount, shipping, advance_paid, total, status, payment_status, payment_method, courier_status, courier_name, consignment_id, tracking_url, shipment_at, order_source, created_at",
-      ),
+      sel(LIST_COLUMNS),
       // exact count powers the pagination footer
       { count: "exact" },
     );
 
     query = data.deleted ? query.not("deleted_at", "is", null) : query.is("deleted_at", null);
+
+    // STATUS TAB — resolved server-side so counts and rows always agree.
+    switch (data.tab) {
+      case "confirmed":
+        query = query.eq("status", "confirmed");
+        break;
+      case "pending":
+        query = query.eq("status", "pending");
+        break;
+      case "cancelled":
+        query = query.in("status", ["cancelled", "returned"]);
+        break;
+      case "completed":
+        query = query.eq("status", "delivered");
+        break;
+      case "today":
+        query = query.gte("created_at", startOfTodayISO());
+        break;
+      case "website":
+        query = query.eq("order_source", "website");
+        break;
+      case "page":
+        query = query.eq("order_source", "page");
+        break;
+      case "new":
+        query = query.eq("status", "pending").eq("print_count", 0);
+        break;
+      case "duplicate":
+        query = query.eq("is_duplicate", true);
+        break;
+      case "hold":
+        // TODO: no "hold" order status exists in the database enum yet.
+        query = query.eq("status", "__hold__");
+        break;
+      case "same_phone":
+        query = query.in("customer_phone", repeatPhones.length ? repeatPhones : ["__none__"]);
+        break;
+      default:
+        break;
+    }
 
     if (data.invoiceNo) query = query.ilike("invoice_no", likeTerm(data.invoiceNo));
     if (data.customerName) query = query.ilike("customer_name", likeTerm(data.customerName));
@@ -134,6 +232,22 @@ export const listOrders = createServerFn({ method: "POST" })
     if (data.deliveryZone) query = query.eq("delivery_zone", data.deliveryZone);
     if (data.dateFrom) query = query.gte("created_at", `${data.dateFrom}T00:00:00.000Z`);
     if (data.dateTo) query = query.lte("created_at", `${data.dateTo}T23:59:59.999Z`);
+    if (data.source) query = query.eq("order_source", data.source);
+    if (data.courier) query = query.ilike("courier_name", likeTerm(data.courier));
+    if (data.createdBy) query = query.eq("created_by", data.createdBy);
+    if (data.assignedTo)
+      query =
+        data.assignedTo === "none"
+          ? query.is("assigned_to", null)
+          : query.eq("assigned_to", data.assignedTo);
+    if (data.pinned) query = query.eq("is_pinned", data.pinned === "pinned");
+    // Free-text search across name, phone and invoice number.
+    if (data.search) {
+      const term = likeTerm(data.search);
+      query = query.or(
+        `customer_name.ilike.${term},customer_phone.ilike.${term},invoice_no.ilike.${term}`,
+      );
+    }
 
     const from = (data.page - 1) * data.pageSize;
     const {
@@ -141,16 +255,268 @@ export const listOrders = createServerFn({ method: "POST" })
       count,
       error,
     } = await query
+      // Pinned orders always float to the top of the current page set.
+      .order("is_pinned", { ascending: false })
       .order(data.sortBy, { ascending: data.sortDir === "asc" })
       .range(from, from + data.pageSize - 1)
       .returns<AdminOrderRow[]>();
     if (error) throw new Error("Could not load orders.");
+
+    // Resolve created-by / assigned-to labels for the rows on this page only.
+    const staffIds = [
+      ...new Set(
+        (rows ?? []).flatMap((row) => [row.created_by, row.assigned_to]).filter(Boolean) as string[],
+      ),
+    ];
+    const staffLabels: Record<string, string> = {};
+    if (staffIds.length) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: profiles } = await supabaseAdmin
+        .from("profiles")
+        .select("id, full_name, email")
+        .in("id", staffIds);
+      for (const profile of profiles ?? [])
+        staffLabels[profile.id] = profile.full_name || profile.email || "Staff";
+    }
+
     return {
-      rows: rows ?? [],
+      rows: (rows ?? []).map<AdminOrderListRow>((row) => ({
+        ...row,
+        order_items: row.order_items ?? [],
+        created_by_label: row.created_by ? (staffLabels[row.created_by] ?? null) : null,
+        assigned_to_label: row.assigned_to ? (staffLabels[row.assigned_to] ?? null) : null,
+        customer_order_count: phoneCounts[row.customer_phone] ?? 1,
+      })),
       count: count ?? 0,
       page: data.page,
       pageSize: data.pageSize,
     };
+  });
+
+// ============================================================
+// ORDER TAB COUNTS
+// Purpose: Live counts for the status tab strip above the table.
+// Security: Requires orders.view; counts run as the signed-in user.
+// ============================================================
+export const getOrderTabCounts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
+
+    const phoneRows = await context.supabase
+      .from("orders")
+      .select("customer_phone")
+      .is("deleted_at", null)
+      .limit(5000)
+      .returns<{ customer_phone: string }[]>();
+    const phoneCounts: Record<string, number> = {};
+    for (const row of phoneRows.data ?? [])
+      phoneCounts[row.customer_phone] = (phoneCounts[row.customer_phone] ?? 0) + 1;
+    const repeatPhones = Object.entries(phoneCounts).filter(([, count]) => count > 1);
+
+    const base = () =>
+      context.supabase
+        .from("orders")
+        .select("id", { count: "exact", head: true })
+        .is("deleted_at", null);
+
+    const counters: Partial<Record<OrderTab, Promise<{ count: number | null }>>> = {
+      all: base(),
+      confirmed: base().eq("status", "confirmed"),
+      pending: base().eq("status", "pending"),
+      cancelled: base().in("status", ["cancelled", "returned"]),
+      completed: base().eq("status", "delivered"),
+      today: base().gte("created_at", startOfTodayISO()),
+      website: base().eq("order_source", "website"),
+      page: base().eq("order_source", "page"),
+      new: base().eq("status", "pending").eq("print_count", 0),
+      duplicate: base().eq("is_duplicate", true),
+    };
+
+    const entries = await Promise.all(
+      Object.entries(counters).map(async ([tab, promise]) => {
+        const result = await promise!;
+        return [tab, result.count ?? 0] as const;
+      }),
+    );
+
+    const counts = Object.fromEntries(entries) as Record<OrderTab, number>;
+    // TODO: "hold" has no matching order status in the database yet.
+    counts.hold = 0;
+    counts.same_phone = repeatPhones.reduce((sum, [, count]) => sum + count, 0);
+    for (const tab of ORDER_TABS) counts[tab.value] = counts[tab.value] ?? 0;
+    return counts;
+  });
+
+// ============================================================
+// STAFF OPTIONS FOR ORDER FILTERS / ASSIGNMENT
+// Purpose: Names for the "Assigned user" and "Created by" filters and
+//          for the bulk Assign User action.
+// Security: Requires orders.view. Only id/name/email are returned —
+//          never roles, statuses or any security fields.
+// ============================================================
+export const listOrderStaff = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
+    const { data } = await supabaseAdmin
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("access_status", "approved")
+      .order("full_name", { ascending: true });
+    return (data ?? []).map((row) => ({
+      id: row.id,
+      label: row.full_name || row.email || "Staff",
+    }));
+  });
+
+// ============================================================
+// PIN / ASSIGN / PRINT
+// Purpose: Row-level and bulk actions used by the redesigned list.
+// Security: All three require orders.manage and write an order event
+//          plus an audit entry.
+// ============================================================
+export const setOrderPinned = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => orderPinInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { logOrderEvent } = await import("./orders.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const { error } = await context.supabase
+      .from("orders")
+      .update({
+        is_pinned: data.pinned,
+        pinned_by: data.pinned ? context.userId : null,
+        pinned_at: data.pinned ? new Date().toISOString() : null,
+      })
+      .eq("id", data.orderId);
+    if (error) throw new Error("Could not update the pin state.");
+
+    await logOrderEvent(data.orderId, {
+      eventType: "order_updated",
+      message: data.pinned ? "Order pinned" : "Order unpinned",
+      actor: context.userId,
+      actorLabel: actor.email ?? "admin",
+    });
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.orderPinned,
+      targetType: "order",
+      targetId: data.orderId,
+      newValue: { pinned: data.pinned },
+    });
+    return { ok: true };
+  });
+
+export const assignOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => orderAssignInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { logOrderEvent } = await import("./orders.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const { error } = await context.supabase
+      .from("orders")
+      .update({ assigned_to: data.assignedTo })
+      .in("id", data.orderIds);
+    if (error) throw new Error("Could not assign the selected orders.");
+
+    await Promise.all(
+      data.orderIds.map((orderId) =>
+        logOrderEvent(orderId, {
+          eventType: "order_updated",
+          message: data.assignedTo ? "Order assigned" : "Order unassigned",
+          actor: context.userId,
+          actorLabel: actor.email ?? "admin",
+          metadata: { assignedTo: data.assignedTo },
+        }),
+      ),
+    );
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.orderAssigned,
+      targetType: "order",
+      targetId: data.orderIds.join(","),
+      targetLabel: `${data.orderIds.length} order(s)`,
+      newValue: { assignedTo: data.assignedTo, orderIds: data.orderIds },
+    });
+    return { ok: true, updated: data.orderIds.length };
+  });
+
+export const markOrdersPrinted = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => orderPrintInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { logOrderEvent } = await import("./orders.server");
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const now = new Date().toISOString();
+    const { data: current } = await context.supabase
+      .from("orders")
+      .select("id, print_count")
+      .in("id", data.orderIds)
+      .returns<{ id: string; print_count: number }[]>();
+
+    await Promise.all(
+      (current ?? []).map((row) =>
+        context.supabase
+          .from("orders")
+          .update({
+            printed_at: now,
+            printed_by: context.userId,
+            print_count: Number(row.print_count ?? 0) + 1,
+          })
+          .eq("id", row.id),
+      ),
+    );
+    await Promise.all(
+      data.orderIds.map((orderId) =>
+        logOrderEvent(orderId, {
+          eventType: "order_printed",
+          message: "Invoice printed",
+          actor: context.userId,
+          actorLabel: actor.email ?? "admin",
+        }),
+      ),
+    );
+    return { ok: true, printed: data.orderIds.length };
+  });
+
+// ============================================================
+// ORDER ACTIVITY LOG
+// Purpose: Per-order history (created / edited / status / assigned /
+//          printed) shown in the Activity dialog on the list screen.
+// ============================================================
+export const getOrderActivity = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
+    const { data: events } = await context.supabase
+      .from("order_events")
+      .select("id, event_type, message, actor_label, created_at")
+      .eq("order_id", data.orderId)
+      .order("created_at", { ascending: false })
+      .limit(100);
+    return { events: events ?? [] };
   });
 
 // ============================================================
