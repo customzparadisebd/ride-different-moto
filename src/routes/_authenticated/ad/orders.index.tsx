@@ -410,7 +410,7 @@ function AdminOrderList() {
               />
               <th className="p-2.5">Placed &amp; Assigned</th>
               <SortHeader
-                label="Date &amp; Time"
+                label="Date & Time"
                 column="created_at"
                 active={sortBy}
                 dir={sortDir}
