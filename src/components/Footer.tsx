@@ -9,6 +9,7 @@ import {
   YouTubeIcon,
 } from "@/components/BrandIcons";
 import { Logo } from "@/components/Logo";
+import { StoreMap } from "@/components/StoreMap";
 import { legalLinks, navLinks, site } from "@/data/site";
 
 const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> = {
@@ -21,6 +22,7 @@ export function Footer() {
   return (
     <footer className="mt-16 bg-gradient-onyx text-onyx-foreground">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="min-w-0">
             <Logo on="dark" className="h-11 w-auto" />
@@ -118,6 +120,11 @@ export function Footer() {
               ))}
             </ul>
           </div>
+        </div>
+        {/* OFFICE MAP — COMPACT FOOTER MAP — COMPLETED */}
+        <div className="w-full lg:max-w-[260px]">
+          <StoreMap />
+        </div>
         </div>
 
         <p className="mt-10 border-t border-white/10 pt-6 text-xs opacity-60">
