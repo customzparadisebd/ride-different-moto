@@ -213,3 +213,15 @@ Status values: `Completed` / `In Progress` / `Pending`.
 - Next: no "hold" order status or "page" source exists in the DB yet (tabs resolve to zero); no tax column on orders (shown as 0); fraud check is an external lookup link.
 
 - Office map: compact near-square map card moved into the footer right column with "Customz Paradise BD" labelled pin (keyless embed) — COMPLETED.
+
+## Pulsar N160 / N250 catalogue (COMPLETED)
+- Added Pulsar N250 as a bike model (`/bike-models/pulsar-n250`); it shares the N160 parts line-up.
+- Loaded 12 products compatible with N160 + N250: X-3 Kit ৳7,000 (pre-order ৳6,300), KTM RC Underbelly ৳3,300,
+  Side Fairing ৳5,300, KTM Mudguard ৳1,300, Tank Pad ৳2,300, Seat Cowl ৳1,700, Facemask ৳1,000, Visor ৳1,000,
+  DRL (Indian CZP, app/Bluetooth, 140+ colours) ৳2,650, Ring Light 60 mm ৳150, Ring Light 170 mm ৳170,
+  Indicator Light & Flasher Set ৳500.
+- Colour variants on body parts only (X-3 Kit, Underbelly, Side Fairing, Mudguard, Tank Pad, Seat Cowl):
+  Black +০, Red +৳300, Blue +৳600; X-3 Kit also has Custom Color +৳1,000. Prices update live from the swatch.
+- X-3 Kit carries the "Pre-order · No Advance" badge (badge_text), shown on card and detail page.
+- Older demo/seed products were deactivated (kept in the DB, `is_active = false`).
+- Next: upload real product photos and colour-specific images from the admin panel (products currently have no image).

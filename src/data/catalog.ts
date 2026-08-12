@@ -3,6 +3,7 @@ import heroN160 from "@/assets/hero-pulsar-n160.jpg";
 import heroR15 from "@/assets/hero-r15-v4.jpg";
 import modelMt15 from "@/assets/model-mt15.jpg";
 import modelNs200 from "@/assets/model-ns200.jpg";
+import modelN250 from "@/assets/model-pulsar-n250.jpg";
 import prodCrashguard from "@/assets/product-crashguard.jpg";
 import prodExhaust from "@/assets/product-exhaust.jpg";
 import prodFoglight from "@/assets/product-foglight.jpg";
@@ -68,13 +69,24 @@ const bikeModels: BikeModel[] = [
     active: true,
   },
   {
+    // Pulsar N250 shares the same universal parts line-up as the N160.
+    id: "bm-6",
+    slug: "pulsar-n250",
+    name: "Pulsar N250",
+    label: "Modification Parts",
+    image: modelN250,
+    alt: "Bajaj Pulsar N250 modification parts",
+    order: 3,
+    active: true,
+  },
+  {
     id: "bm-3",
     slug: "r15-v4",
     name: "Yamaha R15 V4",
     label: "Modification Parts",
     image: heroR15,
     alt: "Yamaha R15 V4 modification parts",
-    order: 3,
+    order: 4,
     active: true,
   },
   {
@@ -84,7 +96,7 @@ const bikeModels: BikeModel[] = [
     label: "Modification Parts",
     image: modelMt15,
     alt: "Yamaha MT-15 modification parts",
-    order: 4,
+    order: 5,
     active: true,
   },
   {
@@ -94,7 +106,7 @@ const bikeModels: BikeModel[] = [
     label: "Modification Parts",
     image: heroDuke,
     alt: "KTM Duke 250 modification parts",
-    order: 5,
+    order: 6,
     active: true,
   },
 ];
