@@ -15,7 +15,6 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { NetworkBanner } from "@/components/NetworkBanner";
-import { StoreMap } from "@/components/StoreMap";
 import { Toaster } from "@/components/ui/sonner";
 import { site } from "@/data/site";
 import { CartProvider } from "@/lib/cart";
@@ -147,13 +146,7 @@ function RootComponent() {
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </main>
-            {isPrivateArea ? null : (
-              <>
-                <Footer />
-                {/* OFFICE MAP — COMPLETED */}
-                <StoreMap />
-              </>
-            )}
+            {isPrivateArea ? null : <Footer />}
           </div>
           <NetworkBanner />
           <Toaster />
