@@ -17,7 +17,7 @@ import {
 } from "@/lib/hero.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
-  head: () => ({ title: "Manage Hero Slider — CZP Ops" }),
+  head: () => ({ meta: [{ title: "Manage Hero Slider — CZP Ops" }, { property: "og:title", content: "Manage Hero Slider — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: AdminHeroSlides,
 });
 

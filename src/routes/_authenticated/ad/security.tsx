@@ -31,7 +31,7 @@ import {
 import { PERMISSIONS } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/security")({
-  head: () => ({ title: "Security — CZP Ops" }),
+  head: () => ({ meta: [{ title: "Security — CZP Ops" }, { property: "og:title", content: "Security — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: SecurityPage,
 });
 
