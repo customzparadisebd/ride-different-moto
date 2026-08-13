@@ -4,7 +4,7 @@
 ## LAST UPDATED: 2026-08-13 (UTC)
 
 ### COMPLETED:
-- [x] Hero Slider Update — Added custom banner slide with "We Are Perfect Price" text. Smooth transition interval set to 3.5s. Fully responsive layout.
+- [x] Hero Slider Update — Added custom banner. Optimized loading (eager preloading for 1st slide, lazy for others) to prevent layout shifts. Transition set to 3.5s.
 - [x] Sticky Navigation Bar (Desktop & Mobile) — COMPLETED
 - [x] N160/N250 PRODUCT ORDER & COLOR CONFIG — COMPLETED
 - [x] All Products Search & Filters (Name, Bike, Category, Price)

@@ -62,6 +62,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   width={1600}
                   height={1008}
                   priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
                   sizes="100vw"
                   containerClassName={cn(
                     "w-full bg-onyx",
