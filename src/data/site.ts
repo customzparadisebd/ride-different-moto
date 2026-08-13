@@ -56,8 +56,4 @@ export const trustPoints = [
     title: "Customer Support",
     body: "Dedicated support from riders who understand modification.",
   },
-  {
-    title: "Authentic Products",
-    body: "Quality-focused products sourced through our established supply network.",
-  },
 ] as const;
