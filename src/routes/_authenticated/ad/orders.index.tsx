@@ -161,6 +161,7 @@ function AdminOrderList() {
   const canManage = accessQuery.data?.permissions.includes("orders.manage") ?? false;
   const canCreate = accessQuery.data?.permissions.includes("orders.create") ?? false;
   const canShip = accessQuery.data?.permissions.includes("shipments.create") ?? false;
+  const canDelete = accessQuery.data?.permissions.includes("orders.manage") ?? false; // or staffManage
   const canSelect = canManage || canShip;
   const pageValue = rows.reduce((sum, row) => sum + Number(row.total), 0);
   const courierOptions = useMemo(
@@ -280,6 +281,21 @@ function AdminOrderList() {
       {canSelect && selected.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/40 bg-card p-3 shadow-card">
           <span className="text-sm font-semibold">{selected.length} selected</span>
+          {/* BULK DELETE / RECYCLE BIN */}
+          {canDelete ? (
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={bulkMutation.isPending}
+              onClick={() => {
+                if (confirm(`Are you sure you want to move ${selected.length} order(s) to the Recycle Bin?`)) {
+                  bulkMutation.mutate({ data: { orderIds: selected, status: "cancelled" } });
+                }
+              }}
+            >
+              Recycle Bin
+            </Button>
+          ) : null}
           {/* BULK PRINT */}
           <Button
             variant="steel"
