@@ -34,6 +34,10 @@ const translations: Record<Language, Record<string, string>> = {
     "common.bdt": "৳",
     "common.comingSoon": "Coming Soon",
     "footer.rights": "All rights reserved.",
+    "section.about.eyebrow": "Our Story",
+    "section.about.title": "About Us",
+    "section.about.p1": "is more than just a parts shop. We are a dedicated motorcycle modification hub born from a passion for unique builds and high-performance aesthetics.",
+    "section.about.p2": "Established with a clear vision to redefine the motorcycling landscape in Bangladesh, we source and develop premium modification kits that help riders express their individuality on every journey.",
   },
   bn: {
     "nav.home": "হোম",
@@ -52,6 +56,10 @@ const translations: Record<Language, Record<string, string>> = {
     "common.bdt": "৳",
     "common.comingSoon": "শীঘ্রই আসছে",
     "footer.rights": "সর্বস্বত্ব সংরক্ষিত।",
+    "section.about.eyebrow": "আমাদের গল্প",
+    "section.about.title": "আমাদের সম্পর্কে",
+    "section.about.p1": "একটি পার্টস শপের চেয়েও বেশি। আমরা মোটরসাইকেল মডিফিকেশনের একটি বিশেষ হাব, যা তৈরি হয়েছে ইউনিক বিল্ড এবং হাই-পারফরম্যান্স নান্দনিকতার প্রতি ভালোবাসা থেকে।",
+    "section.about.p2": "বাংলাদেশে মোটরসাইক্লিং দৃশ্যপট নতুনভাবে সংজ্ঞায়িত করার স্পষ্ট লক্ষ্য নিয়ে প্রতিষ্ঠিত, আমরা প্রিমিয়াম মডিফিকেশন কিট সংগ্রহ ও উন্নয়ন করি যা রাইডারদের প্রতিটি ভ্রমণে তাদের নিজস্বতা প্রকাশ করতে সাহায্য করে।",
   },
 };
 
