@@ -183,6 +183,7 @@ export const AUDIT_ACTIONS = {
   staffDeleted: "staff.deleted",
   staffPasswordChanged: "staff.password_changed",
   staffProfileUpdated: "staff.profile_updated",
+  invoiceSettingsUpdated: "settings.invoice_updated",
 } as const;
 
 export const staffStatusInput = z.object({
