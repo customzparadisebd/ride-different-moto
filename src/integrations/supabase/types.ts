@@ -677,6 +677,33 @@ export type Database = {
           },
         ]
       }
+      invoice_settings: {
+        Row: {
+          current_number: number
+          id: string
+          prefix: string
+          start_number: number
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          current_number?: number
+          id?: string
+          prefix?: string
+          start_number?: number
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          current_number?: number
+          id?: string
+          prefix?: string
+          start_number?: number
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           created_at: string
@@ -1585,6 +1612,7 @@ export type Database = {
     }
     Functions: {
       generate_czp_invoice_id: { Args: never; Returns: string }
+      generate_next_invoice_no: { Args: never; Returns: string }
       has_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean
