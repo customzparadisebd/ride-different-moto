@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-
 import { cn } from "@/lib/utils";
 
 type SafeImageProps = {
@@ -9,11 +8,13 @@ type SafeImageProps = {
   width: number;
   height: number;
   className?: string;
-  /** Container class controls the reserved aspect box so failures never shift layout. */
   containerClassName?: string;
   priority?: boolean;
   sizes?: string;
+  /** Optional custom srcSet, otherwise generated automatically */
   srcSet?: string;
+  /** Optional blurred placeholder data URL */
+  blurDataURL?: string;
 };
 
 const MAX_RETRIES = 3;
@@ -33,6 +34,7 @@ export function SafeImage({
   priority = false,
   sizes = "100vw",
   srcSet,
+  blurDataURL,
 }: SafeImageProps) {
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
@@ -83,10 +85,41 @@ export function SafeImage({
   const canRetry = attempt < MAX_RETRIES;
 
   return (
-    <div className={cn("relative overflow-hidden bg-muted", containerClassName)}>
+    <div 
+      className={cn("relative overflow-hidden bg-muted", containerClassName)}
+      style={{ 
+        aspectRatio: `${width} / ${height}`,
+      }}
+    >
+      {/* 4. Blur-up placeholder effect */}
+      {(status === "loading" || status === "error") && blurDataURL && (
+        <div 
+          className="absolute inset-0 z-0 scale-110 blur-2xl transition-opacity duration-500"
+          style={{
+            backgroundImage: `url(${blurDataURL})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            opacity: status === "loading" ? 1 : 0
+          }}
+        />
+      )}
+
       {status !== "error" && (
         <picture className="contents">
-          {mobileSrc && <source media="(max-width: 640px)" srcSet={mobileSrc} />}
+          {/* 1 & 2. Responsive delivery and format optimization */}
+          {mobileSrc && (
+            <source 
+              media="(max-width: 640px)" 
+              srcSet={`${mobileSrc}?w=640&format=webp&q=80 1x, ${mobileSrc}?w=1280&format=webp&q=60 2x`} 
+              type="image/webp"
+            />
+          )}
+          
+          <source 
+            srcSet={srcSet || `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=60 2x`}
+            type="image/webp"
+          />
+
           <img
             key={attempt}
             ref={imgRef}
@@ -95,7 +128,7 @@ export function SafeImage({
             width={width}
             height={height}
             sizes={sizes}
-            srcSet={srcSet}
+            // 3. Native Lazy Loading
             loading={priority ? "eager" : "lazy"}
             decoding={priority ? "sync" : "async"}
             fetchPriority={priority ? "high" : "auto"}
@@ -103,7 +136,7 @@ export function SafeImage({
             onLoad={() => setStatus("loaded")}
             onError={() => setStatus("error")}
             className={cn(
-              "h-full w-full object-cover transition-opacity duration-500",
+              "h-full w-full object-cover transition-opacity duration-700 ease-in-out relative z-10",
               status === "loaded" ? "opacity-100" : "opacity-0",
               className,
             )}
@@ -111,8 +144,8 @@ export function SafeImage({
         </picture>
       )}
 
-      {status === "loading" && (
-        <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-muted via-secondary to-muted" />
+      {status === "loading" && !blurDataURL && (
+        <div className="absolute inset-0 z-0 animate-pulse bg-gradient-to-br from-muted via-secondary/20 to-muted" />
       )}
 
       {status === "error" && (
