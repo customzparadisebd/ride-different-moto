@@ -99,6 +99,7 @@ export const ASSIGNABLE_PERMISSIONS: Permission[] = [
   "shipments.create",
   "content.manage",
   "zones.manage",
+  "reviews.manage",
 ];
 
 /** Baseline permissions implied by a role, before explicit grants. */
