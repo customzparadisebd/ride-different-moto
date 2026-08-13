@@ -73,17 +73,7 @@ export function InvoiceCell({
   canManage: boolean;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <Link
-          to="/ad/orders/$id"
-          params={{ id: order.id }}
-          className="font-semibold text-primary underline"
-        >
-          {order.invoice_no}
-        </Link>
-        {order.is_pinned ? <Pin className="size-3.5 shrink-0 text-primary" /> : null}
-      </div>
+    <div className="space-y-1">
       <div className="flex flex-wrap items-center gap-1">
         <IconAction label="Copy invoice" onClick={() => void copy(order.invoice_no, "Invoice")}>
           <Copy />
@@ -110,30 +100,27 @@ export function InvoiceCell({
         <IconAction label="Activity log" onClick={onActivity}>
           <History />
         </IconAction>
-        {canManage ? (
-          <IconAction label={order.is_pinned ? "Unpin order" : "Pin order"} onClick={onTogglePin}>
-            <Pin />
-          </IconAction>
-        ) : null}
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Link
+          to="/ad/orders/$id"
+          params={{ id: order.id }}
+          className="font-mono text-[13px] font-bold text-primary underline decoration-primary/30 underline-offset-2"
+        >
+          {order.invoice_no}
+        </Link>
+        {order.is_pinned ? <Pin className="size-3 shrink-0 text-primary" /> : null}
       </div>
       <div className="flex flex-wrap items-center gap-1">
-        <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
-          {statusLabel(order.order_source)}
-        </span>
         <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+          className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-tight ${
             order.print_count > 0
-              ? "bg-emerald-500/15 text-emerald-500"
-              : "bg-muted text-muted-foreground"
+              ? "bg-emerald-500/10 text-emerald-600"
+              : "bg-rose-500/10 text-rose-600"
           }`}
         >
-          {order.print_count > 0 ? "Printed" : "Unprinted"}
+          {order.print_count > 0 ? "Printed" : "Un-Printed"}
         </span>
-        {order.is_duplicate ? (
-          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-500">
-            Duplicate
-          </span>
-        ) : null}
       </div>
     </div>
   );
@@ -161,45 +148,28 @@ export function AssignmentCell({ order }: { order: AdminOrderListRow }) {
 export function CustomerCell({ order }: { order: AdminOrderListRow }) {
   const waPhone = order.customer_phone.replace(/\D/g, "").replace(/^0/, "880");
   return (
-    <div className="space-y-1.5">
-      <p className="font-semibold">{order.customer_name}</p>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-xs text-muted-foreground">{order.customer_phone}</span>
-        <IconAction label="Copy phone" onClick={() => void copy(order.customer_phone, "Phone")}>
-          <Copy />
-        </IconAction>
-        <a
-          href={`https://wa.me/${waPhone}`}
-          target="_blank"
-          rel="noreferrer"
-          title="WhatsApp customer"
-          aria-label="WhatsApp customer"
-          className={iconLinkClass}
-        >
-          <MessageCircle className="text-[color:var(--brand-whatsapp,currentColor)]" />
+    <div className="space-y-1 text-[13px]">
+      <p className="font-bold leading-tight">নাম: {order.customer_name}</p>
+      <div className="flex items-center gap-1">
+        <span className="font-mono text-primary">{order.customer_phone}</span>
+        <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
+          <Copy className="size-3" />
+        </button>
+        <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className="text-[#25D366]">
+          <MessageCircle className="size-3.5" />
         </a>
-        {/* FRAUD CHECK — opens the courier fraud lookup for this number.
-            TODO: replace with an in-app courier fraud API check once available. */}
-        <a
-          href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`}
-          target="_blank"
-          rel="noreferrer"
-          title="Fraud check"
-          aria-label="Fraud check"
-          className={iconLinkClass}
-        >
-          <ShieldAlert />
+        <a href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`} target="_blank" rel="noreferrer" className="text-rose-500">
+          <ShieldAlert className="size-3.5" />
         </a>
       </div>
-      <p className="text-xs text-muted-foreground">
-        {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
+      <p className="text-[11px] leading-tight text-muted-foreground">
+        ঠিকানা: {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
       </p>
-      <p className="text-[11px] font-semibold uppercase tracking-wide">
-        Total orders:{" "}
-        <span className={order.customer_order_count > 1 ? "text-primary" : ""}>
-          {order.customer_order_count}
+      <div className="pt-0.5">
+        <span className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase">
+          Total Orders ({order.customer_order_count})
         </span>
-      </p>
+      </div>
     </div>
   );
 }
@@ -207,30 +177,24 @@ export function CustomerCell({ order }: { order: AdminOrderListRow }) {
 /** PRODUCTS — thumbnail, name, quantity, variant and price. */
 export function ProductsCell({ order }: { order: AdminOrderListRow }) {
   if (!order.order_items.length)
-    return <span className="text-xs text-muted-foreground">No items recorded</span>;
+    return <span className="text-[11px] text-muted-foreground italic">No items</span>;
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-1">
       {order.order_items.map((item) => (
-        <li key={item.id} className="flex items-center gap-2">
-          <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-secondary">
+        <li key={item.id} className="flex items-start gap-1.5">
+          <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded border border-border bg-secondary">
             {item.image_url ? (
-              <img
-                src={item.image_url}
-                alt={item.product_name}
-                loading="lazy"
-                className="size-full object-cover"
-              />
+              <img src={item.image_url} alt={item.product_name} className="size-full object-cover" />
             ) : (
-              <span className="text-[9px] uppercase text-muted-foreground">No img</span>
+              <span className="text-[8px] uppercase text-muted-foreground">No img</span>
             )}
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate text-xs font-semibold">{item.product_name}</span>
-            <span className="block text-[11px] text-muted-foreground">
-              x{item.quantity}
-              {item.variant ? ` · ${item.variant}` : ""} · {formatBDT(Number(item.unit_price))}
+          </div>
+          <div className="min-w-0 leading-tight">
+            <span className="block truncate text-[11px] font-bold">{item.product_name}</span>
+            <span className="block text-[10px] text-muted-foreground">
+              Qty: {item.quantity} {item.variant ? ` · ${item.variant}` : ""}
             </span>
-          </span>
+          </div>
         </li>
       ))}
     </ul>
@@ -240,10 +204,10 @@ export function ProductsCell({ order }: { order: AdminOrderListRow }) {
 /** PAYMENT INFO — method, status and transaction reference. */
 export function PaymentCell({ order }: { order: AdminOrderListRow }) {
   return (
-    <div className="space-y-1 text-xs">
-      <p className="font-semibold">{paymentMethodLabel(order.payment_method)}</p>
+    <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
+      <p className="font-bold text-muted-foreground uppercase">{paymentMethodLabel(order.payment_method)}</p>
       <StatusBadge value={order.payment_status} />
-      <p className="text-muted-foreground">TrxID: {order.transaction_id || "—"}</p>
+      <p className="font-mono text-[10px] opacity-70">TrxID: {order.transaction_id || "—"}</p>
     </div>
   );
 }
@@ -257,12 +221,12 @@ export function CourierCell({
   onCancelShipment?: () => void;
 }) {
   return (
-    <div className="space-y-1 text-xs">
+    <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
       <StatusBadge value={order.courier_status} />
-      {order.courier_name ? <p className="font-semibold">{order.courier_name}</p> : null}
+      {order.courier_name ? <p className="font-bold text-muted-foreground uppercase">{order.courier_name}</p> : <p className="text-muted-foreground italic">No Courier</p>}
       {order.consignment_id ? (
-        <div className="flex items-center gap-1.5">
-          <p className="text-muted-foreground">CN: {order.consignment_id}</p>
+        <div className="flex items-center gap-1">
+          <p className="font-mono text-[10px] opacity-70">CN: {order.consignment_id}</p>
           {onCancelShipment && (
             <button
               type="button"
@@ -275,22 +239,6 @@ export function CourierCell({
           )}
         </div>
       ) : null}
-      {order.tracking_url ? (
-        <a
-          href={order.tracking_url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-primary underline"
-        >
-          Track <ExternalLink className="size-3" />
-        </a>
-      ) : null}
-      <p className="text-muted-foreground">Charge: {formatBDT(Number(order.shipping))}</p>
-      {order.shipment_at ? (
-        <p className="text-muted-foreground">
-          {new Date(order.shipment_at).toLocaleString("en-GB")}
-        </p>
-      ) : null}
     </div>
   );
 }
@@ -300,24 +248,23 @@ export function CourierCell({
 export function AmountsCell({ order }: { order: AdminOrderListRow }) {
   const due = Math.max(Number(order.total) - Number(order.advance_paid ?? 0), 0);
   return (
-    <dl className="space-y-0.5 text-xs">
-      <Row label="Subtotal" value={formatBDT(Number(order.subtotal))} />
-      <Row label="Discount" value={`- ${formatBDT(Number(order.discount))}`} />
-      {/* TODO: no tax column exists on orders yet — shown as 0 until VAT is configured. */}
-      <Row label="Tax" value={formatBDT(0)} />
-      <Row label="Shipping" value={formatBDT(Number(order.shipping))} />
-      <Row label="Advance" value={formatBDT(Number(order.advance_paid ?? 0))} />
-      <Row label="Due" value={formatBDT(due)} strong />
-      <Row label="Total" value={formatBDT(Number(order.total))} strong />
+    <dl className="space-y-0 text-[11px]">
+      <Row label="Discount" value={`৳${Number(order.discount)}`} />
+      <Row label="Subtotal" value={`৳${Number(order.subtotal)}`} />
+      <Row label="Tax" value="৳0" />
+      <Row label="Shipping" value={`৳${Number(order.shipping)}`} />
+      <div className="mt-1 border-t border-dashed border-border pt-1">
+        <Row label="Total" value={`৳${Number(order.total)}`} strong color="text-emerald-600 dark:text-emerald-500" />
+      </div>
     </dl>
   );
 }
 
-function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function Row({ label, value, strong, color }: { label: string; value: string; strong?: boolean; color?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 whitespace-nowrap">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={strong ? "font-bold" : ""}>{value}</dd>
+    <div className="flex items-center justify-between gap-2 whitespace-nowrap leading-tight">
+      <dt className="text-muted-foreground">{label}:</dt>
+      <dd className={`${strong ? "font-bold" : ""} ${color ?? ""}`}>{value}</dd>
     </div>
   );
 }
