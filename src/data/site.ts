@@ -1,4 +1,6 @@
 export const site = {
+  url: "https://customzparadisebd.com",
+
   name: "Customz Paradise BD",
   shortName: "CZP",
   tagline: "Ride Different. Be Different.",

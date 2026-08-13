@@ -9,10 +9,12 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
+import { ProductGallery } from "@/components/product/ProductGallery";
+
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import { useCart } from "@/lib/cart";
@@ -36,8 +38,31 @@ export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
     const product = await context.queryClient.ensureQueryData(productQuery(params.slug));
     if (!product) throw notFound();
-    return { name: product.name, description: product.description };
+
+    const jsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      image: product.gallery,
+      description: product.description,
+      brand: {
+        "@type": "Brand",
+        name: "Customz Paradise BD",
+      },
+      offers: {
+        "@type": "Offer",
+        url: `${site.url}/products/${product.slug}`,
+        priceCurrency: "BDT",
+        price: product.offerPrice || product.price,
+        availability: product.inStock
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
+      },
+    };
+
+    return { name: product.name, description: product.description, jsonLd };
   },
+
   head: ({ loaderData, params }) => {
     if (!loaderData) {
       return {
@@ -48,6 +73,7 @@ export const Route = createFileRoute("/products/$slug")({
     const description =
       loaderData.description ??
       `Buy ${loaderData.name} from Customz Paradise BD with nationwide delivery in Bangladesh.`;
+    
     return {
       meta: [
         { title },
@@ -59,8 +85,15 @@ export const Route = createFileRoute("/products/$slug")({
         { name: "twitter:card", content: "summary_large_image" },
       ],
       links: [{ rel: "canonical", href: `/products/${params.slug}` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: loaderData.jsonLd ? JSON.stringify(loaderData.jsonLd) : undefined,
+        },
+      ],
     };
   },
+
   component: ProductDetailPage,
   errorComponent: ({ error }) => (
     <div className="mx-auto max-w-xl px-4 py-20 text-center" role="alert">
@@ -96,7 +129,7 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
   const navigate = useNavigate();
   const [colorId, setColorId] = useState<string | null>(product.colors[0]?.id ?? null);
   const [qty, setQty] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
+
 
   const color = useMemo(
     () => product.colors.find((entry) => entry.id === colorId) ?? null,
@@ -107,7 +140,7 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
   const unitPrice = colorPrice(product, color);
   const wasPrice = compareAtPrice(product, color);
   const gallery = product.gallery.length ? product.gallery : [""];
-  const mainImage = color?.image ?? gallery[Math.min(activeImage, gallery.length - 1)] ?? "";
+
 
   const add = (thenCheckout: boolean) => {
     if (!product.inStock) return;
@@ -132,44 +165,14 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
       </nav>
 
       <div className="mt-4 grid gap-6 lg:grid-cols-2 lg:gap-10">
-        {/* Gallery — swipeable thumbnails on mobile, no horizontal overflow. */}
-        <div>
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
-            <SafeImage
-              src={mainImage}
-              alt={product.name}
-              width={1200}
-              height={1200}
-              priority
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              containerClassName="aspect-square w-full"
-            />
-          </div>
-          {gallery.length > 1 ? (
-            <div className="mt-3 flex snap-x gap-2 overflow-x-auto pb-1">
-              {gallery.map((image, index) => (
-                <button
-                  key={`${image}-${index}`}
-                  type="button"
-                  onClick={() => setActiveImage(index)}
-                  aria-label={`Show image ${index + 1}`}
-                  className={cn(
-                    "size-16 shrink-0 snap-start overflow-hidden rounded-lg border",
-                    index === activeImage && !color?.image ? "border-primary" : "border-border",
-                  )}
-                >
-                  <SafeImage
-                    src={image}
-                    alt=""
-                    width={128}
-                    height={128}
-                    containerClassName="size-16"
-                  />
-                </button>
-              ))}
-            </div>
-          ) : null}
-        </div>
+        {/* Gallery Section */}
+        <ProductGallery 
+          images={gallery} 
+          productName={product.name} 
+          activeColorImage={color?.image ?? null} 
+        />
+
+
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
