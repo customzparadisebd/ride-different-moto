@@ -123,7 +123,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
                 key={color.id}
                 title={color.name}
                 aria-label={color.name}
-                className="size-4 rounded-full border border-border"
+                className="size-4 rounded-full border border-black/40 dark:border-white/40 ring-1 ring-black/10 dark:ring-white/10"
                 style={{ backgroundColor: color.swatch }}
               />
             ))}
