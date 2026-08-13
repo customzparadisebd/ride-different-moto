@@ -15,6 +15,7 @@ import {
   Pencil,
   Pin,
   Printer,
+  StickyNote,
   ShieldAlert,
   XCircle,
 } from "lucide-react";
@@ -63,13 +64,15 @@ const iconLinkClass =
 /** INVOICE — number, quick actions, source badge and print state. */
 export function InvoiceCell({
   order,
-  onActivity,
+   onActivity,
   onTogglePin,
+  onShowNote,
   canManage,
 }: {
   order: AdminOrderListRow;
   onActivity: () => void;
   onTogglePin: () => void;
+  onShowNote?: () => void;
   canManage: boolean;
 }) {
   return (
@@ -100,6 +103,17 @@ export function InvoiceCell({
         <IconAction label="Activity log" onClick={onActivity}>
           <History />
         </IconAction>
+        {onShowNote && (
+          <button
+            type="button"
+            title="View customer note"
+            aria-label="View customer note"
+            onClick={onShowNote}
+            className="grid size-7 place-items-center rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-500 transition-colors hover:bg-blue-500/20 hover:border-blue-500/40 [&_svg]:size-3.5"
+          >
+            <StickyNote />
+          </button>
+        )}
       </div>
       <div className="flex items-center gap-1.5 pt-1">
         <Link

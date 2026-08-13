@@ -21,6 +21,7 @@ import { XCircle } from "lucide-react";
 import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
+import { OrderNoteDialog } from "@/components/admin/orders/OrderNoteDialog";
 
 import {
   AmountsCell,
@@ -115,6 +116,7 @@ function AdminOrderList() {
   const [steadfastOpen, setSteadfastOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
+  const [noteOrder, setNoteOrder] = useState<AdminOrderListRow | null>(null);
 
 
   const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
@@ -407,6 +409,11 @@ function AdminOrderList() {
         onFinished={refreshOrders}
       />
 
+      <OrderNoteDialog
+        order={noteOrder}
+        onOpenChange={(open) => (open ? null : setNoteOrder(null))}
+      />
+
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -524,6 +531,7 @@ function AdminOrderList() {
                         data: { orderId: order.id, pinned: !order.is_pinned },
                       })
                     }
+                    onShowNote={order.notes ? () => setNoteOrder(order) : undefined}
                   />
                 </td>
                 <td className="p-2">
@@ -610,6 +618,7 @@ function AdminOrderList() {
                         data: { orderId: order.id, pinned: !order.is_pinned },
                       })
                     }
+                    onShowNote={order.notes ? () => setNoteOrder(order) : undefined}
                   />
                 </div>
               </div>
