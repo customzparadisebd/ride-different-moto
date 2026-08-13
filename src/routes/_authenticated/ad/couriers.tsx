@@ -29,7 +29,7 @@ import { emptyCourier, type CourierInput, type CourierSummary } from "@/lib/cour
 import { formatBDT } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/ad/couriers")({
-  head: () => ({ meta: [{ title: "Couriers — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Couriers — CZP Ops" }, { property: "og:title", content: "Couriers — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: CouriersPage,
 });
 

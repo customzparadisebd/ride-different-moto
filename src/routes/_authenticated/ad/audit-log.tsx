@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { listAuditLog } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/audit-log")({
-  head: () => ({ meta: [{ title: "Audit log — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Audit log — CZP Ops" }, { property: "og:title", content: "Audit log — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: AuditLogPage,
 });
 

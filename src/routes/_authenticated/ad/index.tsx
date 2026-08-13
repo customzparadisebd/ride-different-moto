@@ -17,7 +17,7 @@ import { getDashboardMetrics } from "@/lib/admin-data.functions";
 import { ORDER_STATUSES, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/")({
-  head: () => ({ meta: [{ title: "Dashboard — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Dashboard — CZP Ops" }, { property: "og:title", content: "Dashboard — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: AdminDashboard,
 });
 

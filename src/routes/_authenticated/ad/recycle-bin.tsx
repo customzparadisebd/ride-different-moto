@@ -20,7 +20,7 @@ import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
-  head: () => ({ meta: [{ title: "Recycle Bin — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Recycle Bin — CZP Ops" }, { property: "og:title", content: "Recycle Bin — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: RecycleBin,
 });
 

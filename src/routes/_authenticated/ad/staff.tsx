@@ -39,7 +39,7 @@ import {
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
-  head: () => ({ meta: [{ title: "Staff & roles — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Staff & roles — CZP Ops" }, { property: "og:title", content: "Staff & roles — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: StaffPage,
 });
 

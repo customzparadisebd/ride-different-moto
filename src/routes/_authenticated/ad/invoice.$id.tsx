@@ -17,7 +17,7 @@ import { getOrder } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
-  head: () => ({ meta: [{ title: "Invoice — CZP Ops" }] }),
+  head: () => ({ meta: [{ title: "Invoice — CZP Ops" }, { property: "og:title", content: "Invoice — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: InvoicePage,
 });
 
