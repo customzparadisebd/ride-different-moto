@@ -138,16 +138,16 @@ function LeadsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {leads.map((lead: any) => {
-            const status = STATUS_CONFIG[lead.status] || STATUS_CONFIG.new;
-            const StatusIcon = status.icon;
+            const status = STATUS_CONFIG[lead.status] || STATUS_CONFIG["new"];
+            const StatusIcon = status?.icon || Clock;
             
             return (
               <Card key={lead.id} className="group relative overflow-hidden border-border bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-md">
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
-                    <Badge variant="outline" className={`capitalize ${status.color}`}>
+                    <Badge variant="outline" className={`capitalize ${status?.color || ""}`}>
                       <StatusIcon className="mr-1 size-3" />
-                      {status.label}
+                      {status?.label || lead.status}
                     </Badge>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
@@ -218,7 +218,7 @@ function LeadsPage() {
 
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground/60">
                     <span>Source: {lead.source.replace("_", " ")}</span>
-                    <Badge variant="ghost" className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter opacity-40 group-hover:opacity-100 transition-opacity">
+                    <Badge variant="outline" className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter opacity-40 group-hover:opacity-100 transition-opacity">
                       ID: {lead.id.slice(0, 8)}
                     </Badge>
                   </div>
