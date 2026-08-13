@@ -36,11 +36,11 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-lg text-center">
-        <div className="relative mx-auto mb-8 aspect-video max-w-[400px] overflow-hidden rounded-lg bg-muted/50">
+        <div className="relative mx-auto mb-10 w-full max-w-[320px] overflow-hidden rounded-xl bg-muted/30 sm:max-w-[500px] lg:max-w-[600px]">
           <img 
             src={errorGif.url} 
             alt="Page not found" 
-            className="h-full w-full object-contain"
+            className="h-auto w-full object-contain transition-transform duration-500 hover:scale-105"
             loading="eager"
           />
         </div>
