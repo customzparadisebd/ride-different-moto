@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type SafeImageProps = {
   src: string;
-  mobileSrc?: string;
+  mobileSrc?: string | undefined;
   alt: string;
   width: number;
   height: number;
@@ -85,27 +85,30 @@ export function SafeImage({
   return (
     <div className={cn("relative overflow-hidden bg-muted", containerClassName)}>
       {status !== "error" && (
-        <img
-          key={attempt}
-          ref={imgRef}
-          src={attempt === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}r=${attempt}`}
-          alt={alt}
-          width={width}
-          height={height}
-          sizes={sizes}
-          srcSet={srcSet}
-          loading={priority ? "eager" : "lazy"}
-          decoding={priority ? "sync" : "async"}
-          fetchPriority={priority ? "high" : "auto"}
-          draggable={false}
-          onLoad={() => setStatus("loaded")}
-          onError={() => setStatus("error")}
-          className={cn(
-            "h-full w-full object-cover transition-opacity duration-500",
-            status === "loaded" ? "opacity-100" : "opacity-0",
-            className,
-          )}
-        />
+        <picture className="contents">
+          {mobileSrc && <source media="(max-width: 640px)" srcSet={mobileSrc} />}
+          <img
+            key={attempt}
+            ref={imgRef}
+            src={attempt === 0 ? src : `${src}${src.includes("?") ? "&" : "?"}r=${attempt}`}
+            alt={alt}
+            width={width}
+            height={height}
+            sizes={sizes}
+            srcSet={srcSet}
+            loading={priority ? "eager" : "lazy"}
+            decoding={priority ? "sync" : "async"}
+            fetchPriority={priority ? "high" : "auto"}
+            draggable={false}
+            onLoad={() => setStatus("loaded")}
+            onError={() => setStatus("error")}
+            className={cn(
+              "h-full w-full object-cover transition-opacity duration-500",
+              status === "loaded" ? "opacity-100" : "opacity-0",
+              className,
+            )}
+          />
+        </picture>
       )}
 
       {status === "loading" && (
