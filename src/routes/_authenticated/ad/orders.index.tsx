@@ -16,7 +16,6 @@ import { FileSpreadsheet, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import {
   AmountsCell,
@@ -66,7 +65,7 @@ import {
 type SortBy = "created_at" | "total" | "invoice_no";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/")({
-  head: () => adminHead("Orders — CZP Ops"),
+  head: () => ({ title: "Orders — CZP Ops" }),
   validateSearch: (search: Record<string, unknown>): { status?: OrderStatus } => {
     const status = String(search["status"] ?? "");
     return ORDER_STATUSES.includes(status as OrderStatus) ? { status: status as OrderStatus } : {};

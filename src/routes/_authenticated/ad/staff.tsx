@@ -11,15 +11,17 @@
 //          allow-list. Role changes are Super Admin only.
 // Future: None.
 // ============================================================
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
+
 import { Button } from "@/components/ui/button";
 import {
+  deleteStaff,
   listStaff,
+  setStaffPassword,
   setStaffPermissions,
   setStaffRole,
   setStaffStatus,
@@ -37,7 +39,7 @@ import {
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
-  head: () => adminHead("Staff & roles — CZP Ops"),
+  head: () => ({ title: "Staff & roles — CZP Ops" }),
   component: StaffPage,
 });
 
@@ -51,6 +53,17 @@ const statusStyles: Record<AccessStatus, string> = {
 
 function StaffPage() {
   const { access } = Route.useRouteContext();
+  const navigate = useNavigate();
+
+  // ACCESS CONTROL: Staff must have no access to the Staff & Roles section.
+  // Super Admin and Admin only. Redirect staff to Dashboard.
+  useEffect(() => {
+    if (access.primaryRole !== "super_admin" && access.primaryRole !== "admin") {
+      toast.error("Access denied: Admin only.");
+      void navigate({ to: "/ad", replace: true });
+    }
+  }, [access.primaryRole, navigate]);
+
   const queryClient = useQueryClient();
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -87,13 +100,30 @@ function StaffPage() {
     );
   };
 
+  const handleDelete = async (userId: string) => {
+    if (!window.confirm("Are you sure you want to permanently delete this staff account?")) return;
+    void run(userId, () => deleteStaff({ data: { userId } }), "Staff account deleted.");
+  };
+
+  const handlePasswordReset = async (userId: string) => {
+    const password = window.prompt("Enter new password (min 8 characters):");
+    if (!password) return;
+    if (password.length < 8) {
+      toast.error("Password too short.");
+      return;
+    }
+    void run(userId, () => setStaffPassword({ data: { userId, password } }), "Password updated.");
+  };
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Staff & roles</h1>
-        <p className="text-sm text-muted-foreground">
-          New accounts start as <strong>Pending</strong> and cannot open the panel until approved.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Staff & roles</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage staff accounts, roles, and access. Approved accounts can reach the panel.
+          </p>
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -104,36 +134,57 @@ function StaffPage() {
           return (
             <div key={member.id} className="rounded-lg border border-border bg-card p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="font-semibold">{member.full_name || member.email}</p>
-                  <p className="text-xs text-muted-foreground">{member.email}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {role ? ROLE_LABELS[role] : "No role"} ·{" "}
-                    {member.last_login_at
-                      ? `last login ${new Date(member.last_login_at).toLocaleString()}`
-                      : "never signed in"}
-                    {member.mfa_required ? " · MFA required" : ""}
-                  </p>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary font-display font-bold text-muted-foreground uppercase">
+                    {(member.full_name || member.email || "?").charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-semibold">{member.full_name || "Staff Member"}</p>
+                    <p className="text-xs text-muted-foreground">{member.email}</p>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
+                      <span className="font-medium text-primary">
+                        {role ? ROLE_LABELS[role] : "No role"}
+                      </span>
+                      <span>·</span>
+                      <span>
+                        {member.last_login_at
+                          ? `Login: ${new Date(member.last_login_at).toLocaleString()}`
+                          : "Never logged in"}
+                      </span>
+                      {member.mfa_required && (
+                        <>
+                          <span>·</span>
+                          <span className="text-green-500">MFA Required</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider ${statusStyles[status]}`}
-                >
-                  {status}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${statusStyles[status]}`}
+                  >
+                    {status}
+                  </span>
+                </div>
               </div>
 
               {member.isSelf ? (
-                <p className="mt-3 text-xs text-muted-foreground">
-                  This is your own account — you cannot change your own status, role or permissions.
-                </p>
+                <div className="mt-4 rounded bg-muted/30 p-2 text-center text-xs text-muted-foreground">
+                  Logged in as this account — self-modifications are restricted for security.
+                </div>
               ) : (
                 <div className="mt-4 space-y-4">
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap items-center gap-2 border-t border-border/50 pt-4">
+                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Access Control
+                    </p>
                     {ACCESS_STATUSES.filter((s) => s !== status).map((next) => (
                       <Button
                         key={next}
                         variant={next === "approved" ? "red" : "steel"}
                         size="sm"
+                        className="h-7 text-[10px]"
                         disabled={busy}
                         onClick={() =>
                           void run(
@@ -152,19 +203,40 @@ function StaffPage() {
                               : "Set pending"}
                       </Button>
                     ))}
+
+                    <Button
+                      variant="steel"
+                      size="sm"
+                      className="h-7 text-[10px]"
+                      disabled={busy}
+                      onClick={() => handlePasswordReset(member.id)}
+                    >
+                      Reset Password
+                    </Button>
+
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="h-7 text-[10px]"
+                      disabled={busy}
+                      onClick={() => handleDelete(member.id)}
+                    >
+                      Delete
+                    </Button>
                   </div>
 
                   {canManageRoles ? (
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Role
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Change Role
                       </p>
-                      <div className="mt-1.5 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         {ROLES.map((r) => (
                           <Button
                             key={r}
                             variant={r === role ? "red" : "steel"}
                             size="sm"
+                            className="h-7 text-[10px]"
                             disabled={busy || r === role}
                             onClick={() =>
                               void run(
@@ -181,22 +253,23 @@ function StaffPage() {
                     </div>
                   ) : null}
 
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                      Extra permissions
+                  <div className="space-y-2">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Permissions
                     </p>
-                    <div className="mt-1.5 grid gap-1.5 sm:grid-cols-2">
+                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                       {ASSIGNABLE_PERMISSIONS.map((permission) => {
                         const on = member.permissions.includes(permission);
                         return (
                           <label
                             key={permission}
-                            className="flex items-center gap-2 rounded-md bg-secondary px-3 py-2 text-sm"
+                            className={`flex cursor-pointer items-center gap-2 rounded-md border p-2 text-[11px] transition-colors ${on ? "border-primary/50 bg-primary/5" : "border-border bg-muted/20 hover:bg-muted/40"}`}
                           >
                             <input
                               type="checkbox"
                               checked={on}
                               disabled={busy}
+                              className="accent-primary"
                               onChange={(e) =>
                                 togglePermission(
                                   member.id,
@@ -206,22 +279,27 @@ function StaffPage() {
                                 )
                               }
                             />
-                            {PERMISSION_LABELS[permission]}
+                            <span className={on ? "font-medium text-foreground" : ""}>
+                              {PERMISSION_LABELS[permission]}
+                            </span>
                           </label>
                         );
                       })}
                     </div>
-                    <p className="mt-2 text-xs text-muted-foreground">
-                      Security settings, API integrations and role management stay Super Admin only
-                      and cannot be granted here.
-                    </p>
                   </div>
                 </div>
               )}
             </div>
           );
         })}
-        {staff.isLoading ? <p className="text-sm text-muted-foreground">Loading…</p> : null}
+        {staff.data?.length === 0 && !staff.isLoading && (
+          <div className="py-12 text-center text-muted-foreground">No staff members found.</div>
+        )}
+        {staff.isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          </div>
+        ) : null}
       </div>
     </div>
   );

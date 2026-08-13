@@ -13,7 +13,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { CitiesPanel } from "@/components/admin/checkout/CitiesPanel";
 import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPanel";
 import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSettingsPanel";
@@ -26,7 +25,7 @@ import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.share
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
-  head: () => adminHead("Settings — CZP Ops"),
+  head: () => ({ title: "Settings — CZP Ops" }),
   component: AdminSettings,
 });
 

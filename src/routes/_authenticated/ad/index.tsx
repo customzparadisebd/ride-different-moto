@@ -11,14 +11,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
-import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getDashboardMetrics } from "@/lib/admin-data.functions";
 import { ORDER_STATUSES, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/")({
-  head: () => adminHead("Dashboard — CZP Ops"),
+  head: () => ({ title: "Dashboard — CZP Ops" }),
   component: AdminDashboard,
 });
 

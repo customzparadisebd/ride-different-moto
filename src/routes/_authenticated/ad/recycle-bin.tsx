@@ -13,7 +13,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, listOrders } from "@/lib/orders.functions";
@@ -21,7 +20,7 @@ import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
-  head: () => adminHead("Recycle Bin — CZP Ops"),
+  head: () => ({ title: "Recycle Bin — CZP Ops" }),
   component: RecycleBin,
 });
 

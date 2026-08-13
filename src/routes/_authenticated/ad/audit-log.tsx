@@ -14,12 +14,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { Input } from "@/components/ui/input";
 import { listAuditLog } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/audit-log")({
-  head: () => adminHead("Audit log — CZP Ops"),
+  head: () => ({ title: "Audit log — CZP Ops" }),
   component: AuditLogPage,
 });
 

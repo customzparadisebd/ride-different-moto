@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { type AdminOrderItem, OrderItemsTable } from "@/components/admin/orders/OrderItemsTable";
 import { CourierPanel } from "@/components/admin/orders/CourierPanel";
 import {
@@ -17,7 +16,7 @@ import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
-  head: () => adminHead("Order — CZP Ops"),
+  head: () => ({ title: "Order — CZP Ops" }),
   component: AdminOrderDetail,
 });
 

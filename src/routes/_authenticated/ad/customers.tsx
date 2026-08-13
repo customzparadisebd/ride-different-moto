@@ -12,7 +12,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,7 @@ import { listOrders } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/customers")({
-  head: () => adminHead("Customers — CZP Ops"),
+  head: () => ({ title: "Customers — CZP Ops" }),
   component: AdminCustomers,
 });
 

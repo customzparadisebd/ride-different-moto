@@ -12,14 +12,13 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { Button } from "@/components/ui/button";
 import { createManualOrder, getMyAccess } from "@/lib/orders.functions";
 import { newIdempotencyKey } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/new")({
-  head: () => adminHead("New order — CZP Ops"),
+  head: () => ({ title: "New order — CZP Ops" }),
   component: NewManualOrder,
 });
 

@@ -14,7 +14,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import {
   emptyProductForm,
   ProductForm,
@@ -44,7 +43,7 @@ import {
 import { getStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/products")({
-  head: () => adminHead("Products — CZP Ops"),
+  head: () => ({ title: "Products — CZP Ops" }),
   component: AdminProducts,
 });
 

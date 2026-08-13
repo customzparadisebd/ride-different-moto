@@ -10,7 +10,6 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import { formatBDT } from "@/lib/format";
@@ -18,7 +17,7 @@ import { getOrder } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
-  head: () => adminHead("Invoice — CZP Ops"),
+  head: () => ({ title: "Invoice — CZP Ops" }),
   component: InvoicePage,
 });
 

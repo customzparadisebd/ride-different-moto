@@ -16,7 +16,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,7 +31,7 @@ import {
 import { PERMISSIONS } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/security")({
-  head: () => adminHead("Security — CZP Ops"),
+  head: () => ({ title: "Security — CZP Ops" }),
   component: SecurityPage,
 });
 
