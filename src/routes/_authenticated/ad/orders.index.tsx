@@ -454,10 +454,10 @@ function AdminOrderList() {
                 dir={sortDir}
                 onSort={toggleSort}
               />
-              <th className="p-2.5">Customer</th>
-              <th className="p-2.5">Products</th>
-              <th className="p-2.5">Payment Info</th>
-              <th className="p-2.5">Courier</th>
+              <th className="p-2">Customer</th>
+              <th className="p-2">Products</th>
+              <th className="p-2 text-center">Payment Info</th>
+              <th className="p-2 text-center">Courier</th>
               <SortHeader
                 label="Amounts"
                 column="total"
@@ -465,7 +465,7 @@ function AdminOrderList() {
                 dir={sortDir}
                 onSort={toggleSort}
               />
-              <th className="p-2.5">Status</th>
+              <th className="p-2 text-center">Status</th>
             </tr>
           </thead>
           <tbody>
