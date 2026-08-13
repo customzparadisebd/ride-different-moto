@@ -196,9 +196,9 @@
 @utility bg-gradient-onyx {
   background-image: linear-gradient(
     135deg,
-    oklch(0.28 0.004 264),
-    oklch(0.18 0.004 264) 55%,
-    oklch(0.1 0.004 264)
+    oklch(0.18 0.004 264),
+    oklch(0.16 0.004 264) 55%,
+    oklch(0.15 0.004 264)
   );
 }
 
