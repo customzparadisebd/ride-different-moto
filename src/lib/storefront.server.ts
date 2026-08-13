@@ -128,7 +128,7 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
   if (error) throw new Error("Could not load this product.");
   if (!data) return null;
 
-  const row = data as ProductRow;
+  const row = data as any;
   const { data: colorRows } = await supabase
     .from("product_colors")
     .select(COLOR_FIELDS)
