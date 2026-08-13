@@ -4,12 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
-export const getHeroSlides = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabase
-    .from("hero_slides")
-    .select("*")
-    .eq("is_active", true)
-    .order("sort_order", { ascending: true });
+export const getHeroSlides = createServerFn({ method: "GET" })
+  .inputValidator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
+  .handler(async ({ data: { admin } }) => {
+  const query = supabase.from("hero_slides").select("*");
+  
+  if (!admin) {
+    query.eq("is_active", true);
+  }
+
+  const { data, error } = await query.order("sort_order", { ascending: true });
     
   if (error) throw new Error(error.message);
   
