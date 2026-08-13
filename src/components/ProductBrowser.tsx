@@ -63,15 +63,12 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
     }
   }, [products, search, bike, category, sort]);
 
-  const dirty =
-    search !== "" || bike !== "all" || category !== "all" || minPrice !== "" || maxPrice !== "";
+  const dirty = search !== "" || bike !== "all" || category !== "all";
 
   const reset = () => {
     setSearch("");
     setBike("all");
     setCategory("all");
-    setMinPrice("");
-    setMaxPrice("");
     setSort("newest");
   };
 
