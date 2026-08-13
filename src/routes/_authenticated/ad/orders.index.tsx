@@ -307,7 +307,7 @@ function AdminOrderList() {
           <span className="text-xs font-bold">{selected.length} selected</span>
           <Button
             variant="destructive"
-            size="xs"
+            size="sm"
             className="h-7 px-2 text-[10px] uppercase font-bold"
             disabled={bulkMutation.isPending}
             onClick={() => {
@@ -320,7 +320,7 @@ function AdminOrderList() {
           </Button>
           <Button
             variant="secondary"
-            size="xs"
+            size="sm"
             className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
             onClick={() => {
               printOrders(selectedRows, "Selected orders");
@@ -341,7 +341,7 @@ function AdminOrderList() {
               </select>
               <Button
                 variant="secondary"
-                size="xs"
+                size="sm"
                 className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
                 disabled={assignMutation.isPending}
                 onClick={() => assignMutation.mutate({ data: { orderIds: selected, assignedTo: bulkAssignee || null } })}
@@ -357,7 +357,7 @@ function AdminOrderList() {
               </select>
               <Button
                 variant="red"
-                size="xs"
+                size="sm"
                 className="h-7 px-2 text-[10px] uppercase font-bold"
                 disabled={bulkMutation.isPending}
                 onClick={() => bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })}
@@ -369,7 +369,7 @@ function AdminOrderList() {
           {canShip ? (
             <Button
               variant="outline"
-              size="xs"
+              size="sm"
               className="h-7 border-primary/20 hover:bg-primary/5 px-2"
               onClick={() => {
                 if (sendableSelected.length === 0) {
@@ -382,7 +382,7 @@ function AdminOrderList() {
               <img src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" alt="SteadFast" className="h-3 w-auto" />
             </Button>
           ) : null}
-          <Button variant="ghost" size="xs" className="h-7 text-[10px] uppercase font-bold" onClick={() => setSelected([])}>Clear</Button>
+          <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase font-bold" onClick={() => setSelected([])}>Clear</Button>
         </div>
       ) : null}
 
