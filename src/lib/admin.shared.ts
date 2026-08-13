@@ -175,6 +175,10 @@ export const AUDIT_ACTIONS = {
   zoneUpdated: "zone.updated",
   userCreated: "user.created",
   userDeleted: "user.deleted",
+  reviewUpdated: "review.updated",
+  reviewCreated: "review.created",
+  reviewDeleted: "review.deleted",
+  leadCaptured: "lead.captured",
 } as const;
 
 export const staffStatusInput = z.object({
