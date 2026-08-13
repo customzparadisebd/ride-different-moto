@@ -18,6 +18,8 @@ import {
   Truck,
   Users,
   UsersRound,
+  MessageSquare,
+  Star,
 } from "lucide-react";
 
 import {
