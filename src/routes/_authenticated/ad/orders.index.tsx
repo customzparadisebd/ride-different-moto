@@ -22,6 +22,7 @@ import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
 import { OrderNoteDialog } from "@/components/admin/orders/OrderNoteDialog";
+import { CustomerOrderSummaryDialog } from "@/components/admin/orders/CustomerOrderSummaryDialog";
 
 import {
   AmountsCell,
@@ -117,6 +118,7 @@ function AdminOrderList() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
   const [noteOrder, setNoteOrder] = useState<AdminOrderListRow | null>(null);
+  const [summaryCustomer, setSummaryCustomer] = useState<{ phone: string; name: string } | null>(null);
 
 
   const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
@@ -414,6 +416,12 @@ function AdminOrderList() {
         onOpenChange={(open) => (open ? null : setNoteOrder(null))}
       />
 
+      <CustomerOrderSummaryDialog
+        phone={summaryCustomer?.phone ?? null}
+        name={summaryCustomer?.name ?? ""}
+        onOpenChange={(open) => (open ? null : setSummaryCustomer(null))}
+      />
+
       <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -544,7 +552,15 @@ function AdminOrderList() {
                   </div>
                 </td>
                 <td className="p-2">
-                  <CustomerCell order={order} />
+                  <CustomerCell
+                    order={order}
+                    onShowSummary={() =>
+                      setSummaryCustomer({
+                        phone: order.customer_phone,
+                        name: order.customer_name,
+                      })
+                    }
+                  />
                 </td>
                 <td className="p-2">
                   <ProductsCell order={order} />
@@ -630,7 +646,15 @@ function AdminOrderList() {
               </div>
             </div>
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <CustomerCell order={order} />
+              <CustomerCell
+                order={order}
+                onShowSummary={() =>
+                  setSummaryCustomer({
+                    phone: order.customer_phone,
+                    name: order.customer_name,
+                  })
+                }
+              />
               <ProductsCell order={order} />
               <PaymentCell order={order} />
               <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
