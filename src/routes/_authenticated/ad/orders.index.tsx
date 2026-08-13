@@ -560,6 +560,7 @@ function AdminOrderList() {
                         name: order.customer_name,
                       })
                     }
+                    canManage={canManage}
                   />
                 </td>
                 <td className="p-2">
@@ -654,6 +655,7 @@ function AdminOrderList() {
                     name: order.customer_name,
                   })
                 }
+                canManage={canManage}
               />
               <ProductsCell order={order} />
               <PaymentCell order={order} />

@@ -495,6 +495,39 @@ export type Database = {
         }
         Relationships: []
       }
+      customer_fraud_marks: {
+        Row: {
+          label: string | null
+          mark_type: string
+          marked_at: string
+          marked_by: string | null
+          marked_by_label: string | null
+          note: string
+          phone_number: string
+          updated_at: string
+        }
+        Insert: {
+          label?: string | null
+          mark_type?: string
+          marked_at?: string
+          marked_by?: string | null
+          marked_by_label?: string | null
+          note: string
+          phone_number: string
+          updated_at?: string
+        }
+        Update: {
+          label?: string | null
+          mark_type?: string
+          marked_at?: string
+          marked_by?: string | null
+          marked_by_label?: string | null
+          note?: string
+          phone_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           address: string | null

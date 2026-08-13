@@ -10,6 +10,7 @@ import {
   type OrderUpdatePayload,
 } from "@/components/admin/orders/OrderManagePanel";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
+import { FraudMarkBadge } from "@/components/admin/customers/FraudMarkBadge";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions";
@@ -124,7 +125,14 @@ function AdminOrderDetail() {
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {/* ---- Customer information ---- */}
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-          <h2 className="font-display text-lg font-bold uppercase">Customer information</h2>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-lg font-bold uppercase">Customer information</h2>
+            <FraudMarkBadge 
+              phoneNumber={order.customer_phone} 
+              customerName={order.customer_name}
+              canManage={canManage}
+            />
+          </div>
           <p className="mt-2 text-sm">{order.customer_name}</p>
           <p className="text-sm text-muted-foreground">
             <a href={`tel:${order.customer_phone}`} className="underline">
