@@ -73,17 +73,7 @@ export function InvoiceCell({
   canManage: boolean;
 }) {
   return (
-    <div className="space-y-1.5">
-      <div className="flex items-center gap-1.5">
-        <Link
-          to="/ad/orders/$id"
-          params={{ id: order.id }}
-          className="font-semibold text-primary underline"
-        >
-          {order.invoice_no}
-        </Link>
-        {order.is_pinned ? <Pin className="size-3.5 shrink-0 text-primary" /> : null}
-      </div>
+    <div className="space-y-1">
       <div className="flex flex-wrap items-center gap-1">
         <IconAction label="Copy invoice" onClick={() => void copy(order.invoice_no, "Invoice")}>
           <Copy />
@@ -110,30 +100,27 @@ export function InvoiceCell({
         <IconAction label="Activity log" onClick={onActivity}>
           <History />
         </IconAction>
-        {canManage ? (
-          <IconAction label={order.is_pinned ? "Unpin order" : "Pin order"} onClick={onTogglePin}>
-            <Pin />
-          </IconAction>
-        ) : null}
+      </div>
+      <div className="flex items-center gap-1.5">
+        <Link
+          to="/ad/orders/$id"
+          params={{ id: order.id }}
+          className="font-mono text-[13px] font-bold text-primary underline decoration-primary/30 underline-offset-2"
+        >
+          {order.invoice_no}
+        </Link>
+        {order.is_pinned ? <Pin className="size-3 shrink-0 text-primary" /> : null}
       </div>
       <div className="flex flex-wrap items-center gap-1">
-        <span className="rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground">
-          {statusLabel(order.order_source)}
-        </span>
         <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
+          className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-tight ${
             order.print_count > 0
-              ? "bg-emerald-500/15 text-emerald-500"
-              : "bg-muted text-muted-foreground"
+              ? "bg-emerald-500/10 text-emerald-600"
+              : "bg-rose-500/10 text-rose-600"
           }`}
         >
-          {order.print_count > 0 ? "Printed" : "Unprinted"}
+          {order.print_count > 0 ? "Printed" : "Un-Printed"}
         </span>
-        {order.is_duplicate ? (
-          <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-500">
-            Duplicate
-          </span>
-        ) : null}
       </div>
     </div>
   );
