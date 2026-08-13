@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 type SafeImageProps = {
   src: string;
+  mobileSrc?: string;
   alt: string;
   width: number;
   height: number;
@@ -23,6 +24,7 @@ const MAX_RETRIES = 3;
  */
 export function SafeImage({
   src,
+  mobileSrc,
   alt,
   width,
   height,
