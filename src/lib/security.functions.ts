@@ -11,8 +11,8 @@ export const secureAuditLog = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => 
     z.object({
       action: z.string(),
-      targetType: z.string().optional(),
-      targetId: z.string().optional(),
+      targetType: z.string().nullable().optional(),
+      targetId: z.string().nullable().optional(),
       metadata: z.record(z.any()).optional(),
     }).parse(input)
   )
@@ -22,8 +22,8 @@ export const secureAuditLog = createServerFn({ method: "POST" })
     
     await auditFromActor(actor, {
       action: data.action,
-      targetType: data.targetType,
-      targetId: data.targetId,
+      targetType: data.targetType ?? null,
+      targetId: data.targetId ?? null,
       metadata: data.metadata,
     });
     
