@@ -39,7 +39,9 @@ import {
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
-  head: () => ({ title: "Staff & roles — CZP Ops" }),
+  head: () => ({
+    meta: [{ title: "Staff & roles — CZP Ops" }]
+  }),
   component: StaffPage,
 });
 

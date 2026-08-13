@@ -17,7 +17,9 @@ import {
 } from "@/lib/hero.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
-  head: () => ({ title: "Manage Hero Slider — CZP Ops" }),
+  head: () => ({
+    meta: [{ title: "Manage Hero Slider — CZP Ops" }]
+  }),
   component: AdminHeroSlides,
 });
 

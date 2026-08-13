@@ -21,7 +21,9 @@ import { listOrders } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/customers")({
-  head: () => ({ title: "Customers — CZP Ops" }),
+  head: () => ({
+    meta: [{ title: "Customers — CZP Ops" }]
+  }),
   component: AdminCustomers,
 });
 
