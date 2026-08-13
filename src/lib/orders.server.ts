@@ -171,8 +171,12 @@ export async function assertStaff(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<void> {
-  const { data, error } = await supabase.rpc("is_staff", { _user_id: userId });
-  if (error || !data) throw new Error("You are not authorised to access the admin panel.");
+  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: 'staff' });
+  if (error || !data) {
+    // Check if they have a higher role since staff is the lowest
+    const { data: isHigher } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!isHigher) throw new Error("You are not authorised to access the admin panel.");
+  }
 }
 
 /**

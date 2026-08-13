@@ -20,6 +20,7 @@
 - **Product UI**: Added theme-aware outlines (Silver/Gray in Dark Mode, Black/Dark in Light Mode) to all product color selection circles.
 - **About Us Section**: Removed the feature cards (Premium Quality, Unique Designs, etc.) while keeping the brand story and tagline.
 - **Store Coming Soon**: Removed the estimated launch date (Q3 2026) from the "Physical Store Coming Soon" section on the landing page.
+- **Security Hardening**: Resolved automated scan findings. Refactored database migrations to remove `GRANT ALL` in favor of granular permissions. Standardized staff authorization checks across server functions and RLS policies. Hardened the owner account identification logic.
 - **SteadFast API Integration**: Completed the SteadFast courier integration with full support for the `Api-Key` and `Secret-Key` authentication headers.
 - **Connection Testing**: Added a "Test Connection" button in Admin Settings to verify API credentials without placing real orders.
 - **API Visibility**: Implemented a "Recent API Activity" log table in the courier settings panel to debug integration issues.
