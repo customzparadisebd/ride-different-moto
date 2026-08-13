@@ -234,7 +234,7 @@ function RootComponent() {
         <CartProvider>
           <div className="flex min-h-svh flex-col overflow-x-hidden">
             {isPrivateArea ? null : <Header />}
-            <main className="flex-1">
+            <main className={`flex-1 ${isPrivateArea ? '' : 'pt-14 sm:pt-16'}`}>
               {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
               <Outlet />
             </main>
