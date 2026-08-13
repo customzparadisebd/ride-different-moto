@@ -24,7 +24,7 @@ export const secureAuditLog = createServerFn({ method: "POST" })
       action: data.action,
       targetType: data.targetType ?? null,
       targetId: data.targetId ?? null,
-      metadata: data.metadata,
+      metadata: data.metadata ?? {},
     });
     
     return { ok: true };
