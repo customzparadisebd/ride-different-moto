@@ -65,3 +65,8 @@
 - Added Organization and LocalBusiness JSON-LD for enhanced local SEO.
 - Improved Product Gallery accessibility: added keyboard controls (arrows, escape), ARIA roles, and focus management for thumbnails.
 - Verified stable site URL (https://customzparadisebd.com) in site configuration.
+
+## Aug 13, 2026 (Part 3)
+- Implemented Organization and LocalBusiness JSON-LD in root layout for improved local SEO presence in Bangladesh.
+- Finalized Product Gallery keyboard accessibility and focus management.
+- Hardcoded Sector 10, Uttara branch coordinates and opening hours (9 AM - 9 PM) into business metadata.
