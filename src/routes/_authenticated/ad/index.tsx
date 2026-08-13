@@ -42,7 +42,11 @@ export const Route = createFileRoute("/_authenticated/ad/")({
 
 function AdminDashboard() {
   const fetchMetrics = useServerFn(getDashboardMetrics);
-  const query = useQuery({ queryKey: ["admin-dashboard"], queryFn: () => fetchMetrics({}) });
+  const query = useQuery({ 
+    queryKey: ["admin-dashboard"], 
+    queryFn: () => fetchMetrics({}),
+    refetchInterval: 30000 // Auto-refresh every 30 seconds for "real-time" updates
+  });
 
   if (query.isLoading) {
     return (
@@ -94,15 +98,15 @@ function AdminDashboard() {
         />
         <StatCard 
           title="ORDERS" 
-          value={data.statusCounts['pending'] || 0} 
-          subtitle={`${data.statusCounts['pending'] || 0} pending`} 
+          value={data.totalOrders} 
+          subtitle={`${data.pendingOrders} pending`} 
           icon={<ShoppingCart className="h-4 w-4 text-sky-500" />}
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
         <StatCard 
           title="CUSTOMERS" 
-          value={data.recent.length} // Simplified for UI demonstration
-          subtitle="Total" 
+          value={data.uniqueCustomers}
+          subtitle="Total unique" 
           icon={<Users className="h-4 w-4 text-fuchsia-500" />}
           gradient="bg-linear-to-br from-fuchsia-50 to-white dark:from-fuchsia-950/20 dark:to-background"
         />
@@ -110,10 +114,10 @@ function AdminDashboard() {
 
       {/* Secondary Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MiniStatCard title="TOTAL PRODUCTS" value={1} subtitle="Active" icon={<Package className="h-4 w-4 text-sky-400" />} />
-        <MiniStatCard title="TOTAL STOCK ITEMS" value={101} subtitle="Units" icon={<Layers className="h-4 w-4 text-emerald-400" />} />
-        <MiniStatCard title="LOW STOCK" value={0} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} />
-        <MiniStatCard title="OUT OF STOCK" value={0} subtitle="Critical" icon={<Box className="h-4 w-4 text-rose-400" />} />
+        <MiniStatCard title="TOTAL PRODUCTS" value={data.inventory.totalProducts} subtitle="Active" icon={<Package className="h-4 w-4 text-sky-400" />} />
+        <MiniStatCard title="TOTAL STOCK ITEMS" value={data.inventory.totalStock} subtitle="Units" icon={<Layers className="h-4 w-4 text-emerald-400" />} />
+        <MiniStatCard title="LOW STOCK" value={data.inventory.lowStock} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} />
+        <MiniStatCard title="OUT OF STOCK" value={data.inventory.outOfStock} subtitle="Critical" icon={<Box className="h-4 w-4 text-rose-400" />} />
       </div>
 
       {/* Charts Section */}
@@ -213,7 +217,18 @@ function AdminDashboard() {
             <AlertTriangle className="h-4 w-4 text-amber-500" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground py-4 font-medium">No products are low on stock.</p>
+            {data.inventory.lowStock === 0 ? (
+              <p className="text-xs text-muted-foreground py-4 font-medium">No products are low on stock.</p>
+            ) : (
+              <div className="space-y-2 py-2">
+                {data.inventory.lowStockItems?.map((item: any) => (
+                  <div key={item.id} className="flex justify-between items-center text-xs border-b border-border/40 pb-1">
+                    <span className="font-medium truncate max-w-[150px]">Product ID: {item.id.split('-')[0]}</span>
+                    <span className="text-amber-600 font-bold">{item.stock_qty} left</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
         <Card className="border-none shadow-sm">
@@ -222,7 +237,18 @@ function AdminDashboard() {
             <Box className="h-4 w-4 text-rose-500" />
           </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground py-4 font-medium">Everything's in stock — great job.</p>
+            {data.inventory.outOfStock === 0 ? (
+              <p className="text-xs text-muted-foreground py-4 font-medium">Everything's in stock — great job.</p>
+            ) : (
+              <div className="space-y-2 py-2">
+                {data.inventory.outOfStockItems?.map((item: any) => (
+                  <div key={item.id} className="flex justify-between items-center text-xs border-b border-border/40 pb-1">
+                    <span className="font-medium truncate max-w-[150px]">Product ID: {item.id.split('-')[0]}</span>
+                    <span className="text-rose-600 font-bold">OUT</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -248,7 +274,7 @@ function AdminDashboard() {
                 {data.recent.map((order: any) => (
                   <tr key={order.id} className="hover:bg-muted/30 transition-colors group">
                     <td className="px-6 py-4 font-mono font-medium text-muted-foreground/80 group-hover:text-foreground">
-                      {order.id.split('-')[0]}
+                      {order.invoice_no || order.id.split('-')[0]}
                     </td>
                     <td className="px-6 py-4">
                       <StatusBadge value={order.status} className="h-5 text-[10px] font-bold rounded-full px-2" />
