@@ -123,7 +123,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { title: `${site.name} — ${site.tagline}` },
       { name: "description", content: site.description },
-      { name: "author", content: site.name },
+      { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
       { property: "og:site_name", content: site.name },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

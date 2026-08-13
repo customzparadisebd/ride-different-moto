@@ -1,3 +1,8 @@
+/**
+ * Orders Module
+ * Handles storefront checkout, admin order management, and bulk processing.
+ * Developed by: Rafi Gazi (Rabbee) Apps
+ */
 import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
