@@ -62,6 +62,8 @@ function toColor(row: ProductRow): StorefrontColor {
 }
 
 function toProduct(row: ProductRow, colors: StorefrontColor[]): StorefrontProduct {
+  const sortOrder = row["sort_order"] === null ? null : num(row["sort_order"]);
+
   const image = (row["image_url"] as string | null) ?? null;
   const offer = row["offer_price"] === null ? null : num(row["offer_price"]);
   const stockQty = Number(row["stock_qty"] ?? 0);
@@ -87,8 +89,10 @@ function toProduct(row: ProductRow, colors: StorefrontColor[]): StorefrontProduc
     newArrival: Boolean(row["is_new_arrival"]),
     badgeText: row["badge_enabled"] ? ((row["badge_text"] as string | null) ?? null) : null,
     colors,
+    sortOrder,
   };
 }
+
 
 /** All active, non-deleted products with their active colour options. */
 export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
@@ -112,9 +116,10 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   }
 
   return ((products.data ?? []) as any[])
-    .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999))
     .map((row) => toProduct(row, byProduct.get(String(row["id"])) ?? []));
 }
+
+
 
 export async function fetchProductBySlug(slug: string): Promise<StorefrontProduct | null> {
   const supabase = publicClient();

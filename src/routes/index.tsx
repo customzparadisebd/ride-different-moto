@@ -79,7 +79,10 @@ function Index() {
   // Status: COMPLETED
   const { data: products } = useSuspenseQuery(storefrontProductsQuery());
   const universalProducts = products.filter((product) => product.universal);
-  const bestDeals = products.filter((product) => product.bestDeal || product.featured);
+  const bestDeals = products
+    .filter((product) => product.bestDeal || product.featured)
+    .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+
 
   return (
     <>

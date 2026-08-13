@@ -76,3 +76,7 @@
 - Migrated Hero Slider to database: The homepage now fetches slides dynamically from the `hero_slides` table.
 - Added sorting, active status toggles, and link/CTA management for banners without code changes.
 - Refined design tokens for color selector chips with enhanced silver/gray borders.
+- Implemented **Featured & Best Deals Admin**: Added a new management panel (`/ad/featured`) for the homepage "Featured & Best Deals" section.
+- Added drag-and-drop sorting and custom promotional label management for featured products.
+- Updated the storefront to dynamically sort and display featured products according to admin configuration.
+

@@ -14,6 +14,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
+  featuredProductsUpdateInput,
   productDeleteInput,
   productInput,
   productListInput,
@@ -32,6 +33,7 @@ import {
   PRODUCT_TOGGLE_COLUMNS,
   productToRow,
 } from "./products.shared";
+
 
 export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -391,3 +393,39 @@ export const reorderProductColors = createServerFn({ method: "POST" })
     );
     return { ok: true };
   });
+
+export const updateFeaturedProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => featuredProductsUpdateInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const results = await Promise.all(
+      data.items.map((item: any) =>
+        context.supabase
+          .from("products")
+          .update({
+            sort_order: item.sortOrder,
+            badge_text: item.badgeText || null,
+            badge_enabled: item.badgeEnabled,
+          })
+          .eq("id", item.id)
+      )
+    );
+
+    const error = results.find((r: any) => r.error);
+
+    if (error) throw new Error("Could not update some products.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product",
+      targetLabel: "Bulk Featured Update",
+      newValue: data.items,
+    });
+
+    return { ok: true };
+  });
+

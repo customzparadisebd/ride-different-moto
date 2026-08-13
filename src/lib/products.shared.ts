@@ -127,9 +127,19 @@ export const productStockInput = z.object({
 
 export const productToggleInput = z.object({
   id: z.string().uuid(),
-  field: z.enum(["isActive", "isBestDeal", "isFeatured", "isNewArrival"]),
+  field: z.enum(["isActive", "isBestDeal", "isFeatured", "isNewArrival", "badgeEnabled"]),
   value: z.boolean(),
 });
+
+export const featuredProductsUpdateInput = z.object({
+  items: z.array(z.object({
+    id: z.string().uuid(),
+    sortOrder: z.number().int(),
+    badgeText: z.string().trim().max(40).optional().nullable(),
+    badgeEnabled: z.boolean(),
+  })),
+});
+
 
 export function stockStatus(qty: number, lowThreshold: number) {
   if (qty <= 0) return { key: "out_of_stock", label: "Out of stock" } as const;
@@ -157,7 +167,9 @@ export const PRODUCT_TOGGLE_COLUMNS = {
   isBestDeal: "is_best_deal",
   isFeatured: "is_featured",
   isNewArrival: "is_new_arrival",
+  badgeEnabled: "badge_enabled",
 } as const;
+
 
 export function productToRow(data: ReturnType<typeof productInput.parse>) {
   return {
