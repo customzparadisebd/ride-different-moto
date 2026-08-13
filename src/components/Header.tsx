@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Languages, Menu, Moon, ShoppingBag, Sun } from "lucide-react";
+import { Menu, Moon, ShoppingBag, Sun } from "lucide-react";
 import { useState } from "react";
 
 import { CartSheet } from "@/components/CartSheet";
@@ -49,16 +49,15 @@ export function Header() {
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
         <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
+          <button
             onClick={toggleLanguage}
-            className="flex items-center gap-1.5 px-2 w-auto"
+            className="flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary active:scale-95 sm:h-10 sm:px-4 sm:text-xs"
             aria-label={`Switch to ${language === 'en' ? 'Bangla' : 'English'}`}
           >
-            <Languages className="size-4.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">{t('nav.language')}</span>
-          </Button>
+            <span className={language === 'bn' ? "text-primary" : "text-foreground/40"}>বাং</span>
+            <span className="mx-1.5 h-3 w-px bg-border/50" />
+            <span className={language === 'en' ? "text-primary" : "text-foreground/40"}>ENG</span>
+          </button>
 
           <Button
             variant="ghost"
@@ -110,17 +109,17 @@ export function Header() {
                 ))}
               </nav>
               <div className="p-4 pb-safe space-y-3">
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-center gap-2"
+                <button 
+                  className="flex h-12 w-full items-center justify-center rounded-xl bg-secondary/50 font-display text-sm font-bold tracking-wider"
                   onClick={() => {
                     toggleLanguage();
                     setMenuOpen(false);
                   }}
                 >
-                  <Languages className="size-4" />
-                  <span>Switch to {language === 'en' ? 'Bangla' : 'English'}</span>
-                </Button>
+                  <span className={language === 'bn' ? "text-primary" : "text-foreground/40"}>বাং</span>
+                  <span className="mx-3 h-4 w-px bg-border/50" />
+                  <span className={language === 'en' ? "text-primary" : "text-foreground/40"}>ENG</span>
+                </button>
                 <Button variant="red" size="touch" className="w-full" asChild>
                   <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer">
                     {t('common.whatsapp')}
