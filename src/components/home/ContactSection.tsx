@@ -4,6 +4,7 @@ import { WhatsAppIcon, FacebookIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
 
+export function ContactSection() {
   const getWhatsAppHref = () => {
     const text = encodeURIComponent("Hello Customz Paradise BD, I'm interested in modifying my bike. Can you help me?");
     return `https://wa.me/${site.whatsappNumber}?text=${text}`;
@@ -11,7 +12,7 @@ import { site } from "@/data/site";
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24" id="contact">
-      <div className="max-w-3xl">
+      <div className="max-w-4xl">
         <SectionHeading
           eyebrow="Get in touch"
           title="Contact Us"
@@ -23,12 +24,12 @@ import { site } from "@/data/site";
           Reach out to our experts directly or visit our office.
         </p>
 
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-3 lg:grid-cols-3">
           <a
             href={getWhatsAppHref()}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 shadow-card transition-colors hover:border-primary/60"
+            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-8 shadow-card transition-colors hover:border-primary/60"
           >
             <div className="grid size-12 place-items-center rounded-xl bg-brand-whatsapp/10 text-brand-whatsapp">
               <WhatsAppIcon className="size-6" />
@@ -43,7 +44,7 @@ import { site } from "@/data/site";
             href="https://m.me/customzparadisebd"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 shadow-card transition-colors hover:border-primary/60"
+            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-8 shadow-card transition-colors hover:border-primary/60"
           >
             <div className="grid size-12 place-items-center rounded-xl bg-brand-facebook/10 text-brand-facebook">
               <FacebookIcon className="size-6" />
@@ -54,7 +55,7 @@ import { site } from "@/data/site";
             </div>
           </a>
 
-          <div className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 shadow-card">
+          <div className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-8 shadow-card">
             <div className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
               <Store className="size-6" />
             </div>
