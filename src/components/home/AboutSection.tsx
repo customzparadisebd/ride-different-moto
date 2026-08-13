@@ -12,9 +12,9 @@ export function AboutSection() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-      <div className="max-w-3xl">
-        <div>
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24" id="about">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-12 lg:gap-16">
+        <div className="flex-1">
           <SectionHeading eyebrow="Our Story" title="About Us" />
           <div className="mt-8 space-y-6 text-lg leading-relaxed text-muted-foreground">
             <p>
@@ -30,7 +30,6 @@ export function AboutSection() {
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );
