@@ -117,6 +117,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "shipments.create",
     "content.manage",
     "zones.manage",
+    "reviews.manage",
   ],
   manager: [
     "orders.view",
