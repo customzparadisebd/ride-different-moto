@@ -238,12 +238,13 @@ export function SteadfastSettingsPanel() {
             </div>
             <Button
               variant="ghost"
-              size="xs"
+              size="sm"
               onClick={() => queryClient.invalidateQueries({ queryKey: ["steadfast-logs"] })}
               disabled={logsQuery.isFetching}
             >
               Refresh Logs
             </Button>
+
           </div>
  
           <div className="mt-4 overflow-hidden rounded-lg border border-border bg-muted/30">
