@@ -17,7 +17,7 @@ import type { BikeModel, HeroSlide, PolicyPage, Product, Review } from "./types"
 const heroSlides: HeroSlide[] = [
   {
     id: "hs-1",
-    bikeName: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            hi",
+    bikeName: "Pulsar N160",
     label: "Modification Setup",
     image: heroN160,
     alt: "Modified Bajaj Pulsar N160 with red and black custom bodywork",
@@ -51,7 +51,7 @@ const bikeModels: BikeModel[] = [
   {
     id: "bm-1",
     slug: "pulsar-n160",
-    name: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            hi",
+    name: "Pulsar N160",
     label: "Modification Parts",
     image: heroN160,
     alt: "Bajaj Pulsar N160 modification parts",
@@ -239,7 +239,7 @@ const reviews: Review[] = [
     name: "Sample Customer",
     rating: 5,
     text: "Placeholder review text. Real customer reviews will replace this once collected.",
-    bikeModel: "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''\n                                        \n                                            \n                                            hi",
+    bikeModel: "Pulsar N160",
     active: true,
     order: 1,
   },
