@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { XCircle } from "lucide-react";
 
 
+import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
 
@@ -96,6 +97,7 @@ function AdminOrderList() {
   const assign = useServerFn(assignOrders);
   const markPrinted = useServerFn(markOrdersPrinted);
   const pinOrder = useServerFn(setOrderPinned);
+  const createOrderFn = useServerFn(createManualOrder);
 
   const [filters, setFilters] = useState<OrderFilters>({
     ...EMPTY_ORDER_FILTERS,
@@ -168,6 +170,16 @@ function AdminOrderList() {
   });
 
   const printMutation = useMutation({ mutationFn: markPrinted, onSuccess: () => refreshOrders() });
+
+  const createMutation = useMutation({
+    mutationFn: createOrderFn,
+    onSuccess: (result) => {
+      toast.success(`Order ${result.invoiceNo} created`);
+      setCreateModalOpen(false);
+      refreshOrders();
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not create the order."),
+  });
 
   const rows = ordersQuery.data?.rows ?? [];
   const totalCount = ordersQuery.data?.count ?? 0;
@@ -430,11 +442,8 @@ function AdminOrderList() {
           </DialogHeader>
           <ManualOrderForm
             idempotencyKey={newIdempotencyKey()}
-            isPending={false}
-            onSubmit={(input) => {
-              // We'll wrap this in a mutation soon
-              console.log("Submit manual order", input);
-            }}
+            isPending={createMutation.isPending}
+            onSubmit={(input: any) => createMutation.mutate({ data: input })}
             onClose={() => setCreateModalOpen(false)}
           />
         </DialogContent>
