@@ -18,6 +18,7 @@ import { getBikeModels } from "@/data/catalog";
 import { getHeroSlides } from "@/lib/hero.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
+import { useLanguage } from "@/lib/i18n";
 
 const title = "Customz Paradise BD — Ride Different. Be Different.";
 
@@ -73,6 +74,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);
   const heroSlidesQuery = useQuery({ 
     queryKey: ["hero-slides"], 
@@ -93,7 +95,7 @@ function Index() {
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — premium motorcycle modification parts and accessories in Bangladesh
+        {site.name} — {t('section.home.h1')}
       </h1>
 
       <SectionBoundary label="hero">
