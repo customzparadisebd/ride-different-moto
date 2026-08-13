@@ -165,8 +165,6 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
     </article>
   );
 }
-  );
-}
 
 export function ProductGrid({ products }: { products: StorefrontProduct[] }) {
   if (!products.length) {
