@@ -490,7 +490,7 @@ function AdminOrderList() {
                   order.is_pinned ? "bg-primary/5" : ""
                 }`}
               >
-                 {canSelect ? (
+                {canSelect ? (
                   <td className="p-2 text-center">
                     <Checkbox
                       checked={selected.includes(order.id)}
