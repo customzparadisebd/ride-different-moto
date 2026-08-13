@@ -17,8 +17,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { listCustomers } from "@/lib/admin-data.functions";
 import { formatBDT } from "@/lib/format";
-import { listOrders } from "@/lib/orders.functions";
+import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
+import { FraudMarkBadge } from "@/components/admin/customers/FraudMarkBadge";
 
 export const Route = createFileRoute("/_authenticated/ad/customers")({
   head: () => ({ meta: [{ title: "Customers — CZP Ops" }, { property: "og:title", content: "Customers — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
@@ -27,8 +28,12 @@ export const Route = createFileRoute("/_authenticated/ad/customers")({
 
 function AdminCustomers() {
   const fetchCustomers = useServerFn(listCustomers);
+  const access = useServerFn(getMyAccess);
   const [search, setSearch] = useState("");
   const [openPhone, setOpenPhone] = useState<string | null>(null);
+
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  const canManage = accessQuery.data?.permissions.includes("customers.manage") ?? false;
 
   const query = useQuery({
     queryKey: ["admin-customers", search],
@@ -84,7 +89,14 @@ function AdminCustomers() {
               <>
                 <tr key={customer.phone} className="border-b border-border">
                   <td className="p-3">
-                    {customer.name}
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="font-bold">{customer.name}</span>
+                      <FraudMarkBadge 
+                        phoneNumber={customer.phone} 
+                        customerName={customer.name} 
+                        canManage={canManage}
+                      />
+                    </div>
                     <span className="block text-xs text-muted-foreground">
                       <a href={`tel:${customer.phone}`} className="underline">
                         {customer.phone}

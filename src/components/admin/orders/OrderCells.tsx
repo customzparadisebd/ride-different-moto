@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
+import { FraudMarkBadge } from "@/components/admin/customers/FraudMarkBadge";
 import { formatBDT } from "@/lib/format";
 import type { AdminOrderListRow } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
@@ -159,23 +160,40 @@ export function AssignmentCell({ order }: { order: AdminOrderListRow }) {
 }
 
 /** CUSTOMER — contact, quick actions, address and repeat-order count. */
-export function CustomerCell({ order, onShowSummary }: { order: AdminOrderListRow; onShowSummary?: () => void }) {
+export function CustomerCell({ 
+  order, 
+  onShowSummary,
+  canManage = false 
+}: { 
+  order: AdminOrderListRow; 
+  onShowSummary?: () => void;
+  canManage?: boolean;
+}) {
   const waPhone = order.customer_phone.replace(/\D/g, "").replace(/^0/, "880");
 
   return (
     <div className="space-y-1 text-[13px]">
-      <p className="font-bold leading-tight">{order.customer_name}</p>
-      <div className="flex items-center gap-1">
-        <span className="font-mono text-primary">{order.customer_phone}</span>
-        <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
-          <Copy className="size-3" />
-        </button>
-        <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className="text-[#25D366]">
-          <MessageCircle className="size-3.5" />
-        </a>
-        <a href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`} target="_blank" rel="noreferrer" className="text-rose-500">
-          <ShieldAlert className="size-3.5" />
-        </a>
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <p className="font-bold leading-tight">{order.customer_name}</p>
+          <FraudMarkBadge 
+            phoneNumber={order.customer_phone} 
+            customerName={order.customer_name}
+            canManage={canManage}
+          />
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="font-mono text-primary">{order.customer_phone}</span>
+          <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
+            <Copy className="size-3" />
+          </button>
+          <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className="text-[#25D366]">
+            <MessageCircle className="size-3.5" />
+          </a>
+          <a href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`} target="_blank" rel="noreferrer" className="text-rose-500">
+            <ShieldAlert className="size-3.5" />
+          </a>
+        </div>
       </div>
       <p className="text-[11px] leading-tight text-muted-foreground">
         {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
