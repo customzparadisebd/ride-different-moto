@@ -439,7 +439,6 @@ function AdminOrderList() {
                   />
                 </th>
               ) : null}
-              <th className="p-2.5">SL</th>
               <SortHeader
                 label="Invoice No"
                 column="invoice_no"
@@ -447,7 +446,7 @@ function AdminOrderList() {
                 dir={sortDir}
                 onSort={toggleSort}
               />
-              <th className="p-2.5">Placed &amp; Assigned</th>
+              <th className="p-2">Placed &amp; Assigned</th>
               <SortHeader
                 label="Date & Time"
                 column="created_at"
