@@ -13,18 +13,16 @@
 - [x] Operational UI: Bangladesh Time (Asia/Dhaka) displayed in Admin Header.
 - [x] Staff UI: Super Admin name correctly displayed, Add User button added.
 - [x] Courier Integration (SteadFast): Bulk booking, Tracking, Cancellation, Connection Testing, and API Logs.
- 
-## Recent Changes (Aug 14, 2026)
+
+## Recent Changes (Aug 13, 2026)
+- **Store Coming Soon**: Removed the estimated launch date (Q3 2026) from the "Physical Store Coming Soon" section on the landing page.
 - **SteadFast API Integration**: Completed the SteadFast courier integration with full support for the `Api-Key` and `Secret-Key` authentication headers.
 - **Connection Testing**: Added a "Test Connection" button in Admin Settings to verify API credentials without placing real orders.
-- **API Visibility**: Implemented a "Recent API Activity" log table in the courier settings panel to debug integration issues (Success/Failure status, status codes, and error messages).
-- **Shipment Management**: Added a "Cancel Shipment" capability to individual orders in the admin list, allowing staff to void bookings directly via the SteadFast API.
-- **UI Improvements**: Standardized icon sizes and colors for courier actions and status badges.
-
+- **API Visibility**: Implemented a "Recent API Activity" log table in the courier settings panel to debug integration issues.
+- **Shipment Management**: Added a "Cancel Shipment" capability to individual orders in the admin list.
 - **Admin Theme & Utilities**: Integrated theme toggle and live Asia/Dhaka clock into the Admin Header.
 - **RBAC Hardening**: Restricted the "Staff & Roles" section to Super Admin and Admin roles only.
-- **Staff Management**: Implemented 'Delete' and 'Reset Password' capabilities for high-level admins.
-- **Security Logic**: Added server-side authorization checks for email/password-related staff data to prevent lower-level staff from accessing sensitive details.
+- **Staff Management**: Implemented 'Delete', 'Reset Password', 'Edit Name', and 'Add User' capabilities for Super Admins/Admins.
 
 ## Next Steps
 - Implement detailed Product Inventory tracking.
