@@ -303,27 +303,25 @@ function AdminOrderList() {
       />
 
       {canSelect && selected.length > 0 ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-primary/40 bg-card p-3 shadow-card">
-          <span className="text-sm font-semibold">{selected.length} selected</span>
-          {/* BULK DELETE / RECYCLE BIN */}
-          {canDelete ? (
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={bulkMutation.isPending}
-              onClick={() => {
-                if (confirm(`Are you sure you want to move ${selected.length} order(s) to the Recycle Bin?`)) {
-                  bulkMutation.mutate({ data: { orderIds: selected, status: "cancelled" } });
-                }
-              }}
-            >
-              Recycle Bin
-            </Button>
-          ) : null}
-          {/* BULK PRINT */}
+        <div className="mt-3 flex flex-wrap items-center gap-2 rounded border border-primary/20 bg-card p-2 shadow-sm">
+          <span className="text-xs font-bold">{selected.length} selected</span>
           <Button
-            variant="steel"
-            size="sm"
+            variant="destructive"
+            size="xs"
+            className="h-7 px-2 text-[10px] uppercase font-bold"
+            disabled={bulkMutation.isPending}
+            onClick={() => {
+              if (confirm(`Move ${selected.length} orders to Recycle Bin?`)) {
+                bulkMutation.mutate({ data: { orderIds: selected, status: "cancelled" } });
+              }
+            }}
+          >
+            Recycle Bin
+          </Button>
+          <Button
+            variant="secondary"
+            size="xs"
+            className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
             onClick={() => {
               printOrders(selectedRows, "Selected orders");
               if (canManage) printMutation.mutate({ data: { orderIds: selected } });
@@ -331,83 +329,60 @@ function AdminOrderList() {
           >
             Print
           </Button>
-          {/* BULK ASSIGN USER */}
           {canManage ? (
-            <>
+            <div className="flex items-center gap-1.5">
               <select
                 value={bulkAssignee}
-                onChange={(event) => setBulkAssignee(event.target.value)}
-                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-                aria-label="Assign to"
+                onChange={(e) => setBulkAssignee(e.target.value)}
+                className="h-7 rounded border border-input bg-background px-2 text-[10px] font-bold uppercase"
               >
                 <option value="">Unassign</option>
-                {(staffQuery.data ?? []).map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.label}
-                  </option>
-                ))}
+                {staffQuery.data?.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
               </select>
               <Button
-                variant="steel"
-                size="sm"
+                variant="secondary"
+                size="xs"
+                className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
                 disabled={assignMutation.isPending}
-                onClick={() =>
-                  assignMutation.mutate({
-                    data: { orderIds: selected, assignedTo: bulkAssignee || null },
-                  })
-                }
+                onClick={() => assignMutation.mutate({ data: { orderIds: selected, assignedTo: bulkAssignee || null } })}
               >
-                {assignMutation.isPending ? "Assigning…" : "Assign User"}
+                Assign User
               </Button>
-            </>
+              <select
+                value={bulkStatus}
+                onChange={(e) => setBulkStatus(e.target.value as OrderStatus)}
+                className="h-7 rounded border border-input bg-background px-2 text-[10px] font-bold uppercase"
+              >
+                {ORDER_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
+              </select>
+              <Button
+                variant="red"
+                size="xs"
+                className="h-7 px-2 text-[10px] uppercase font-bold"
+                disabled={bulkMutation.isPending}
+                onClick={() => bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })}
+              >
+                Change Status
+              </Button>
+            </div>
           ) : null}
-          {canManage ? (
-            <>
-          <select
-            value={bulkStatus}
-            onChange={(event) => setBulkStatus(event.target.value as OrderStatus)}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
-            aria-label="Change status to"
-          >
-            {ORDER_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {statusLabel(status)}
-              </option>
-            ))}
-          </select>
-          <Button
-            variant="red"
-            size="sm"
-            disabled={bulkMutation.isPending}
-            onClick={() =>
-              bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })
-            }
-          >
-            {bulkMutation.isPending ? "Updating…" : "Change Status"}
-          </Button>
-            </>
-          ) : null}
+          {canShip ? (
             <Button
               variant="outline"
-              size="sm"
-              className="flex items-center border-primary/20 hover:bg-primary/5"
+              size="xs"
+              className="h-7 border-primary/20 hover:bg-primary/5 px-2"
               onClick={() => {
                 if (sendableSelected.length === 0) {
-                  toast.error("All selected orders already have a SteadFast consignment.");
+                  toast.error("Orders already have consignments.");
                   return;
                 }
                 setSteadfastOpen(true);
               }}
             >
-              <img 
-                src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" 
-                alt="SteadFast" 
-                className="h-4 w-auto" 
-              />
+              <img src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" alt="SteadFast" className="h-3 w-auto" />
             </Button>
-          <Button variant="steel" size="sm" onClick={() => setSelected([])}>
-            Clear
-          </Button>
+          ) : null}
+          <Button variant="ghost" size="xs" className="h-7 text-[10px] uppercase font-bold" onClick={() => setSelected([])}>Clear</Button>
         </div>
       ) : null}
 
@@ -447,13 +422,14 @@ function AdminOrderList() {
       </Dialog>
 
 
-      {/* DESKTOP TABLE — full column layout */}
-      <div className="mt-3 hidden overflow-x-auto rounded-xl border border-border bg-card shadow-card lg:block">
-        <table className="w-full min-w-[1500px] text-sm">
-          <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
+      {/* DESKTOP TABLE */}
+      <div className="mt-3 hidden overflow-x-auto rounded border border-border bg-card lg:block">
+        <table className="w-full min-w-[1400px] text-[13px]">
+          <thead className="border-b border-border bg-secondary text-left text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             <tr>
+              <th className="p-2 w-10 text-center">SL</th>
               {canSelect ? (
-                <th className="p-2.5">
+                <th className="p-2 w-10 text-center">
                   <Checkbox
                     checked={allOnPageSelected}
                     onCheckedChange={(checked) =>

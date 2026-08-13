@@ -148,45 +148,28 @@ export function AssignmentCell({ order }: { order: AdminOrderListRow }) {
 export function CustomerCell({ order }: { order: AdminOrderListRow }) {
   const waPhone = order.customer_phone.replace(/\D/g, "").replace(/^0/, "880");
   return (
-    <div className="space-y-1.5">
-      <p className="font-semibold">{order.customer_name}</p>
-      <div className="flex flex-wrap items-center gap-1.5">
-        <span className="text-xs text-muted-foreground">{order.customer_phone}</span>
-        <IconAction label="Copy phone" onClick={() => void copy(order.customer_phone, "Phone")}>
-          <Copy />
-        </IconAction>
-        <a
-          href={`https://wa.me/${waPhone}`}
-          target="_blank"
-          rel="noreferrer"
-          title="WhatsApp customer"
-          aria-label="WhatsApp customer"
-          className={iconLinkClass}
-        >
-          <MessageCircle className="text-[color:var(--brand-whatsapp,currentColor)]" />
+    <div className="space-y-1 text-[13px]">
+      <p className="font-bold leading-tight">নাম: {order.customer_name}</p>
+      <div className="flex items-center gap-1">
+        <span className="font-mono text-primary">{order.customer_phone}</span>
+        <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
+          <Copy className="size-3" />
+        </button>
+        <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className="text-[#25D366]">
+          <MessageCircle className="size-3.5" />
         </a>
-        {/* FRAUD CHECK — opens the courier fraud lookup for this number.
-            TODO: replace with an in-app courier fraud API check once available. */}
-        <a
-          href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`}
-          target="_blank"
-          rel="noreferrer"
-          title="Fraud check"
-          aria-label="Fraud check"
-          className={iconLinkClass}
-        >
-          <ShieldAlert />
+        <a href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`} target="_blank" rel="noreferrer" className="text-rose-500">
+          <ShieldAlert className="size-3.5" />
         </a>
       </div>
-      <p className="text-xs text-muted-foreground">
-        {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
+      <p className="text-[11px] leading-tight text-muted-foreground">
+        ঠিকানা: {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
       </p>
-      <p className="text-[11px] font-semibold uppercase tracking-wide">
-        Total orders:{" "}
-        <span className={order.customer_order_count > 1 ? "text-primary" : ""}>
-          {order.customer_order_count}
+      <div className="pt-0.5">
+        <span className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase">
+          Total Orders ({order.customer_order_count})
         </span>
-      </p>
+      </div>
     </div>
   );
 }
@@ -194,30 +177,24 @@ export function CustomerCell({ order }: { order: AdminOrderListRow }) {
 /** PRODUCTS — thumbnail, name, quantity, variant and price. */
 export function ProductsCell({ order }: { order: AdminOrderListRow }) {
   if (!order.order_items.length)
-    return <span className="text-xs text-muted-foreground">No items recorded</span>;
+    return <span className="text-[11px] text-muted-foreground italic">No items</span>;
   return (
-    <ul className="space-y-1.5">
+    <ul className="space-y-1">
       {order.order_items.map((item) => (
-        <li key={item.id} className="flex items-center gap-2">
-          <span className="grid size-9 shrink-0 place-items-center overflow-hidden rounded-md border border-border bg-secondary">
+        <li key={item.id} className="flex items-start gap-1.5">
+          <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded border border-border bg-secondary">
             {item.image_url ? (
-              <img
-                src={item.image_url}
-                alt={item.product_name}
-                loading="lazy"
-                className="size-full object-cover"
-              />
+              <img src={item.image_url} alt={item.product_name} className="size-full object-cover" />
             ) : (
-              <span className="text-[9px] uppercase text-muted-foreground">No img</span>
+              <span className="text-[8px] uppercase text-muted-foreground">No img</span>
             )}
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate text-xs font-semibold">{item.product_name}</span>
-            <span className="block text-[11px] text-muted-foreground">
-              x{item.quantity}
-              {item.variant ? ` · ${item.variant}` : ""} · {formatBDT(Number(item.unit_price))}
+          </div>
+          <div className="min-w-0 leading-tight">
+            <span className="block truncate text-[11px] font-bold">{item.product_name}</span>
+            <span className="block text-[10px] text-muted-foreground">
+              Qty: {item.quantity} {item.variant ? ` · ${item.variant}` : ""}
             </span>
-          </span>
+          </div>
         </li>
       ))}
     </ul>
@@ -287,24 +264,23 @@ export function CourierCell({
 export function AmountsCell({ order }: { order: AdminOrderListRow }) {
   const due = Math.max(Number(order.total) - Number(order.advance_paid ?? 0), 0);
   return (
-    <dl className="space-y-0.5 text-xs">
-      <Row label="Subtotal" value={formatBDT(Number(order.subtotal))} />
-      <Row label="Discount" value={`- ${formatBDT(Number(order.discount))}`} />
-      {/* TODO: no tax column exists on orders yet — shown as 0 until VAT is configured. */}
-      <Row label="Tax" value={formatBDT(0)} />
-      <Row label="Shipping" value={formatBDT(Number(order.shipping))} />
-      <Row label="Advance" value={formatBDT(Number(order.advance_paid ?? 0))} />
-      <Row label="Due" value={formatBDT(due)} strong />
-      <Row label="Total" value={formatBDT(Number(order.total))} strong />
+    <dl className="space-y-0 text-[11px]">
+      <Row label="Discount" value={`৳${Number(order.discount)}`} />
+      <Row label="Subtotal" value={`৳${Number(order.subtotal)}`} />
+      <Row label="Tax" value="৳0" />
+      <Row label="Shipping" value={`৳${Number(order.shipping)}`} />
+      <div className="mt-1 border-t border-dashed border-border pt-1">
+        <Row label="Total" value={`৳${Number(order.total)}`} strong color="text-emerald-600 dark:text-emerald-500" />
+      </div>
     </dl>
   );
 }
 
-function Row({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
+function Row({ label, value, strong, color }: { label: string; value: string; strong?: boolean; color?: string }) {
   return (
-    <div className="flex items-center justify-between gap-3 whitespace-nowrap">
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={strong ? "font-bold" : ""}>{value}</dd>
+    <div className="flex items-center justify-between gap-2 whitespace-nowrap leading-tight">
+      <dt className="text-muted-foreground">{label}:</dt>
+      <dd className={`${strong ? "font-bold" : ""} ${color ?? ""}`}>{value}</dd>
     </div>
   );
 }
