@@ -32,7 +32,7 @@ export function AboutSection() {
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2">
-          {trustPoints.slice(0, 4).map((point) => {
+          {trustPoints.map((point) => {
             const Icon = iconMap[point.title] || ShieldCheck;
             return (
               <div 
