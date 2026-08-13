@@ -19,9 +19,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { GripVertical, Save, Trash2, Plus } from "lucide-react";
+import { GripVertical, Save, Trash2, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";

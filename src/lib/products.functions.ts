@@ -14,6 +14,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
+  featuredProductsUpdateInput,
   productDeleteInput,
   productInput,
   productListInput,
@@ -32,6 +33,7 @@ import {
   PRODUCT_TOGGLE_COLUMNS,
   productToRow,
 } from "./products.shared";
+
 
 export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
