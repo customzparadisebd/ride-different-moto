@@ -31,23 +31,6 @@ export function AboutSection() {
           </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2">
-          {trustPoints.map((point) => {
-            const Icon = iconMap[point.title] || ShieldCheck;
-            return (
-              <div 
-                key={point.title}
-                className="group rounded-3xl border border-border bg-card p-6 transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
-              >
-                <div className="mb-4 inline-grid size-12 place-items-center rounded-2xl bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-black">
-                  <Icon className="size-6" />
-                </div>
-                <h3 className="mb-2 font-display text-xl font-bold uppercase tracking-tight">{point.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{point.body}</p>
-              </div>
-            );
-          })}
-        </div>
       </div>
     </section>
   );
