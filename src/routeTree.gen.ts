@@ -42,6 +42,7 @@ import { Route as AuthenticatedAdRecycleBinRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdSecurityRouteImport } from './routes/_authenticated/ad/security'
 import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
 import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
+import { Route as ApiHeroUploadRouteImport } from './routes/api/hero/upload'
 import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice.$id'
 import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
@@ -213,6 +214,11 @@ const AuthenticatedAdStaffRoute = AuthenticatedAdStaffRouteImport.update({
   path: '/staff',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
+const ApiHeroUploadRoute = ApiHeroUploadRouteImport.update({
+  id: '/api/hero/upload',
+  path: '/api/hero/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdInvoiceIdRoute =
   AuthenticatedAdInvoiceIdRouteImport.update({
     id: '/invoice/$id',
@@ -269,6 +275,7 @@ export interface FileRoutesByFullPath {
   '/ad/security': typeof AuthenticatedAdSecurityRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/api/hero/upload': typeof ApiHeroUploadRoute
   '/ad/': typeof AuthenticatedAdIndexRoute
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
@@ -306,6 +313,7 @@ export interface FileRoutesByTo {
   '/ad/security': typeof AuthenticatedAdSecurityRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/api/hero/upload': typeof ApiHeroUploadRoute
   '/ad': typeof AuthenticatedAdIndexRoute
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
@@ -346,6 +354,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/security': typeof AuthenticatedAdSecurityRoute
   '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/_authenticated/ad/staff': typeof AuthenticatedAdStaffRoute
+  '/api/hero/upload': typeof ApiHeroUploadRoute
   '/_authenticated/ad/': typeof AuthenticatedAdIndexRoute
   '/_authenticated/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/_authenticated/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
@@ -386,6 +395,7 @@ export interface FileRouteTypes {
     | '/ad/security'
     | '/ad/settings'
     | '/ad/staff'
+    | '/api/hero/upload'
     | '/ad/'
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/ad/security'
     | '/ad/settings'
     | '/ad/staff'
+    | '/api/hero/upload'
     | '/ad'
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
@@ -462,6 +473,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/security'
     | '/_authenticated/ad/settings'
     | '/_authenticated/ad/staff'
+    | '/api/hero/upload'
     | '/_authenticated/ad/'
     | '/_authenticated/ad/invoice/$id'
     | '/_authenticated/ad/orders/$id'
@@ -491,6 +503,7 @@ export interface RootRouteChildren {
   ProductsSlugRoute: typeof ProductsSlugRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
+  ApiHeroUploadRoute: typeof ApiHeroUploadRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -726,6 +739,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdStaffRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/api/hero/upload': {
+      id: '/api/hero/upload'
+      path: '/api/hero/upload'
+      fullPath: '/api/hero/upload'
+      preLoaderRoute: typeof ApiHeroUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/ad/invoice/$id': {
       id: '/_authenticated/ad/invoice/$id'
       path: '/invoice/$id'
@@ -829,6 +849,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProductsSlugRoute: ProductsSlugRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
+  ApiHeroUploadRoute: ApiHeroUploadRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
