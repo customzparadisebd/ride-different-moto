@@ -181,9 +181,13 @@ export function CustomerCell({ order, onShowSummary }: { order: AdminOrderListRo
         {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
       </p>
       <div className="pt-0.5">
-        <span className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase">
+        <button
+          type="button"
+          onClick={onShowSummary}
+          className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase transition-colors hover:bg-primary/10 hover:border-primary/30 hover:text-primary"
+        >
           Total Orders ({order.customer_order_count})
-        </span>
+        </button>
       </div>
     </div>
   );

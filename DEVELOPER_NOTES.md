@@ -1,6 +1,7 @@
 # Developer Notes — Customz Paradise BD
 
 ## Implementation Status
+- [x] Customer Order History: Clicking "Total Orders" in Admin opens a detailed order summary popup
 - [x] Order Notes: Dedicated blue Note button in Admin for customer messages
 - [x] Invoice Sequence: Automatic Prefix-Number generation (e.g., CZP-01)
 - [x] Sticky Navigation Bar (Sticky with Backdrop Blur)
