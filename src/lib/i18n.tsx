@@ -51,6 +51,11 @@ const translations: Record<Language, Record<string, string>> = {
     "section.bestDeals.title": "Featured & Best Deals",
     "section.allProducts.title": "All Products",
     "section.allProducts.eyebrow": "products",
+    "section.contact.eyebrow": "Get in touch",
+    "section.contact.title": "Contact Us",
+    "section.contact.p1": "Have questions about our modification kits or need advice for your build? Reach out to our experts directly or visit our office.",
+    "section.contact.messenger": "Messenger",
+    "section.contact.office": "Office",
   },
   bn: {
     "nav.home": "হোম",
@@ -86,6 +91,11 @@ const translations: Record<Language, Record<string, string>> = {
     "section.bestDeals.title": "ফিচারড এবং সেরা ডিল",
     "section.allProducts.title": "সব প্রোডাক্ট",
     "section.allProducts.eyebrow": "টি প্রোডাক্ট",
+    "section.contact.eyebrow": "যোগাযোগ করুন",
+    "section.contact.title": "আমাদের সাথে যোগাযোগ",
+    "section.contact.p1": "আমাদের মডিফিকেশন কিট সম্পর্কে প্রশ্ন আছে বা আপনার বাইক বিল্ডের জন্য পরামর্শ প্রয়োজন? সরাসরি আমাদের বিশেষজ্ঞদের সাথে যোগাযোগ করুন বা আমাদের অফিসে ভিজিট করুন।",
+    "section.contact.messenger": "মেসেঞ্জার",
+    "section.contact.office": "অফিস",
   },
 };
 
