@@ -16,8 +16,19 @@ export const submitLead = createServerFn({ method: "POST" })
     source: z.string().default("contact_form"),
   }))
   .handler(async ({ data }) => {
-    const { error } = await supabase.from(TABLE_LEADS as any).insert(data as any);
+    const { data: inserted, error } = await supabase.from(TABLE_LEADS as any).insert(data as any).select().single();
     if (error) throw new Error(error.message);
+
+    // Record audit for public lead capture (system actor)
+    const { writeAudit } = await import("./admin.server");
+    await writeAudit({
+      action: AUDIT_ACTIONS.leadCaptured as any,
+      targetType: "lead",
+      targetId: (inserted as any).id,
+      targetLabel: data.name,
+      newValue: data,
+    });
+
     return { ok: true };
   });
 

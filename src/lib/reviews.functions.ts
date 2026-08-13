@@ -64,11 +64,19 @@ export const createReview = createServerFn({ method: "POST" })
     sort_order: z.number().default(0),
   }))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.reviewsManage);
-    const { error } = await context.supabase.from(TABLE_REVIEWS as any).insert(data as any);
+    const { data: inserted, error } = await context.supabase.from(TABLE_REVIEWS as any).insert(data as any).select().single();
     if (error) throw new Error(error.message);
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.reviewCreated as any,
+      targetType: "review",
+      targetId: (inserted as any).id,
+      newValue: data,
+    });
+
     return { ok: true };
   });
 
@@ -76,10 +84,21 @@ export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator(z.string().uuid())
   .handler(async ({ data: id, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.contentManage);
+    assertAccess(actor, PERMISSIONS.reviewsManage);
+    
+    const before = await context.supabase.from(TABLE_REVIEWS as any).select("*").eq("id", id).single();
+    
     const { error } = await context.supabase.from(TABLE_REVIEWS as any).delete().eq("id", id);
     if (error) throw new Error(error.message);
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.reviewDeleted as any,
+      targetType: "review",
+      targetId: id,
+      oldValue: (before as any).data,
+    });
+
     return { ok: true };
   });
