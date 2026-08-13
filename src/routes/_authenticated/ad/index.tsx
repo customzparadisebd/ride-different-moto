@@ -114,9 +114,15 @@ function AdminDashboard() {
 
       {/* Secondary Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <MiniStatCard title="TOTAL PRODUCTS" value={data.inventory.totalProducts} subtitle="Active" icon={<Package className="h-4 w-4 text-sky-400" />} />
-        <MiniStatCard title="TOTAL STOCK ITEMS" value={data.inventory.totalStock} subtitle="Units" icon={<Layers className="h-4 w-4 text-emerald-400" />} />
-        <MiniStatCard title="LOW STOCK" value={data.inventory.lowStock} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} />
+        <MiniStatCard title="PENDING ORDERS" value={data.pendingOrders} subtitle="Awaiting Action" icon={<ShoppingCart className="h-4 w-4 text-amber-400" />} />
+        <MiniStatCard title="COMPLETED ORDERS" value={data.completedOrders} subtitle="Successful" icon={<TrendingUp className="h-4 w-4 text-emerald-400" />} />
+        <MiniStatCard title="CANCELLED ORDERS" value={data.cancelledOrders} subtitle="Total cancelled" icon={<Box className="h-4 w-4 text-rose-400" />} />
+        <MiniStatCard title="TOTAL PRODUCTS" value={data.inventory.totalProducts} subtitle="In system" icon={<Package className="h-4 w-4 text-sky-400" />} />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <MiniStatCard title="CURRENT STOCK" value={data.inventory.totalStock} subtitle="Units available" icon={<Layers className="h-4 w-4 text-emerald-400" />} />
+        <MiniStatCard title="LOW STOCK" value={data.inventory.lowStock} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} / >
         <MiniStatCard title="OUT OF STOCK" value={data.inventory.outOfStock} subtitle="Critical" icon={<Box className="h-4 w-4 text-rose-400" />} />
       </div>
 
