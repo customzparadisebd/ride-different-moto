@@ -88,7 +88,7 @@ function Index() {
       </h1>
 
       <SectionBoundary label="hero">
-        <HeroSlider slides={heroSlides} />
+        <HeroSlider slides={heroSlidesQuery.data || []} />
       </SectionBoundary>
 
       <SectionBoundary label="bike-models">
