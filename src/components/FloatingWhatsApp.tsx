@@ -24,12 +24,14 @@ export function FloatingWhatsApp() {
 
   if (!settings || !settings.whatsappFloatingEnabled) return null;
 
+  const position = settings.whatsappFloatingPosition as "bottom-right" | "bottom-left" | "top-right" | "top-left";
+  
   const positionClasses = {
     "bottom-right": "bottom-6 right-6",
     "bottom-left": "bottom-6 left-6",
     "top-right": "top-24 right-6",
     "top-left": "top-24 left-6",
-  }[settings.whatsappFloatingPosition || "bottom-right"];
+  }[position || "bottom-right"];
 
   const whatsappUrl = `https://wa.me/${settings.whatsappPhone.replace(/\D/g, "")}`;
 

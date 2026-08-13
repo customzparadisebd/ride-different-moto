@@ -34,6 +34,8 @@ export const storeSettingsInput = z.object({
   // WHATSAPP SUPPORT — COMPLETED
   whatsappPhone: z.string().trim().min(6).max(40),
   whatsappMessage: z.string().trim().min(4).max(200),
+  whatsappFloatingEnabled: z.boolean().default(true),
+  whatsappFloatingPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]).default("bottom-right"),
 });
 
 export type StoreSettings = z.infer<typeof storeSettingsInput>;
@@ -47,6 +49,8 @@ export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   lowStockThreshold: 3,
   whatsappPhone: "+8801890722202",
   whatsappMessage: "Having any problem with your order? Contact us on WhatsApp.",
+  whatsappFloatingEnabled: true,
+  whatsappFloatingPosition: "bottom-right",
 };
 
 /** Normalises a database row (jsonb columns are `unknown`) into StoreSettings. */
@@ -59,6 +63,8 @@ export function parseStoreSettingsRow(row: {
   low_stock_threshold: number;
   whatsapp_phone?: string | null;
   whatsapp_message?: string | null;
+  whatsapp_floating_enabled?: boolean | null;
+  whatsapp_floating_position?: string | null;
 }): StoreSettings {
   const zones = (row.zone_charges ?? {}) as Partial<Record<ZoneKey, number>>;
   const methods = Array.isArray(row.payment_methods)
@@ -79,9 +85,11 @@ export function parseStoreSettingsRow(row: {
     lowStockThreshold: row.low_stock_threshold,
     whatsappPhone: row.whatsapp_phone || DEFAULT_STORE_SETTINGS.whatsappPhone,
     whatsappMessage: row.whatsapp_message || DEFAULT_STORE_SETTINGS.whatsappMessage,
+    whatsappFloatingEnabled: row.whatsapp_floating_enabled ?? DEFAULT_STORE_SETTINGS.whatsappFloatingEnabled,
+    whatsappFloatingPosition: (row.whatsapp_floating_position as any) || DEFAULT_STORE_SETTINGS.whatsappFloatingPosition,
   });
   return parsed.success ? parsed.data : DEFAULT_STORE_SETTINGS;
 }
 
 export const SETTINGS_COLUMNS =
-  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold, whatsapp_phone, whatsapp_message";
+  "shipping_flat, zone_charges, payment_methods, support_phone, support_email, low_stock_threshold, whatsapp_phone, whatsapp_message, whatsapp_floating_enabled, whatsapp_floating_position";
