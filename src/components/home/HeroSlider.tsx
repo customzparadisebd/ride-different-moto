@@ -7,7 +7,7 @@ import { SafeImage } from "@/components/SafeImage";
 import type { HeroSlide } from "@/data/types";
 import { cn } from "@/lib/utils";
 
-const AUTOPLAY_MS = 6500;
+const AUTOPLAY_MS = 3500;
 
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [emblaRef, embla] = useEmblaCarousel({ loop: true, align: "start" });
@@ -51,10 +51,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           {slides.map((slide, index) => (
             <div key={slide.id} className="min-w-0 flex-[0_0_100%]">
               <Link
-                to="/bike-models/$slug"
-                params={{ slug: slide.bikeSlug }}
+                to={slide.bikeSlug === "all-products" ? "/" : "/bike-models/$slug"}
+                params={slide.bikeSlug === "all-products" ? {} : ({ slug: slide.bikeSlug } as any)}
                 className="group relative block"
-                aria-label={`${slide.bikeName} modification parts`}
+                aria-label={slide.isFullBanner ? slide.alt : `${slide.bikeName} modification parts`}
               >
                 <SafeImage
                   src={slide.image}
@@ -63,17 +63,26 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   height={1008}
                   priority={index === 0}
                   sizes="100vw"
-                  containerClassName="aspect-4/5 sm:aspect-16/9 lg:aspect-21/9 w-full bg-onyx"
+                  containerClassName={cn(
+                    "w-full bg-onyx",
+                    slide.isFullBanner
+                      ? "aspect-video sm:aspect-21/9"
+                      : "aspect-4/5 sm:aspect-16/9 lg:aspect-21/9",
+                  )}
                   className="transition-transform duration-700 group-hover:scale-[1.02]"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 pb-16 sm:p-8 sm:pb-20">
-                  {slide.label && <p className="eyebrow text-white/70">{slide.label}</p>}
-                  <h2 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">
-                    {slide.bikeName}
-                  </h2>
-                  <span className="mt-2 inline-block h-0.5 w-14 bg-gradient-red" />
-                </div>
+                {!slide.isFullBanner && (
+                  <>
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-4 pb-16 sm:p-8 sm:pb-20">
+                      {slide.label && <p className="eyebrow text-white/70">{slide.label}</p>}
+                      <h2 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">
+                        {slide.bikeName}
+                      </h2>
+                      <span className="mt-2 inline-block h-0.5 w-14 bg-gradient-red" />
+                    </div>
+                  </>
+                )}
               </Link>
             </div>
           ))}
