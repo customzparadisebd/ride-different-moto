@@ -98,8 +98,7 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
       .from("products")
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
-      .is("deleted_at", null)
-      .order("created_at", { ascending: true }),
+      .is("deleted_at", null),
     supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
   ]);
   if (products.error) throw new Error("Could not load the product catalogue.");
@@ -112,9 +111,9 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
     byProduct.set(key, list);
   }
 
-  return ((products.data ?? []) as ProductRow[]).map((row) =>
-    toProduct(row, byProduct.get(String(row["id"])) ?? []),
-  );
+  return ((products.data ?? []) as any[])
+    .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999))
+    .map((row) => toProduct(row, byProduct.get(String(row["id"])) ?? []));
 }
 
 export async function fetchProductBySlug(slug: string): Promise<StorefrontProduct | null> {
