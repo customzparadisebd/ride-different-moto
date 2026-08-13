@@ -677,6 +677,51 @@ export type Database = {
           },
         ]
       }
+      leads: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          email: string | null
+          id: string
+          internal_notes: string | null
+          message: string | null
+          name: string
+          phone: string
+          source: string
+          status: Database["public"]["Enums"]["lead_status"]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          internal_notes?: string | null
+          message?: string | null
+          name: string
+          phone: string
+          source?: string
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          internal_notes?: string | null
+          message?: string | null
+          name?: string
+          phone?: string
+          source?: string
+          status?: Database["public"]["Enums"]["lead_status"]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           created_at: string
@@ -1514,6 +1559,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "manager" | "staff" | "super_admin"
+      lead_status: "new" | "contacted" | "closed"
       movement_type:
         | "stock_in"
         | "stock_out"
@@ -1648,6 +1694,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "manager", "staff", "super_admin"],
+      lead_status: ["new", "contacted", "closed"],
       movement_type: [
         "stock_in",
         "stock_out",

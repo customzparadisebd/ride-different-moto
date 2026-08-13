@@ -38,7 +38,55 @@ export const getLeads = createServerFn({ method: "GET" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.customersManage);
-    const { data, error } = await context.supabase.from(TABLE_LEADS as any).select("*").order("created_at", { ascending: false });
+    
+    const { data, error } = await context.supabase
+      .from(TABLE_LEADS as any)
+      .select("*")
+      .is("deleted_at", null)
+      .order("created_at", { ascending: false });
+      
     if (error) throw new Error(error.message);
     return data;
+  });
+
+export const updateLeadStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator(z.object({
+    id: z.string().uuid(),
+    status: z.enum(["new", "contacted", "closed"]),
+    internalNotes: z.string().optional(),
+  }))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.customersManage);
+
+    const { data: oldLead } = await context.supabase
+      .from(TABLE_LEADS as any)
+      .select("*")
+      .eq("id", data.id)
+      .single();
+
+    const updateData: any = { status: data.status };
+    if (data.internalNotes !== undefined) {
+      updateData.internal_notes = data.internalNotes;
+    }
+
+    const { error } = await context.supabase
+      .from(TABLE_LEADS as any)
+      .update(updateData)
+      .eq("id", data.id);
+
+    if (error) throw new Error(error.message);
+
+    await auditFromActor(actor, {
+      action: "lead.updated",
+      targetType: "lead",
+      targetId: data.id,
+      targetLabel: (oldLead as any)?.name || data.id,
+      oldValue: oldLead,
+      newValue: updateData,
+    });
+
+    return { ok: true };
   });

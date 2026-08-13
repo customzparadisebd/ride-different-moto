@@ -1,7 +1,7 @@
 # DEVELOPER NOTES - CUSTOMZ PARADISE BD
 
 ## STATUS: OPERATIONAL
-## LAST UPDATED: 2026-08-16 (UTC)
+## LAST UPDATED: 2026-08-17 (UTC)
 
 ### COMPLETED:
 - [x] Hero Slider Update — Added custom banner. Optimized loading (priority eager preloading for 1st slide, responsive sizes/srcset support) to prevent layout shifts and improve LCP. Enhanced accessibility with ARIA labels and keyboard navigation (Arrow keys). Transition set to 3.5s.
@@ -98,5 +98,10 @@
 - **SEO & Organization**: Updated homepage meta title to reflect brand tagline: "Customz Paradise BD — Ride Different. Be Different."
 - **Storefront Component Upgrades**: Redesigned `StoreComingSoon` and `AboutSection` with premium visuals, custom icons, and improved typography to match the brand identity.
 
-
+## Aug 17, 2026
+- **Lead Workflow Enhancements**: Added `status` (New, Contacted, Closed), `internal_notes`, and workflow fields to the `leads` table.
+- **Admin Leads Management Upgrade**: Redesigned the Leads page (`/ad/leads`) with a grid of cards, status badges (Clock, PhoneCall, CheckCircle), and internal followup notes.
+- **CSV Export**: Added "Export CSV" functionality for all leads to allow offline reporting and CRM integration.
+- **Audit Tracking**: Wired lead status updates and internal note edits to the admin audit log.
+- **Recycle Bin for Leads**: Implemented soft-delete for leads to keep the main view clean while preserving data.
 
