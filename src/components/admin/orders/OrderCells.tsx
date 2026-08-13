@@ -204,10 +204,10 @@ export function ProductsCell({ order }: { order: AdminOrderListRow }) {
 /** PAYMENT INFO — method, status and transaction reference. */
 export function PaymentCell({ order }: { order: AdminOrderListRow }) {
   return (
-    <div className="space-y-1 text-xs">
-      <p className="font-semibold">{paymentMethodLabel(order.payment_method)}</p>
+    <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
+      <p className="font-bold text-muted-foreground uppercase">{paymentMethodLabel(order.payment_method)}</p>
       <StatusBadge value={order.payment_status} />
-      <p className="text-muted-foreground">TrxID: {order.transaction_id || "—"}</p>
+      <p className="font-mono text-[10px] opacity-70">TrxID: {order.transaction_id || "—"}</p>
     </div>
   );
 }
@@ -221,12 +221,12 @@ export function CourierCell({
   onCancelShipment?: () => void;
 }) {
   return (
-    <div className="space-y-1 text-xs">
+    <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
       <StatusBadge value={order.courier_status} />
-      {order.courier_name ? <p className="font-semibold">{order.courier_name}</p> : null}
+      {order.courier_name ? <p className="font-bold text-muted-foreground uppercase">{order.courier_name}</p> : <p className="text-muted-foreground italic">No Courier</p>}
       {order.consignment_id ? (
-        <div className="flex items-center gap-1.5">
-          <p className="text-muted-foreground">CN: {order.consignment_id}</p>
+        <div className="flex items-center gap-1">
+          <p className="font-mono text-[10px] opacity-70">CN: {order.consignment_id}</p>
           {onCancelShipment && (
             <button
               type="button"
@@ -238,22 +238,6 @@ export function CourierCell({
             </button>
           )}
         </div>
-      ) : null}
-      {order.tracking_url ? (
-        <a
-          href={order.tracking_url}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1 text-primary underline"
-        >
-          Track <ExternalLink className="size-3" />
-        </a>
-      ) : null}
-      <p className="text-muted-foreground">Charge: {formatBDT(Number(order.shipping))}</p>
-      {order.shipment_at ? (
-        <p className="text-muted-foreground">
-          {new Date(order.shipment_at).toLocaleString("en-GB")}
-        </p>
       ) : null}
     </div>
   );
