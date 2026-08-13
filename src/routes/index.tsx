@@ -6,6 +6,7 @@ import { ProductBrowser } from "@/components/ProductBrowser";
 import { ProductGrid } from "@/components/ProductCard";
 import { SectionBoundary } from "@/components/SectionBoundary";
 
+import { AboutSection } from "@/components/home/AboutSection";
 import { BikeModelCarousel } from "@/components/home/BikeModelCarousel";
 import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSlider } from "@/components/home/HeroSlider";
@@ -123,6 +124,10 @@ function Index() {
           {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
           <ProductBrowser products={products} />
         </section>
+      </SectionBoundary>
+
+      <SectionBoundary label="about">
+        <AboutSection />
       </SectionBoundary>
 
 
