@@ -131,7 +131,7 @@ function StaffPage() {
         <AddUserDialog 
           onSuccess={() => void queryClient.invalidateQueries({ queryKey: ["admin-staff"] })}
           isSuperAdmin={access.isSuperAdmin}
-          callerRole={access.primaryRole}
+          callerRole={access.primaryRole as string}
         />
       </div>
 
