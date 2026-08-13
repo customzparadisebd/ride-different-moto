@@ -108,7 +108,7 @@ function AdminOrderDetail() {
         </Button>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
+        <h1 className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-4xl font-black tracking-tighter text-primary ring-2 ring-primary/20">
           {order.invoice_no}
         </h1>
         <StatusBadge value={order.status} />

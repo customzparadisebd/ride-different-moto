@@ -101,11 +101,11 @@ export function InvoiceCell({
           <History />
         </IconAction>
       </div>
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center gap-1.5 pt-1">
         <Link
           to="/ad/orders/$id"
           params={{ id: order.id }}
-          className="font-mono text-[13px] font-bold text-primary underline decoration-primary/30 underline-offset-2"
+          className="rounded bg-primary/10 px-2 py-0.5 font-mono text-sm font-black tracking-tighter text-primary ring-1 ring-primary/20 transition-all hover:bg-primary/20"
         >
           {order.invoice_no}
         </Link>
