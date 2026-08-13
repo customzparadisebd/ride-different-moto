@@ -73,13 +73,13 @@ export const updateAdminProfile = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
 
     const update: Record<string, any> = {};
-    if (data.fullName !== undefined) update.full_name = data.fullName;
-    if (data.gender !== undefined) update.gender = data.gender;
-    if (data.avatarUrl !== undefined) update.avatar_url = data.avatarUrl;
+    if (data.fullName !== undefined) update["full_name"] = data.fullName;
+    if (data.gender !== undefined) update["gender"] = data.gender;
+    if (data.avatarUrl !== undefined) update["avatar_url"] = data.avatarUrl;
 
     if (Object.keys(update).length === 0) return { ok: true };
 
-    const { error } = await supabaseAdmin.from("profiles").update(update).eq("id", context.userId);
+    const { error } = await supabaseAdmin.from("profiles").update(update as any).eq("id", context.userId);
     if (error) throw new Error("Could not update profile.");
 
     await auditFromActor(actor, {
