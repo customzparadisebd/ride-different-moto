@@ -5,7 +5,6 @@
 
 ### COMPLETED:
 - [x] Sticky Navigation Bar (Desktop & Mobile) — COMPLETED
-- [x] REMOVED "Store Coming Soon" and "About Us" sections from Landing Page — COMPLETED
 - [x] N160/N250 PRODUCT ORDER & COLOR CONFIG — COMPLETED
 - [x] All Products Search & Filters (Name, Bike, Category, Price)
 - [x] Dynamic Checkout (Searchable Cities, Delivery Zones & Charges)
