@@ -15,6 +15,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { History, Trash2, KeyRound, Edit2 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { AddUserDialog } from "@/components/admin/AddUserDialog";
+import { UserActivityDialog } from "@/components/admin/UserActivityDialog";
 
 
 import { Button } from "@/components/ui/button";
