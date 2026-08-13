@@ -11,6 +11,7 @@ import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { SocialSection } from "@/components/home/SocialSection";
+import { ReviewSection } from "@/components/home/ReviewSection";
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
 import { getBikeModels } from "@/data/catalog";
 import { getHeroSlides } from "@/lib/hero.functions";
@@ -130,6 +131,10 @@ function Index() {
 
       <SectionBoundary label="about">
         <AboutSection />
+      </SectionBoundary>
+
+      <SectionBoundary label="reviews">
+        <ReviewSection />
       </SectionBoundary>
 
       <SectionBoundary label="contact">
