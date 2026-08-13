@@ -1,7 +1,7 @@
 # DEVELOPER NOTES - CUSTOMZ PARADISE BD
 
 ## STATUS: OPERATIONAL
-## LAST UPDATED: 2026-08-13 (UTC)
+## LAST UPDATED: 2026-08-14 (UTC)
 
 ### COMPLETED:
 - [x] Hero Slider Update — Added custom banner. Optimized loading (priority eager preloading for 1st slide, responsive sizes/srcset support) to prevent layout shifts and improve LCP. Enhanced accessibility with ARIA labels and keyboard navigation (Arrow keys). Transition set to 3.5s.
@@ -70,3 +70,9 @@
 - Implemented Organization and LocalBusiness JSON-LD in root layout for improved local SEO presence in Bangladesh.
 - Finalized Product Gallery keyboard accessibility and focus management.
 - Hardcoded Sector 10, Uttara branch coordinates and opening hours (9 AM - 9 PM) into business metadata.
+
+## Aug 14, 2026
+- Implemented Admin Slider Management: Created a dedicated admin screen (`/ad/hero`) to manage homepage banners (CRUD).
+- Migrated Hero Slider to database: The homepage now fetches slides dynamically from the `hero_slides` table.
+- Added sorting, active status toggles, and link/CTA management for banners without code changes.
+- Refined design tokens for color selector chips with enhanced silver/gray borders.
