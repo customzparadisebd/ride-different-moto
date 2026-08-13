@@ -15,6 +15,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { FileSpreadsheet, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { XCircle } from "lucide-react";
+
 
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
@@ -524,8 +526,9 @@ function AdminOrderList() {
                   <PaymentCell order={order} />
                 </td>
                 <td className="p-2.5">
-                  <CourierCell order={order} />
+                  <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
                 </td>
+
                 <td className="min-w-[170px] p-2.5">
                   <AmountsCell order={order} />
                 </td>
@@ -600,7 +603,7 @@ function AdminOrderList() {
               <CustomerCell order={order} />
               <ProductsCell order={order} />
               <PaymentCell order={order} />
-              <CourierCell order={order} />
+              <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
               <AmountsCell order={order} />
               <AssignmentCell order={order} />
             </div>

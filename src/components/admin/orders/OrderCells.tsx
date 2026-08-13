@@ -16,7 +16,9 @@ import {
   Pin,
   Printer,
   ShieldAlert,
+  XCircle,
 } from "lucide-react";
+
 import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
@@ -247,13 +249,31 @@ export function PaymentCell({ order }: { order: AdminOrderListRow }) {
 }
 
 /** COURIER — status, courier name, consignment, tracking link and charge. */
-export function CourierCell({ order }: { order: AdminOrderListRow }) {
+export function CourierCell({ 
+  order, 
+  onCancelShipment 
+}: { 
+  order: AdminOrderListRow;
+  onCancelShipment?: () => void;
+}) {
   return (
     <div className="space-y-1 text-xs">
       <StatusBadge value={order.courier_status} />
       {order.courier_name ? <p className="font-semibold">{order.courier_name}</p> : null}
       {order.consignment_id ? (
-        <p className="text-muted-foreground">CN: {order.consignment_id}</p>
+        <div className="flex items-center gap-1.5">
+          <p className="text-muted-foreground">CN: {order.consignment_id}</p>
+          {onCancelShipment && (
+            <button
+              type="button"
+              onClick={onCancelShipment}
+              className="text-rose-500 hover:text-rose-600"
+              title="Cancel Shipment"
+            >
+              <XCircle className="size-3" />
+            </button>
+          )}
+        </div>
       ) : null}
       {order.tracking_url ? (
         <a
@@ -274,6 +294,7 @@ export function CourierCell({ order }: { order: AdminOrderListRow }) {
     </div>
   );
 }
+
 
 /** AMOUNTS — full money breakdown for the order. */
 export function AmountsCell({ order }: { order: AdminOrderListRow }) {
