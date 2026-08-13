@@ -11,6 +11,7 @@ interface ProductGalleryProps {
   activeColorImage?: string | null;
 }
 
+
 export function ProductGallery({ images, productName, activeColorImage }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
