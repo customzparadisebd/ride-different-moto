@@ -282,6 +282,70 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
     return { success, message: payload.message };
   });
 
+export const getSteadfastTracking = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersView);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await context.supabase
+      .from("orders")
+      .select("id, courier_id, consignment_id")
+      .eq("id", data.orderId)
+      .maybeSingle();
+
+    if (!order?.consignment_id) return { events: [] };
+
+    const { loadCourierContext } = await import("./couriers.server");
+    const ctx = await loadCourierContext(order.courier_id!);
+    if (!ctx) return { events: [] };
+
+    // 1. Get stored events
+    const { data: storedEvents } = await supabaseAdmin
+      .from("courier_tracking_events")
+      .select("*")
+      .eq("order_id", order.id)
+      .order("created_at", { ascending: false });
+
+    // 2. Fetch latest from API (real-time check)
+    try {
+      const res = await fetch(`${ctx.baseUrl}/status_by_cid/${encodeURIComponent(order.consignment_id)}`, {
+        method: "GET",
+        headers: {
+          "Accept": "application/json",
+          "Api-Key": ctx.credentials.api_key ?? "",
+          "Secret-Key": ctx.credentials.api_secret ?? ""
+        }
+      });
+
+      if (res.ok) {
+        const payload = await res.json() as any;
+        // Steadfast status_by_cid usually returns latest. 
+        // We add it to the timeline if it's new/relevant.
+        const latestStatus = payload.delivery_status || payload.status;
+        if (latestStatus) {
+          return {
+            events: storedEvents ?? [],
+            latest: {
+              status: latestStatus,
+              message: payload.message || "Latest status from API",
+              time: new Date().toISOString(),
+              raw: payload
+            }
+          };
+        }
+      }
+    } catch (e) {
+      console.error("Steadfast tracking fetch failed", e);
+    }
+
+    return { events: storedEvents ?? [] };
+  });
+
+
 
 // ------------------------------------------------------------
 // BULK SEND — validate, book, report per order

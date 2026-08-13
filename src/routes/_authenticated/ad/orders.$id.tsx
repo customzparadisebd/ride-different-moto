@@ -13,7 +13,12 @@ import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions";
+import { getSteadfastTracking } from "@/lib/steadfast.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Clock, Truck, AlertCircle } from "lucide-react";
+
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
   head: () => ({ meta: [{ title: "Order — CZP Ops" }, { property: "og:title", content: "Order — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
@@ -26,14 +31,23 @@ function AdminOrderDetail() {
   const fetchOrder = useServerFn(getOrder);
   const access = useServerFn(getMyAccess);
   const update = useServerFn(updateOrderStatus);
+  const fetchTracking = useServerFn(getSteadfastTracking);
 
   const query = useQuery({
+
     queryKey: ["admin-order", id],
     queryFn: () => fetchOrder({ data: { orderId: id } }),
   });
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
 
+  const trackingQuery = useQuery({
+    queryKey: ["admin-order-tracking", id],
+    queryFn: () => fetchTracking({ data: { orderId: id } }),
+    enabled: !!query.data?.order.consignment_id,
+  });
+
   const mutation = useMutation({
+
     mutationFn: update,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
@@ -180,6 +194,72 @@ function AdminOrderDetail() {
         </p>
       ) : null}
 
+      <h2 className="mt-6 font-display text-lg font-bold uppercase">Shipment Timeline (SteadFast)</h2>
+      <div className="mt-2">
+        <Card className="border-border bg-card shadow-card">
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+              <Truck className="h-4 w-4" />
+              Real-time Status Updates
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {trackingQuery.isLoading ? (
+              <p className="py-4 text-center text-xs text-muted-foreground">Fetching latest tracking...</p>
+            ) : trackingQuery.data?.events.length || trackingQuery.data?.latest ? (
+              <div className="space-y-4">
+                {trackingQuery.data.latest && (
+                  <div className="relative flex gap-3 pb-4">
+                    <div className="absolute left-[7px] top-6 h-full w-[2px] bg-border" />
+                    <div className="z-10 mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-4 ring-background">
+                      <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
+                    </div>
+                    <div className="flex-1 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold uppercase text-primary">Live: {statusLabel(trackingQuery.data.latest.status)}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(trackingQuery.data.latest.time).toLocaleTimeString("en-BD", { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm font-medium">{trackingQuery.data.latest.message}</p>
+                      <div className="mt-2 rounded bg-muted/50 p-2 font-mono text-[10px] text-muted-foreground">
+                        Raw: {JSON.stringify(trackingQuery.data.latest.raw)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {trackingQuery.data?.events.map((event: any, idx: number) => (
+                  <div key={event.id} className="relative flex gap-3">
+                    {idx < trackingQuery.data.events.length - 1 && (
+                      <div className="absolute left-[7px] top-6 h-full w-[2px] bg-border" />
+                    )}
+                    <div className="z-10 mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-muted ring-4 ring-background">
+                      <div className="h-2 w-2 rounded-full bg-muted-foreground" />
+                    </div>
+                    <div className="flex-1 pb-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold uppercase">{statusLabel(event.courier_status)}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {new Date(event.created_at).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">{event.message}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                <AlertCircle className="mb-2 h-8 w-8 opacity-20" />
+                <p className="text-sm italic">No shipment tracking data available yet.</p>
+                {!order.consignment_id && <p className="text-[10px]">Order not yet booked with courier.</p>}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
       <h2 className="mt-6 font-display text-lg font-bold uppercase">Order history</h2>
       <ol className="mt-2 space-y-2">
         {events.map((event) => (
@@ -192,6 +272,7 @@ function AdminOrderDetail() {
           </li>
         ))}
       </ol>
+
     </section>
   );
 }
