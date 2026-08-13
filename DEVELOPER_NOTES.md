@@ -34,8 +34,8 @@
 
 ## All Products & Search
 - **Status:** Completed
-- **Done:** Dynamic "All Products" grid replaces old static sections. High-performance `ProductBrowser` with search (name/model), category filter, price range, and sorting. Mobile-first responsive layout.
-- **Next:** None.
+- **Done:** Dynamic "All Products" grid replaces old static sections. High-performance `ProductBrowser` with search (name/model), category filter, and sorting. Mobile-first responsive layout.
+- **Next:** Price range filters removed at user request.
 
 ## Dynamic Checkout & Cities
 - **Status:** Completed
