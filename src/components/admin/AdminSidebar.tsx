@@ -45,6 +45,7 @@ const OPERATIONS: NavItem[] = [
   { to: "/ad", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/ad/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
   { to: "/ad/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
+  { to: "/ad/hero", label: "Hero Slider", icon: LayoutDashboard, permission: PERMISSIONS.productsManage },
   { to: "/ad/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
   { to: "/ad/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
   {
