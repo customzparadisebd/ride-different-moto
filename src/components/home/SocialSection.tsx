@@ -14,7 +14,7 @@ export function SocialSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16">
       <SectionHeading eyebrow="Follow the builds" title="Social Media" />
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-4">
+      <div className="mt-6 grid grid-cols-1 gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
         {site.socials.map((social) => {
           const entry = icons[social.name];
           const Icon = entry?.Icon;

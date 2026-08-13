@@ -28,6 +28,11 @@
 - **RBAC Hardening**: Restricted the "Staff & Roles" section to Super Admin and Admin roles only.
 - **Staff Management**: Implemented 'Delete', 'Reset Password', 'Edit Name', and 'Add User' capabilities for Super Admins/Admins.
 
+## Recently Completed
+- Optimized product cards for mobile with a specific vertical order (Image → Badges → Name → Description → Price → Colors → Buttons).
+- Comprehensive responsiveness audit: Fixed grid gap inconsistencies, refined mobile typography, addressed header layout issues, and improved address text wrapping for small screens.
+- Automated cross-browser viewport testing completed for iPhone 14, Samsung Galaxy S22, and Desktop Full HD.
+
 ## Next Steps
 - Implement detailed Product Inventory tracking.
 - Enhance Admin Analytics dashboard with sales charts.
