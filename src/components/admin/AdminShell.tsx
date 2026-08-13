@@ -67,9 +67,9 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background">
+      <div className="flex h-svh w-full bg-background overflow-hidden">
         <AdminSidebar access={access} permissions={access.permissions} />
-        <SidebarInset>
+        <SidebarInset className="flex flex-col overflow-hidden">
           <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
@@ -101,7 +101,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
               </Button>
             </div>
           </header>
-          <main className="p-4 md:p-6 lg:p-8">{children}</main>
+          <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
