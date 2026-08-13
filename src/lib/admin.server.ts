@@ -21,6 +21,7 @@ import type { Database } from "@/integrations/supabase/types";
 import {
   ROLE_DEFAULT_PERMISSIONS,
   SUPER_ADMIN_ONLY,
+  PERMISSIONS,
   type AccessStatus,
   type Permission,
   type Role,
@@ -69,10 +70,21 @@ function effectivePermissions(roles: Role[], granted: string[]): Permission[] {
   const set = new Set<string>();
   for (const role of roles) for (const p of ROLE_DEFAULT_PERMISSIONS[role] ?? []) set.add(p);
   const isSuper = roles.includes("super_admin");
+  const isAdmin = roles.includes("admin");
+  const isPrivileged = isSuper || isAdmin;
+
   for (const p of granted) {
     // Privilege-escalation guard: super-admin-only permissions are ignored
     // for anyone who is not a Super Admin, even if a row exists.
     if (!isSuper && SUPER_ADMIN_ONLY.includes(p as Permission)) continue;
+
+    // Hard restrict specific sections from Staff roles (non-privileged)
+    if (!isPrivileged) {
+      if (p === PERMISSIONS.staffManage || p === PERMISSIONS.couriersManage || p === PERMISSIONS.apiManage || p === PERMISSIONS.couriersView) {
+        continue;
+      }
+    }
+
     set.add(p);
   }
   return [...set] as Permission[];

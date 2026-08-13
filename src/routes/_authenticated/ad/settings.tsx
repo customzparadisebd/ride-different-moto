@@ -8,7 +8,7 @@
 //          server function validates and audits the change.
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -34,8 +34,21 @@ function AdminSettings() {
   const load = useServerFn(getStoreSettings);
   const save = useServerFn(saveStoreSettings);
   const access = useServerFn(getMyAccess);
+  const navigate = useNavigate();
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  
+  // ACCESS CONTROL: Restrict Staff from settings
+  useEffect(() => {
+    if (accessQuery.data) {
+      const { primaryRole } = accessQuery.data;
+      if (primaryRole !== "super_admin" && primaryRole !== "admin") {
+        toast.error("Access denied: Admin only.");
+        void navigate({ to: "/ad", replace: true });
+      }
+    }
+  }, [accessQuery.data, navigate]);
+
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
   const canManageZones = accessQuery.data?.permissions.includes("zones.manage") ?? false;
 

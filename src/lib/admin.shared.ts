@@ -127,7 +127,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "couriers.view",
     "shipments.create",
   ],
-  staff: ["orders.view", "couriers.view"],
+  staff: ["orders.view"],
 };
 
 export const AUDIT_ACTIONS = {
