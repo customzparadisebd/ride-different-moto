@@ -23,8 +23,6 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
   const [search, setSearch] = useState("");
   const [bike, setBike] = useState("all");
   const [category, setCategory] = useState("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
 
   const bikeOptions = useMemo(
@@ -42,8 +40,6 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    const min = Number(minPrice) || 0;
-    const max = Number(maxPrice) || Number.POSITIVE_INFINITY;
 
     const result = products.filter((product) => {
       const price = basePrice(product);
@@ -52,7 +48,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
       if (bike !== "all" && !product.universal && !product.bikeCompatibility.includes(bike)) {
         return false;
       }
-      return price >= min && price <= max;
+      return true;
     });
 
     switch (sort) {
@@ -65,17 +61,14 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
       default:
         return result;
     }
-  }, [products, search, bike, category, minPrice, maxPrice, sort]);
+  }, [products, search, bike, category, sort]);
 
-  const dirty =
-    search !== "" || bike !== "all" || category !== "all" || minPrice !== "" || maxPrice !== "";
+  const dirty = search !== "" || bike !== "all" || category !== "all";
 
   const reset = () => {
     setSearch("");
     setBike("all");
     setCategory("all");
-    setMinPrice("");
-    setMaxPrice("");
     setSort("newest");
   };
 
@@ -100,7 +93,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
           />
         </div>
 
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="filter-bike">Bike model</Label>
             <select
@@ -132,28 +125,6 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
                 </option>
               ))}
             </select>
-          </div>
-          <div>
-            <Label htmlFor="filter-min">Min price ৳</Label>
-            <Input
-              id="filter-min"
-              inputMode="numeric"
-              value={minPrice}
-              onChange={(event) => setMinPrice(event.target.value.replace(/\D/g, ""))}
-              placeholder="0"
-              className="mt-1.5 h-11 text-base sm:text-sm"
-            />
-          </div>
-          <div>
-            <Label htmlFor="filter-max">Max price ৳</Label>
-            <Input
-              id="filter-max"
-              inputMode="numeric"
-              value={maxPrice}
-              onChange={(event) => setMaxPrice(event.target.value.replace(/\D/g, ""))}
-              placeholder="Any"
-              className="mt-1.5 h-11 text-base sm:text-sm"
-            />
           </div>
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="filter-sort">Sort by</Label>
