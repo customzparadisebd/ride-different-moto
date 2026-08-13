@@ -167,7 +167,9 @@ export const PRODUCT_TOGGLE_COLUMNS = {
   isBestDeal: "is_best_deal",
   isFeatured: "is_featured",
   isNewArrival: "is_new_arrival",
+  badgeEnabled: "badge_enabled",
 } as const;
+
 
 export function productToRow(data: ReturnType<typeof productInput.parse>) {
   return {

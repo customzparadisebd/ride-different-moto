@@ -401,7 +401,7 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
     assertAccess(actor, PERMISSIONS.productsManage);
 
     const results = await Promise.all(
-      data.items.map((item) =>
+      data.items.map((item: any) =>
         context.supabase
           .from("products")
           .update({
@@ -413,7 +413,8 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
       )
     );
 
-    const error = results.find((r) => r.error);
+    const error = results.find((r: any) => r.error);
+
     if (error) throw new Error("Could not update some products.");
 
     await auditFromActor(actor, {
