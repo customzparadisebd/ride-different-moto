@@ -71,7 +71,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
               <SidebarTrigger />
               <div>
                 <p className="font-display text-sm font-bold uppercase tracking-wide">
-                  Customz Paradise BD — Operations
+                  Customer Paradise Admin Panel
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {access.email} ·{" "}
