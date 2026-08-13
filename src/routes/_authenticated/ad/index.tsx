@@ -154,7 +154,7 @@ function AdminDashboard() {
                         return (
                           <div className="rounded-lg bg-onyx px-3 py-2 shadow-xl border border-border/50">
                             <p className="text-[10px] font-bold text-onyx-foreground/60 uppercase">Revenue</p>
-                            <p className="text-sm font-bold text-brand-red">{payload[0].value}</p>
+                            <p className="text-sm font-bold text-brand-red">{(payload as any[])[0].value}</p>
                           </div>
                         );
                       }
