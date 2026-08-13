@@ -64,7 +64,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   return (
     <SidebarProvider>
       <div className="flex min-h-screen w-full bg-background">
-        <AdminSidebar permissions={access.permissions} />
+        <AdminSidebar access={access} permissions={access.permissions} />
         <SidebarInset>
           <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
             <div className="flex items-center gap-2">

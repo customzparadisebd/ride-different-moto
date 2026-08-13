@@ -74,9 +74,22 @@ const ADMINISTRATION: NavItem[] = [
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
 ];
 
-export function AdminSidebar({ permissions }: { permissions: Permission[] }) {
+export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const allowed = (item: NavItem) => !item.permission || permissions.includes(item.permission);
+  const isPrivileged = access.primaryRole === "super_admin" || access.primaryRole === "admin";
+  
+  const allowed = (item: NavItem) => {
+    if (!item.permission || permissions.includes(item.permission)) {
+      // Hard restrict Staff from specific paths in UI even if they have the permission bit
+      if (!isPrivileged) {
+        if (item.to === "/ad/staff" || item.to === "/ad/settings" || item.to === "/ad/couriers") {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  };
   const isActive = (item: NavItem) =>
     item.exact ? pathname === item.to : pathname.startsWith(item.to);
 
