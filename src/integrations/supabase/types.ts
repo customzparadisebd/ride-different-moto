@@ -596,6 +596,7 @@ export type Database = {
           is_active: boolean
           link_label: string | null
           link_url: string | null
+          mobile_image_url: string | null
           sort_order: number
           subtitle: string | null
           title: string
@@ -608,6 +609,7 @@ export type Database = {
           is_active?: boolean
           link_label?: string | null
           link_url?: string | null
+          mobile_image_url?: string | null
           sort_order?: number
           subtitle?: string | null
           title: string
@@ -620,6 +622,7 @@ export type Database = {
           is_active?: boolean
           link_label?: string | null
           link_url?: string | null
+          mobile_image_url?: string | null
           sort_order?: number
           subtitle?: string | null
           title?: string

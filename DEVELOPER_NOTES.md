@@ -79,4 +79,9 @@
 - Implemented **Featured & Best Deals Admin**: Added a new management panel (`/ad/featured`) for the homepage "Featured & Best Deals" section.
 - Added drag-and-drop sorting and custom promotional label management for featured products.
 - Updated the storefront to dynamically sort and display featured products according to admin configuration.
+- **Hero Slider Fixes**: Implemented responsive aspect-ratio (`aspect-[800/1000]`) for mobile banners to prevent cropping and ensure full image visibility.
+- **Hero Slider Uploads**: Added secure server-side upload system (`/api/hero/upload`) for hero banners with file type validation, size limits (2MB), and support for both desktop and mobile versions.
+- **Admin Hero UI**: Integrated "Upload Banner" buttons in the Hero Slider management panel, allowing staff to upload images directly to the database-linked storage bucket.
+- **Audit Logs**: Updated hero management server functions to properly validate mobile image URLs and manage banner states.
+
 

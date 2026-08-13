@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit2, Save, X } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2 } from "lucide-react";
 
 import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,39 @@ function AdminHeroSlides() {
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
+  const [uploadingType, setUploadingType] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const mobileFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'desktop' | 'mobile', callback: (url: string) => void) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingType(`${type}-${editingId || 'new'}`);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('type', type);
+
+    try {
+      const res = await fetch('/api/hero/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const error = await res.text();
+        throw new Error(error);
+      }
+
+      const { url } = await res.json();
+      callback(url);
+      toast.success(`${type === 'desktop' ? 'Desktop' : 'Mobile'} banner uploaded`);
+    } catch (err: any) {
+      toast.error(err.message || 'Upload failed');
+    } finally {
+      setUploadingType(null);
+    }
+  };
 
   const addMutation = useMutation({
     mutationFn: addSlide,
@@ -74,6 +107,7 @@ function AdminHeroSlides() {
       title: formData.get("title") as string,
       subtitle: formData.get("subtitle") as string,
       image_url: formData.get("image_url") as string,
+      mobile_image_url: formData.get("mobile_image_url") as string || null,
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: formData.get("is_active") === "on",
@@ -88,6 +122,7 @@ function AdminHeroSlides() {
       title: formData.get("title") as string,
       subtitle: formData.get("subtitle") as string,
       image_url: formData.get("image_url") as string,
+      mobile_image_url: formData.get("mobile_image_url") as string || null,
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: true,
@@ -131,8 +166,54 @@ function AdminHeroSlides() {
               <Input id="subtitle" name="subtitle" placeholder="e.g. For limited time only" />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="image_url">Image URL</Label>
-              <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
+              <Label htmlFor="image_url">Desktop Image URL</Label>
+              <div className="flex gap-2">
+                <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingType === 'desktop-new'}
+                >
+                  {uploadingType === 'desktop-new' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                </Button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={(e) => handleFileUpload(e, 'desktop', (url) => {
+                    const input = document.getElementById('image_url') as HTMLInputElement;
+                    if (input) input.value = url;
+                  })} 
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="mobile_image_url">Mobile Image URL (Recommended 4:5)</Label>
+              <div className="flex gap-2">
+                <Input id="mobile_image_url" name="mobile_image_url" placeholder="CDN URL preferred" />
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => mobileFileInputRef.current?.click()}
+                  disabled={uploadingType === 'mobile-new'}
+                >
+                  {uploadingType === 'mobile-new' ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                </Button>
+                <input 
+                  type="file" 
+                  ref={mobileFileInputRef} 
+                  className="hidden" 
+                  accept="image/*" 
+                  onChange={(e) => handleFileUpload(e, 'mobile', (url) => {
+                    const input = document.getElementById('mobile_image_url') as HTMLInputElement;
+                    if (input) input.value = url;
+                  })} 
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="link_url">Link Destination</Label>
@@ -182,8 +263,54 @@ function AdminHeroSlides() {
                       <Input name="subtitle" defaultValue={slide.label || ''} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Image URL</Label>
-                      <Input name="image_url" defaultValue={slide.image} required />
+                      <Label>Desktop Image URL</Label>
+                      <div className="flex gap-2">
+                        <Input name="image_url" id={`img-${slide.id}`} defaultValue={slide.image} required />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => fileInputRef.current?.click()}
+                          disabled={uploadingType === `desktop-${slide.id}`}
+                        >
+                          {uploadingType === `desktop-${slide.id}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        </Button>
+                        <input 
+                          type="file" 
+                          ref={fileInputRef} 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={(e) => handleFileUpload(e, 'desktop', (url) => {
+                            const input = document.getElementById(`img-${slide.id}`) as HTMLInputElement;
+                            if (input) input.value = url;
+                          })} 
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Mobile Image URL</Label>
+                      <div className="flex gap-2">
+                        <Input name="mobile_image_url" id={`mobile-img-${slide.id}`} defaultValue={slide.mobileImage || ''} />
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => mobileFileInputRef.current?.click()}
+                          disabled={uploadingType === `mobile-${slide.id}`}
+                        >
+                          {uploadingType === `mobile-${slide.id}` ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                        </Button>
+                        <input 
+                          type="file" 
+                          ref={mobileFileInputRef} 
+                          className="hidden" 
+                          accept="image/*" 
+                          onChange={(e) => handleFileUpload(e, 'mobile', (url) => {
+                            const input = document.getElementById(`mobile-img-${slide.id}`) as HTMLInputElement;
+                            if (input) input.value = url;
+                          })} 
+                        />
+                      </div>
                     </div>
                     <div className="space-y-2">
                       <Label>Link URL</Label>

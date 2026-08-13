@@ -98,7 +98,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   containerClassName={cn(
                     "w-full bg-onyx",
                     slide.isFullBanner
-                      ? "aspect-video sm:aspect-21/9"
+                      ? "aspect-[800/1000] sm:aspect-21/9"
                       : "aspect-4/5 sm:aspect-16/9 lg:aspect-21/9",
                   )}
                   className="transition-transform duration-700 group-hover:scale-[1.02]"
