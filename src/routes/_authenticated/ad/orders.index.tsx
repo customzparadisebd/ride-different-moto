@@ -490,8 +490,8 @@ function AdminOrderList() {
                   order.is_pinned ? "bg-primary/5" : ""
                 }`}
               >
-                {canSelect ? (
-                  <td className="p-2.5">
+                 {canSelect ? (
+                  <td className="p-2 text-center">
                     <Checkbox
                       checked={selected.includes(order.id)}
                       onCheckedChange={(checked) =>
@@ -505,10 +505,10 @@ function AdminOrderList() {
                     />
                   </td>
                 ) : null}
-                <td className="p-2.5 text-xs text-muted-foreground">
+                <td className="p-2 text-center font-mono text-[11px] text-muted-foreground">
                   {(page - 1) * pageSize + index + 1}
                 </td>
-                <td className="p-2.5">
+                <td className="p-2">
                   <InvoiceCell
                     order={order}
                     canManage={canManage}
@@ -520,29 +520,32 @@ function AdminOrderList() {
                     }
                   />
                 </td>
-                <td className="p-2.5">
+                <td className="p-2">
                   <AssignmentCell order={order} />
                 </td>
-                <td className="whitespace-nowrap p-2.5 text-xs text-muted-foreground">
-                  {new Date(order.created_at).toLocaleString("en-GB")}
+                <td className="whitespace-nowrap p-2 font-mono text-[11px] leading-tight text-muted-foreground">
+                  <div>{new Date(order.created_at).toLocaleDateString("en-GB")}</div>
+                  <div className="text-[10px] opacity-70">
+                    {new Date(order.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                  </div>
                 </td>
-                <td className="min-w-[240px] p-2.5">
+                <td className="p-2">
                   <CustomerCell order={order} />
                 </td>
-                <td className="min-w-[220px] p-2.5">
+                <td className="p-2">
                   <ProductsCell order={order} />
                 </td>
-                <td className="p-2.5">
+                <td className="p-2 text-center">
                   <PaymentCell order={order} />
                 </td>
-                <td className="p-2.5">
+                <td className="p-2 text-center">
                   <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
                 </td>
 
-                <td className="min-w-[170px] p-2.5">
+                <td className="p-2">
                   <AmountsCell order={order} />
                 </td>
-                <td className="p-2.5">
+                <td className="p-2 text-center">
                   <StatusBadge value={order.status} />
                 </td>
               </tr>
