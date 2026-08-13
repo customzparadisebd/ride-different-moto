@@ -149,7 +149,7 @@ export function CustomerCell({ order }: { order: AdminOrderListRow }) {
   const waPhone = order.customer_phone.replace(/\D/g, "").replace(/^0/, "880");
   return (
     <div className="space-y-1 text-[13px]">
-      <p className="font-bold leading-tight">নাম: {order.customer_name}</p>
+      <p className="font-bold leading-tight">{order.customer_name}</p>
       <div className="flex items-center gap-1">
         <span className="font-mono text-primary">{order.customer_phone}</span>
         <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
@@ -163,7 +163,7 @@ export function CustomerCell({ order }: { order: AdminOrderListRow }) {
         </a>
       </div>
       <p className="text-[11px] leading-tight text-muted-foreground">
-        ঠিকানা: {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
+        {order.address_line}, {order.city} · {deliveryZoneLabel(order.delivery_zone)}
       </p>
       <div className="pt-0.5">
         <span className="rounded border border-border bg-secondary px-1.5 py-0.5 text-[10px] font-bold uppercase">
