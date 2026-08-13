@@ -1321,9 +1321,11 @@ export type Database = {
           access_status: string
           approved_at: string | null
           approved_by: string | null
+          avatar_url: string | null
           created_at: string
           email: string | null
           full_name: string | null
+          gender: string | null
           id: string
           last_login_at: string | null
           mfa_required: boolean
@@ -1334,9 +1336,11 @@ export type Database = {
           access_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          gender?: string | null
           id: string
           last_login_at?: string | null
           mfa_required?: boolean
@@ -1347,9 +1351,11 @@ export type Database = {
           access_status?: string
           approved_at?: string | null
           approved_by?: string | null
+          avatar_url?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
+          gender?: string | null
           id?: string
           last_login_at?: string | null
           mfa_required?: boolean
