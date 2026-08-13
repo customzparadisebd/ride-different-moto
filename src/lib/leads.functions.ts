@@ -4,6 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
+// @ts-ignore - Tables might not be in types yet
+const TABLE_LEADS = "leads";
+
 export const submitLead = createServerFn({ method: "POST" })
   .inputValidator(z.object({
     name: z.string().min(2),
@@ -13,7 +16,7 @@ export const submitLead = createServerFn({ method: "POST" })
     source: z.string().default("contact_form"),
   }))
   .handler(async ({ data }) => {
-    const { error } = await supabase.from("leads").insert(data);
+    const { error } = await supabase.from(TABLE_LEADS as any).insert(data as any);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -24,7 +27,7 @@ export const getLeads = createServerFn({ method: "GET" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.customersManage);
-    const { data, error } = await context.supabase.from("leads").select("*").order("created_at", { ascending: false });
+    const { data, error } = await context.supabase.from(TABLE_LEADS as any).select("*").order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return data;
   });

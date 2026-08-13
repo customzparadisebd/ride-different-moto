@@ -4,10 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
+// @ts-ignore - Tables might not be in types yet
+const TABLE_REVIEWS = "reviews";
+
 export const getReviews = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
-    const query = supabase.from("reviews").select("*");
+    const query = supabase.from(TABLE_REVIEWS as any).select("*");
     if (!admin) query.eq("is_active", true);
     const { data, error } = await query.order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
@@ -32,7 +35,7 @@ export const updateReview = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.contentManage);
-    const { error } = await context.supabase.from("reviews").update(data.updates as any).eq("id", data.id);
+    const { error } = await context.supabase.from(TABLE_REVIEWS as any).update(data.updates as any).eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -52,7 +55,7 @@ export const createReview = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.contentManage);
-    const { error } = await context.supabase.from("reviews").insert(data as any);
+    const { error } = await context.supabase.from(TABLE_REVIEWS as any).insert(data as any);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -64,7 +67,7 @@ export const deleteReview = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.contentManage);
-    const { error } = await context.supabase.from("reviews").delete().eq("id", id);
+    const { error } = await context.supabase.from(TABLE_REVIEWS as any).delete().eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
