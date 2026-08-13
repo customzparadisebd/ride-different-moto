@@ -108,21 +108,21 @@ function Index() {
 
       <SectionBoundary label="universal-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow="Fits most bikes" title="Universal Products" />
+          <SectionHeading eyebrow={t('section.universal.eyebrow')} title={t('section.universal.title')} />
           <ProductGrid products={universalProducts} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="best-deals">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow="Limited offers" title="Featured & Best Deals" />
+          <SectionHeading eyebrow={t('section.bestDeals.eyebrow')} title={t('section.bestDeals.title')} />
           <ProductGrid products={bestDeals} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="all-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow={`${products.length} products`} title="All Products" />
+          <SectionHeading eyebrow={`${products.length} ${t('section.allProducts.eyebrow')}`} title={t('section.allProducts.title')} />
           {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
           <ProductBrowser products={products} />
         </section>

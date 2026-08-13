@@ -5,11 +5,13 @@ import { useEffect, useState } from "react";
 
 import { SafeImage } from "@/components/SafeImage";
 import { SectionHeading } from "@/components/home/SectionHeading";
+import { useLanguage } from "@/lib/i18n";
 import type { BikeModel } from "@/data/types";
 
 const AUTOPLAY_MS = 5000;
 
 export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
+  const { t } = useLanguage();
   const [emblaRef, embla] = useEmblaCarousel({ align: "start", dragFree: true, loop: false });
   const [paused, setPaused] = useState(false);
 
@@ -36,8 +38,8 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
       aria-labelledby="bike-models"
     >
       <SectionHeading
-        eyebrow="Find your fit"
-        title="Explore by Bike Model"
+        eyebrow={t('section.models.eyebrow')}
+        title={t('section.models.title')}
         action={
           <div className="hidden gap-2 sm:flex">
             <button
