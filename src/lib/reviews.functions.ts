@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { PERMISSIONS } from "./admin.shared";
+import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 // @ts-ignore - Tables might not be in types yet
 const TABLE_REVIEWS = "reviews";
@@ -66,7 +66,7 @@ export const createReview = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.contentManage);
+    assertAccess(actor, PERMISSIONS.reviewsManage);
     const { error } = await context.supabase.from(TABLE_REVIEWS as any).insert(data as any);
     if (error) throw new Error(error.message);
     return { ok: true };

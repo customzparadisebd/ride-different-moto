@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { PERMISSIONS } from "./admin.shared";
+import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 // @ts-ignore - Tables might not be in types yet
 const TABLE_LEADS = "leads";
