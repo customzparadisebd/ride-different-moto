@@ -22,6 +22,7 @@ export const getHeroSlides = createServerFn({ method: "GET" })
     bikeName: slide.title,
     label: slide.subtitle || undefined,
     image: slide.image_url,
+    mobileImage: (slide as any).mobile_image_url || undefined,
     alt: slide.title,
     bikeSlug: slide.link_url || "all-products",
     order: slide.sort_order,
