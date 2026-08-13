@@ -4,7 +4,7 @@
 ## LAST UPDATED: 2026-08-13 (UTC)
 
 ### COMPLETED:
-- [x] Hero Slider Update — Added custom banner. Optimized loading (priority eager preloading for 1st slide via SafeImage) to prevent layout shifts. Transition set to 3.5s.
+- [x] Hero Slider Update — Added custom banner. Optimized loading (priority eager preloading for 1st slide, responsive sizes/srcset support) to prevent layout shifts and improve LCP. Transition set to 3.5s.
 - [x] Sticky Navigation Bar (Desktop & Mobile) — COMPLETED
 - [x] N160/N250 PRODUCT ORDER & COLOR CONFIG — COMPLETED
 - [x] All Products Search & Filters (Name, Bike, Category, Price)
