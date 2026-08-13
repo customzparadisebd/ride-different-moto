@@ -42,11 +42,15 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = time.toLocaleString("en-GB", {
+  const formattedTime = time.toLocaleString("en-US", {
     timeZone: "Asia/Dhaka",
-    dateStyle: "medium",
-    timeStyle: "medium",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
     hour12: true,
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
   });
 
   const handleSignOut = async () => {
