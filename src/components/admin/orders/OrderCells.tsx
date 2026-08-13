@@ -159,8 +159,9 @@ export function AssignmentCell({ order }: { order: AdminOrderListRow }) {
 }
 
 /** CUSTOMER — contact, quick actions, address and repeat-order count. */
-export function CustomerCell({ order }: { order: AdminOrderListRow }) {
+export function CustomerCell({ order, onShowSummary }: { order: AdminOrderListRow; onShowSummary?: () => void }) {
   const waPhone = order.customer_phone.replace(/\D/g, "").replace(/^0/, "880");
+
   return (
     <div className="space-y-1 text-[13px]">
       <p className="font-bold leading-tight">{order.customer_name}</p>
