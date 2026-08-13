@@ -71,7 +71,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const heroSlides = getHeroSlides();
+  const fetchHeroSlides = useServerFn(getHeroSlides);
+  const heroSlidesQuery = useQuery({ queryKey: ["hero-slides"], queryFn: () => fetchHeroSlides() });
   const bikeModels = getBikeModels();
   // ALL PRODUCTS SECTION
   // Purpose: Displays all active products dynamically from the database.
