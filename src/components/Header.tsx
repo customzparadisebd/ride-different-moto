@@ -41,20 +41,6 @@ export function Header() {
         </nav>
 
         <div className="flex shrink-0 items-center justify-end gap-1 lg:flex-1 lg:justify-end">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                activeOptions={{ exact: link.to === "/" }}
-                activeProps={{ className: "text-primary" }}
-                inactiveProps={{ className: "text-foreground/80" }}
-                className="rounded-md px-2.5 py-2 font-display text-sm font-semibold uppercase tracking-wide transition-colors hover:text-primary"
-              >
-                {link.label}
-              </Link>
-            ))}
-          </nav>
-
           <Button
             variant="ghost"
             size="icon"
