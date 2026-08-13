@@ -18,13 +18,29 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-3 sm:h-16 sm:px-6">
-        <Link to="/" className="min-w-0" aria-label={`${site.name} home`}>
-          <Logo priority className="h-8 w-auto sm:h-10" />
-        </Link>
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-3 px-3 sm:h-16 sm:px-6">
+        <div className="flex flex-1 items-center justify-start lg:flex-none">
+          <Link to="/" className="min-w-0" aria-label={`${site.name} home`}>
+            <Logo priority className="h-8 w-auto sm:h-10" />
+          </Link>
+        </div>
 
-        <div className="flex shrink-0 items-center gap-1">
-          <nav className="mr-2 hidden items-center gap-1 lg:flex" aria-label="Main">
+        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label="Main">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              activeOptions={{ exact: link.to === "/" }}
+              activeProps={{ className: "text-primary" }}
+              inactiveProps={{ className: "text-foreground/80" }}
+              className="rounded-md px-2.5 py-2 font-display text-sm font-semibold uppercase tracking-wide transition-colors hover:text-primary"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex shrink-0 items-center justify-end gap-1 lg:flex-1 lg:justify-end">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
@@ -69,12 +85,12 @@ export function Header() {
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[86vw] max-w-sm p-0">
+            <SheetContent side="right" className="flex w-[86vw] max-w-sm flex-col p-0">
               <div className="border-b border-border p-4">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <Logo className="h-8 w-auto" />
               </div>
-              <nav className="flex flex-col p-2" aria-label="Mobile">
+              <nav className="flex flex-1 flex-col items-center justify-center p-2" aria-label="Mobile">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -82,7 +98,7 @@ export function Header() {
                     onClick={() => setMenuOpen(false)}
                     activeOptions={{ exact: link.to === "/" }}
                     activeProps={{ className: "text-primary" }}
-                    className="rounded-md px-3 py-3.5 font-display text-lg font-semibold uppercase tracking-wide hover:bg-secondary"
+                    className="w-full rounded-md px-3 py-3.5 text-center font-display text-lg font-semibold uppercase tracking-wide hover:bg-secondary"
                   >
                     {link.label}
                   </Link>
