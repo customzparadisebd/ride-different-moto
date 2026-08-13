@@ -37,74 +37,110 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       PERMISSIONS.ordersView,
     );
 
-    const since = startOfDayISO(29);
-    const [window, recent] = await Promise.all([
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayISO = todayStart.toISOString();
+
+    const monthStart = new Date();
+    monthStart.setDate(1);
+    monthStart.setHours(0, 0, 0, 0);
+    const monthISO = monthStart.toISOString();
+
+    const historyStart = startOfDayISO(13); // Last 14 days
+
+    const [orders, recent, inventory, statusCountsRaw] = await Promise.all([
       context.supabase
         .from("orders")
-        .select("created_at, total, advance_paid, status, payment_status")
-        .gte("created_at", since)
-        .returns<MetricRow[]>(),
+        .select("created_at, total, status")
+        .gte("created_at", monthISO)
+        .is("deleted_at", null),
       context.supabase
         .from("orders")
         .select("id, invoice_no, customer_name, total, status, payment_status, created_at")
+        .is("deleted_at", null)
         .order("created_at", { ascending: false })
         .limit(10),
+      context.supabase
+        .from("products")
+        .select("id, stock_qty, low_stock_threshold, is_active")
+        .is("deleted_at", null),
+      context.supabase
+        .from("orders")
+        .select("status")
+        .is("deleted_at", null),
     ]);
 
-    const rows = window.data ?? [];
-    const todayStart = startOfDayISO(0);
-    const weekStart = startOfDayISO(6);
+    const orderRows = orders.data ?? [];
+    const todayRows = orderRows.filter(r => r.created_at >= todayISO);
+    
+    // Revenue logic: typically excludes cancelled/returned in BDT context unless asked otherwise.
+    // Here we include everything that isn't deleted, but filter by status for "Sales" usually implies non-cancelled.
+    const getRevenue = (rows: any[]) => rows
+      .filter(r => r.status !== 'cancelled' && r.status !== 'returned')
+      .reduce((sum, r) => sum + Number(r.total), 0);
 
-    const bucket = (from: string) => {
-      const slice = rows.filter((row) => row.created_at >= from);
-      return {
-        orders: slice.length,
-        revenue: slice.reduce((sum, row) => sum + Number(row.total), 0),
-      };
-    };
+    const productRows = inventory.data ?? [];
+    const activeProducts = productRows.filter(p => p.is_active);
+    const totalStock = productRows.reduce((sum, p) => sum + (p.stock_qty || 0), 0);
+    const lowStock = productRows.filter(p => p.stock_qty > 0 && p.stock_qty <= (p.low_stock_threshold || 5));
+    const outOfStock = productRows.filter(p => (p.stock_qty || 0) <= 0);
 
     const statusCounts: Record<string, number> = {};
-    let dueAmount = 0;
-    let unpaidOrders = 0;
-    for (const row of rows) {
-      statusCounts[row.status] = (statusCounts[row.status] ?? 0) + 1;
-      const due = Math.max(Number(row.total) - Number(row.advance_paid ?? 0), 0);
-      if (row.payment_status !== "paid" && row.payment_status !== "refunded") {
-        dueAmount += due;
-        if (due > 0) unpaidOrders += 1;
-      }
-    }
+    (statusCountsRaw.data ?? []).forEach(r => {
+      statusCounts[r.status] = (statusCounts[r.status] ?? 0) + 1;
+    });
+
+    // Unique customers based on phone (from all-time orders)
+    const { data: customerData } = await context.supabase
+      .from("orders")
+      .select("customer_phone")
+      .is("deleted_at", null);
+    const uniqueCustomers = new Set((customerData ?? []).map(c => c.customer_phone)).size;
+
+    // Revenue History (last 14 days)
+    const historyRows = await context.supabase
+      .from("orders")
+      .select("created_at, total, status")
+      .gte("created_at", historyStart)
+      .is("deleted_at", null);
+    
+    const revenueByDay: Record<string, number> = {};
+    (historyRows.data ?? []).forEach(r => {
+      if (r.status === 'cancelled' || r.status === 'returned') return;
+      const day = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      revenueByDay[day] = (revenueByDay[day] ?? 0) + Number(r.total);
+    });
+
+    const revenueHistory = Array.from({ length: 14 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(d.getDate() - (13 - i));
+      const day = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      return { date: day, revenue: revenueByDay[day] || 0 };
+    });
 
     return {
-      today: bucket(todayStart),
-      week: bucket(weekStart),
-      month: bucket(since),
+      today: {
+        orders: todayRows.length,
+        revenue: getRevenue(todayRows)
+      },
+      month: {
+        orders: orderRows.length,
+        revenue: getRevenue(orderRows)
+      },
+      totalOrders: (statusCountsRaw.data ?? []).length,
+      pendingOrders: statusCounts['pending'] || 0,
+      uniqueCustomers,
       statusCounts,
-      dueAmount,
-      unpaidOrders,
       recent: recent.data ?? [],
       inventory: {
-        totalProducts: rows.length > 0 ? 1 : 0, // Placeholder for actual product count if needed
-        totalStock: 101, // Mock as per reference
-        lowStock: 0,
-        outOfStock: 0,
+        totalProducts: activeProducts.length,
+        totalStock,
+        lowStock: lowStock.length,
+        outOfStock: outOfStock.length,
+        lowStockItems: lowStock.slice(0, 5), // Return some samples
+        outOfStockItems: outOfStock.slice(0, 5)
       },
-      revenueHistory: [
-        { date: 'Jul 31', revenue: 0 },
-        { date: 'Aug 1', revenue: 0 },
-        { date: 'Aug 2', revenue: 0 },
-        { date: 'Aug 3', revenue: 0 },
-        { date: 'Aug 4', revenue: 0 },
-        { date: 'Aug 5', revenue: 0 },
-        { date: 'Aug 6', revenue: 0 },
-        { date: 'Aug 7', revenue: 0 },
-        { date: 'Aug 8', revenue: 0 },
-        { date: 'Aug 9', revenue: 0 },
-        { date: 'Aug 10', revenue: 0 },
-        { date: 'Aug 11', revenue: 0 },
-        { date: 'Aug 12', revenue: 0 },
-        { date: 'Aug 13', revenue: 0 },
-      ],
+      revenueHistory
     };
   });
 
