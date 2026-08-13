@@ -1360,6 +1360,8 @@ export type Database = {
           support_email: string | null
           support_phone: string
           updated_at: string
+          whatsapp_floating_enabled: boolean | null
+          whatsapp_floating_position: string | null
           whatsapp_message: string
           whatsapp_phone: string
           zone_charges: Json
@@ -1375,6 +1377,8 @@ export type Database = {
           support_email?: string | null
           support_phone?: string
           updated_at?: string
+          whatsapp_floating_enabled?: boolean | null
+          whatsapp_floating_position?: string | null
           whatsapp_message?: string
           whatsapp_phone?: string
           zone_charges?: Json
@@ -1390,6 +1394,8 @@ export type Database = {
           support_email?: string | null
           support_phone?: string
           updated_at?: string
+          whatsapp_floating_enabled?: boolean | null
+          whatsapp_floating_position?: string | null
           whatsapp_message?: string
           whatsapp_phone?: string
           zone_charges?: Json
