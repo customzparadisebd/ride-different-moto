@@ -40,8 +40,6 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    const min = Number(minPrice) || 0;
-    const max = Number(maxPrice) || Number.POSITIVE_INFINITY;
 
     const result = products.filter((product) => {
       const price = basePrice(product);
@@ -50,7 +48,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
       if (bike !== "all" && !product.universal && !product.bikeCompatibility.includes(bike)) {
         return false;
       }
-      return price >= min && price <= max;
+      return true;
     });
 
     switch (sort) {
@@ -63,7 +61,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
       default:
         return result;
     }
-  }, [products, search, bike, category, minPrice, maxPrice, sort]);
+  }, [products, search, bike, category, sort]);
 
   const dirty =
     search !== "" || bike !== "all" || category !== "all" || minPrice !== "" || maxPrice !== "";
