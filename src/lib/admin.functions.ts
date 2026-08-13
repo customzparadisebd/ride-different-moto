@@ -40,6 +40,9 @@ export const getAdminContext = createServerFn({ method: "POST" })
     return {
       userId: actor.userId,
       email: actor.email,
+      fullName: actor.fullName,
+      gender: actor.gender,
+      avatarUrl: actor.avatarUrl,
       roles: actor.roles,
       primaryRole: actor.primaryRole,
       permissions: actor.permissions,
@@ -50,6 +53,43 @@ export const getAdminContext = createServerFn({ method: "POST" })
       mfaSatisfied: actor.mfaSatisfied,
       sessionRevoked: actor.sessionRevoked,
     };
+  });
+
+/** Updates the caller's profile (name, gender, avatar). */
+export const updateAdminProfile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        fullName: z.string().min(2).optional(),
+        gender: z.enum(["male", "female", "other"]).optional(),
+        avatarUrl: z.string().url().optional(),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { auditFromActor, resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+
+    const update: Record<string, any> = {};
+    if (data.fullName !== undefined) update["full_name"] = data.fullName;
+    if (data.gender !== undefined) update["gender"] = data.gender;
+    if (data.avatarUrl !== undefined) update["avatar_url"] = data.avatarUrl;
+
+    if (Object.keys(update).length === 0) return { ok: true };
+
+    const { error } = await supabaseAdmin.from("profiles").update(update as any).eq("id", context.userId);
+    if (error) throw new Error("Could not update profile.");
+
+    await auditFromActor(actor, {
+      action: "PROFILE_UPDATED",
+      targetType: "account",
+      targetId: context.userId,
+      newValue: update,
+    });
+
+    return { ok: true };
   });
 
 /** Records a successful sign-in: session row, last login and audit entry. */

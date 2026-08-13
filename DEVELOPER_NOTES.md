@@ -33,9 +33,12 @@
 - **Admin Button States**: Primary actions use the brand red with enhanced depth, while secondary actions utilize a sleek steel/onyx gradient with multi-layered shadows.
 
 ## Recently Completed
-- Optimized product cards for mobile with a specific vertical order (Image → Badges → Name → Description → Price → Colors → Buttons).
-- Comprehensive responsiveness audit: Fixed grid gap inconsistencies, refined mobile typography, addressed header layout issues, and improved address text wrapping for small screens.
-- Automated cross-browser viewport testing completed for iPhone 14, Samsung Galaxy S22, and Desktop Full HD.
+- **User Profile Widget**: Implemented a dynamic User Profile Widget in the Admin sidebar.
+  - Features dynamic 3D illustrated avatars via DiceBear based on user name/gender.
+  - Allows users to customize their profile (Edit Name, Select Gender, Upload Custom Photo).
+  - Profile data is securely stored in `profiles` table and \`avatars\` storage bucket with full RLS.
+- Optimized product cards for mobile with a specific vertical order.
+- Comprehensive responsiveness audit: Fixed grid gap inconsistencies and refined mobile layouts.
 
 ## Next Steps
 - Implement detailed Product Inventory tracking.

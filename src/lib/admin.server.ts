@@ -52,6 +52,9 @@ export type AdminClaims = {
 export type AdminActor = {
   userId: string;
   email: string | null;
+  fullName: string | null;
+  gender: string | null;
+  avatarUrl: string | null;
   roles: Role[];
   primaryRole: Role | null;
   permissions: Permission[];
@@ -139,7 +142,7 @@ export async function resolveActor(
   const [profile, roleRows, permRows] = await Promise.all([
     supabaseAdmin
       .from("profiles")
-      .select("access_status, mfa_required")
+      .select("access_status, mfa_required, full_name, gender, avatar_url")
       .eq("id", userId)
       .maybeSingle(),
     supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
@@ -185,6 +188,9 @@ export async function resolveActor(
   return {
     userId,
     email,
+    fullName: profile.data?.full_name ?? null,
+    gender: profile.data?.gender ?? null,
+    avatarUrl: profile.data?.avatar_url ?? null,
     roles,
     primaryRole,
     permissions,
