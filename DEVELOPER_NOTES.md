@@ -1,7 +1,7 @@
 # DEVELOPER NOTES - CUSTOMZ PARADISE BD
 
 ## STATUS: OPERATIONAL
-## LAST UPDATED: 2026-08-14 (UTC)
+## LAST UPDATED: 2026-08-16 (UTC)
 
 ### COMPLETED:
 - [x] Hero Slider Update — Added custom banner. Optimized loading (priority eager preloading for 1st slide, responsive sizes/srcset support) to prevent layout shifts and improve LCP. Enhanced accessibility with ARIA labels and keyboard navigation (Arrow keys). Transition set to 3.5s.
@@ -83,5 +83,20 @@
 - **Hero Slider Uploads**: Added secure server-side upload system (`/api/hero/upload`) for hero banners with file type validation, size limits (2MB), and support for both desktop and mobile versions.
 - **Admin Hero UI**: Integrated "Upload Banner" buttons in the Hero Slider management panel, allowing staff to upload images directly to the database-linked storage bucket.
 - **Audit Logs**: Updated hero management server functions to properly validate mobile image URLs and manage banner states.
+
+## Aug 16, 2026
+- **Lead Capture System**: Implemented a customer contact form in `ContactSection.tsx` with server-side lead storage in a new `leads` table.
+- **Admin Leads Management**: Created a new admin page (`/ad/leads`) for staff to review and manage customer inquiries.
+- **Review Management System**: Built a full review management suite. Added `reviews` database table and an admin dashboard (`/ad/reviews`) for CRUD operations, sorting, and active status toggles.
+- **Storefront Reviews**: Implemented a premium carousel-based `ReviewSection` on the homepage that fetches verified customer testimonials from the database.
+- **Hero Slider Optimization**: Increased autoplay speed to 2.5s for a more dynamic feel.
+- **Homepage Layout Refinement**: Rearranged sections for better flow: Hero -> Bike Models -> Universal Products -> Featured & Deals -> All Products -> About Us -> Customer Reviews -> Store Coming Soon -> Contact.
+- **Admin Orders Enhancement**: Added a "Recycle Bin" bulk action to the Orders list for faster batch cancellation/archiving.
+- **Permission System Expansion**: Added `reviews.manage` permission and updated RBAC to include review management for admins/staff.
+- **Security & Auditing**: Wired lead capture and review modifications to the admin audit log for tracking staff actions and system events.
+- **WhatsApp Prefill**: Updated WhatsApp contact links with pre-filled messages ("Hello Customz Paradise BD, I'm interested in modifying my bike...") for better conversion.
+- **SEO & Organization**: Updated homepage meta title to reflect brand tagline: "Customz Paradise BD — Ride Different. Be Different."
+- **Storefront Component Upgrades**: Redesigned `StoreComingSoon` and `AboutSection` with premium visuals, custom icons, and improved typography to match the brand identity.
+
 
 
