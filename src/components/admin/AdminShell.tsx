@@ -12,13 +12,15 @@
 // ============================================================
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
+import { Moon, Sun, Clock } from "lucide-react";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { recordSignOut } from "@/lib/admin.functions";
+import { useTheme } from "@/lib/theme";
 import { ROLE_LABELS, type Permission, type Role } from "@/lib/admin.shared";
 
 export type AdminAccess = {
@@ -49,14 +51,14 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
 
   const handleSignOut = async () => {
     try {
-      await recordSignOut({});
-    } catch {
-      /* audit/session cleanup is best-effort; sign-out must still happen */
+      await recordSignOut();
+      await supabase.auth.signOut();
+      queryClient.clear();
+      void navigate({ to: "/" });
+    } catch (error) {
+      console.error("Sign out error:", error);
+      void navigate({ to: "/" });
     }
-    await queryClient.cancelQueries();
-    queryClient.clear();
-    await supabase.auth.signOut();
-    void navigate({ to: "/ad/log", replace: true });
   };
 
   return (
@@ -96,22 +98,9 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
               </Button>
             </div>
           </header>
-          <main className="px-4 py-6">{children}</main>
+          <main className="p-4 md:p-6 lg:p-8">{children}</main>
         </SidebarInset>
       </div>
     </SidebarProvider>
   );
 }
-
-export const adminHead = (title: string) => ({
-  meta: [
-    { title },
-    { name: "description", content: "Restricted staff area." },
-    { property: "og:title", content: title },
-    { property: "og:description", content: "Restricted staff area." },
-    { property: "og:type", content: "website" },
-    { name: "twitter:card", content: "summary" },
-    // Admin screens must never be indexed.
-    { name: "robots", content: "noindex, nofollow, noarchive" },
-  ],
-});
