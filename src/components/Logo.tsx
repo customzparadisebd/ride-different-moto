@@ -1,5 +1,4 @@
-import logoDarkBg from "@/assets/logo-dark-bg.png.asset.json";
-import logoLightBg from "@/assets/logo-light-bg.png.asset.json";
+import brandLogoMain from "@/assets/brand-logo-main.png.asset.json";
 import { site } from "@/data/site";
 import { useTheme } from "@/lib/theme";
 import { cn } from "@/lib/utils";
@@ -18,7 +17,7 @@ type LogoProps = {
 export function Logo({ on = "auto", className, priority = false }: LogoProps) {
   const { theme } = useTheme();
   const surface = on === "auto" ? theme : on;
-  const asset = surface === "dark" ? logoDarkBg : logoLightBg;
+  const asset = brandLogoMain;
 
   return (
     <img
