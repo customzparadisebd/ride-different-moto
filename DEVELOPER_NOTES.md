@@ -14,6 +14,12 @@
 - [x] Staff UI: Super Admin name correctly displayed, Add User button added.
 - [x] Courier Integration (SteadFast): Bulk booking, Tracking, Cancellation, Connection Testing, and API Logs.
 
+## Recent Changes (Aug 14, 2026)
+- **Invoice Configuration**: Added an Invoice Settings panel to the Admin Dashboard. Super Admins/Admins can now customize the invoice prefix (e.g., "CZP") and the sequence starting number.
+- **Atomic Invoice Generation**: Implemented a database sequence and `SECURITY DEFINER` trigger to ensure sequential, collision-free invoice IDs (e.g., CZP-01, CZP-02) even during concurrent order placement.
+- **Staff Management Updates**: Implemented 'Delete', 'Reset Password', 'Edit Name', and 'Add User' capabilities for Super Admins/Admins. Corrected profile name display to reflect the authenticated user.
+- **Admin UI Hardening**: Restricted "Staff & Roles" and "SteadFast Courier/API settings" to Super Admin and Admin roles only. Staff users are now correctly redirected if they attempt to access these sections directly via URL.
+
 ## Recent Changes (Aug 13, 2026)
 - **Full Responsiveness**: Executed a comprehensive responsiveness audit across the entire website. Refactored the About Us, Bike Models, Product Browser, Store Coming Soon, Contact Us, and Social sections to ensure clean layouts and proper stacking on mobile, tablet, and desktop viewports. Added safe-area padding and responsive typography.
 - **Mobile Product Card Optimization**: Redesigned the product card layout specifically for mobile (single-column grid). Cards now feature a clear vertical flow: Image → Badges → Name → Description → Price → Color Selection → Action Buttons (Choose Color, Order Now). Ensured full readability of button text and easy-to-tap color selection. Existing tablet/desktop layouts remain unchanged.
@@ -36,7 +42,7 @@
 - **User Profile Widget**: Implemented a dynamic User Profile Widget in the Admin sidebar.
   - Features dynamic 3D illustrated avatars via DiceBear based on user name/gender.
   - Allows users to customize their profile (Edit Name, Select Gender, Upload Custom Photo).
-  - Profile data is securely stored in `profiles` table and \`avatars\` storage bucket with full RLS.
+  - Profile data is securely stored in `profiles` table and `avatars` storage bucket with full RLS.
 - Optimized product cards for mobile with a specific vertical order.
 - Comprehensive responsiveness audit: Fixed grid gap inconsistencies and refined mobile layouts.
 
