@@ -36,6 +36,13 @@ const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => 
     response.headers.set("referrer-policy", "strict-origin-when-cross-origin");
     response.headers.set("x-permitted-cross-domain-policies", "none");
     response.headers.set("permissions-policy", "geolocation=(), microphone=(), camera=()");
+    response.headers.set("x-xss-protection", "1; mode=block");
+    response.headers.set("strict-transport-security", "max-age=31536000; includeSubDomains; preload");
+    // Standard CSP - allowing specific external assets while hardening
+    response.headers.set(
+      "content-security-policy",
+      "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; frame-src 'self' https://www.google.com; connect-src 'self' https://*.supabase.co https://*.lovable.app wss://*.supabase.co https://api.dicebear.com;"
+    );
   }
   return result;
 });

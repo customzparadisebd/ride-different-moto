@@ -162,6 +162,10 @@ export async function resolveActor(
   let sessionRevoked = false;
   if (sessionId) {
     const meta = requestMeta();
+    // Use the details for a unique key per user + IP
+    const rateLimitKey = `rate:sess:${userId}:${meta.ip}`;
+    // Simple in-memory or DB-backed rate limit check would go here.
+    // For now we rely on the existing loginLockState for auth attempts.
     const row = await supabaseAdmin
       .from("admin_sessions")
       .select("id, revoked_at")
