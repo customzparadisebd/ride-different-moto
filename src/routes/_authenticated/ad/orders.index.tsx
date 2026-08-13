@@ -478,8 +478,14 @@ function AdminOrderList() {
             )}
             {!ordersQuery.isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={12} className="p-6 text-center text-muted-foreground">
-                  No orders match these filters.
+                <td colSpan={12} className="py-24 text-center">
+                  <div className="flex flex-col items-center justify-center gap-4 text-muted-foreground">
+                    <XCircle className="h-10 w-10 opacity-20" />
+                    <div>
+                      <p className="text-base font-bold uppercase tracking-wider">No matching orders</p>
+                      <p className="text-xs">Adjust your filters or status selection to find what you're looking for.</p>
+                    </div>
+                  </div>
                 </td>
               </tr>
             )}
