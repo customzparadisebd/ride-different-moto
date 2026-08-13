@@ -15,6 +15,7 @@
 - [x] Courier Integration (SteadFast): Bulk booking, Tracking, Cancellation, Connection Testing, and API Logs.
 
 ## Recent Changes (Aug 13, 2026)
+- **Product UI**: Added theme-aware outlines (Silver/Gray in Dark Mode, Black/Dark in Light Mode) to all product color selection circles.
 - **About Us Section**: Removed the feature cards (Premium Quality, Unique Designs, etc.) while keeping the brand story and tagline.
 - **Store Coming Soon**: Removed the estimated launch date (Q3 2026) from the "Physical Store Coming Soon" section on the landing page.
 - **SteadFast API Integration**: Completed the SteadFast courier integration with full support for the `Api-Key` and `Secret-Key` authentication headers.
