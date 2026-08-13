@@ -76,8 +76,8 @@ export const saveStoreSettings = createServerFn({ method: "POST" })
         low_stock_threshold: data.lowStockThreshold,
         whatsapp_phone: data.whatsappPhone,
         whatsapp_message: data.whatsappMessage,
-        whatsapp_floating_enabled: data.whatsappFloatingEnabled,
-        whatsapp_floating_position: data.whatsappFloatingPosition,
+        whatsapp_floating_enabled: data.whatsappFloatingEnabled as never,
+        whatsapp_floating_position: data.whatsappFloatingPosition as never,
       })
       .eq("id", "default");
     if (error) throw new Error("Could not save the store settings.");

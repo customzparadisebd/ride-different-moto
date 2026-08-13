@@ -13,6 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Footer } from "@/components/Footer";
+import { FloatingWhatsApp } from "@/components/FloatingWhatsApp";
 import { Header } from "@/components/Header";
 import { NetworkBanner } from "@/components/NetworkBanner";
 import { Toaster } from "@/components/ui/sonner";
@@ -208,6 +209,7 @@ function RootComponent() {
             </main>
             {isPrivateArea ? null : <Footer />}
           </div>
+          {isPrivateArea ? null : <FloatingWhatsApp />}
           <NetworkBanner />
           <Toaster />
         </CartProvider>
