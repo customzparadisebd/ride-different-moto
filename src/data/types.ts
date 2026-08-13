@@ -14,6 +14,7 @@ export type HeroSlide = {
   bikeSlug: string;
   order: number;
   active: boolean;
+  isFullBanner?: boolean;
 };
 
 export type BikeModel = {
