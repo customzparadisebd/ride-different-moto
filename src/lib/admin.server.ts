@@ -87,7 +87,8 @@ export async function resolveActor(
   claims: AdminClaims | null,
 ): Promise<AdminActor> {
   const email = claims?.email?.toLowerCase() ?? null;
-  const isOwner = !!email && email === OWNER_EMAIL;
+  // SECURITY: Case-insensitive email comparison for the owner account.
+  const isOwner = !!email && email === OWNER_EMAIL.toLowerCase();
 
   const existing = await supabaseAdmin
     .from("profiles")
