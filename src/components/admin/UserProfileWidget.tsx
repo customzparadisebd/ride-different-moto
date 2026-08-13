@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Camera, Loader2, Upload, User } from "lucide-react";
+import { Camera, Loader2, Upload, User, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -145,6 +145,16 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                   <User className="h-16 w-16 text-muted-foreground" />
                 )}
               </div>
+              <Button
+                variant="steel"
+                size="icon"
+                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-lg border-2 border-background"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUpdating}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+
               {isUpdating && (
                 <div className="absolute inset-0 bg-background/60 flex items-center justify-center rounded-full">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
