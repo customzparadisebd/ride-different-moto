@@ -72,7 +72,7 @@ export function InvoiceCell({
   order: AdminOrderListRow;
   onActivity: () => void;
   onTogglePin: () => void;
-  onShowNote?: () => void;
+  onShowNote?: (() => void) | undefined;
   canManage: boolean;
 }) {
   return (
