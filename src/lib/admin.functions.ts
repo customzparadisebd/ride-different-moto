@@ -266,6 +266,10 @@ export const listStaff = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.staffManage);
+    // Security: Only Super Admin and Admin can view/manage staff email and password data.
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("You do not have permission to view staff data.");
+    }
 
     const [profiles, roles, perms] = await Promise.all([
       supabaseAdmin
@@ -426,6 +430,73 @@ export const setStaffPermissions = createServerFn({ method: "POST" })
       newValue: { permissions: allowed },
     });
     return { ok: true, permissions: allowed };
+  });
+
+/** Deletes a staff account (Super Admin/Admin only). */
+export const deleteStaff = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.staffManage);
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only Super Admins and Admins can delete users.");
+    }
+    if (data.userId === actor.userId) throw new Error("You cannot delete yourself.");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .eq("id", data.userId)
+      .maybeSingle();
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error("Could not delete the user account.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.staffDeleted,
+      targetType: "account",
+      targetId: data.userId,
+      targetLabel: profile?.email ?? null,
+    });
+    return { ok: true };
+  });
+
+/** Updates a staff member's password (Super Admin/Admin only). */
+export const setStaffPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ userId: z.string().uuid(), password: z.string().min(8) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.staffManage);
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only Super Admins and Admins can change passwords.");
+    }
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email")
+      .eq("id", data.userId)
+      .maybeSingle();
+
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, {
+      password: data.password,
+    });
+    if (error) throw new Error("Could not update the password.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.staffPasswordChanged,
+      targetType: "account",
+      targetId: data.userId,
+      targetLabel: profile?.email ?? null,
+    });
+    return { ok: true };
   });
 
 // ---------- SESSIONS ----------

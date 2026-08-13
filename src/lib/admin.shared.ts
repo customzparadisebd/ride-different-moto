@@ -179,6 +179,9 @@ export const AUDIT_ACTIONS = {
   reviewCreated: "review.created",
   reviewDeleted: "review.deleted",
   leadCaptured: "lead.captured",
+  staffCreated: "staff.created",
+  staffDeleted: "staff.deleted",
+  staffPasswordChanged: "staff.password_changed",
 } as const;
 
 export const staffStatusInput = z.object({
