@@ -103,6 +103,7 @@ function AdminOrderList() {
   const [activityOrder, setActivityOrder] = useState<AdminOrderListRow | null>(null);
   // SEND TO STEADFAST — confirmation modal state
   const [steadfastOpen, setSteadfastOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
 
 
@@ -261,11 +262,9 @@ function AdminOrderList() {
             </DropdownMenuContent>
           </DropdownMenu>
           {canCreate ? (
-            <Button variant="red" size="touch" asChild>
-              <Link to="/ad/orders/new">
-                <Plus />
-                Create Order
-              </Link>
+            <Button variant="red" size="touch" onClick={() => setCreateModalOpen(true)}>
+              <Plus />
+              CREATE ORDER
             </Button>
           ) : null}
         </div>
@@ -368,11 +367,11 @@ function AdminOrderList() {
           </Button>
             </>
           ) : null}
-          {/* SEND TO STEADFAST — bulk action */}
           {canShip ? (
             <Button
-              variant="steel"
+              variant="outline"
               size="sm"
+              className="flex items-center gap-2 border-primary/20 hover:bg-primary/5"
               onClick={() => {
                 if (sendableSelected.length === 0) {
                   toast.error("All selected orders already have a SteadFast consignment.");
@@ -381,6 +380,11 @@ function AdminOrderList() {
                 setSteadfastOpen(true);
               }}
             >
+              <img 
+                src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" 
+                alt="SteadFast" 
+                className="h-4 w-auto" 
+              />
               Send to SteadFast ({sendableSelected.length})
             </Button>
           ) : null}
@@ -410,6 +414,23 @@ function AdminOrderList() {
         onOpenChange={(open) => (open ? null : setCancelOrder(null))}
         onFinished={refreshOrders}
       />
+
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display uppercase">Create order</DialogTitle>
+          </DialogHeader>
+          <ManualOrderForm
+            idempotencyKey={newIdempotencyKey()}
+            isPending={false}
+            onSubmit={(input) => {
+              // We'll wrap this in a mutation soon
+              console.log("Submit manual order", input);
+            }}
+            onClose={() => setCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
 
       {/* DESKTOP TABLE — full column layout */}

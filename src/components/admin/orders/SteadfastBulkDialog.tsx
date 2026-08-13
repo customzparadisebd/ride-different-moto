@@ -95,7 +95,14 @@ export function SteadfastBulkDialog({
     >
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-display uppercase">Send to SteadFast</DialogTitle>
+          <div className="flex items-center gap-3 mb-2">
+            <img 
+              src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" 
+              alt="SteadFast Courier" 
+              className="h-8 w-auto"
+            />
+            <DialogTitle className="font-display uppercase">Send to SteadFast</DialogTitle>
+          </div>
           <DialogDescription>
             {finished
               ? "Results for this batch. Failed orders stay selectable for a retry — already booked orders are never sent twice."
