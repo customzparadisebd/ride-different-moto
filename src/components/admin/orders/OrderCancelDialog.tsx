@@ -25,17 +25,18 @@ export function OrderCancelDialog({ order, onOpenChange, onFinished }: OrderCanc
  
   const mutation = useMutation({
     mutationFn: () => cancelShipment({ data: { orderId: order?.id ?? "" } }),
-    onSuccess: (res) => {
-      if (res.success) {
+    onSuccess: (res: any) => {
+      if (res?.success) {
         toast.success(res.message || "Shipment cancelled successfully.");
         onFinished();
         onOpenChange(false);
       } else {
-        toast.error(res.message || "Could not cancel the shipment.");
+        toast.error(res?.message || "Could not cancel the shipment.");
       }
     },
     onError: (error: Error) => toast.error(error.message || "Cancel failed."),
   });
+
  
   return (
     <Dialog open={!!order} onOpenChange={onOpenChange}>

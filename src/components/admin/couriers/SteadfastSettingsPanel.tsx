@@ -73,16 +73,17 @@ export function SteadfastSettingsPanel() {
  
   const testMutation = useMutation({
     mutationFn: () => testConn({}),
-    onSuccess: (res) => {
-      if (res.ok) {
+    onSuccess: (res: any) => {
+      if (res?.ok) {
         toast.success(res.message);
         void queryClient.invalidateQueries({ queryKey: ["steadfast-logs"] });
       } else {
-        toast.error(res.message);
+        toast.error(res?.message || "Connection failed");
       }
     },
     onError: (error: Error) => toast.error(error.message || "Connection test failed."),
   });
+
 
 
   // Staff / Manager accounts get a 403 from the server function — hide the section.
