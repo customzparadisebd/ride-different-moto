@@ -43,9 +43,7 @@ import {
 import { getStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/products")({
-  head: () => ({
-    meta: [{ title: "Products — CZP Ops" }]
-  }),
+  head: () => ({ meta: [{ title: "Products — CZP Ops" }] }),
   component: AdminProducts,
 });
 

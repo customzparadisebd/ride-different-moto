@@ -65,9 +65,7 @@ import {
 type SortBy = "created_at" | "total" | "invoice_no";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/")({
-  head: () => ({
-    meta: [{ title: "Orders — CZP Ops" }]
-  }),
+  head: () => ({ meta: [{ title: "Orders — CZP Ops" }] }),
   validateSearch: (search: Record<string, unknown>): { status?: OrderStatus } => {
     const status = String(search["status"] ?? "");
     return ORDER_STATUSES.includes(status as OrderStatus) ? { status: status as OrderStatus } : {};

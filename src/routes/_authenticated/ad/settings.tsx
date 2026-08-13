@@ -25,9 +25,7 @@ import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.share
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
-  head: () => ({
-    meta: [{ title: "Settings — CZP Ops" }]
-  }),
+  head: () => ({ meta: [{ title: "Settings — CZP Ops" }] }),
   component: AdminSettings,
 });
 

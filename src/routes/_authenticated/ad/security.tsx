@@ -31,9 +31,7 @@ import {
 import { PERMISSIONS } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/security")({
-  head: () => ({
-    meta: [{ title: "Security — CZP Ops" }]
-  }),
+  head: () => ({ meta: [{ title: "Security — CZP Ops" }] }),
   component: SecurityPage,
 });
 
