@@ -72,7 +72,11 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const fetchHeroSlides = useServerFn(getHeroSlides);
-  const heroSlidesQuery = useQuery({ queryKey: ["hero-slides"], queryFn: () => fetchHeroSlides({ data: {} }) });
+  const heroSlidesQuery = useQuery({ 
+    queryKey: ["hero-slides"], 
+    queryFn: () => fetchHeroSlides({ data: {} }),
+    placeholderData: (prev) => prev
+  });
   const bikeModels = getBikeModels();
   // ALL PRODUCTS SECTION
   // Purpose: Displays all active products dynamically from the database.
