@@ -387,11 +387,10 @@ function AdminOrderList() {
           </Button>
             </>
           ) : null}
-          {canShip ? (
             <Button
               variant="outline"
               size="sm"
-              className="flex items-center gap-2 border-primary/20 hover:bg-primary/5"
+              className="flex items-center border-primary/20 hover:bg-primary/5"
               onClick={() => {
                 if (sendableSelected.length === 0) {
                   toast.error("All selected orders already have a SteadFast consignment.");
@@ -405,9 +404,7 @@ function AdminOrderList() {
                 alt="SteadFast" 
                 className="h-4 w-auto" 
               />
-              Send to SteadFast ({sendableSelected.length})
             </Button>
-          ) : null}
           <Button variant="steel" size="sm" onClick={() => setSelected([])}>
             Clear
           </Button>
