@@ -800,6 +800,36 @@ export type Database = {
         }
         Relationships: []
       }
+      not_found_logs: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: string | null
+          path: string
+          referrer: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          path: string
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          path?: string
+          referrer?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       order_events: {
         Row: {
           actor: string | null

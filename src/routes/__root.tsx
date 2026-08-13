@@ -9,6 +9,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
+import { useServerFn } from "@tanstack/react-start";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -20,11 +21,17 @@ import { Toaster } from "@/components/ui/sonner";
 import { site } from "@/data/site";
 import { CartProvider } from "@/lib/cart";
 import { ThemeProvider } from "@/lib/theme";
+import { logNotFound } from "@/lib/analytics.functions";
 import errorGif from "@/assets/404-error.gif.asset.json";
 
 function NotFoundComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const isPrivateArea = pathname === "/ad" || pathname.startsWith("/ad/");
+  const logFn = useServerFn(logNotFound);
+
+  useEffect(() => {
+    void logFn({ data: { path: pathname, referrer: typeof document !== "undefined" ? document.referrer : null } });
+  }, [pathname, logFn]);
   
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
