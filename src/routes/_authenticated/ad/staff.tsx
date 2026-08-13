@@ -19,8 +19,10 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
+  createStaff,
   deleteStaff,
   listStaff,
+  setStaffName,
   setStaffPassword,
   setStaffPermissions,
   setStaffRole,
@@ -115,6 +117,51 @@ function StaffPage() {
     void run(userId, () => setStaffPassword({ data: { userId, password } }), "Password updated.");
   };
 
+  const handleEditName = async (userId: string, currentName: string) => {
+    const name = window.prompt("Enter full name:", currentName);
+    if (!name || name === currentName) return;
+    if (name.length < 2) {
+      toast.error("Name too short.");
+      return;
+    }
+    void run(userId, () => setStaffName({ data: { userId, fullName: name } }), "Name updated.");
+  };
+
+  const handleAddUser = async () => {
+    const email = window.prompt("Enter email address:");
+    if (!email) return;
+    const fullName = window.prompt("Enter full name:");
+    if (!fullName) return;
+    const password = window.prompt("Enter initial password (min 8 characters):");
+    if (!password || password.length < 8) {
+      toast.error("Invalid password.");
+      return;
+    }
+
+    const rolePrompt = window.prompt(
+      "Enter role (super_admin, admin, manager, staff):",
+      "staff",
+    );
+    if (!rolePrompt || !ROLES.includes(rolePrompt as Role)) {
+      toast.error("Invalid role.");
+      return;
+    }
+
+    void run(
+      "new",
+      () =>
+        createStaff({
+          data: {
+            email,
+            fullName,
+            password,
+            role: rolePrompt as Role,
+          },
+        }),
+      "Staff account created.",
+    );
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -124,12 +171,16 @@ function StaffPage() {
             Manage staff accounts, roles, and access. Approved accounts can reach the panel.
           </p>
         </div>
+        <Button variant="red" onClick={handleAddUser}>
+          Add User
+        </Button>
       </div>
 
       <div className="space-y-4">
         {(staff.data ?? []).map((member) => {
           const status = (member.access_status ?? "pending") as AccessStatus;
           const role = (member.roles[0] ?? null) as Role | null;
+          const isSuperAdmin = member.roles.includes("super_admin");
           const busy = busyId === member.id;
           return (
             <div key={member.id} className="rounded-lg border border-border bg-card p-4">
@@ -139,7 +190,9 @@ function StaffPage() {
                     {(member.full_name || member.email || "?").charAt(0)}
                   </div>
                   <div>
-                    <p className="font-semibold">{member.full_name || "Staff Member"}</p>
+                    <p className="font-semibold">
+                      {member.full_name || (isSuperAdmin ? "Super Admin" : "Staff Member")}
+                    </p>
                     <p className="text-xs text-muted-foreground">{member.email}</p>
                     <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
                       <span className="font-medium text-primary">
@@ -170,8 +223,24 @@ function StaffPage() {
               </div>
 
               {member.isSelf ? (
-                <div className="mt-4 rounded bg-muted/30 p-2 text-center text-xs text-muted-foreground">
-                  Logged in as this account — self-modifications are restricted for security.
+                <div className="mt-4 space-y-4">
+                  <div className="flex flex-wrap items-center gap-2 border-t border-border/50 pt-4">
+                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Your Account
+                    </p>
+                    <Button
+                      variant="steel"
+                      size="sm"
+                      className="h-7 text-[10px]"
+                      disabled={busy}
+                      onClick={() => handleEditName(member.id, member.full_name || "")}
+                    >
+                      Edit Name
+                    </Button>
+                  </div>
+                  <div className="rounded bg-muted/30 p-2 text-center text-xs text-muted-foreground">
+                    Logged in as this account — sensitive security changes must be done by another admin.
+                  </div>
                 </div>
               ) : (
                 <div className="mt-4 space-y-4">

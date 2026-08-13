@@ -9,8 +9,9 @@
 - [x] Admin Dashboard: Redesigned Orders board, Live status counts, Bulk actions, Audit logs
 - [x] Admin Security: MFA (TOTP), Session Revocation, Login Lockouts (rate limiting)
 - [x] Role-Based Access: Super Admin, Admin, Manager, Staff roles implemented
-- [x] Staff Management (RESTRICTED): Super Admin/Admin only access. Add/Delete/Reset Password.
+- [x] Staff Management (RESTRICTED): Super Admin/Admin only access. Add/Delete/Reset Password/Edit Name.
 - [x] Operational UI: Bangladesh Time (Asia/Dhaka) displayed in Admin Header.
+- [x] Staff UI: Super Admin name correctly displayed, Add User button added.
 
 ## Recent Changes (Aug 13, 2026)
 - **Admin Theme & Utilities**: Integrated theme toggle and live Asia/Dhaka clock into the Admin Header.
