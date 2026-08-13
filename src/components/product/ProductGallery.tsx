@@ -30,9 +30,9 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
       if (displayImages.length <= 1 || activeColorImage) return;
       
       if (e.key === "ArrowRight") {
-        handleNext();
+        setActiveIndex((prev) => (prev + 1) % displayImages.length);
       } else if (e.key === "ArrowLeft") {
-        handlePrev();
+        setActiveIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
       } else if (e.key === "Escape" && isFullscreen) {
         setIsFullscreen(false);
       }
@@ -114,7 +114,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
           {displayImages.map((image, index) => (
             <button
               key={`${image}-${index}`}
-              ref={el => thumbnailRefs.current[index] = el}
+              ref={(el) => { thumbnailRefs.current[index] = el; }}
               type="button"
               role="tab"
               aria-selected={index === activeIndex && !activeColorImage}
