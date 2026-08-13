@@ -79,39 +79,41 @@ export function OrderFilterBar({
     onChange({ ...value, [field]: next });
 
   return (
-    <div className="mt-3 rounded-xl border border-border bg-card p-3 shadow-card">
-      {/* SEARCH ROW — always visible */}
-      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 sm:flex">
-        <div className="relative min-w-0 sm:flex-1">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={value.search}
-            onChange={(e) => set("search")(e.target.value)}
-            placeholder="Search customer name, phone or invoice no…"
-            className="h-11 pl-9"
-            aria-label="Search orders"
-          />
-        </div>
-        <div className="flex shrink-0 items-center gap-2">
-          <Select
-            value={value.sortDir}
-            onChange={set("sortDir")}
-            placeholder="Sort"
-            allowEmpty={false}
-          >
-            <option value="desc">Latest first</option>
-            <option value="asc">Oldest first</option>
-          </Select>
-          <Button
-            type="button"
-            variant="steel"
-            size="touch"
-            onClick={() => setOpen((current) => !current)}
-          >
-            <SlidersHorizontal />
-            <span className="hidden sm:inline">Filters</span>
-          </Button>
-        </div>
+    <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-2 shadow-sm">
+      {/* SEARCH AREA */}
+      <div className="relative flex-1 min-w-[240px]">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={value.search}
+          onChange={(e) => set("search")(e.target.value)}
+          placeholder="Ex: name, number, invoice"
+          className="h-9 pl-9 text-sm"
+          aria-label="Search orders"
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Select
+          value={value.sortDir}
+          onChange={set("sortDir")}
+          placeholder="Sort"
+          allowEmpty={false}
+          className="h-9 w-[120px]"
+        >
+          <option value="desc">Latest first</option>
+          <option value="asc">Oldest first</option>
+        </Select>
+
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          className="h-9 border border-border"
+          onClick={() => setOpen((current) => !current)}
+        >
+          <SlidersHorizontal className="mr-2 size-3.5" />
+          Filter Orders
+        </Button>
       </div>
 
       {/* ADVANCED FILTERS */}
