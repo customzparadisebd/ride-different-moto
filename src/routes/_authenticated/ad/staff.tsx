@@ -182,7 +182,7 @@ function StaffPage() {
                     <div className="flex flex-col gap-2">
                       <div className="flex items-center gap-2">
                         <Shield className={`size-3.5 ${member.primary_role === 'super_admin' ? 'text-primary' : 'text-muted-foreground'}`} />
-                        <span className="text-sm font-medium">{ROLE_LABELS[member.primary_role]}</span>
+                        <span className="text-sm font-medium">{ROLE_LABELS[member.primary_role as keyof typeof ROLE_LABELS]}</span>
                       </div>
                       <Badge 
                         className={`w-fit uppercase text-[10px] tracking-wider px-2 py-0.5 ${
@@ -192,7 +192,7 @@ function StaffPage() {
                         }`}
                         variant="outline"
                       >
-                        {ACCESS_STATUS_LABELS[member.access_status]}
+                        {ACCESS_STATUS_LABELS[member.access_status as keyof typeof ACCESS_STATUS_LABELS]}
                       </Badge>
                     </div>
                   </TableCell>
@@ -312,7 +312,7 @@ function StaffPage() {
 
       <UserActivityDialog 
         userId={activityUserId}
-        userName={activityUserName}
+        userName={activityUserName || ""}
         open={!!activityUserId}
         onOpenChange={(open) => !open && setActivityUserId(null)}
       />
