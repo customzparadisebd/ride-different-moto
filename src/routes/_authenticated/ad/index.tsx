@@ -40,6 +40,10 @@ export const Route = createFileRoute("/_authenticated/ad/")({
   component: AdminDashboard,
 });
 
+/**
+ * Admin Dashboard Route
+ * Provides a real-time overview of business metrics using Recharts.
+ */
 function AdminDashboard() {
   const fetchMetrics = useServerFn(getDashboardMetrics);
   const query = useQuery({ 

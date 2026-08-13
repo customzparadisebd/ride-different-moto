@@ -1,3 +1,8 @@
+/**
+ * Error Reporting Utility
+ * Standardized interface for capturing and reporting runtime errors.
+ * Developed by: Rafi Gazi (Rabbee) Apps
+ */
 type LovableErrorOptions = {
   mechanism?: "manual" | "onerror" | "unhandledrejection" | "react_error_boundary";
   handled?: boolean;

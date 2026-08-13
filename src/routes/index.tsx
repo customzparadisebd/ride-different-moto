@@ -73,6 +73,10 @@ export const Route = createFileRoute("/")({
   ),
 });
 
+/**
+ * Homepage Component
+ * Renders the main storefront landing page sections.
+ */
 function Index() {
   const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);

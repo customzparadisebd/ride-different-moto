@@ -1,29 +1,27 @@
-# Welcome to your Lovable project
+# Customz Paradise BD
 
-This project was built with [Lovable](https://lovable.dev).
+"RIDE DIFFERENT. BE DIFFERENT."
 
-## Build with Lovable
+## Project Attribution
+Developed by **Rafi Gazi (Rabbee) Apps**.
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+## Overview
+This is a premium, modern motorcycle modification website for CUSTOMZ PARADISE BD. It features a complete e-commerce flow, integrated SteadFast courier booking, and a powerful administrative dashboard for order and staff management.
 
 ## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+This project uses TanStack Start v1, React 19, and Tailwind CSS v4.
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
 npm i
 npm run dev
 ```
 
-## Built with
+## Features
+- **Modern E-commerce**: Product catalog with color variations and district-based shipping.
+- **Admin Dashboard**: Real-time sales metrics and inventory tracking.
+- **SteadFast Integration**: Automated parcel booking and tracking.
+- **Staff RBAC**: Granular permissions for Super Admin, Admin, and Staff roles.
+- **Security**: MFA support and audit logging for all administrative actions.
 
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
+## License
+All rights reserved. © Rafi Gazi (Rabbee) Apps.
