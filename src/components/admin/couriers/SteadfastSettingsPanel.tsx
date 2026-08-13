@@ -10,26 +10,44 @@
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { format } from "date-fns";
+import { Activity, AlertCircle, CheckCircle2, ShieldCheck, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-
+ 
 import { PasswordInput } from "@/components/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getSteadfastSettings, saveSteadfastSettings } from "@/lib/steadfast.functions";
+import {
+  getSteadfastLogs,
+  getSteadfastSettings,
+  saveSteadfastSettings,
+  testSteadfastConnection,
+} from "@/lib/steadfast.functions";
 import { CLEAR_SECRET, STEADFAST_DEFAULT_BASE_URL } from "@/lib/steadfast.shared";
+
 
 export function SteadfastSettingsPanel() {
   const queryClient = useQueryClient();
   const load = useServerFn(getSteadfastSettings);
   const save = useServerFn(saveSteadfastSettings);
+  const testConn = useServerFn(testSteadfastConnection);
+  const loadLogs = useServerFn(getSteadfastLogs);
+
 
   const settings = useQuery({
     queryKey: ["steadfast-settings"],
     queryFn: () => load(),
     retry: false,
   });
+ 
+  const logsQuery = useQuery({
+    queryKey: ["steadfast-logs"],
+    queryFn: () => loadLogs(),
+    enabled: !!settings.data?.configured,
+  });
+
 
   const [baseUrl, setBaseUrl] = useState(STEADFAST_DEFAULT_BASE_URL);
   const [isActive, setIsActive] = useState(false);
@@ -52,6 +70,20 @@ export function SteadfastSettingsPanel() {
     },
     onError: (error: Error) => toast.error(error.message || "Could not save the settings."),
   });
+ 
+  const testMutation = useMutation({
+    mutationFn: () => testConn({}),
+    onSuccess: (res) => {
+      if (res.ok) {
+        toast.success(res.message);
+        void queryClient.invalidateQueries({ queryKey: ["steadfast-logs"] });
+      } else {
+        toast.error(res.message);
+      }
+    },
+    onError: (error: Error) => toast.error(error.message || "Connection test failed."),
+  });
+
 
   // Staff / Manager accounts get a 403 from the server function — hide the section.
   if (settings.isError) return null;
@@ -151,7 +183,26 @@ export function SteadfastSettingsPanel() {
             <Button type="submit" variant="red" size="touch" disabled={mutation.isPending}>
               {mutation.isPending ? "Saving…" : "Save SteadFast settings"}
             </Button>
+            {stored?.configured ? (
+              <Button
+                type="button"
+                variant="steel"
+                size="touch"
+                disabled={testMutation.isPending}
+                onClick={() => testMutation.mutate()}
+              >
+                {testMutation.isPending ? (
+                  "Testing…"
+                ) : (
+                  <>
+                    <ShieldCheck className="h-4 w-4" />
+                    Test Connection
+                  </>
+                )}
+              </Button>
+            ) : null}
             {stored?.hasApiKey || stored?.hasApiSecret ? (
+
               <Button
                 type="button"
                 variant="steel"
@@ -173,6 +224,83 @@ export function SteadfastSettingsPanel() {
             ) : null}
           </div>
         </form>
+      )}
+ 
+      {/* API ERROR LOGS */}
+      {stored?.configured && (
+        <div className="mt-8 border-t border-border pt-6">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Activity className="h-4 w-4 text-primary" />
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider">
+                Recent API Activity
+              </h3>
+            </div>
+            <Button
+              variant="ghost"
+              size="xs"
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["steadfast-logs"] })}
+              disabled={logsQuery.isFetching}
+            >
+              Refresh Logs
+            </Button>
+          </div>
+ 
+          <div className="mt-4 overflow-hidden rounded-lg border border-border bg-muted/30">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-border bg-muted/50 font-semibold uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">Time</th>
+                  <th className="px-3 py-2">Action</th>
+                  <th className="px-3 py-2">Result</th>
+                  <th className="px-3 py-2">Status</th>
+                  <th className="px-3 py-2">Message</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/50">
+                {logsQuery.isLoading ? (
+                  <tr>
+                    <td colSpan={5} className="p-4 text-center text-muted-foreground">
+                      Loading logs…
+                    </td>
+                  </tr>
+                ) : logsQuery.data?.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="p-4 text-center text-muted-foreground">
+                      No recent activity.
+                    </td>
+                  </tr>
+                ) : (
+                  logsQuery.data?.map((log) => (
+                    <tr key={log.id} className="hover:bg-muted/50">
+                      <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
+                        {format(new Date(log.created_at), "MMM d, HH:mm")}
+                      </td>
+                      <td className="px-3 py-2 font-medium">{log.action.replace(/_/g, " ")}</td>
+                      <td className="px-3 py-2">
+                        {log.success ? (
+                          <span className="flex items-center gap-1 text-emerald-500">
+                            <CheckCircle2 className="h-3 w-3" />
+                            Success
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-rose-500">
+                            <XCircle className="h-3 w-3" />
+                            Failed
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2 font-mono text-[10px]">{log.status_code || "-"}</td>
+                      <td className="max-w-[200px] truncate px-3 py-2 text-muted-foreground" title={log.message || ""}>
+                        {log.message || "-"}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
     </div>
   );
