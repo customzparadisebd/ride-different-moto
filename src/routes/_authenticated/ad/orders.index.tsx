@@ -17,6 +17,8 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
+import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
+
 import {
   AmountsCell,
   AssignmentCell,
@@ -99,6 +101,8 @@ function AdminOrderList() {
   const [activityOrder, setActivityOrder] = useState<AdminOrderListRow | null>(null);
   // SEND TO STEADFAST — confirmation modal state
   const [steadfastOpen, setSteadfastOpen] = useState(false);
+  const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
+
 
   const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
 
@@ -398,6 +402,13 @@ function AdminOrderList() {
         order={activityOrder}
         onOpenChange={(open) => (open ? null : setActivityOrder(null))}
       />
+ 
+      <OrderCancelDialog
+        order={cancelOrder}
+        onOpenChange={(open) => (open ? null : setCancelOrder(null))}
+        onFinished={refreshOrders}
+      />
+
 
       {/* DESKTOP TABLE — full column layout */}
       <div className="mt-3 hidden overflow-x-auto rounded-xl border border-border bg-card shadow-card lg:block">
