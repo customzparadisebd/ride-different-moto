@@ -1328,7 +1328,9 @@ export type Database = {
           gender: string | null
           id: string
           last_login_at: string | null
+          last_login_ip: string | null
           mfa_required: boolean
+          phone_number: string | null
           updated_at: string
         }
         Insert: {
@@ -1343,7 +1345,9 @@ export type Database = {
           gender?: string | null
           id: string
           last_login_at?: string | null
+          last_login_ip?: string | null
           mfa_required?: boolean
+          phone_number?: string | null
           updated_at?: string
         }
         Update: {
@@ -1358,7 +1362,9 @@ export type Database = {
           gender?: string | null
           id?: string
           last_login_at?: string | null
+          last_login_ip?: string | null
           mfa_required?: boolean
+          phone_number?: string | null
           updated_at?: string
         }
         Relationships: []
