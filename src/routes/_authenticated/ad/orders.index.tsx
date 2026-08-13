@@ -41,6 +41,12 @@ import { SteadfastBulkDialog } from "@/components/admin/orders/SteadfastBulkDial
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -51,6 +57,7 @@ import { exportOrdersCsv, exportOrdersExcel, printOrders } from "@/lib/orders-ex
 import {
   assignOrders,
   bulkUpdateOrderStatus,
+  createManualOrder,
   getMyAccess,
   getOrderTabCounts,
   listOrders,
@@ -60,6 +67,7 @@ import {
   type AdminOrderListRow,
 } from "@/lib/orders.functions";
 import {
+  newIdempotencyKey,
   ORDER_STATUSES,
   statusLabel,
   type OrderStatus,

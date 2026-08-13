@@ -7,19 +7,24 @@
 //          server re-validates every field and recomputes totals.
 // Future: Courier booking can be triggered from here later.
 // ============================================================
-import { useMemo, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { getProducts } from "@/data/catalog";
+import { listProducts } from "@/lib/products.functions";
 import { formatBDT } from "@/lib/format";
 import {
   DELIVERY_ZONES,
   ORDER_STATUSES,
   PAYMENT_METHODS,
   PAYMENT_STATUSES,
+  SHIPPING_FLAT_BDT,
   statusLabel,
   type AdminOrderInput,
 } from "@/lib/orders.shared";
@@ -48,14 +53,23 @@ const emptyLine = (): LineItem => ({
 
 export function ManualOrderForm({
   idempotencyKey,
-  isPending,
+  isPending: externalIsPending,
   onSubmit,
+  onClose,
 }: {
   idempotencyKey: string;
   isPending: boolean;
   onSubmit: (input: AdminOrderInput) => void;
+  onClose?: () => void;
 }) {
-  const catalog = useMemo(() => getProducts(), []);
+  const fetchProducts = useServerFn(listProducts);
+  const productsQuery = useQuery({
+    queryKey: ["admin-catalog-search"],
+    queryFn: () => fetchProducts({ data: { pageSize: 100, activeOnly: true } }),
+  });
+
+  const catalog = productsQuery.data?.rows ?? [];
+
   const [items, setItems] = useState<LineItem[]>([emptyLine()]);
   const [form, setForm] = useState({
     customerName: "",
@@ -63,14 +77,14 @@ export function ManualOrderForm({
     customerEmail: "",
     addressLine: "",
     city: "",
-    deliveryZone: "inside_dhaka",
+    deliveryZone: "inside_dhaka" as const,
     discount: "0",
-    shipping: "120",
+    shipping: String(SHIPPING_FLAT_BDT),
     advancePaid: "0",
     transactionId: "",
-    paymentMethod: "cash_on_delivery",
-    paymentStatus: "unpaid",
-    status: "pending",
+    paymentMethod: "cash_on_delivery" as const,
+    paymentStatus: "unpaid" as const,
+    status: "pending" as const,
     notes: "",
     internalNote: "",
   });
