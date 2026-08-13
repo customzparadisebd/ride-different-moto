@@ -10,6 +10,7 @@
 //          the shipments.create permission. Every call is audited.
 // ============================================================
 import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
@@ -22,6 +23,7 @@ import {
   STEADFAST_SLUG,
   type BulkShipmentRow,
   type SteadfastSettings,
+  type SteadfastApiLog,
 } from "./steadfast.shared";
 
 /** Admin + Super Admin only — credentials are off-limits to Staff/Managers. */
@@ -145,6 +147,141 @@ export const saveSteadfastSettings = createServerFn({ method: "POST" })
 
     return { courierId };
   });
+
+// ------------------------------------------------------------
+// TESTING & LOGS
+// ------------------------------------------------------------
+export const testSteadfastConnection = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertCredentialAccess(actor);
+
+    const { testCourierConnection } = await import("./couriers.functions");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: courier } = await supabaseAdmin
+      .from("couriers")
+      .select("id")
+      .eq("slug", STEADFAST_SLUG)
+      .maybeSingle();
+
+    if (!courier) throw new Error("SteadFast integration not found.");
+    return testCourierConnection({ data: { courierId: courier.id } });
+  });
+
+export const getSteadfastLogs = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<SteadfastApiLog[]> => {
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertCredentialAccess(actor);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: courier } = await supabaseAdmin
+      .from("couriers")
+      .select("id")
+      .eq("slug", STEADFAST_SLUG)
+      .maybeSingle();
+
+    if (!courier) return [];
+
+    const { data: logs, error } = await supabaseAdmin
+      .from("courier_api_logs")
+      .select(`
+        id,
+        action,
+        success,
+        status_code,
+        message,
+        created_at,
+        profiles(email)
+      `)
+      .eq("courier_id", courier.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (error) throw new Error("Could not load API logs.");
+
+    return (logs ?? []).map(l => ({
+      id: l.id,
+      action: l.action,
+      success: l.success,
+      status_code: l.status_code,
+      message: l.message,
+      created_at: l.created_at,
+      actor_email: (l.profiles as any)?.email ?? null
+    }));
+  });
+
+export const cancelSteadfastShipment = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.shipmentsCreate);
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: order } = await context.supabase
+      .from("orders")
+      .select("id, invoice_no, courier_id, consignment_id")
+      .eq("id", data.orderId)
+      .maybeSingle();
+
+    if (!order?.consignment_id) throw new Error("No consignment found for this order.");
+
+    const { loadCourierContext, logCourierApi } = await import("./couriers.server");
+    const ctx = await loadCourierContext(order.courier_id!);
+    if (!ctx) throw new Error("SteadFast integration is not configured.");
+
+    // SteadFast cancel API: POST /cancel_order/{consignment_id}
+    const res = await fetch(`${ctx.baseUrl}/cancel_order/${order.consignment_id}`, {
+      method: "POST",
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        "Api-Key": ctx.credentials.api_key ?? "",
+        "Secret-Key": ctx.credentials.api_secret ?? ""
+      }
+    });
+
+    const payload = await res.json() as any;
+    const success = res.ok && (payload.status === 200 || payload.status === "200");
+
+    await logCourierApi({
+      courierId: ctx.courier.id,
+      orderId: order.id,
+      action: "cancel_shipment",
+      success,
+      statusCode: String(res.status),
+      message: payload.message || (success ? "Cancelled successfully" : "Failed to cancel"),
+      actorId: context.userId
+    });
+
+    if (success) {
+      await supabaseAdmin
+        .from("orders")
+        .update({
+          courier_status: "cancelled",
+          consignment_id: null,
+          courier_tracking_id: null,
+          tracking_url: null
+        })
+        .eq("id", order.id);
+
+      await supabaseAdmin.from("order_events").insert({
+        order_id: order.id,
+        event_type: "courier.shipment_cancelled",
+        message: `SteadFast shipment cancelled. ${payload.message || ""}`,
+        actor: context.userId,
+        actor_label: actor.email ?? "staff"
+      });
+    }
+
+    return { success, message: payload.message };
+  });
+
 
 // ------------------------------------------------------------
 // BULK SEND — validate, book, report per order

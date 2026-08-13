@@ -15,8 +15,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { FileSpreadsheet, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { XCircle } from "lucide-react";
+
 
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
+import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
+
 import {
   AmountsCell,
   AssignmentCell,
@@ -99,6 +103,8 @@ function AdminOrderList() {
   const [activityOrder, setActivityOrder] = useState<AdminOrderListRow | null>(null);
   // SEND TO STEADFAST — confirmation modal state
   const [steadfastOpen, setSteadfastOpen] = useState(false);
+  const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
+
 
   const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
 
@@ -398,6 +404,13 @@ function AdminOrderList() {
         order={activityOrder}
         onOpenChange={(open) => (open ? null : setActivityOrder(null))}
       />
+ 
+      <OrderCancelDialog
+        order={cancelOrder}
+        onOpenChange={(open) => (open ? null : setCancelOrder(null))}
+        onFinished={refreshOrders}
+      />
+
 
       {/* DESKTOP TABLE — full column layout */}
       <div className="mt-3 hidden overflow-x-auto rounded-xl border border-border bg-card shadow-card lg:block">
@@ -513,8 +526,9 @@ function AdminOrderList() {
                   <PaymentCell order={order} />
                 </td>
                 <td className="p-2.5">
-                  <CourierCell order={order} />
+                  <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
                 </td>
+
                 <td className="min-w-[170px] p-2.5">
                   <AmountsCell order={order} />
                 </td>
@@ -589,7 +603,7 @@ function AdminOrderList() {
               <CustomerCell order={order} />
               <ProductsCell order={order} />
               <PaymentCell order={order} />
-              <CourierCell order={order} />
+              <CourierCell order={order} onCancelShipment={() => setCancelOrder(order)} />
               <AmountsCell order={order} />
               <AssignmentCell order={order} />
             </div>
