@@ -169,8 +169,9 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
         <ProductGallery 
           images={gallery} 
           productName={product.name} 
-          activeColorImage={color?.image} 
+          activeColorImage={color?.image ?? null} 
         />
+
 
 
         <div className="min-w-0">
