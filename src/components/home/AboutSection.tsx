@@ -13,7 +13,7 @@ export function AboutSection() {
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
-      <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+      <div className="max-w-3xl">
         <div>
           <SectionHeading eyebrow="Our Story" title="About Us" />
           <div className="mt-8 space-y-6 text-lg leading-relaxed text-muted-foreground">
