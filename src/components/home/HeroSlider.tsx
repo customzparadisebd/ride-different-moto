@@ -62,7 +62,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   width={1600}
                   height={1008}
                   priority={index === 0}
-                  sizes="100vw"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1920px"
                   containerClassName={cn(
                     "w-full bg-onyx",
                     slide.isFullBanner

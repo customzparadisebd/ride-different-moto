@@ -12,6 +12,7 @@ type SafeImageProps = {
   containerClassName?: string;
   priority?: boolean;
   sizes?: string;
+  srcSet?: string;
 };
 
 const MAX_RETRIES = 3;
@@ -29,6 +30,7 @@ export function SafeImage({
   containerClassName,
   priority = false,
   sizes = "100vw",
+  srcSet,
 }: SafeImageProps) {
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
@@ -89,6 +91,7 @@ export function SafeImage({
           width={width}
           height={height}
           sizes={sizes}
+          srcSet={srcSet}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
           fetchPriority={priority ? "high" : "auto"}
