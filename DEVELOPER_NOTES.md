@@ -28,7 +28,7 @@
 
 ## N160/N250 PRODUCT ORDER & COLOR CONFIG
 - **Status:** Completed
-- **Done:** Enforced exact serial order (1. X-3 Kit ... 12. Indicator Combo) for Pulsar N160/N250 catalogs using a new `sort_order` column and migration. Configured specific colors for body parts (Black, Red, Blue) and restricted others (Facemask/Visor to Black only). CZP DRL and Ring Lights updated with correct specs and pricing. The storefront catalog is now 100% database-driven and adheres to this manual ordering.
+- **Done:** Enforced exact serial order (1. X-3 Kit ... 12. Indicator Combo) for Pulsar N160/N250 catalogs. Refined color system to exactly 3 options: Black, Red, Blue (in that order) for all color-selectable items. Removed Orange and other variations. The storefront catalog is now 100% database-driven and adheres to this manual ordering and color constraints.
 - **Next:** Admin UI for manual re-ordering/dragging is pending (currently database-controlled).
 
 ## All Products & Search
