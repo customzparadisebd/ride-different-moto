@@ -35,6 +35,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { UserProfileWidget } from "@/components/admin/UserProfileWidget";
 import { PERMISSIONS, type Permission } from "@/lib/admin.shared";
 
 type NavItem = {
@@ -121,7 +122,7 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-border/50 pb-4">
+      <SidebarHeader className="border-b border-border/50 pb-2">
         <div className="flex items-center gap-3 px-2 pt-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <img
             src={czpLogoAsset.url}
@@ -136,6 +137,10 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
               Customer Paradise Admin Panel
             </p>
           </div>
+        </div>
+        
+        <div className="mt-4 px-1 group-data-[collapsible=icon]:hidden">
+          <UserProfileWidget access={access} />
         </div>
       </SidebarHeader>
       <SidebarContent>

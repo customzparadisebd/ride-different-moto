@@ -75,7 +75,6 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {access.email} ·{" "}
-                  {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "No role"} ·{" "}
                   {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
                 </p>
               </div>
