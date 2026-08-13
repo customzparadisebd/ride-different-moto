@@ -69,6 +69,7 @@ export async function createOrder(
   const inserted = await supabaseAdmin
     .from("orders")
     .insert({
+      invoice_no: '', // Placeholder, trigger will fill it properly if it's null/empty
       idempotency_key: input.idempotencyKey,
       customer_name: input.customerName,
       customer_phone: input.customerPhone,
