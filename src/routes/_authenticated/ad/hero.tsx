@@ -78,7 +78,7 @@ function AdminHeroSlides() {
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: formData.get("is_active") === "on",
     };
-    updateMutation.mutate({ id, data });
+    updateMutation.mutate({ data: { id, updates: data } });
   };
 
   const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
