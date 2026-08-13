@@ -18,7 +18,7 @@ import { createManualOrder, getMyAccess } from "@/lib/orders.functions";
 import { newIdempotencyKey } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/new")({
-  head: () => adminHead("New order — CZP Ops"),
+  head: () => ({ title: "New order — CZP Ops" }),
   component: NewManualOrder,
 });
 

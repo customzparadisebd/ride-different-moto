@@ -16,7 +16,7 @@ import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
-  head: () => adminHead("Order — CZP Ops"),
+  head: () => ({ title: "Order — CZP Ops" }),
   component: AdminOrderDetail,
 });
 

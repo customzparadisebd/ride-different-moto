@@ -17,7 +17,7 @@ import { getDashboardMetrics } from "@/lib/admin-data.functions";
 import { ORDER_STATUSES, statusLabel } from "@/lib/orders.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/")({
-  head: () => adminHead("Dashboard — CZP Ops"),
+  head: () => ({ title: "Dashboard — CZP Ops" }),
   component: AdminDashboard,
 });
 

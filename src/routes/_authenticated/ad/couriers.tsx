@@ -29,7 +29,7 @@ import { emptyCourier, type CourierInput, type CourierSummary } from "@/lib/cour
 import { formatBDT } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/ad/couriers")({
-  head: () => adminHead("Couriers — CZP Ops"),
+  head: () => ({ title: "Couriers — CZP Ops" }),
   component: CouriersPage,
 });
 

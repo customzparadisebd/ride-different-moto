@@ -20,7 +20,7 @@ import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
-  head: () => adminHead("Recycle Bin — CZP Ops"),
+  head: () => ({ title: "Recycle Bin — CZP Ops" }),
   component: RecycleBin,
 });
 

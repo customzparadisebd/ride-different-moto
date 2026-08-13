@@ -39,7 +39,7 @@ import {
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
-  head: () => adminHead("Staff & roles — CZP Ops"),
+  head: () => ({ title: "Staff & roles — CZP Ops" }),
   component: StaffPage,
 });
 
