@@ -16,15 +16,13 @@ export const getHeroSlides = createServerFn({ method: "GET" }).handler(async () 
   return data.map(slide => ({
     id: slide.id,
     bikeName: slide.title,
-    label: slide.subtitle,
+    label: slide.subtitle || undefined,
     image: slide.image_url,
-    alt: slide.title, // Use title as fallback alt
+    alt: slide.title,
     bikeSlug: slide.link_url || "all-products",
     order: slide.sort_order,
     active: slide.is_active,
-    isFullBanner: slide.title.includes("Perfect Price"), // Heuristic
-    ctaText: slide.link_label || undefined,
-    ctaLink: slide.link_url || undefined,
+    isFullBanner: slide.title.includes("Perfect Price"),
   }));
 });
 
