@@ -129,6 +129,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       },
       totalOrders: (statusCountsRaw.data ?? []).length,
       pendingOrders: statusCounts['pending'] || 0,
+      completedOrders: (statusCounts['delivered'] || 0) + (statusCounts['completed'] || 0),
+      cancelledOrders: (statusCounts['cancelled'] || 0) + (statusCounts['returned'] || 0),
       uniqueCustomers,
       statusCounts,
       recent: recent.data ?? [],
@@ -137,7 +139,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         totalStock,
         lowStock: lowStock.length,
         outOfStock: outOfStock.length,
-        lowStockItems: lowStock.slice(0, 5), // Return some samples
+        lowStockItems: lowStock.slice(0, 5),
         outOfStockItems: outOfStock.slice(0, 5)
       },
       revenueHistory
