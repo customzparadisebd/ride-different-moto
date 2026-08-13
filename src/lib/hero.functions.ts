@@ -66,6 +66,7 @@ export const createHeroSlide = createServerFn({ method: "POST" })
     title: z.string(),
     subtitle: z.string().optional().nullable(),
     image_url: z.string(),
+    mobile_image_url: z.string().optional().nullable(),
     link_url: z.string().optional().nullable(),
     link_label: z.string().optional().nullable(),
     sort_order: z.number().default(0),
