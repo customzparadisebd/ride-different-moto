@@ -10,7 +10,12 @@ import { cn } from "@/lib/utils";
 const AUTOPLAY_MS = 3500;
 
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
-  const [emblaRef, embla] = useEmblaCarousel({ loop: true, align: "start" });
+  const [emblaRef, embla] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    watchDrag: true,
+    skipSnaps: false,
+  });
   const [selected, setSelected] = useState(0);
   const [paused, setPaused] = useState(false);
 
