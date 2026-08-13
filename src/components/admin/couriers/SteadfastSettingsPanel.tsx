@@ -273,7 +273,7 @@ export function SteadfastSettingsPanel() {
                     </td>
                   </tr>
                 ) : (
-                  logsQuery.data?.map((log) => (
+                  logsQuery.data?.map((log: any) => (
                     <tr key={log.id} className="hover:bg-muted/50">
                       <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">
                         {format(new Date(log.created_at), "MMM d, HH:mm")}
