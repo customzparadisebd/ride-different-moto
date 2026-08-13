@@ -16,6 +16,7 @@
 
 ## Recent Changes (Aug 13, 2026)
 - **Full Responsiveness**: Executed a comprehensive responsiveness audit across the entire website. Refactored the About Us, Bike Models, Product Browser, Store Coming Soon, Contact Us, and Social sections to ensure clean layouts and proper stacking on mobile, tablet, and desktop viewports. Added safe-area padding and responsive typography.
+- **Mobile Product Card Optimization**: Redesigned the product card layout specifically for mobile (single-column grid). Cards now feature a clear vertical flow: Image → Badges → Name → Description → Price → Color Selection → Action Buttons (Choose Color, Order Now). Ensured full readability of button text and easy-to-tap color selection. Existing tablet/desktop layouts remain unchanged.
 - **Product UI**: Added theme-aware outlines (Silver/Gray in Dark Mode, Black/Dark in Light Mode) to all product color selection circles.
 - **About Us Section**: Removed the feature cards (Premium Quality, Unique Designs, etc.) while keeping the brand story and tagline.
 - **Store Coming Soon**: Removed the estimated launch date (Q3 2026) from the "Physical Store Coming Soon" section on the landing page.
