@@ -23,8 +23,6 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
   const [search, setSearch] = useState("");
   const [bike, setBike] = useState("all");
   const [category, setCategory] = useState("all");
-  const [minPrice, setMinPrice] = useState("");
-  const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState<SortKey>("newest");
 
   const bikeOptions = useMemo(
