@@ -8,24 +8,24 @@ export const getHeroSlides = createServerFn({ method: "GET" }).handler(async () 
   const { data, error } = await supabase
     .from("hero_slides")
     .select("*")
-    .eq("active", true)
-    .order("order", { ascending: true });
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
     
   if (error) throw new Error(error.message);
   
   return data.map(slide => ({
     id: slide.id,
-    bikeName: slide.bike_name,
-    label: slide.label,
-    image: slide.image,
-    mobileImage: slide.mobile_image || undefined,
-    alt: slide.alt,
-    bikeSlug: slide.bike_slug,
-    order: slide.order,
-    active: slide.active,
+    bikeName: slide.title,
+    label: slide.subtitle,
+    image: slide.image_url,
+    mobileImage: slide.mobile_image_url || undefined,
+    alt: slide.alt_text,
+    bikeSlug: slide.link_url,
+    order: slide.sort_order,
+    active: slide.is_active,
     isFullBanner: slide.is_full_banner,
-    ctaText: slide.cta_text || undefined,
-    ctaLink: slide.cta_link || undefined,
+    ctaText: slide.link_label || undefined,
+    ctaLink: slide.link_url || undefined,
   }));
 });
 
@@ -34,17 +34,16 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
   .inputValidator((d) => z.object({
     id: z.string().uuid(),
     updates: z.object({
-      bike_name: z.string().optional(),
-      label: z.string().optional(),
-      image: z.string().optional(),
-      mobile_image: z.string().optional().nullable(),
-      alt: z.string().optional(),
-      bike_slug: z.string().optional(),
-      cta_text: z.string().optional().nullable(),
-      cta_link: z.string().optional().nullable(),
+      title: z.string().optional(),
+      subtitle: z.string().optional().nullable(),
+      image_url: z.string().optional(),
+      mobile_image_url: z.string().optional().nullable(),
+      alt_text: z.string().optional(),
+      link_url: z.string().optional(),
+      link_label: z.string().optional().nullable(),
       is_full_banner: z.boolean().optional(),
-      order: z.number().optional(),
-      active: z.boolean().optional(),
+      sort_order: z.number().optional(),
+      is_active: z.boolean().optional(),
     })
   }).parse(d))
   .handler(async ({ data, context }) => {
@@ -64,14 +63,15 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
 export const createHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({
-    bike_name: z.string(),
-    label: z.string().optional(),
-    image: z.string(),
-    mobile_image: z.string().optional().nullable(),
-    alt: z.string(),
-    bike_slug: z.string().default("all-products"),
+    title: z.string(),
+    subtitle: z.string().optional().nullable(),
+    image_url: z.string(),
+    mobile_image_url: z.string().optional().nullable(),
+    alt_text: z.string(),
+    link_url: z.string().default("/"),
+    link_label: z.string().optional().nullable(),
     is_full_banner: z.boolean().default(false),
-    order: z.number().default(0),
+    sort_order: z.number().default(0),
   }).parse(d))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
@@ -102,3 +102,4 @@ export const deleteHeroSlide = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
