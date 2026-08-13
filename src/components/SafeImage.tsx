@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 type SafeImageProps = {
   src: string;
-  mobileSrc?: string | undefined;
+  mobileSrc?: string | null | undefined;
   alt: string;
   width: number;
   height: number;
