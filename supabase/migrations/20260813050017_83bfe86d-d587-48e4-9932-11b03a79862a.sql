@@ -2,6 +2,9 @@
 
 -- Add sort_order to products for manual serial management
 ALTER TABLE public.products ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 999;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.products TO authenticated;
+GRANT SELECT ON public.products TO anon;
+GRANT ALL ON public.products TO service_role;
 
 -- Reset and Update N160/N250 Product Serial Order
 -- 1. X-3 KIT
