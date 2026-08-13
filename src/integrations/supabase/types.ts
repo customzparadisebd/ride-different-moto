@@ -1542,6 +1542,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_czp_invoice_id: { Args: never; Returns: string }
       has_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean

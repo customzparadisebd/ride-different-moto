@@ -22,6 +22,8 @@ import {
   Star,
 } from "lucide-react";
 
+import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
+
 import {
   Sidebar,
   SidebarContent,
@@ -119,10 +121,22 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <p className="px-2 font-display text-lg font-bold uppercase tracking-wide group-data-[collapsible=icon]:hidden">
-          CZP Ops
-        </p>
+      <SidebarHeader className="border-b border-border/50 pb-4">
+        <div className="flex items-center gap-3 px-2 pt-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <img
+            src={czpLogoAsset.url}
+            alt="CZP Logo"
+            className="h-10 w-auto shrink-0 object-contain"
+          />
+          <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
+            <p className="font-display text-sm font-bold uppercase tracking-tight text-primary">
+              CZP Admin
+            </p>
+            <p className="truncate text-[10px] font-medium text-muted-foreground">
+              Customer Paradise Admin Panel
+            </p>
+          </div>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         {renderGroup("Operations", OPERATIONS)}
