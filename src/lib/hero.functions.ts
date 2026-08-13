@@ -18,12 +18,11 @@ export const getHeroSlides = createServerFn({ method: "GET" }).handler(async () 
     bikeName: slide.title,
     label: slide.subtitle,
     image: slide.image_url,
-    mobileImage: slide.mobile_image_url || undefined,
-    alt: slide.alt_text,
-    bikeSlug: slide.link_url,
+    alt: slide.title, // Use title as fallback alt
+    bikeSlug: slide.link_url || "all-products",
     order: slide.sort_order,
     active: slide.is_active,
-    isFullBanner: slide.is_full_banner,
+    isFullBanner: slide.title.includes("Perfect Price"), // Heuristic
     ctaText: slide.link_label || undefined,
     ctaLink: slide.link_url || undefined,
   }));
@@ -37,11 +36,8 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
       title: z.string().optional(),
       subtitle: z.string().optional().nullable(),
       image_url: z.string().optional(),
-      mobile_image_url: z.string().optional().nullable(),
-      alt_text: z.string().optional(),
-      link_url: z.string().optional(),
+      link_url: z.string().optional().nullable(),
       link_label: z.string().optional().nullable(),
-      is_full_banner: z.boolean().optional(),
       sort_order: z.number().optional(),
       is_active: z.boolean().optional(),
     })
@@ -53,7 +49,7 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
 
     const { error } = await context.supabase
       .from("hero_slides")
-      .update(data.updates)
+      .update(data.updates as any)
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
@@ -66,12 +62,10 @@ export const createHeroSlide = createServerFn({ method: "POST" })
     title: z.string(),
     subtitle: z.string().optional().nullable(),
     image_url: z.string(),
-    mobile_image_url: z.string().optional().nullable(),
-    alt_text: z.string(),
-    link_url: z.string().default("/"),
+    link_url: z.string().optional().nullable(),
     link_label: z.string().optional().nullable(),
-    is_full_banner: z.boolean().default(false),
     sort_order: z.number().default(0),
+    is_active: z.boolean().default(true),
   }).parse(d))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
@@ -80,7 +74,7 @@ export const createHeroSlide = createServerFn({ method: "POST" })
 
     const { error } = await context.supabase
       .from("hero_slides")
-      .insert(data);
+      .insert(data as any);
 
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -102,4 +96,5 @@ export const deleteHeroSlide = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
 
