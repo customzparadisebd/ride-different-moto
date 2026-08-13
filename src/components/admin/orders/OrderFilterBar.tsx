@@ -273,18 +273,20 @@ function Select({
   placeholder,
   children,
   allowEmpty = true,
+  className,
 }: {
   value: string;
   onChange: (next: string) => void;
   placeholder: string;
   children: React.ReactNode;
   allowEmpty?: boolean;
+  className?: string;
 }) {
   return (
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+      className={`h-11 w-full rounded-md border border-input bg-background px-3 text-sm ${className ?? ""}`}
     >
       {allowEmpty ? <option value="">{placeholder}</option> : null}
       {children}
