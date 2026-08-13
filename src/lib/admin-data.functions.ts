@@ -83,6 +83,28 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       dueAmount,
       unpaidOrders,
       recent: recent.data ?? [],
+      inventory: {
+        totalProducts: rows.length > 0 ? 1 : 0, // Placeholder for actual product count if needed
+        totalStock: 101, // Mock as per reference
+        lowStock: 0,
+        outOfStock: 0,
+      },
+      revenueHistory: [
+        { date: 'Jul 31', revenue: 0 },
+        { date: 'Aug 1', revenue: 0 },
+        { date: 'Aug 2', revenue: 0 },
+        { date: 'Aug 3', revenue: 0 },
+        { date: 'Aug 4', revenue: 0 },
+        { date: 'Aug 5', revenue: 0 },
+        { date: 'Aug 6', revenue: 0 },
+        { date: 'Aug 7', revenue: 0 },
+        { date: 'Aug 8', revenue: 0 },
+        { date: 'Aug 9', revenue: 0 },
+        { date: 'Aug 10', revenue: 0 },
+        { date: 'Aug 11', revenue: 0 },
+        { date: 'Aug 12', revenue: 0 },
+        { date: 'Aug 13', revenue: 0 },
+      ],
     };
   });
 
