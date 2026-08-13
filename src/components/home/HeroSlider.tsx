@@ -72,7 +72,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="overflow-hidden" ref={emblaRef} tabIndex={0} role="region" aria-roledescription="carousel">
-        <div className="flex touch-pan-y">
+        <div className="flex touch-pan-y cursor-grab active:cursor-grabbing">
           {slides.map((slide, index) => (
             <div
               key={slide.id}
