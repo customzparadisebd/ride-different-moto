@@ -27,12 +27,6 @@ export function StoreComingSoon() {
               </div>
             </div>
             
-            <div className="h-px w-12 bg-border hidden sm:block" />
-            
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wider text-primary">Launch</p>
-              <p className="text-lg font-medium">Q3 2026</p>
-            </div>
           </div>
           
           <p className="mt-10 max-w-xl text-lg text-muted-foreground leading-relaxed">
