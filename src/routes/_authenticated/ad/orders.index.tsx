@@ -562,9 +562,11 @@ function AdminOrderList() {
           </p>
         ) : null}
         {!ordersQuery.isLoading && rows.length === 0 ? (
-          <p className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-            No orders match these filters.
-          </p>
+          <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground shadow-card">
+            <XCircle className="mx-auto h-10 w-10 opacity-20" />
+            <p className="mt-4 text-base font-bold uppercase tracking-wider">No matching orders</p>
+            <p className="text-xs">Adjust your filters or status selection.</p>
+          </div>
         ) : null}
         {rows.map((order, index) => (
           <article
