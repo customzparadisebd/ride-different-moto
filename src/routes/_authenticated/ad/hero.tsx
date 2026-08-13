@@ -31,7 +31,7 @@ function AdminHeroSlides() {
 
   const { data: slides = [], isLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
-    queryFn: () => fetchSlides(),
+    queryFn: () => fetchSlides({ data: { admin: true } }),
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
