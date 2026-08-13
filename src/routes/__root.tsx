@@ -21,6 +21,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { site } from "@/data/site";
 import { CartProvider } from "@/lib/cart";
 import { ThemeProvider } from "@/lib/theme";
+import { LanguageProvider } from "@/lib/i18n";
 import { logNotFound } from "@/lib/analytics.functions";
 import errorGif from "@/assets/404-error.gif.asset.json";
 
@@ -231,7 +232,8 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <CartProvider>
+        <LanguageProvider>
+          <CartProvider>
           <div className="flex min-h-svh flex-col overflow-x-hidden">
             {isPrivateArea ? null : <Header />}
             <main className={`flex-1 ${isPrivateArea ? '' : 'pt-14 sm:pt-16'}`}>
@@ -243,7 +245,8 @@ function RootComponent() {
           {isPrivateArea ? null : <FloatingWhatsApp />}
           <NetworkBanner />
           <Toaster />
-        </CartProvider>
+          </CartProvider>
+        </LanguageProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

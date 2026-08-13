@@ -3,8 +3,10 @@ import { Store } from "lucide-react";
 import { WhatsAppIcon, FacebookIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
+import { useLanguage } from "@/lib/i18n";
 
 export function ContactSection() {
+  const { t } = useLanguage();
   const getWhatsAppHref = () => {
     const text = encodeURIComponent("Hello Customz Paradise BD, I'm interested in modifying my bike. Can you help me?");
     return `https://wa.me/${site.whatsappNumber}?text=${text}`;
@@ -14,14 +16,13 @@ export function ContactSection() {
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-24" id="contact">
       <div className="w-full">
         <SectionHeading
-          eyebrow="Get in touch"
-          title="Contact Us"
+          eyebrow={t('section.contact.eyebrow')}
+          title={t('section.contact.title')}
         />
         <div className="mb-6 sm:mb-8" />
         
         <p className="mb-8 max-w-2xl text-sm text-muted-foreground sm:mb-10 sm:text-base lg:text-lg">
-          Have questions about our modification kits or need advice for your build? 
-          Reach out to our experts directly or visit our office.
+          {t('section.contact.p1')}
         </p>
  
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -50,7 +51,7 @@ export function ContactSection() {
               <FacebookIcon className="size-6" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">Messenger</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">{t('section.contact.messenger')}</h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">Customz Paradise BD</p>
             </div>
           </a>
@@ -60,7 +61,7 @@ export function ContactSection() {
               <Store className="size-6" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">Office</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">{t('section.contact.office')}</h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.address}</p>
             </div>
           </div>

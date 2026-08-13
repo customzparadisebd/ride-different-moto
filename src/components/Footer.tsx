@@ -10,6 +10,7 @@ import {
 } from "@/components/BrandIcons";
 import { Logo } from "@/components/Logo";
 import { StoreMap } from "@/components/StoreMap";
+import { useLanguage } from "@/lib/i18n";
 import { legalLinks, navLinks, site } from "@/data/site";
 
 const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> = {
@@ -19,6 +20,7 @@ const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>;
 };
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="mt-16 bg-gradient-onyx text-onyx-foreground">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -38,7 +40,7 @@ export function Footer() {
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <Link to={link.to} className="opacity-80 hover:text-primary hover:opacity-100">
-                    {link.label}
+                    {t(link.translationKey)}
                   </Link>
                 </li>
               ))}
@@ -128,7 +130,7 @@ export function Footer() {
         </div>
 
         <p className="mt-10 border-t border-white/10 pt-6 text-xs opacity-60">
-          © {new Date().getFullYear()} {site.name}. All rights reserved.
+          © {new Date().getFullYear()} {site.name}. {t('footer.rights')}
         </p>
       </div>
     </footer>

@@ -23,13 +23,13 @@ export const site = {
 } as const;
 
 export const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "Shop", to: "/shop" },
-  { label: "Bike Models", to: "/bike-models" },
-  { label: "New Arrivals", to: "/new-arrivals" },
-  { label: "Gallery", to: "/gallery" },
-  { label: "About Us", to: "/about" },
-  { label: "Contact", to: "/contact" },
+  { label: "Home", to: "/", translationKey: "nav.home" },
+  { label: "Shop", to: "/shop", translationKey: "nav.shop" },
+  { label: "Bike Models", to: "/bike-models", translationKey: "nav.bikeModels" },
+  { label: "New Arrivals", to: "/new-arrivals", translationKey: "nav.newArrivals" },
+  { label: "Gallery", to: "/gallery", translationKey: "nav.gallery" },
+  { label: "About Us", to: "/about", translationKey: "nav.about" },
+  { label: "Contact", to: "/contact", translationKey: "nav.contact" },
 ] as const;
 
 export const legalLinks = [

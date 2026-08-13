@@ -18,6 +18,7 @@ import { getBikeModels } from "@/data/catalog";
 import { getHeroSlides } from "@/lib/hero.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
+import { useLanguage } from "@/lib/i18n";
 
 const title = "Customz Paradise BD — Ride Different. Be Different.";
 
@@ -73,6 +74,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);
   const heroSlidesQuery = useQuery({ 
     queryKey: ["hero-slides"], 
@@ -93,7 +95,7 @@ function Index() {
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — premium motorcycle modification parts and accessories in Bangladesh
+        {site.name} — {t('section.home.h1')}
       </h1>
 
       <SectionBoundary label="hero">
@@ -106,21 +108,21 @@ function Index() {
 
       <SectionBoundary label="universal-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow="Fits most bikes" title="Universal Products" />
+          <SectionHeading eyebrow={t('section.universal.eyebrow')} title={t('section.universal.title')} />
           <ProductGrid products={universalProducts} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="best-deals">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow="Limited offers" title="Featured & Best Deals" />
+          <SectionHeading eyebrow={t('section.bestDeals.eyebrow')} title={t('section.bestDeals.title')} />
           <ProductGrid products={bestDeals} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="all-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow={`${products.length} products`} title="All Products" />
+          <SectionHeading eyebrow={`${products.length} ${t('section.allProducts.eyebrow')}`} title={t('section.allProducts.title')} />
           {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
           <ProductBrowser products={products} />
         </section>
