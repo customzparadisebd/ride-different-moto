@@ -98,6 +98,12 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('Unauthorized: No user ID found in token');
     }
 
+    // Mask internal error details for the client
+    } catch (error) {
+      console.error('[Auth Middleware Error]:', error);
+      throw new Error('Unauthorized');
+    }
+
     return next({
       context: {
         supabase,
