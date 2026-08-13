@@ -15,12 +15,14 @@ import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { discountPercent, formatBDT } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n";
 import { basePrice, type StorefrontProduct } from "@/lib/storefront.shared";
 
 export function ProductCard({ product }: { product: StorefrontProduct }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
+  const { t } = useLanguage();
 
   const activePrice = basePrice(product);
   const discount = discountPercent(product.price, product.offerPrice ?? undefined);
@@ -146,7 +148,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             className="h-9 w-full min-w-0 sm:h-8"
           >
             <span className="whitespace-nowrap px-2 text-xs font-bold uppercase tracking-wider sm:text-[10px]">
-              {hasColors ? "Choose Color" : "Add to Cart"}
+              {hasColors ? t('common.chooseColor') : t('nav.cart')}
             </span>
           </Button>
           <Button
