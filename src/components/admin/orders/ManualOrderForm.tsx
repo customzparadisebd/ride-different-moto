@@ -107,8 +107,8 @@ export function ManualOrderForm({
       productSlug: product.slug,
       productName: product.name,
       variant: product.category,
-      imageUrl: product.image,
-      unitPrice: String(product.offerPrice ?? product.price),
+      imageUrl: product.image_url ?? "",
+      unitPrice: String(product.offer_price ?? product.price),
     });
   };
 
@@ -254,7 +254,7 @@ export function ManualOrderForm({
                   <option value="">Custom item…</option>
                   {catalog.map((product) => (
                     <option key={product.id} value={product.id}>
-                      {product.name} — {formatBDT(product.offerPrice ?? product.price)}
+                      {product.name} — {formatBDT(Number(product.offer_price ?? product.price))}
                     </option>
                   ))}
                 </SelectInput>
@@ -405,8 +405,8 @@ export function ManualOrderForm({
 
       {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
 
-      <Button type="submit" variant="red" size="touch" disabled={isPending}>
-        {isPending ? "Saving order…" : "Create order"}
+      <Button type="submit" variant="red" size="touch" disabled={externalIsPending}>
+        {externalIsPending ? "Saving order…" : "Create order"}
       </Button>
     </form>
   );
