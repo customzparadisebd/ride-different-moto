@@ -655,6 +655,7 @@ function AdminOrderList() {
                     name: order.customer_name,
                   })
                 }
+                canManage={canManage}
               />
               <ProductsCell order={order} />
               <PaymentCell order={order} />
