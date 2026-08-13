@@ -391,3 +391,38 @@ export const reorderProductColors = createServerFn({ method: "POST" })
     );
     return { ok: true };
   });
+
+export const updateFeaturedProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => featuredProductsUpdateInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const results = await Promise.all(
+      data.items.map((item) =>
+        context.supabase
+          .from("products")
+          .update({
+            sort_order: item.sortOrder,
+            badge_text: item.badgeText || null,
+            badge_enabled: item.badgeEnabled,
+          })
+          .eq("id", item.id)
+      )
+    );
+
+    const error = results.find((r) => r.error);
+    if (error) throw new Error("Could not update some products.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product",
+      targetLabel: "Bulk Featured Update",
+      newValue: data.items,
+    });
+
+    return { ok: true };
+  });
+
