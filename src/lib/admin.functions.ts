@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
+  ACCESS_STATUSES,
   ASSIGNABLE_PERMISSIONS,
   AUDIT_ACTIONS,
   PERMISSIONS,
@@ -96,19 +97,24 @@ export const updateAdminProfile = createServerFn({ method: "POST" })
 export const recordSignIn = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const { resolveActor, auditFromActor, requestMeta } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const actor = await resolveActor(context.userId, context.claims as never);
+    const meta = requestMeta();
+    
     await supabaseAdmin
       .from("profiles")
-      .update({ last_login_at: new Date().toISOString() })
+      .update({ 
+        last_login_at: new Date().toISOString(),
+        last_login_ip: meta.ip 
+      })
       .eq("id", actor.userId);
     await auditFromActor(actor, {
       action: AUDIT_ACTIONS.loginSuccess,
       targetType: "account",
       targetId: actor.userId,
       targetLabel: actor.email,
-      metadata: { mfa: actor.mfaSatisfied ? "aal2" : "aal1", status: actor.status },
+      metadata: { mfa: actor.mfaSatisfied ? "aal2" : "aal1", status: actor.status, ip: meta.ip },
     });
     return { ok: true, status: actor.status, isStaff: actor.isStaff };
   });
@@ -317,7 +323,7 @@ export const listStaff = createServerFn({ method: "POST" })
       supabaseAdmin
         .from("profiles")
         .select(
-          "id, email, full_name, access_status, access_note, mfa_required, last_login_at, created_at",
+          "id, email, full_name, phone_number, access_status, access_note, mfa_required, last_login_at, last_login_ip, created_at",
         )
         .order("created_at", { ascending: true }),
       supabaseAdmin.from("user_roles").select("user_id, role"),
@@ -593,7 +599,9 @@ export const createStaff = createServerFn({ method: "POST" })
         email: z.string().email(),
         password: z.string().min(8),
         fullName: z.string().min(2),
+        phoneNumber: z.string().optional(),
         role: z.enum(ROLES),
+        status: z.enum(ACCESS_STATUSES).optional().default("approved"),
       })
       .parse(input),
   )
@@ -613,8 +621,8 @@ export const createStaff = createServerFn({ method: "POST" })
     }
 
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
+      email: data.email as string,
+      password: data.password as string,
       email_confirm: true,
       user_metadata: { full_name: data.fullName },
     });
@@ -627,12 +635,14 @@ export const createStaff = createServerFn({ method: "POST" })
     // Create profile
     const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
       id: userId,
-      email: data.email,
-      full_name: data.fullName,
-      access_status: "approved",
+      email: data.email as string,
+      full_name: data.fullName as string,
+      phone_number: (data.phoneNumber as string) ?? null,
+      access_status: data.status as any,
       approved_by: actor.userId,
       approved_at: new Date().toISOString(),
       mfa_required: data.role === "super_admin",
+
     });
 
     if (profileError) {
@@ -644,7 +654,7 @@ export const createStaff = createServerFn({ method: "POST" })
     // Set role
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: userId, role: data.role });
+      .insert({ user_id: userId, role: data.role as any });
 
     if (roleError) {
       await supabaseAdmin.auth.admin.deleteUser(userId);
@@ -655,12 +665,35 @@ export const createStaff = createServerFn({ method: "POST" })
       action: AUDIT_ACTIONS.staffCreated,
       targetType: "account",
       targetId: userId,
-      targetLabel: data.email,
+      targetLabel: data.email as string,
       newValue: { role: data.role as string, full_name: data.fullName },
     });
 
     return { ok: true, userId };
   });
+
+/** Fetches audit logs for a specific user. */
+export const getStaffActivity = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ userId: z.string().uuid(), limit: z.number().optional() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.staffManage);
+
+    const { data: logs, error } = await supabaseAdmin
+      .from("admin_audit_log")
+      .select("*")
+      .eq("actor_id", data.userId)
+      .order("created_at", { ascending: false })
+      .limit(data.limit ?? 50);
+
+    if (error) throw new Error("Could not load activity log.");
+    return logs;
+  });
+
+
 
 
 // ---------- SESSIONS ----------
