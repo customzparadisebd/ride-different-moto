@@ -7,7 +7,7 @@
 export type HeroSlide = {
   id: string;
   bikeName: string;
-  label?: string;
+  label?: string | null;
   image: string;
   mobileImage?: string;
   alt: string;
