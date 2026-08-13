@@ -10,7 +10,12 @@ import { cn } from "@/lib/utils";
 const AUTOPLAY_MS = 3500;
 
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
-  const [emblaRef, embla] = useEmblaCarousel({ loop: true, align: "start" });
+  const [emblaRef, embla] = useEmblaCarousel({
+    loop: true,
+    align: "start",
+    watchDrag: true,
+    skipSnaps: false,
+  });
   const [selected, setSelected] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -20,8 +25,23 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     onSelect();
     embla.on("select", onSelect);
     embla.on("pointerDown", () => setPaused(true));
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setPaused(true);
+        embla.scrollPrev();
+      } else if (e.key === "ArrowRight") {
+        setPaused(true);
+        embla.scrollNext();
+      }
+    };
+
+    const node = embla.rootNode();
+    node.addEventListener("keydown", onKeyDown);
+
     return () => {
       embla.off("select", onSelect);
+      node.removeEventListener("keydown", onKeyDown);
     };
   }, [embla]);
 
@@ -45,11 +65,22 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   if (!slides.length) return null;
 
   return (
-    <section aria-label="Featured motorcycle builds" className="relative bg-onyx">
-      <div className="overflow-hidden" ref={emblaRef}>
+    <section
+      aria-label="Featured motorcycle builds"
+      className="relative bg-onyx"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div className="overflow-hidden" ref={emblaRef} tabIndex={0} role="region" aria-roledescription="carousel">
         <div className="flex touch-pan-y">
           {slides.map((slide, index) => (
-            <div key={slide.id} className="min-w-0 flex-[0_0_100%]">
+            <div
+              key={slide.id}
+              className="min-w-0 flex-[0_0_100%]"
+              role="group"
+              aria-roledescription="slide"
+              aria-label={`${index + 1} of ${slides.length}`}
+            >
               <Link
                 to={slide.bikeSlug === "all-products" ? "/" : "/bike-models/$slug"}
                 params={slide.bikeSlug === "all-products" ? {} : ({ slug: slide.bikeSlug } as any)}
@@ -128,6 +159,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             <ChevronRight className="size-5" aria-hidden="true" />
           </button>
         </div>
+      </div>
+
+      <div className="sr-only" aria-live="polite">
+        Slide {selected + 1} of {slides.length}
       </div>
     </section>
   );
