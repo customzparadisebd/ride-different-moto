@@ -24,7 +24,7 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 //          referrer leakage, cross-origin isolation of resources).
 // Status: COMPLETED
 // Security: Frame-ancestors are intentionally left to the host so
-//          the Lovable preview keeps working; HTTPS/HSTS is
+//          the development preview keeps working; HTTPS/HSTS is
 //          terminated and enforced by the hosting platform.
 // Future: None.
 // ============================================================
