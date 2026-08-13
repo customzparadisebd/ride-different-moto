@@ -13,9 +13,7 @@ export function StoreComingSoon() {
         <div className="relative z-10">
           <p className="eyebrow text-primary">Uttara Branch</p>
           <h2 className="mt-2 max-w-2xl font-display text-2xl font-bold uppercase leading-tight tracking-tight sm:text-4xl lg:text-6xl">
-            '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-            
-            I have approved the plan
+            Physical Store Coming Soon
           </h2>
           
           <div className="mt-6 flex flex-col gap-6 sm:mt-8 sm:flex-row sm:items-center">
