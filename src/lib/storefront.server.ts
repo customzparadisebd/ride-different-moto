@@ -15,7 +15,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./storefront.shared";
 
 const PRODUCT_FIELDS =
-  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, deleted_at";
+  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, deleted_at, sort_order";
 
 const COLOR_FIELDS = "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
@@ -98,8 +98,7 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
       .from("products")
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
-      .is("deleted_at", null)
-      .order("created_at", { ascending: true }),
+      .is("deleted_at", null),
     supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
   ]);
   if (products.error) throw new Error("Could not load the product catalogue.");
@@ -112,9 +111,9 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
     byProduct.set(key, list);
   }
 
-  return ((products.data ?? []) as ProductRow[]).map((row) =>
-    toProduct(row, byProduct.get(String(row["id"])) ?? []),
-  );
+  return ((products.data ?? []) as any[])
+    .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999))
+    .map((row) => toProduct(row, byProduct.get(String(row["id"])) ?? []));
 }
 
 export async function fetchProductBySlug(slug: string): Promise<StorefrontProduct | null> {
@@ -129,7 +128,7 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
   if (error) throw new Error("Could not load this product.");
   if (!data) return null;
 
-  const row = data as ProductRow;
+  const row = data as any;
   const { data: colorRows } = await supabase
     .from("product_colors")
     .select(COLOR_FIELDS)
