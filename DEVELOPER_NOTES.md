@@ -15,7 +15,7 @@
 - [x] Courier Integration (SteadFast): Bulk booking, Tracking, Cancellation, Connection Testing, and API Logs.
 
 ## Recent Changes (Aug 13, 2026)
-- **Responsive Layouts**: Refactored the About Us, Store Coming Soon, and Contact Us sections for full responsiveness. Improved grid handling and spacing across mobile, tablet, and desktop viewports.
+- **Full Responsiveness**: Executed a comprehensive responsiveness audit across the entire website. Refactored the About Us, Bike Models, Product Browser, Store Coming Soon, Contact Us, and Social sections to ensure clean layouts and proper stacking on mobile, tablet, and desktop viewports. Added safe-area padding and responsive typography.
 - **Product UI**: Added theme-aware outlines (Silver/Gray in Dark Mode, Black/Dark in Light Mode) to all product color selection circles.
 - **About Us Section**: Removed the feature cards (Premium Quality, Unique Designs, etc.) while keeping the brand story and tagline.
 - **Store Coming Soon**: Removed the estimated launch date (Q3 2026) from the "Physical Store Coming Soon" section on the landing page.

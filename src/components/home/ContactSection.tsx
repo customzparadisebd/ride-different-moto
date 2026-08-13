@@ -11,57 +11,57 @@ export function ContactSection() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24" id="contact">
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-24" id="contact">
       <div className="w-full">
         <SectionHeading
           eyebrow="Get in touch"
           title="Contact Us"
         />
-        <div className="mb-8" />
+        <div className="mb-6 sm:mb-8" />
         
-        <p className="mb-10 text-base sm:text-lg text-muted-foreground max-w-2xl">
+        <p className="mb-8 max-w-2xl text-sm text-muted-foreground sm:mb-10 sm:text-base lg:text-lg">
           Have questions about our modification kits or need advice for your build? 
           Reach out to our experts directly or visit our office.
         </p>
-
-        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+ 
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
           <a
             href={getWhatsAppHref()}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 sm:p-8 shadow-card transition-colors hover:border-primary/60"
+            className="group flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center shadow-card transition-colors hover:border-brand-whatsapp/60 sm:p-8"
           >
-            <div className="grid size-12 place-items-center rounded-xl bg-brand-whatsapp/10 text-brand-whatsapp">
+            <div className="grid size-12 place-items-center rounded-xl bg-brand-whatsapp/10 text-brand-whatsapp transition-transform group-hover:scale-110">
               <WhatsAppIcon className="size-6" />
             </div>
-            <div>
-              <h3 className="font-display text-base font-bold uppercase tracking-tight">WhatsApp</h3>
-              <p className="text-sm text-muted-foreground">{site.phoneDisplay}</p>
+            <div className="min-w-0">
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">WhatsApp</h3>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.phoneDisplay}</p>
             </div>
           </a>
-
+ 
           <a
             href="https://m.me/customzparadisebd"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 sm:p-8 shadow-card transition-colors hover:border-primary/60"
+            className="group flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center shadow-card transition-colors hover:border-brand-facebook/60 sm:p-8"
           >
-            <div className="grid size-12 place-items-center rounded-xl bg-brand-facebook/10 text-brand-facebook">
+            <div className="grid size-12 place-items-center rounded-xl bg-brand-facebook/10 text-brand-facebook transition-transform group-hover:scale-110">
               <FacebookIcon className="size-6" />
             </div>
-            <div>
-              <h3 className="font-display text-base font-bold uppercase tracking-tight">Messenger</h3>
-              <p className="text-sm text-muted-foreground">Customz Paradise BD</p>
+            <div className="min-w-0">
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">Messenger</h3>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">Customz Paradise BD</p>
             </div>
           </a>
-
-          <div className="flex flex-col items-center text-center gap-4 rounded-xl border border-border bg-card p-6 sm:p-8 shadow-card sm:col-span-2 lg:col-span-1">
+ 
+          <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center shadow-card sm:col-span-2 sm:p-8 lg:col-span-1">
             <div className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
               <Store className="size-6" />
             </div>
-            <div>
-              <h3 className="font-display text-base font-bold uppercase tracking-tight">Office</h3>
-              <p className="text-sm text-muted-foreground">{site.address}</p>
+            <div className="min-w-0">
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">Office</h3>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.address}</p>
             </div>
           </div>
         </div>
