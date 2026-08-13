@@ -53,9 +53,8 @@ export function ContactSection() {
           <SectionHeading
             eyebrow="Get in touch"
             title="Contact Us"
-            align="left"
-            className="mb-8"
           />
+          <div className="mb-8" />
           
           <p className="mb-10 max-w-lg text-lg text-muted-foreground">
             Have questions about our modification kits or need advice for your build? 

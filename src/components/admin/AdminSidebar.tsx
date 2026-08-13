@@ -50,6 +50,8 @@ const OPERATIONS: NavItem[] = [
 
   { to: "/ad/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
   { to: "/ad/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
+  { to: "/ad/leads", label: "Leads", icon: MessageSquare, permission: PERMISSIONS.customersManage },
+  { to: "/ad/reviews", label: "Reviews", icon: Star, permission: PERMISSIONS.reviewsManage },
   {
     to: "/ad/recycle-bin",
     label: "Recycle Bin",
