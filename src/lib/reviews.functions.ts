@@ -32,11 +32,23 @@ export const updateReview = createServerFn({ method: "POST" })
     })
   }))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.contentManage);
+    assertAccess(actor, PERMISSIONS.reviewsManage);
+    
+    const before = await context.supabase.from(TABLE_REVIEWS as any).select("*").eq("id", data.id).single();
+    
     const { error } = await context.supabase.from(TABLE_REVIEWS as any).update(data.updates as any).eq("id", data.id);
     if (error) throw new Error(error.message);
+    
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.reviewUpdated as any,
+      targetType: "review",
+      targetId: data.id,
+      oldValue: before.data,
+      newValue: data.updates,
+    });
+    
     return { ok: true };
   });
 
