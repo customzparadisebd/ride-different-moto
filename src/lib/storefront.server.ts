@@ -15,7 +15,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./storefront.shared";
 
 const PRODUCT_FIELDS =
-  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, deleted_at";
+  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, deleted_at, sort_order";
 
 const COLOR_FIELDS = "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
