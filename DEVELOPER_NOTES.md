@@ -1,6 +1,7 @@
 # Developer Notes — Customz Paradise BD
 
 ## Implementation Status
+- [x] Admin Login Redesign: Split-screen layout with seamless looping video animation and 3D UI
 - [x] Customer Fraud Marking System: Flag suspicious phone numbers with Red/Warning badges
 - [x] Customer Order History: Clicking "Total Orders" in Admin opens a detailed order summary popup
 - [x] Order Notes: Dedicated blue Note button in Admin for customer messages
@@ -19,6 +20,7 @@
 - [x] Courier Integration (SteadFast): Bulk booking, Tracking, Cancellation, Connection Testing, and API Logs.
 
 ## Recent Changes (Aug 13, 2026)
+- **Admin Login Redesign**: Transformed the admin login experience into a high-performance split-screen layout. Features a continuous autoplaying loop of the CZP brand animation on the left and a clean, 3D-styled login panel on the right. 
 - **Customer Fraud Marking System**: Implemented a professional fraud detection system linked to phone numbers. Admins can mark customers as "Fraud" or "Warning" with mandatory notes. Warnings appear automatically in the Order List, Order Details, and Customer Management.
 - **Invoice Configuration**: Added an Invoice Settings panel to the Admin Dashboard. Super Admins/Admins can now customize the invoice prefix (e.g., "CZP") and the sequence starting number.
 - **Atomic Invoice Generation**: Implemented a database sequence and `SECURITY DEFINER` trigger to ensure sequential, collision-free invoice IDs (e.g., CZP-01, CZP-02) even during concurrent order placement.
