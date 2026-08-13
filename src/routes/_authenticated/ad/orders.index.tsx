@@ -560,6 +560,7 @@ function AdminOrderList() {
                         name: order.customer_name,
                       })
                     }
+                    canManage={canManage}
                   />
                 </td>
                 <td className="p-2">

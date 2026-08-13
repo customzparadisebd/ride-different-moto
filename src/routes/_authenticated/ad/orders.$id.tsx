@@ -10,6 +10,7 @@ import {
   type OrderUpdatePayload,
 } from "@/components/admin/orders/OrderManagePanel";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
+import { FraudMarkBadge } from "@/components/admin/customers/FraudMarkBadge";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, getOrder, updateOrderStatus } from "@/lib/orders.functions";
