@@ -237,7 +237,7 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
                       )}
                     >
                       <span
-                        className="size-5 shrink-0 rounded-full border border-border"
+                        className="size-5 shrink-0 rounded-full border border-white/20 shadow-[0_0_0_1px_rgba(128,128,128,0.5)]"
                         style={{ backgroundColor: entry.swatch }}
                         aria-hidden="true"
                       />
