@@ -54,6 +54,7 @@ export const PERMISSIONS = {
   shipmentsCreate: "shipments.create",
   contentManage: "content.manage",
   zonesManage: "zones.manage",
+  reviewsManage: "reviews.manage",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
