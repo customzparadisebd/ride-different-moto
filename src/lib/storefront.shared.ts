@@ -36,7 +36,9 @@ export type StorefrontProduct = {
   newArrival: boolean;
   badgeText: string | null;
   colors: StorefrontColor[];
+  sortOrder: number | null;
 };
+
 
 export const productSlugInput = z.object({ slug: z.string().trim().min(1).max(160) });
 

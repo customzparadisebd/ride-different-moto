@@ -81,7 +81,7 @@ function Index() {
   const universalProducts = products.filter((product) => product.universal);
   const bestDeals = products
     .filter((product) => product.bestDeal || product.featured)
-    .sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999));
+    .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
 
 
   return (
