@@ -112,9 +112,12 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   }
 
   return ((products.data ?? []) as any[])
-    .sort((a, b) => Number(a.sort_order ?? 999) - Number(b.sort_order ?? 999))
-    .map((row) => toProduct(row, byProduct.get(String(row["id"])) ?? []));
+    .map((row) => ({
+      ...toProduct(row, byProduct.get(String(row["id"])) ?? []),
+      sort_order: row.sort_order, // Pass through for custom sorting
+    }));
 }
+
 
 export async function fetchProductBySlug(slug: string): Promise<StorefrontProduct | null> {
   const supabase = publicClient();
