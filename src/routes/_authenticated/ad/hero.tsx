@@ -248,7 +248,7 @@ function AdminHeroSlides() {
                             size="icon" 
                             className="h-8 w-8 text-destructive hover:bg-destructive/10"
                             onClick={() => {
-                              if (confirm("Delete this slide?")) deleteMutation.mutate({ id: slide.id });
+                              if (confirm("Delete this slide?")) deleteMutation.mutate({ data: slide.id });
                             }}
                           >
                             <Trash2 className="h-4 w-4" />
