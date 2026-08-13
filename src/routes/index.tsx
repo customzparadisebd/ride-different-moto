@@ -1,5 +1,6 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 
 import { ProductBrowser } from "@/components/ProductBrowser";
 import { ProductGrid } from "@/components/ProductCard";
@@ -11,7 +12,8 @@ import { HeroSlider } from "@/components/home/HeroSlider";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { SocialSection } from "@/components/home/SocialSection";
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
-import { getBikeModels, getHeroSlides } from "@/data/catalog";
+import { getBikeModels } from "@/data/catalog";
+import { getHeroSlides } from "@/lib/hero.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
