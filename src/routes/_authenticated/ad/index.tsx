@@ -122,7 +122,7 @@ function AdminDashboard() {
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <MiniStatCard title="CURRENT STOCK" value={data.inventory.totalStock} subtitle="Units available" icon={<Layers className="h-4 w-4 text-emerald-400" />} />
-        <MiniStatCard title="LOW STOCK" value={data.inventory.lowStock} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} / >
+        <MiniStatCard title="LOW STOCK" value={data.inventory.lowStock} subtitle="Reorder soon" icon={<AlertTriangle className="h-4 w-4 text-amber-400" />} />
         <MiniStatCard title="OUT OF STOCK" value={data.inventory.outOfStock} subtitle="Critical" icon={<Box className="h-4 w-4 text-rose-400" />} />
       </div>
 
