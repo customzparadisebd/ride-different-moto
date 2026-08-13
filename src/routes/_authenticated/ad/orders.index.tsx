@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { XCircle } from "lucide-react";
 
 
+import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
 
@@ -41,6 +42,12 @@ import { SteadfastBulkDialog } from "@/components/admin/orders/SteadfastBulkDial
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -51,6 +58,7 @@ import { exportOrdersCsv, exportOrdersExcel, printOrders } from "@/lib/orders-ex
 import {
   assignOrders,
   bulkUpdateOrderStatus,
+  createManualOrder,
   getMyAccess,
   getOrderTabCounts,
   listOrders,
@@ -60,6 +68,7 @@ import {
   type AdminOrderListRow,
 } from "@/lib/orders.functions";
 import {
+  newIdempotencyKey,
   ORDER_STATUSES,
   statusLabel,
   type OrderStatus,
@@ -88,6 +97,7 @@ function AdminOrderList() {
   const assign = useServerFn(assignOrders);
   const markPrinted = useServerFn(markOrdersPrinted);
   const pinOrder = useServerFn(setOrderPinned);
+  const createOrderFn = useServerFn(createManualOrder);
 
   const [filters, setFilters] = useState<OrderFilters>({
     ...EMPTY_ORDER_FILTERS,
@@ -103,6 +113,7 @@ function AdminOrderList() {
   const [activityOrder, setActivityOrder] = useState<AdminOrderListRow | null>(null);
   // SEND TO STEADFAST — confirmation modal state
   const [steadfastOpen, setSteadfastOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
 
 
@@ -159,6 +170,16 @@ function AdminOrderList() {
   });
 
   const printMutation = useMutation({ mutationFn: markPrinted, onSuccess: () => refreshOrders() });
+
+  const createMutation = useMutation({
+    mutationFn: createOrderFn,
+    onSuccess: (result) => {
+      toast.success(`Order ${result.invoiceNo} created`);
+      setCreateModalOpen(false);
+      refreshOrders();
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not create the order."),
+  });
 
   const rows = ordersQuery.data?.rows ?? [];
   const totalCount = ordersQuery.data?.count ?? 0;
@@ -261,11 +282,9 @@ function AdminOrderList() {
             </DropdownMenuContent>
           </DropdownMenu>
           {canCreate ? (
-            <Button variant="red" size="touch" asChild>
-              <Link to="/ad/orders/new">
-                <Plus />
-                Create Order
-              </Link>
+            <Button variant="red" size="touch" onClick={() => setCreateModalOpen(true)}>
+              <Plus />
+              CREATE ORDER
             </Button>
           ) : null}
         </div>
@@ -368,11 +387,11 @@ function AdminOrderList() {
           </Button>
             </>
           ) : null}
-          {/* SEND TO STEADFAST — bulk action */}
           {canShip ? (
             <Button
-              variant="steel"
+              variant="outline"
               size="sm"
+              className="flex items-center gap-2 border-primary/20 hover:bg-primary/5"
               onClick={() => {
                 if (sendableSelected.length === 0) {
                   toast.error("All selected orders already have a SteadFast consignment.");
@@ -381,6 +400,11 @@ function AdminOrderList() {
                 setSteadfastOpen(true);
               }}
             >
+              <img 
+                src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" 
+                alt="SteadFast" 
+                className="h-4 w-auto" 
+              />
               Send to SteadFast ({sendableSelected.length})
             </Button>
           ) : null}
@@ -410,6 +434,20 @@ function AdminOrderList() {
         onOpenChange={(open) => (open ? null : setCancelOrder(null))}
         onFinished={refreshOrders}
       />
+
+      <Dialog open={createModalOpen} onOpenChange={setCreateModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="font-display uppercase">Create order</DialogTitle>
+          </DialogHeader>
+          <ManualOrderForm
+            idempotencyKey={newIdempotencyKey()}
+            isPending={createMutation.isPending}
+            onSubmit={(input: any) => createMutation.mutate({ data: input })}
+            onClose={() => setCreateModalOpen(false)}
+          />
+        </DialogContent>
+      </Dialog>
 
 
       {/* DESKTOP TABLE — full column layout */}
