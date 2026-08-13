@@ -690,6 +690,8 @@ export const getStaffActivity = createServerFn({ method: "POST" })
 
     if (error) throw new Error("Could not load activity log.");
     return logs;
+  });
+
 
 
 
