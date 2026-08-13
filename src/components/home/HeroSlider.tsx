@@ -129,6 +129,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
           </button>
         </div>
       </div>
+
+      <div className="sr-only" aria-live="polite">
+        Slide {selected + 1} of {slides.length}
+      </div>
     </section>
   );
 }
