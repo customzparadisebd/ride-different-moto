@@ -24,7 +24,7 @@ export function ContactSection() {
           Reach out to our experts directly or visit our office.
         </p>
  
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <a
             href={getWhatsAppHref()}
             target="_blank"

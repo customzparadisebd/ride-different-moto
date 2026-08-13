@@ -23,7 +23,7 @@ export function StoreComingSoon() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-primary sm:text-xs">Location</p>
-                <p className="text-sm font-medium break-words sm:text-base lg:text-lg">{site.address}</p>
+                <p className="text-sm font-medium break-words sm:text-base lg:text-lg overflow-hidden text-ellipsis">{site.address}</p>
               </div>
             </div>
           </div>
