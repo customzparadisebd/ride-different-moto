@@ -187,18 +187,49 @@
 @utility bg-gradient-red {
   background-image: linear-gradient(
     135deg,
-    oklch(from var(--brand-red) calc(l + 0.06) c h),
+    oklch(from var(--brand-red) calc(l + 0.12) c h),
     var(--brand-red) 55%,
-    oklch(from var(--brand-red) calc(l - 0.12) c h)
+    oklch(from var(--brand-red) calc(l - 0.15) c h)
   );
 }
 
 @utility bg-gradient-onyx {
-  background-image: linear-gradient(135deg, oklch(0.26 0.004 264), oklch(0.12 0.004 264));
+  background-image: linear-gradient(
+    135deg,
+    oklch(0.28 0.004 264),
+    oklch(0.18 0.004 264) 55%,
+    oklch(0.1 0.004 264)
+  );
 }
 
 @utility bg-gradient-steel {
-  background-image: linear-gradient(135deg, oklch(0.88 0.004 264), oklch(0.66 0.006 264));
+  background-image: linear-gradient(
+    135deg,
+    oklch(0.92 0.004 264),
+    oklch(0.85 0.004 264) 55%,
+    oklch(0.7 0.006 264)
+  );
+}
+
+@utility shadow-3d-red {
+  box-shadow: 
+    0 1px 0 0 oklch(from var(--brand-red) calc(l + 0.2) c h) inset,
+    0 8px 24px -10px oklch(from var(--brand-red) l c h / 0.6),
+    0 4px 6px -2px oklch(from var(--brand-red) calc(l - 0.2) c h / 0.4);
+}
+
+@utility shadow-3d-onyx {
+  box-shadow: 
+    0 1px 0 0 oklch(0.35 0.004 264) inset,
+    0 8px 24px -10px oklch(0 0 0 / 0.5),
+    0 4px 6px -2px oklch(0 0 0 / 0.8);
+}
+
+@utility shadow-3d-steel {
+  box-shadow: 
+    0 1px 0 0 oklch(0.98 0 0) inset,
+    0 8px 24px -10px oklch(0 0 0 / 0.2),
+    0 4px 6px -2px oklch(0 0 0 / 0.1);
 }
 
 @utility text-gradient-red {

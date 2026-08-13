@@ -5,28 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+        default: "bg-primary text-primary-foreground shadow-3d-red hover:brightness-110",
         destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        ghost: "hover:bg-accent hover:text-accent-foreground rounded-md active:scale-100",
         link: "text-primary underline-offset-4 hover:underline",
-        red: "bg-gradient-red text-primary-foreground shadow-red hover:brightness-110 active:brightness-95 font-semibold uppercase tracking-wide",
-        onyx: "bg-gradient-onyx text-onyx-foreground hover:brightness-125 font-semibold uppercase tracking-wide",
+        red: "bg-gradient-red text-primary-foreground shadow-3d-red hover:brightness-110 active:brightness-95 uppercase tracking-wide",
+        onyx: "bg-gradient-onyx text-onyx-foreground shadow-3d-onyx hover:brightness-125 uppercase tracking-wide",
         steel:
-          "border border-border bg-secondary text-secondary-foreground hover:border-primary/60 hover:text-primary font-semibold uppercase tracking-wide",
+          "bg-gradient-steel text-secondary-foreground shadow-3d-steel border border-border/50 hover:brightness-105 active:brightness-95 uppercase tracking-wide",
       },
       size: {
-        default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
-        icon: "h-9 w-9",
-        touch: "h-11 rounded-md px-5 text-sm",
+        default: "h-11 px-6 py-2.5",
+        sm: "h-9 rounded-full px-4 text-xs",
+        lg: "h-13 rounded-full px-10 text-base",
+        icon: "h-10 w-10 rounded-full",
+        touch: "h-12 rounded-full px-6 text-sm",
       },
     },
     defaultVariants: {

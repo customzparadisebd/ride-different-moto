@@ -29,6 +29,9 @@
 - **RBAC Hardening**: Restricted the "Staff & Roles" section to Super Admin and Admin roles only.
 - **Staff Management**: Implemented 'Delete', 'Reset Password', 'Edit Name', and 'Add User' capabilities for Super Admins/Admins.
 
+- **Modern Admin UI Refresh**: Implemented a "3D Floating" button design system across the Admin Panel. Buttons now feature generous padding, pill-style rounded corners, and subtle top highlights with soft drop-shadows for a modern, tactile feel.
+- **Admin Button States**: Primary actions use the brand red with enhanced depth, while secondary actions utilize a sleek steel/onyx gradient with multi-layered shadows.
+
 ## Recently Completed
 - Optimized product cards for mobile with a specific vertical order (Image → Badges → Name → Description → Price → Colors → Buttons).
 - Comprehensive responsiveness audit: Fixed grid gap inconsistencies, refined mobile typography, addressed header layout issues, and improved address text wrapping for small screens.
