@@ -125,9 +125,6 @@ function Index() {
         </section>
       </SectionBoundary>
 
-      <SectionBoundary label="about">
-        <AboutSection />
-      </SectionBoundary>
 
       <SectionBoundary label="store">
         <StoreComingSoon />
