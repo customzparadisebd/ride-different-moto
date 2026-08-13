@@ -43,7 +43,18 @@ export const bulkSteadfastInput = z.object({
   retry: z.boolean().optional(),
 });
 
+export type SteadfastApiLog = {
+  id: string;
+  action: string;
+  success: boolean;
+  status_code: string | null;
+  message: string | null;
+  created_at: string;
+  actor_email: string | null;
+};
+
 export type BulkShipmentRow = {
+
   orderId: string;
   invoiceNo: string;
   success: boolean;

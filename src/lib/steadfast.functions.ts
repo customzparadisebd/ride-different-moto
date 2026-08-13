@@ -22,7 +22,9 @@ import {
   STEADFAST_SLUG,
   type BulkShipmentRow,
   type SteadfastSettings,
+  type SteadfastApiLog,
 } from "./steadfast.shared";
+
 
 /** Admin + Super Admin only — credentials are off-limits to Staff/Managers. */
 function assertCredentialAccess(actor: AdminActor) {
