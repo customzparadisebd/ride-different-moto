@@ -22,6 +22,7 @@ import {
   auditQueryInput,
   backupCodeInput,
   loginAttemptInput,
+  ROLES,
   revokeSessionInput,
   staffPermissionsInput,
   staffRoleInput,
@@ -536,11 +537,89 @@ export const setStaffName = createServerFn({ method: "POST" })
       action: AUDIT_ACTIONS.staffProfileUpdated,
       targetType: "account",
       targetId: data.userId,
-      targetLabel: profile?.email ?? null,
-      oldValue: { full_name: profile?.full_name },
+      targetLabel: (profile?.email as string) ?? null,
+      oldValue: { full_name: profile?.full_name as string },
       newValue: { full_name: data.fullName },
     });
     return { ok: true };
+  });
+
+/** Creates a new staff member account (Super Admin/Admin only). */
+export const createStaff = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        email: z.string().email(),
+        password: z.string().min(8),
+        fullName: z.string().min(2),
+        role: z.enum(ROLES),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.staffManage);
+
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only Super Admins and Admins can create users.");
+    }
+
+    // Guard: Only Super Admin can create another Super Admin
+    if (data.role === "super_admin" && !actor.isSuperAdmin) {
+      throw new Error("Only a Super Admin can create another Super Admin.");
+    }
+
+    const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+      email: data.email,
+      password: data.password,
+      email_confirm: true,
+      user_metadata: { full_name: data.fullName },
+    });
+
+    if (authError) throw new Error(authError.message);
+    if (!authUser.user) throw new Error("User creation failed.");
+
+    const userId = authUser.user.id;
+
+    // Create profile
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
+      id: userId,
+      email: data.email,
+      full_name: data.fullName,
+      access_status: "approved",
+      approved_by: actor.userId,
+      approved_at: new Date().toISOString(),
+      mfa_required: data.role === "super_admin",
+    });
+
+    if (profileError) {
+      // Rollback auth user if profile fails
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error("Could not create staff profile.");
+    }
+
+    // Set role
+    const { error: roleError } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: userId, role: data.role });
+
+    if (roleError) {
+      await supabaseAdmin.auth.admin.deleteUser(userId);
+      throw new Error("Could not assign role.");
+    }
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.staffCreated,
+      targetType: "account",
+      targetId: userId,
+      targetLabel: data.email,
+      newValue: { role: data.role as string, full_name: data.fullName },
+    });
+
+    return { ok: true, userId };
   });
 
 /** Creates a new staff member account (Super Admin/Admin only). */
