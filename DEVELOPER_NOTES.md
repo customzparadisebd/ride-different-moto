@@ -1,6 +1,8 @@
 # Developer Notes — Customz Paradise BD
 
 ## Implementation Status
+- [x] Order Notes: Dedicated blue Note button in Admin for customer messages
+- [x] Invoice Sequence: Automatic Prefix-Number generation (e.g., CZP-01)
 - [x] Sticky Navigation Bar (Sticky with Backdrop Blur)
 - [x] Home Page Theme: Dark Mode by default with Light Mode toggle
 - [x] Product Color Selector: Gray outline for Black/Red/Blue chips on dark backgrounds
