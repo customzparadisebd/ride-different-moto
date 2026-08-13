@@ -12,7 +12,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

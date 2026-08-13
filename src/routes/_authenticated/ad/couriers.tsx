@@ -14,7 +14,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { CourierForm } from "@/components/admin/couriers/CourierForm";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";

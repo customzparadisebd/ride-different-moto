@@ -16,7 +16,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
+
 import { Button } from "@/components/ui/button";
 import {
   deleteStaff,
@@ -108,7 +108,10 @@ function StaffPage() {
   const handlePasswordReset = async (userId: string) => {
     const password = window.prompt("Enter new password (min 8 characters):");
     if (!password) return;
-    if (password.length < 8) return toast.error("Password too short.");
+    if (password.length < 8) {
+      toast.error("Password too short.");
+      return;
+    }
     void run(userId, () => setStaffPassword({ data: { userId, password } }), "Password updated.");
   };
 

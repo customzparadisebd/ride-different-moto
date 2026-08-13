@@ -3,7 +3,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { type AdminOrderItem, OrderItemsTable } from "@/components/admin/orders/OrderItemsTable";
 import { CourierPanel } from "@/components/admin/orders/CourierPanel";
 import {

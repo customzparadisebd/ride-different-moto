@@ -14,7 +14,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import {
   emptyProductForm,
   ProductForm,

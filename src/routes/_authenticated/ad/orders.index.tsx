@@ -16,7 +16,6 @@ import { FileSpreadsheet, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import {
   AmountsCell,

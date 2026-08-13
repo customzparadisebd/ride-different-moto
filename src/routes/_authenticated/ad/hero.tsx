@@ -5,7 +5,6 @@ import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, Edit2, Save, X, Upload, Loader2 } from "lucide-react";
 
-import { adminHead } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
