@@ -2,12 +2,35 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { History, Trash2, KeyRound, Edit2, Shield, UserX, UserCheck, Smartphone, MapPin, Mail, Clock } from "lucide-react";
+import { 
+  History, 
+  Trash2, 
+  KeyRound, 
+  Edit2, 
+  Shield, 
+  UserX, 
+  UserCheck, 
+  Smartphone, 
+  MapPin, 
+  Mail, 
+  Clock,
+  User,
+  MoreVertical,
+  Activity
+} from "lucide-react";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
 import { AddUserDialog } from "@/components/admin/AddUserDialog";
 import { UserActivityDialog } from "@/components/admin/UserActivityDialog";
 
@@ -17,51 +40,42 @@ import {
   setStaffName,
   setStaffPassword,
   setStaffStatus,
+  setStaffRole,
 } from "@/lib/admin.functions";
 import {
   ACCESS_STATUSES,
-  ASSIGNABLE_PERMISSIONS,
   PERMISSIONS,
-  PERMISSION_LABELS,
-  ROLES,
   ROLE_LABELS,
-  type AccessStatus,
-  type Permission,
-  type Role,
+  ACCESS_STATUS_LABELS,
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
-  head: () => ({ meta: [{ title: "Staff & roles — CZP Ops" }, { property: "og:title", content: "Staff & roles — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
   component: StaffPage,
 });
 
-const statusStyles: Record<AccessStatus, string> = {
-  pending: "bg-yellow-500/15 text-yellow-500",
-  approved: "bg-green-500/15 text-green-500",
-  inactive: "bg-muted text-muted-foreground",
-  suspended: "bg-orange-500/15 text-orange-500",
-  revoked: "bg-destructive/15 text-destructive",
-};
-
 function StaffPage() {
-  const { access } = Route.useRouteContext();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { access } = Route.useRouteContext();
+  
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [activityUserId, setActivityUserId] = useState<string | null>(null);
+  const [activityUserName, setActivityUserName] = useState<string>("");
 
-  // ACCESS CONTROL: Staff must have no access to the Staff & Roles section.
-  // Super Admin and Admin only. Redirect staff to Dashboard.
+  const staff = useQuery({ 
+    queryKey: ["admin-staff"], 
+    queryFn: () => listStaff({}) 
+  });
+
+  // Security: Staff users redirected to dashboard
   useEffect(() => {
-    if (access.primaryRole !== "super_admin" && access.primaryRole !== "admin") {
-      toast.error("Access denied: Admin only.");
-      void navigate({ to: "/ad", replace: true });
+    if (access.primaryRole === "staff") {
+      toast.error("Access denied: You do not have permission to manage staff.");
+      void navigate({ to: "/ad" });
     }
   }, [access.primaryRole, navigate]);
 
-  const queryClient = useQueryClient();
-  const [busyId, setBusyId] = useState<string | null>(null);
-
-  const staff = useQuery({ queryKey: ["admin-staff"], queryFn: () => listStaff({}) });
-  const canManageRoles =
-    access.permissions.includes(PERMISSIONS.rolesManage) && access.isSuperAdmin;
+  if (access.primaryRole === "staff") return null;
 
   const run = async (userId: string, action: () => Promise<unknown>, message: string) => {
     setBusyId(userId);
@@ -76,22 +90,6 @@ function StaffPage() {
     }
   };
 
-  const togglePermission = (
-    userId: string,
-    current: Permission[],
-    permission: Permission,
-    on: boolean,
-  ) => {
-    const next = on
-      ? [...new Set([...current, permission])]
-      : current.filter((p) => p !== permission);
-    void run(
-      userId,
-      () => setStaffPermissions({ data: { userId, permissions: next } }),
-      "Permissions updated.",
-    );
-  };
-
   const handleDelete = async (userId: string) => {
     if (!window.confirm("Are you sure you want to permanently delete this staff account?")) return;
     void run(userId, () => deleteStaff({ data: { userId } }), "Staff account deleted.");
@@ -101,265 +99,223 @@ function StaffPage() {
     const password = window.prompt("Enter new password (min 8 characters):");
     if (!password) return;
     if (password.length < 8) {
-      toast.error("Password too short.");
+      toast.error("Password must be at least 8 characters.");
       return;
     }
     void run(userId, () => setStaffPassword({ data: { userId, password } }), "Password updated.");
   };
 
+  const handleStatusToggle = async (userId: string, currentStatus: string) => {
+    const nextStatus = currentStatus === "approved" ? "suspended" : "approved";
+    void run(
+      userId,
+      () => setStaffStatus({ data: { userId, status: nextStatus as any } }),
+      `User ${nextStatus === "approved" ? "activated" : "deactivated"}.`
+    );
+  };
+
   const handleEditName = async (userId: string, currentName: string) => {
     const name = window.prompt("Enter full name:", currentName);
     if (!name || name === currentName) return;
-    if (name.length < 2) {
-      toast.error("Name too short.");
-      return;
-    }
     void run(userId, () => setStaffName({ data: { userId, fullName: name } }), "Name updated.");
   };
 
-  const handleAddUser = async () => {
-    const email = window.prompt("Enter email address:");
-    if (!email) return;
-    const fullName = window.prompt("Enter full name:");
-    if (!fullName) return;
-    const password = window.prompt("Enter initial password (min 8 characters):");
-    if (!password || password.length < 8) {
-      toast.error("Invalid password.");
-      return;
-    }
-
-    const rolePrompt = window.prompt(
-      "Enter role (super_admin, admin, manager, staff):",
-      "staff",
-    );
-    if (!rolePrompt || !ROLES.includes(rolePrompt as Role)) {
-      toast.error("Invalid role.");
-      return;
-    }
-
-    void run(
-      "new",
-      () =>
-        createStaff({
-          data: {
-            email,
-            fullName,
-            password,
-            role: rolePrompt as Role,
-          },
-        }),
-      "Staff account created.",
-    );
-  };
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-6 p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold uppercase tracking-wide">Staff & roles</h1>
-          <p className="text-sm text-muted-foreground">
-            Manage staff accounts, roles, and access. Approved accounts can reach the panel.
-          </p>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wider">Staff & Roles</h1>
+          <p className="text-sm text-muted-foreground">Manage administrative accounts and permissions.</p>
         </div>
-        <Button variant="red" onClick={handleAddUser}>
-          Add User
-        </Button>
+        
+        <AddUserDialog 
+          onSuccess={() => void queryClient.invalidateQueries({ queryKey: ["admin-staff"] })}
+          isSuperAdmin={access.isSuperAdmin}
+          callerRole={access.primaryRole}
+        />
       </div>
 
-      <div className="space-y-4">
-        {(staff.data ?? []).map((member) => {
-          const status = (member.access_status ?? "pending") as AccessStatus;
-          const role = (member.roles[0] ?? null) as Role | null;
-          const isSuperAdmin = member.roles.includes("super_admin");
-          const busy = busyId === member.id;
-          return (
-            <div key={member.id} className="rounded-lg border border-border bg-card p-4">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary font-display font-bold text-muted-foreground uppercase">
-                    {(member.full_name || member.email || "?").charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-semibold">
-                      {member.full_name || (isSuperAdmin ? "Super Admin" : "Staff Member")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">{member.email}</p>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-                      <span className="font-medium text-primary">
-                        {role ? ROLE_LABELS[role] : "No role"}
-                      </span>
-                      <span>·</span>
-                      <span>
-                        {member.last_login_at
-                          ? `Login: ${new Date(member.last_login_at).toLocaleString()}`
-                          : "Never logged in"}
-                      </span>
-                      {member.mfa_required && (
-                        <>
-                          <span>·</span>
-                          <span className="text-green-500">MFA Required</span>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${statusStyles[status]}`}
-                  >
-                    {status}
-                  </span>
-                </div>
-              </div>
-
-              {member.isSelf ? (
-                <div className="mt-4 space-y-4">
-                  <div className="flex flex-wrap items-center gap-2 border-t border-border/50 pt-4">
-                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Your Account
-                    </p>
-                    <Button
-                      variant="steel"
-                      size="sm"
-                      className="h-7 text-[10px]"
-                      disabled={busy}
-                      onClick={() => handleEditName(member.id, member.full_name || "")}
-                    >
-                      Edit Name
-                    </Button>
-                  </div>
-                  <div className="rounded bg-muted/30 p-2 text-center text-xs text-muted-foreground">
-                    Logged in as this account — sensitive security changes must be done by another admin.
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-4 space-y-4">
-                  <div className="flex flex-wrap items-center gap-2 border-t border-border/50 pt-4">
-                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Access Control
-                    </p>
-                    {ACCESS_STATUSES.filter((s) => s !== status).map((next) => (
-                      <Button
-                        key={next}
-                        variant={next === "approved" ? "red" : "steel"}
-                        size="sm"
-                        className="h-7 text-[10px]"
-                        disabled={busy}
-                        onClick={() =>
-                          void run(
-                            member.id,
-                            () => setStaffStatus({ data: { userId: member.id, status: next } }),
-                            `Account ${next}.`,
-                          )
-                        }
-                      >
-                        {next === "approved"
-                          ? "Approve"
-                          : next === "suspended"
-                            ? "Suspend"
-                            : next === "revoked"
-                              ? "Revoke"
-                              : "Set pending"}
-                      </Button>
-                    ))}
-
-                    <Button
-                      variant="steel"
-                      size="sm"
-                      className="h-7 text-[10px]"
-                      disabled={busy}
-                      onClick={() => handlePasswordReset(member.id)}
-                    >
-                      Reset Password
-                    </Button>
-
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="h-7 text-[10px]"
-                      disabled={busy}
-                      onClick={() => handleDelete(member.id)}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-
-                  {canManageRoles ? (
-                    <div className="space-y-1.5">
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Change Role
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {ROLES.map((r) => (
-                          <Button
-                            key={r}
-                            variant={r === role ? "red" : "steel"}
-                            size="sm"
-                            className="h-7 text-[10px]"
-                            disabled={busy || r === role}
-                            onClick={() =>
-                              void run(
-                                member.id,
-                                () => setStaffRole({ data: { userId: member.id, role: r } }),
-                                `Role set to ${ROLE_LABELS[r]}.`,
-                              )
-                            }
-                          >
-                            {ROLE_LABELS[r]}
-                          </Button>
-                        ))}
+      <div className="rounded-xl border border-border bg-card shadow-lg overflow-hidden">
+        <Table>
+          <TableHeader className="bg-muted/30">
+            <TableRow className="hover:bg-transparent">
+              <TableHead className="w-[300px] uppercase font-bold text-xs tracking-widest py-4">User Information</TableHead>
+              <TableHead className="uppercase font-bold text-xs tracking-widest">Role & Status</TableHead>
+              <TableHead className="uppercase font-bold text-xs tracking-widest">Last Login</TableHead>
+              <TableHead className="text-right uppercase font-bold text-xs tracking-widest">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {staff.data?.map((member: any) => {
+              const isSelf = member.id === access.userId;
+              const busy = busyId === member.id;
+              
+              return (
+                <TableRow key={member.id} className="group transition-colors hover:bg-muted/10">
+                  <TableCell className="py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
+                        <User className="size-5" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-foreground flex items-center gap-2">
+                          {member.full_name}
+                          {isSelf && <Badge variant="outline" className="text-[10px] py-0 h-4 bg-muted/50 border-primary/30 text-primary uppercase">You</Badge>}
+                        </span>
+                        <div className="flex flex-col gap-0.5 mt-0.5">
+                          <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <Mail className="size-3" />
+                            {member.email}
+                          </span>
+                          {member.phone_number && (
+                            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <Smartphone className="size-3" />
+                              {member.phone_number}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  ) : null}
-
-                  <div className="space-y-2">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      Permissions
-                    </p>
-                    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                      {ASSIGNABLE_PERMISSIONS.map((permission) => {
-                        const on = member.permissions.includes(permission);
-                        return (
-                          <label
-                            key={permission}
-                            className={`flex cursor-pointer items-center gap-2 rounded-md border p-2 text-[11px] transition-colors ${on ? "border-primary/50 bg-primary/5" : "border-border bg-muted/20 hover:bg-muted/40"}`}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={on}
-                              disabled={busy}
-                              className="accent-primary"
-                              onChange={(e) =>
-                                togglePermission(
-                                  member.id,
-                                  member.permissions,
-                                  permission,
-                                  e.target.checked,
-                                )
-                              }
-                            />
-                            <span className={on ? "font-medium text-foreground" : ""}>
-                              {PERMISSION_LABELS[permission]}
-                            </span>
-                          </label>
-                        );
-                      })}
+                  </TableCell>
+                  
+                  <TableCell>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex items-center gap-2">
+                        <Shield className={`size-3.5 ${member.primary_role === 'super_admin' ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <span className="text-sm font-medium">{ROLE_LABELS[member.primary_role]}</span>
+                      </div>
+                      <Badge 
+                        className={`w-fit uppercase text-[10px] tracking-wider px-2 py-0.5 ${
+                          member.access_status === 'approved' 
+                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+                            : 'bg-red-500/10 text-red-500 border-red-500/20'
+                        }`}
+                        variant="outline"
+                      >
+                        {ACCESS_STATUS_LABELS[member.access_status]}
+                      </Badge>
                     </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+                  </TableCell>
+
+                  <TableCell>
+                    <div className="flex flex-col gap-1 text-xs">
+                      {member.last_login_at ? (
+                        <>
+                          <div className="flex items-center gap-1.5 text-foreground font-medium">
+                            <Clock className="size-3 text-primary" />
+                            {format(new Date(member.last_login_at), "h:mm a, d MMM yyyy")}
+                          </div>
+                          {member.last_login_ip && (
+                            <div className="flex items-center gap-1.5 text-muted-foreground font-mono">
+                              <MapPin className="size-3" />
+                              {member.last_login_ip}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground italic">Never logged in</span>
+                      )}
+                    </div>
+                  </TableCell>
+
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-muted-foreground hover:text-primary hover:bg-primary/5"
+                        onClick={() => {
+                          setActivityUserId(member.id);
+                          setActivityUserName(member.full_name);
+                        }}
+                        title="View Activity"
+                      >
+                        <Activity className="size-4" />
+                      </Button>
+                      
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="size-8 text-muted-foreground hover:text-foreground hover:bg-muted"
+                            disabled={busy}
+                          >
+                            <MoreVertical className="size-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuLabel className="text-[10px] uppercase tracking-widest text-muted-foreground">Management</DropdownMenuLabel>
+                          <DropdownMenuItem onClick={() => handleEditName(member.id, member.full_name)}>
+                            <Edit2 className="mr-2 size-3.5" />
+                            Edit Name
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handlePasswordReset(member.id)}>
+                            <KeyRound className="mr-2 size-3.5" />
+                            Change Password
+                          </DropdownMenuItem>
+                          
+                          <DropdownMenuSeparator />
+                          
+                          <DropdownMenuItem 
+                            onClick={() => handleStatusToggle(member.id, member.access_status)}
+                            className={member.access_status === 'approved' ? "text-red-500 focus:text-red-500 focus:bg-red-500/5" : "text-emerald-500 focus:text-emerald-500 focus:bg-emerald-500/5"}
+                          >
+                            {member.access_status === 'approved' ? (
+                              <><UserX className="mr-2 size-3.5" />Deactivate Account</>
+                            ) : (
+                              <><UserCheck className="mr-2 size-3.5" />Activate Account</>
+                            )}
+                          </DropdownMenuItem>
+                          
+                          {!isSelf && access.isSuperAdmin && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem 
+                                onClick={() => handleDelete(member.id)}
+                                className="text-red-600 font-bold focus:text-red-600 focus:bg-red-600/5"
+                              >
+                                <Trash2 className="mr-2 size-3.5" />
+                                Permanently Delete
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+
         {staff.data?.length === 0 && !staff.isLoading && (
-          <div className="py-12 text-center text-muted-foreground">No staff members found.</div>
-        )}
-        {staff.isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <div className="py-20 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-muted">
+              <User className="size-6 text-muted-foreground" />
+            </div>
+            <h3 className="mt-4 text-sm font-bold uppercase tracking-wider">No users found</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Try creating a new administrative user.</p>
           </div>
-        ) : null}
+        )}
+        
+        {staff.isLoading && (
+          <div className="flex h-64 items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Loading users...</span>
+            </div>
+          </div>
+        )}
       </div>
+
+      <UserActivityDialog 
+        userId={activityUserId}
+        userName={activityUserName}
+        open={!!activityUserId}
+        onOpenChange={(open) => !open && setActivityUserId(null)}
+      />
     </div>
   );
 }
