@@ -9,10 +9,12 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
+import { ProductGallery } from "@/components/product/ProductGallery";
+
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import { useCart } from "@/lib/cart";
