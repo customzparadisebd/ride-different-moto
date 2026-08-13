@@ -21,6 +21,7 @@ import type { Database } from "@/integrations/supabase/types";
 import {
   ROLE_DEFAULT_PERMISSIONS,
   SUPER_ADMIN_ONLY,
+  PERMISSIONS,
   type AccessStatus,
   type Permission,
   type Role,
