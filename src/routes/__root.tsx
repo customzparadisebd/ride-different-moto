@@ -20,23 +20,47 @@ import { Toaster } from "@/components/ui/sonner";
 import { site } from "@/data/site";
 import { CartProvider } from "@/lib/cart";
 import { ThemeProvider } from "@/lib/theme";
+import errorGif from "@/assets/404-error.gif.asset.json";
 
 function NotFoundComponent() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isPrivateArea = pathname === "/ad" || pathname.startsWith("/ad/");
+  
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
+      <div className="w-full max-w-lg text-center">
+        <div className="relative mx-auto mb-8 aspect-video max-w-[400px] overflow-hidden rounded-lg bg-muted/50">
+          <img 
+            src={errorGif.url} 
+            alt="Page not found" 
+            className="h-full w-full object-contain"
+            loading="eager"
+          />
+        </div>
+        
+        <h1 className="text-6xl font-black tracking-tighter text-foreground sm:text-8xl">
+          404
+        </h1>
+        <h2 className="mt-4 text-2xl font-bold uppercase tracking-wide text-foreground sm:text-3xl">
+          Page Not Found
+        </h2>
+        <p className="mx-auto mt-4 max-w-sm text-base text-muted-foreground sm:text-lg">
+          The page you're looking for doesn't exist or has been moved to a different path.
         </p>
-        <div className="mt-6">
+        
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            to={isPrivateArea ? "/ad" : "/"}
+            className="inline-flex min-w-[160px] items-center justify-center rounded-sm bg-primary px-8 py-3 text-sm font-bold uppercase tracking-widest text-primary-foreground transition-all hover:bg-primary/90 hover:ring-2 hover:ring-primary/20"
           >
-            Go home
+            {isPrivateArea ? "Back to Dashboard" : "Back to Home"}
           </Link>
+          <button
+            onClick={() => window.history.back()}
+            className="inline-flex min-w-[160px] items-center justify-center rounded-sm border-2 border-input bg-transparent px-8 py-3 text-sm font-bold uppercase tracking-widest text-foreground transition-all hover:bg-accent hover:text-accent-foreground"
+          >
+            Go Back
+          </button>
         </div>
       </div>
     </div>
