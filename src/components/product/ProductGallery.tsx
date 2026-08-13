@@ -11,17 +11,13 @@ interface ProductGalleryProps {
   activeColorImage?: string | null;
 }
 
-
 export function ProductGallery({ images, productName, activeColorImage }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // If a color image is provided, we prioritize it as the primary view
-  // but we still want to allow navigating the full gallery.
   const displayImages = images.length > 0 ? images : [""];
   
   useEffect(() => {
-    // Reset index if images change significantly, though usually images are stable
     if (activeIndex >= displayImages.length) {
       setActiveIndex(0);
     }
@@ -37,7 +33,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
     setActiveIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
   };
 
-  const currentImage = activeColorImage || displayImages[activeIndex];
+  const currentImage = activeColorImage || displayImages[activeIndex] || "";
 
   return (
     <div className="flex flex-col gap-4">
@@ -92,7 +88,6 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
               type="button"
               onClick={() => {
                 setActiveIndex(index);
-                // If we were showing a color image, clear it by setting active index
               }}
               className={cn(
                 "size-20 shrink-0 snap-start overflow-hidden rounded-lg border-2 transition-all",
