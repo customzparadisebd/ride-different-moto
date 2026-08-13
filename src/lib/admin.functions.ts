@@ -16,6 +16,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
+  ACCESS_STATUSES,
   ASSIGNABLE_PERMISSIONS,
   AUDIT_ACTIONS,
   PERMISSIONS,
@@ -620,8 +621,8 @@ export const createStaff = createServerFn({ method: "POST" })
     }
 
     const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
-      email: data.email,
-      password: data.password,
+      email: data.email as string,
+      password: data.password as string,
       email_confirm: true,
       user_metadata: { full_name: data.fullName },
     });
@@ -634,10 +635,10 @@ export const createStaff = createServerFn({ method: "POST" })
     // Create profile
     const { error: profileError } = await supabaseAdmin.from("profiles").upsert({
       id: userId,
-      email: data.email,
-      full_name: data.fullName,
-      phone_number: data.phoneNumber ?? null,
-      access_status: data.status,
+      email: data.email as string,
+      full_name: data.fullName as string,
+      phone_number: (data.phoneNumber as string) ?? null,
+      access_status: data.status as any,
       approved_by: actor.userId,
       approved_at: new Date().toISOString(),
       mfa_required: data.role === "super_admin",
@@ -653,7 +654,7 @@ export const createStaff = createServerFn({ method: "POST" })
     // Set role
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: userId, role: data.role });
+      .insert({ user_id: userId, role: data.role as any });
 
     if (roleError) {
       await supabaseAdmin.auth.admin.deleteUser(userId);
@@ -664,7 +665,7 @@ export const createStaff = createServerFn({ method: "POST" })
       action: AUDIT_ACTIONS.staffCreated,
       targetType: "account",
       targetId: userId,
-      targetLabel: data.email,
+      targetLabel: data.email as string,
       newValue: { role: data.role as string, full_name: data.fullName },
     });
 
