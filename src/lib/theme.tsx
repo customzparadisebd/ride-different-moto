@@ -5,13 +5,13 @@ type Theme = "light" | "dark";
 const STORAGE_KEY = "czp-theme";
 
 const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void }>({
-  theme: "light",
+  theme: "dark",
   toggleTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  // Light is the default theme; the stored preference is applied after hydration.
-  const [theme, setTheme] = useState<Theme>("light");
+  // Dark is the default theme; the stored preference is applied after hydration.
+  const [theme, setTheme] = useState<Theme>("dark");
 
   useEffect(() => {
     let stored: string | null = null;
@@ -20,7 +20,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {
       stored = null;
     }
-    if (stored === "dark" || stored === "light") setTheme(stored);
+    if (stored === "dark" || stored === "light") {
+      setTheme(stored);
+    }
   }, []);
 
   useEffect(() => {

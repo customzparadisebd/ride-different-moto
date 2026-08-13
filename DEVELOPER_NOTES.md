@@ -24,7 +24,7 @@
 
 ## Branding & Design System
 - **Status:** Completed
-- **Done:** Brand palette (red / silver / black) and shadows as tokens in `src/styles.css`; Barlow Condensed headings + Barlow body; utilities (`bg-gradient-red`, `text-gradient-red`, `eyebrow`, `pb-safe`, `no-scrollbar`). Logo used as-is in light-bg / dark-bg versions via `src/components/Logo.tsx`. Favicon generated from the mark.
+- **Done:** Brand palette (red / silver / black) and shadows as tokens in `src/styles.css`; Barlow Condensed headings + Barlow body; utilities (`bg-gradient-red`, `text-gradient-red`, `eyebrow`, `pb-safe`, `no-scrollbar`). Logo used as-is. Default theme changed to **Dark/Black** (users can toggle to Light).
 - **Next:** None. Rule: never recolor, stretch or redesign the logo.
 
 ## N160/N250 PRODUCT ORDER & COLOR CONFIG
