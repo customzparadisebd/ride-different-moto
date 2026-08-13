@@ -54,6 +54,7 @@ export const PERMISSIONS = {
   shipmentsCreate: "shipments.create",
   contentManage: "content.manage",
   zonesManage: "zones.manage",
+  reviewsManage: "reviews.manage",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -74,6 +75,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   "shipments.create": "Book courier shipments",
   "content.manage": "Manage website content",
   "zones.manage": "Manage delivery zones",
+  "reviews.manage": "Manage customer reviews",
 };
 
 /** Permissions only a Super Admin may ever hold. Never grantable to Staff. */
@@ -97,6 +99,7 @@ export const ASSIGNABLE_PERMISSIONS: Permission[] = [
   "shipments.create",
   "content.manage",
   "zones.manage",
+  "reviews.manage",
 ];
 
 /** Baseline permissions implied by a role, before explicit grants. */
@@ -114,6 +117,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "shipments.create",
     "content.manage",
     "zones.manage",
+    "reviews.manage",
   ],
   manager: [
     "orders.view",
@@ -171,6 +175,10 @@ export const AUDIT_ACTIONS = {
   zoneUpdated: "zone.updated",
   userCreated: "user.created",
   userDeleted: "user.deleted",
+  reviewUpdated: "review.updated",
+  reviewCreated: "review.created",
+  reviewDeleted: "review.deleted",
+  leadCaptured: "lead.captured",
 } as const;
 
 export const staffStatusInput = z.object({

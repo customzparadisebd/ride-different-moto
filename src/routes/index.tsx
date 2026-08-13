@@ -11,13 +11,14 @@ import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { SocialSection } from "@/components/home/SocialSection";
+import { ReviewSection } from "@/components/home/ReviewSection";
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
 import { getBikeModels } from "@/data/catalog";
 import { getHeroSlides } from "@/lib/hero.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
-const title = "Customz Paradise BD — Premium Motorcycle Modification Parts";
+const title = "Customz Paradise BD — Ride Different. Be Different.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -124,12 +125,16 @@ function Index() {
         </section>
       </SectionBoundary>
 
+      <SectionBoundary label="about">
+        <AboutSection />
+      </SectionBoundary>
+
       <SectionBoundary label="store">
         <StoreComingSoon />
       </SectionBoundary>
 
-      <SectionBoundary label="about">
-        <AboutSection />
+      <SectionBoundary label="reviews">
+        <ReviewSection />
       </SectionBoundary>
 
       <SectionBoundary label="contact">

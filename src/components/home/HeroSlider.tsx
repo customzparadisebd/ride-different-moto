@@ -7,7 +7,7 @@ import { SafeImage } from "@/components/SafeImage";
 import type { HeroSlide } from "@/data/types";
 import { cn } from "@/lib/utils";
 
-const AUTOPLAY_MS = 3500;
+const AUTOPLAY_MS = 2500;
 
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [emblaRef, embla] = useEmblaCarousel({
