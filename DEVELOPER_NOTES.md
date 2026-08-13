@@ -60,3 +60,8 @@
 - Implemented JSON-LD structured data for Product rich results.
 - Added premium Product Gallery with zoom, thumbnail navigation, and fullscreen mode.
 - Integrated framer-motion for gallery animations.
+
+## Aug 13, 2026 (Part 2)
+- Added Organization and LocalBusiness JSON-LD for enhanced local SEO.
+- Improved Product Gallery accessibility: added keyboard controls (arrows, escape), ARIA roles, and focus management for thumbnails.
+- Verified stable site URL (https://customzparadisebd.com) in site configuration.
