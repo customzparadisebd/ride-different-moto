@@ -58,14 +58,27 @@ function AdminOrderDetail() {
   });
 
   if (query.isLoading) {
-    return <p className="px-4 py-16 text-center text-sm text-muted-foreground">Loading order…</p>;
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <p className="text-sm text-muted-foreground animate-pulse">Loading order details...</p>
+      </div>
+    );
   }
+
   if (query.isError || !query.data) {
+    // If the error is a 404 (handled by TanStack Router notFoundComponent), this won't even render.
+    // This block handles cases where the order row is missing or there's a database fetch error.
     return (
       <section className="mx-auto max-w-md px-4 py-16 text-center">
-        <p className="text-sm text-muted-foreground">Order not found.</p>
-        <Button variant="steel" size="touch" className="mt-4" asChild>
-          <Link to="/ad/orders">Back to orders</Link>
+        <div className="mb-6 flex justify-center text-destructive">
+          <AlertCircle className="h-12 w-12 opacity-20" />
+        </div>
+        <h2 className="text-xl font-bold uppercase tracking-tight">Order Record Unavailable</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          We couldn't retrieve this order record. It may have been permanently removed.
+        </p>
+        <Button variant="steel" size="touch" className="mt-8" asChild>
+          <Link to="/ad/orders">Return to Order List</Link>
         </Button>
       </section>
     );
