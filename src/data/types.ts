@@ -9,6 +9,7 @@ export type HeroSlide = {
   bikeName: string;
   label?: string;
   image: string;
+  mobileImage?: string;
   alt: string;
   /** Destination bike model slug — the whole slide links to /bike-models/$slug. */
   bikeSlug: string;

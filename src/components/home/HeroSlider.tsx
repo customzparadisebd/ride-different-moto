@@ -89,9 +89,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               >
                 <SafeImage
                   src={slide.image}
+                  mobileSrc={slide.mobileImage}
                   alt={slide.alt}
-                  width={1600}
-                  height={1008}
+                  width={1920}
+                  height={822}
                   priority={index === 0}
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1920px"
                   containerClassName={cn(
