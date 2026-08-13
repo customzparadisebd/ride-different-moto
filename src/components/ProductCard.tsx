@@ -159,7 +159,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             className="h-9 w-full min-w-0 sm:h-8"
           >
             <span className="whitespace-nowrap px-2 text-xs font-bold uppercase tracking-wider sm:text-[10px]">
-              Order Now
+              {t('common.orderNow')}
             </span>
           </Button>
         </div>
