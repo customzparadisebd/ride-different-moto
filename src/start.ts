@@ -54,7 +54,9 @@ const csrfMiddleware = createCsrfMiddleware({
   filter: (ctx) => ctx.handlerType === "serverFn",
 });
 
+import { rateLimitMiddleware } from "./lib/rate-limit.middleware";
+
 export const startInstance = createStart(() => ({
   functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [errorMiddleware, csrfMiddleware, securityHeadersMiddleware],
+  requestMiddleware: [errorMiddleware, csrfMiddleware, securityHeadersMiddleware, rateLimitMiddleware],
 }));
