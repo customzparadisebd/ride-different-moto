@@ -347,7 +347,21 @@ export async function recordLoginAttempt(emailRaw: string, success: boolean) {
   await supabaseAdmin
     .from("login_attempts")
     .insert({ email_key: emailKey, ip_address: meta.ip, success });
+
+  if (!success) {
+    // Check if this failure triggered a lockout to log a security event
+    const lock = await loginLockState(emailKey);
+    if (lock.locked) {
+      await supabaseAdmin.from("security_events").insert({
+        event_type: "login_throttle",
+        ip_address: meta.ip,
+        actor_email: emailKey,
+        metadata: { retry_after: lock.retryInSeconds }
+      });
+    }
+  }
 }
+
 
 // ============================================================
 // MFA BACKUP CODES
