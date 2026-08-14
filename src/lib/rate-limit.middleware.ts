@@ -32,7 +32,16 @@ export const rateLimitMiddleware = createMiddleware().server(async ({ next }) =>
       // Alert/Log spike for abnormal traffic (10x limit)
       if (record.count === MAX_REQUESTS * 10) {
         console.warn(`[SECURITY ALERT] Massive traffic spike from IP: ${ip}`);
+        
+        // Asynchronously log to the database
+        void supabaseAdmin.from("security_events").insert({
+          event_type: "rate_limit",
+          ip_address: ip,
+          route: "unknown", // Route info not easily available in generic middleware context
+          metadata: { count: record.count, limit: MAX_REQUESTS }
+        });
       }
+
       
       return new Response("Too Many Requests", {
         status: 429,
