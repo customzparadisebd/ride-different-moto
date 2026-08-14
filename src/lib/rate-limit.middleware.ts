@@ -16,8 +16,8 @@ const memoryLimits = new Map<string, { count: number; expires: number }>();
  * - RATE_LIMIT_WINDOW_MS: Default 60000 (1 minute)
  */
 export const rateLimitMiddleware = createMiddleware().server(async ({ next }) => {
-  const MAX_REQUESTS = Number(process.env["RATE_LIMIT_MAX"] || 100);
-  const WINDOW_MS = Number(process.env["RATE_LIMIT_WINDOW_MS"] || 60000);
+  // Use module-level constants for consistency
+
   
   const ip = getRequestIP({ xForwardedFor: true }) || "unknown";
   const key = `rl:${ip}`;
