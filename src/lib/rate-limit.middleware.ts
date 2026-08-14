@@ -1,10 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequestIP } from "@tanstack/react-start/server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 // rate limit keys are stored in a simple in-memory map for the worker's life
-// in a multi-region deployment this is per-isolate, but usually sufficient
-// for baseline throttling. For global strictness, we use the database.
 const memoryLimits = new Map<string, { count: number; expires: number }>();
 
 /**
@@ -48,30 +45,6 @@ export const rateLimitMiddleware = createMiddleware().server(async ({ next }) =>
   if (Math.random() < 0.01) {
     for (const [k, v] of memoryLimits.entries()) {
       if (v.expires < now) memoryLimits.delete(k);
-    }
-  }
-
-  return next();
-});
-
-/**
- * Throttles login attempts specifically to prevent brute-force attacks.
- * Uses the database-backed loginLockState from admin.server.ts.
- */
-export const loginThrottleMiddleware = createMiddleware().server(async ({ next, data }) => {
-  // We only throttle if this is a login-related function
-  // In TanStack Start, we identify this by the input data or function name if available
-  // For now, this is intended to be used manually in specific server functions
-  
-  const { loginLockState } = await import("./admin.server");
-  
-  // The login function should pass email in data
-  const email = (data as any)?.email;
-  
-  if (email) {
-    const lock = await loginLockState(email);
-    if (lock.locked) {
-      throw new Error(`Account temporarily locked. Please try again in ${lock.retryInSeconds} seconds.`);
     }
   }
 
