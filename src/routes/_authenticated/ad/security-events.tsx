@@ -108,7 +108,7 @@ function SecurityEventsPage() {
                   events?.map((event) => (
                     <TableRow key={event.id} className="border-white/5 hover:bg-white/5">
                       <TableCell className="text-xs font-mono text-white/70">
-                        {format(toZonedTime(new Date(event.created_at), TZ), "yyyy-MM-dd HH:mm:ss")}
+                        {format(toBDTime(event.created_at || new Date()), "yyyy-MM-dd HH:mm:ss")}
                       </TableCell>
                       <TableCell>
                         <Badge 
