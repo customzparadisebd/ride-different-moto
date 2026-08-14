@@ -1,9 +1,8 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Shield, Search, Filter, Clock, Globe, User, AlertTriangle } from "lucide-react";
+import { Shield, Search, Filter, Globe, User, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
-import { toZonedTime } from "date-fns-tz";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +24,12 @@ import {
 } from "@/components/ui/table";
 import { listSecurityEvents } from "@/lib/security-events.functions";
 
-const TZ = "Asia/Dhaka";
+// BD Timezone is UTC+6
+const toBDTime = (date: string | Date) => {
+  const d = new Date(date);
+  return new Date(d.getTime() + 6 * 60 * 60 * 1000);
+};
+
 
 export const Route = createFileRoute("/_authenticated/ad/security-events")({
   component: SecurityEventsPage,
