@@ -9,7 +9,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2 } from "lucide-react";
+import { OrderSuccessAnimation } from "@/components/checkout/OrderSuccessAnimation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
