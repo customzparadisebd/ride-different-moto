@@ -13,6 +13,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] Project Attribution & Documentation Cleanup (Aug 2026).
 - [x] Implemented API Rate Limiting and Login Throttling.
 - [x] Hardened Security Headers (CSP, HSTS, XSS Protection).
+- [x] Created Admin Security Events page for monitoring throttling activity.
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
