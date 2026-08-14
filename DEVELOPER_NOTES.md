@@ -11,6 +11,8 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] Dynamic Bike Model Management.
 - [x] Responsive Product Card & Storefront refactor.
 - [x] Project Attribution & Documentation Cleanup (Aug 2026).
+- [x] Implemented API Rate Limiting and Login Throttling.
+- [x] Hardened Security Headers (CSP, HSTS, XSS Protection).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
