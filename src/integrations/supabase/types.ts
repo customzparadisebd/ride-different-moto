@@ -1465,6 +1465,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_events: {
+        Row: {
+          actor_email: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          route: string | null
+        }
+        Insert: {
+          actor_email?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          route?: string | null
+        }
+        Update: {
+          actor_email?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          route?: string | null
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           created_at: string
