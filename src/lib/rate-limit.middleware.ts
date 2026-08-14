@@ -1,5 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { getRequestIP } from "@tanstack/react-start/server";
+import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
 
 // rate limit keys are stored in a simple in-memory map for the worker's life
 // Configuration tuned via environment variables (defaults for production)
