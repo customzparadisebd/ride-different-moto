@@ -9,7 +9,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2 } from "lucide-react";
+import { OrderSuccessAnimation } from "@/components/checkout/OrderSuccessAnimation";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -138,14 +138,25 @@ function CheckoutPage() {
   if (placed) {
     return (
       <section className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <CheckCircle2 className="mx-auto size-12 text-primary" aria-hidden="true" />
-        <h1 className="mt-4 font-display text-3xl font-bold uppercase tracking-wide">
+        <style>{`
+          .czp-reveal{opacity:0;transform:translateY(12px);animation:czp-reveal .6s cubic-bezier(.2,.8,.3,1) forwards}
+          @keyframes czp-reveal{to{opacity:1;transform:translateY(0)}}
+          @media (prefers-reduced-motion: reduce){.czp-reveal{animation:none;opacity:1;transform:none}}
+        `}</style>
+        <OrderSuccessAnimation />
+        <h1
+          className="czp-reveal mt-4 font-display text-3xl font-bold uppercase tracking-wide"
+          style={{ animationDelay: "0.85s" }}
+        >
           Order Confirmed
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="czp-reveal mt-2 text-sm text-muted-foreground" style={{ animationDelay: "0.98s" }}>
           Thank you! Our team will call you shortly to confirm delivery details.
         </p>
-        <div className="mt-6 rounded-xl border border-border bg-card p-5 text-left shadow-card">
+        <div
+          className="czp-reveal mt-6 rounded-xl border border-border bg-card p-5 text-left shadow-card"
+          style={{ animationDelay: "1.1s" }}
+        >
           <p className="text-xs uppercase tracking-wider text-muted-foreground">Invoice ID</p>
           <p className="font-display text-2xl font-bold text-primary">{placed.invoiceNo}</p>
           <p className="mt-3 text-sm">
@@ -155,7 +166,10 @@ function CheckoutPage() {
             Keep this invoice ID for tracking. Support: {site.phoneDisplay}
           </p>
         </div>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div
+          className="czp-reveal mt-6 flex flex-wrap justify-center gap-2"
+          style={{ animationDelay: "1.24s" }}
+        >
           <Button variant="red" size="touch" asChild>
             <Link to="/shop">Continue Shopping</Link>
           </Button>
