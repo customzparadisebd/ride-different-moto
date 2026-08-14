@@ -1,7 +1,7 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Shield, Search, Filter, Globe, User, AlertTriangle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Shield, Search, Filter, Globe, User, AlertTriangle, Radio } from "lucide-react";
 import { format } from "date-fns";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -23,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { listSecurityEvents } from "@/lib/security-events.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 // BD Timezone is UTC+6
 const toBDTime = (date: string | Date) => {
@@ -38,11 +39,34 @@ export const Route = createFileRoute("/_authenticated/ad/security-events")({
 function SecurityEventsPage() {
   const [search, setSearch] = useState("");
   const [type, setType] = useState<"all" | "rate_limit" | "login_throttle">("all");
+  const queryClient = useQueryClient();
 
   const { data: events } = useSuspenseQuery({
     queryKey: ["security-events", { search, type }],
     queryFn: () => listSecurityEvents({ data: { search, type, limit: 100 } }),
   });
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("security-events-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "security_events",
+        },
+        () => {
+          // Refetch to include new events and respect current filters
+          queryClient.invalidateQueries({ queryKey: ["security-events"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -50,9 +74,13 @@ function SecurityEventsPage() {
         <h1 className="font-display text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
           <Shield className="h-8 w-8 text-primary" />
           Security Events
+          <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse">
+            <Radio className="h-3 w-3" />
+            Live
+          </Badge>
         </h1>
         <p className="text-muted-foreground uppercase tracking-widest text-xs font-bold">
-          Monitor rate limiting and login throttling activity
+          Monitor real-time rate limiting and login throttling activity
         </p>
       </div>
 
