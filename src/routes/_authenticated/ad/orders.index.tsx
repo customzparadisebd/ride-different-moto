@@ -56,7 +56,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatBDT } from "@/lib/format";
-import { exportOrdersCsv, exportOrdersExcel, printOrders } from "@/lib/orders-export";
+import { exportOrdersCsv, exportOrdersXlsx, printOrders } from "@/lib/orders-export";
 import {
   assignOrders,
   bulkUpdateOrderStatus,
@@ -252,9 +252,18 @@ function AdminOrderList() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => exportOrdersExcel(rows, exportName)}>
-                Excel (.xls)
+              <DropdownMenuItem onClick={() => void exportOrdersXlsx(rows, exportName)}>
+                Excel (.xlsx)
               </DropdownMenuItem>
+              {selectedRows.length ? (
+                <DropdownMenuItem
+                  onClick={() =>
+                    void exportOrdersXlsx(selectedRows, `${exportName}-selected`)
+                  }
+                >
+                  Excel (.xlsx) — {selectedRows.length} selected
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem onClick={() => exportOrdersCsv(rows, exportName)}>
                 CSV
               </DropdownMenuItem>
@@ -332,6 +341,14 @@ function AdminOrderList() {
             }}
           >
             Print
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
+            onClick={() => void exportOrdersXlsx(selectedRows, `czp-orders-selected`)}
+          >
+            Export Excel
           </Button>
           {canManage ? (
             <div className="flex items-center gap-1.5">

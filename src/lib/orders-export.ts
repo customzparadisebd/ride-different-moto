@@ -81,6 +81,118 @@ const escapeHtml = (value: string) =>
     (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char] ?? char,
   );
 
+// ------------------------------------------------------------
+// XLSX EXPORT (reference-format: one row per order)
+// Columns mirror the operations sheet used by the team.
+// ------------------------------------------------------------
+const XLSX_HEADER = [
+  "Invoice No",
+  "Date",
+  "Customer Name",
+  "Phone",
+  "Full Address",
+  "Products",
+  "Subtotal",
+  "Shipping",
+  "Discount",
+  "Total Amount",
+  "Payment Method",
+  "Payment Status",
+  "Order Status",
+  "Courier",
+  "Tracking ID",
+  "Created By",
+] as const;
+
+/** Column widths (characters) tuned for readability in Excel. */
+const XLSX_WIDTHS = [14, 12, 22, 16, 42, 40, 11, 10, 10, 13, 15, 14, 14, 14, 18, 16];
+
+/** Full address = street + city + zone, joined for a single readable cell. */
+const fullAddress = (row: AdminOrderListRow) =>
+  [row.address_line, row.city, deliveryZoneLabel(row.delivery_zone)]
+    .map((part) => (part ?? "").toString().trim())
+    .filter(Boolean)
+    .join(", ");
+
+const productsCell = (row: AdminOrderListRow) =>
+  row.order_items
+    .map((item) =>
+      [item.product_name, item.variant ? `[${item.variant}]` : "", `(x${item.quantity})`]
+        .filter(Boolean)
+        .join(" "),
+    )
+    .join("\n");
+
+const toXlsxRow = (row: AdminOrderListRow) => [
+  row.invoice_no,
+  new Date(row.created_at).toLocaleDateString("en-GB"),
+  row.customer_name,
+  row.customer_phone,
+  fullAddress(row),
+  productsCell(row),
+  Number(row.subtotal),
+  Number(row.shipping),
+  Number(row.discount),
+  Number(row.total),
+  paymentMethodLabel(row.payment_method),
+  statusLabel(row.payment_status),
+  statusLabel(row.status),
+  row.courier_name || "N/A",
+  row.consignment_id || row.courier_tracking_id || "N/A",
+  row.created_by_label || "N/A",
+];
+
+/**
+ * Real .xlsx export (SheetJS) — works for a single selected order or many.
+ * Money columns stay numeric so Excel can sum/filter them.
+ */
+export const exportOrdersXlsx = async (rows: AdminOrderListRow[], name = "czp-orders") => {
+  const XLSX = await import("xlsx");
+  const data = [[...XLSX_HEADER], ...rows.map(toXlsxRow)];
+  const sheet = XLSX.utils.aoa_to_sheet(data);
+
+  sheet["!cols"] = XLSX_WIDTHS.map((wch) => ({ wch }));
+  sheet["!rows"] = data.map((_, index) => (index === 0 ? { hpt: 22 } : { hpt: 18 }));
+  sheet["!autofilter"] = {
+    ref: XLSX.utils.encode_range({
+      s: { r: 0, c: 0 },
+      e: { r: Math.max(rows.length, 1), c: XLSX_HEADER.length - 1 },
+    }),
+  };
+  sheet["!freeze"] = { xSplit: "0", ySplit: "1" };
+
+  // Header styling + numeric formats for the money columns (6..9).
+  for (let c = 0; c < XLSX_HEADER.length; c += 1) {
+    const headerCell = sheet[XLSX.utils.encode_cell({ r: 0, c })];
+    if (headerCell) {
+      headerCell.s = {
+        font: { bold: true, name: "Arial", sz: 11 },
+        alignment: { horizontal: "center", vertical: "center", wrapText: true },
+      };
+    }
+  }
+  for (let r = 1; r <= rows.length; r += 1) {
+    for (const c of [6, 7, 8, 9]) {
+      const cell = sheet[XLSX.utils.encode_cell({ r, c })];
+      if (cell) cell.z = "#,##0.00";
+    }
+    const addressCell = sheet[XLSX.utils.encode_cell({ r, c: 4 })];
+    if (addressCell) addressCell.s = { alignment: { wrapText: true, vertical: "top" } };
+    const products = sheet[XLSX.utils.encode_cell({ r, c: 5 })];
+    if (products) products.s = { alignment: { wrapText: true, vertical: "top" } };
+  }
+
+  const book = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(book, sheet, "Orders");
+  const buffer = XLSX.write(book, { bookType: "xlsx", type: "array" });
+  download(
+    new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    }),
+    `${name}.xlsx`,
+  );
+};
+
 /** CSV export. */
 export const exportOrdersCsv = (rows: AdminOrderListRow[], name = "czp-orders") => {
   const cell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
