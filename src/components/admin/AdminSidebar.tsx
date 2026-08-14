@@ -75,7 +75,14 @@ const ADMINISTRATION: NavItem[] = [
     permission: PERMISSIONS.productsManage,
   },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
+  { 
+    to: "/ad/security-events", 
+    label: "Security Events", 
+    icon: ShieldCheck, 
+    permission: PERMISSIONS.securityManage 
+  },
 ];
+
 
 export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });

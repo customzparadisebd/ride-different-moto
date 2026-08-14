@@ -1,5 +1,7 @@
 import { createMiddleware } from "@tanstack/react-start";
-import { getRequestIP } from "@tanstack/react-start/server";
+import { getRequestIP, getRequestHeader } from "@tanstack/react-start/server";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
 
 // rate limit keys are stored in a simple in-memory map for the worker's life
 // Configuration tuned via environment variables (defaults for production)
@@ -30,7 +32,16 @@ export const rateLimitMiddleware = createMiddleware().server(async ({ next }) =>
       // Alert/Log spike for abnormal traffic (10x limit)
       if (record.count === MAX_REQUESTS * 10) {
         console.warn(`[SECURITY ALERT] Massive traffic spike from IP: ${ip}`);
+        
+        // Asynchronously log to the database
+        void supabaseAdmin.from("security_events").insert({
+          event_type: "rate_limit",
+          ip_address: ip,
+          route: "unknown", // Route info not easily available in generic middleware context
+          metadata: { count: record.count, limit: MAX_REQUESTS }
+        });
       }
+
       
       return new Response("Too Many Requests", {
         status: 429,

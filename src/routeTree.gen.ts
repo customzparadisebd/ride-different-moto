@@ -42,6 +42,7 @@ import { Route as AuthenticatedAdProductsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdRecycleBinRouteImport } from './routes/_authenticated/ad/recycle-bin'
 import { Route as AuthenticatedAdReviewsRouteImport } from './routes/_authenticated/ad/reviews'
 import { Route as AuthenticatedAdSecurityRouteImport } from './routes/_authenticated/ad/security'
+import { Route as AuthenticatedAdSecurityEventsRouteImport } from './routes/_authenticated/ad/security-events'
 import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
 import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
 import { Route as ApiHeroUploadRouteImport } from './routes/api/hero/upload'
@@ -216,6 +217,12 @@ const AuthenticatedAdSecurityRoute = AuthenticatedAdSecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
+const AuthenticatedAdSecurityEventsRoute =
+  AuthenticatedAdSecurityEventsRouteImport.update({
+    id: '/security-events',
+    path: '/security-events',
+    getParentRoute: () => AuthenticatedAdRouteRoute,
+  } as any)
 const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -287,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
@@ -327,6 +335,7 @@ export interface FileRoutesByTo {
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
@@ -370,6 +379,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/_authenticated/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/_authenticated/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/_authenticated/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/_authenticated/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
@@ -413,6 +423,7 @@ export interface FileRouteTypes {
     | '/ad/recycle-bin'
     | '/ad/reviews'
     | '/ad/security'
+    | '/ad/security-events'
     | '/ad/settings'
     | '/ad/staff'
     | '/api/hero/upload'
@@ -453,6 +464,7 @@ export interface FileRouteTypes {
     | '/ad/recycle-bin'
     | '/ad/reviews'
     | '/ad/security'
+    | '/ad/security-events'
     | '/ad/settings'
     | '/ad/staff'
     | '/api/hero/upload'
@@ -495,6 +507,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/recycle-bin'
     | '/_authenticated/ad/reviews'
     | '/_authenticated/ad/security'
+    | '/_authenticated/ad/security-events'
     | '/_authenticated/ad/settings'
     | '/_authenticated/ad/staff'
     | '/api/hero/upload'
@@ -763,6 +776,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdSecurityRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/_authenticated/ad/security-events': {
+      id: '/_authenticated/ad/security-events'
+      path: '/security-events'
+      fullPath: '/ad/security-events'
+      preLoaderRoute: typeof AuthenticatedAdSecurityEventsRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
+    }
     '/_authenticated/ad/settings': {
       id: '/_authenticated/ad/settings'
       path: '/settings'
@@ -826,6 +846,7 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdRecycleBinRoute: typeof AuthenticatedAdRecycleBinRoute
   AuthenticatedAdReviewsRoute: typeof AuthenticatedAdReviewsRoute
   AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
+  AuthenticatedAdSecurityEventsRoute: typeof AuthenticatedAdSecurityEventsRoute
   AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
   AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
   AuthenticatedAdIndexRoute: typeof AuthenticatedAdIndexRoute
@@ -846,6 +867,7 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdRecycleBinRoute: AuthenticatedAdRecycleBinRoute,
   AuthenticatedAdReviewsRoute: AuthenticatedAdReviewsRoute,
   AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
+  AuthenticatedAdSecurityEventsRoute: AuthenticatedAdSecurityEventsRoute,
   AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
   AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
   AuthenticatedAdIndexRoute: AuthenticatedAdIndexRoute,
