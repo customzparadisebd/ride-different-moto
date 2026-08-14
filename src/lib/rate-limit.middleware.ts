@@ -2,6 +2,9 @@ import { createMiddleware } from "@tanstack/react-start";
 import { getRequestIP } from "@tanstack/react-start/server";
 
 // rate limit keys are stored in a simple in-memory map for the worker's life
+// Configuration tuned via environment variables (defaults for production)
+const MAX_REQUESTS = Number(process.env["RATE_LIMIT_MAX"] || 100);
+const WINDOW_MS = Number(process.env["RATE_LIMIT_WINDOW_MS"] || 60000);
 const memoryLimits = new Map<string, { count: number; expires: number }>();
 
 /**
