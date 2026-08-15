@@ -344,7 +344,13 @@ function AdminOrderList() {
                     refreshOrders();
                   } catch (err) {
                     console.error("Failed to mark orders as printed:", err);
-                    toast.error("Print finished but failed to update status");
+                    toast.error("Print process finished but audit log failed", {
+                      description: "Retry recording print status for these orders?",
+                      action: {
+                        label: "Retry",
+                        onClick: () => onAfterPrint(),
+                      },
+                    });
                   }
                   win.removeEventListener("afterprint", onAfterPrint);
                 };

@@ -46,7 +46,13 @@ function InvoicePage() {
         toast.success("Print process completed and recorded");
       } catch (err) {
         console.error("Failed to mark order as printed:", err);
-        toast.error("Print was successful but failed to record status");
+        toast.error("Print recorded successfully but audit log failed", {
+          description: "Would you like to try recording the print status again?",
+          action: {
+            label: "Retry",
+            onClick: () => onAfterPrint(),
+          },
+        });
       }
       window.removeEventListener("afterprint", onAfterPrint);
     };
