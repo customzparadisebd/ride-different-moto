@@ -278,6 +278,17 @@ function AdminProducts() {
         />
       ) : null}
 
+      {previewing && (
+        <ProductPreviewDialog
+          value={previewing}
+          productId={previewingId}
+          onClose={() => {
+            setPreviewing(null);
+            setPreviewingId(null);
+          }}
+        />
+      )}
+
       {/* ---- Filters ---- */}
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         <Input
@@ -565,5 +576,73 @@ function FlagChip({
     >
       {label}
     </button>
+  );
+}
+
+function ProductPreviewDialog({
+  value,
+  productId,
+  onClose,
+}: {
+  value: ProductFormValue;
+  productId: string | null;
+  onClose: () => void;
+}) {
+  const fetchProduct = useServerFn(listProducts);
+  
+  const { data: existingProduct } = useQuery({
+    queryKey: ["admin-product-detail", productId],
+    queryFn: async () => {
+      if (!productId) return null;
+      const res = await fetchProduct({ data: { search: productId, page: 1, pageSize: 1 } as any });
+      return res.rows[0] || null;
+    },
+    enabled: !!productId,
+  });
+
+  const mockProduct = {
+    id: productId || "preview",
+    slug: value.slug,
+    name: value.name,
+    description: value.description,
+    details: value.details,
+    category: value.category,
+    image: value.imageUrl,
+    gallery: value.images.split("\n").filter(Boolean),
+    price: Number(value.price),
+    offerPrice: value.offerPrice ? Number(value.offerPrice) : null,
+    stockQty: Number(value.stockQty),
+    inStock: Number(value.stockQty) > 0,
+    universal: value.isUniversal,
+    bikeCompatibility: value.bikeCompatibility.split(",").map(s => s.trim()).filter(Boolean),
+    bestDeal: value.isBestDeal,
+    featured: value.isFeatured,
+    newArrival: value.isNewArrival,
+    badgeText: value.badgeEnabled ? value.badgeText : null,
+    colors: (existingProduct as any)?.colors || [],
+    has360View: value.has360View,
+    product360Images: (existingProduct as any)?.product360Images || [],
+    sortOrder: 0,
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-[95vw] w-[1200px] h-[90vh] p-0 overflow-y-auto bg-background border-border">
+        <div className="sticky top-0 z-50 flex items-center justify-between border-b border-border bg-background/80 px-6 py-4 backdrop-blur-md">
+          <div>
+            <h2 className="font-display text-xl font-bold uppercase tracking-wide">Live Preview</h2>
+            <p className="text-xs text-muted-foreground italic">
+              * Showing draft content. Colors and 360 view reflect currently saved state.
+            </p>
+          </div>
+          <Button variant="steel" size="icon" onClick={onClose} className="rounded-full">
+            <X className="size-5" />
+          </Button>
+        </div>
+        <div className="p-6">
+          <ProductDetail product={mockProduct as any} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
