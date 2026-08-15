@@ -30,7 +30,9 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Bug Fix:** Resolved 500 error in `getHeroSlides` by moving `supabaseAdmin` import inside the handler to prevent SSR environment variable resolution issues.
 - [x] **Admin Logo Optimization:** Enhanced Admin Panel logo with responsive sizing (h-10 to h-20) for better visibility and visual balance on larger desktop screens (Aug 15, 2026).
 - [x] **360° Product Viewer System:** Implemented a full-stack image-sequence viewer. Includes a dedicated Admin management panel with bulk URL uploading, an interactive frame scrubber for sequence verification, progressive frame loading (cardinal frames first), and full accessibility support (keyboard nav + ARIA). (Aug 15, 2026).
-
+- [x] **Mandatory MFA Enforcement:** Hardened two-factor authentication requirements, making TOTP enrolment mandatory for all staff roles. Blocked Admin Panel access for sessions below AAL2 assurance (Aug 15, 2026).
+- [x] **Granular RBAC System:** Implemented a hybrid role-based and permission-based access control system. Admins can now toggle specific permissions for individual staff members via the new User Permissions UI (Aug 15, 2026).
+- [x] **Personal Security Management:** Enhanced the personal security page for administrators to manage their own MFA settings and securely regenerate backup recovery codes with a verified confirmation flow (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
