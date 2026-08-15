@@ -65,10 +65,11 @@ export function ProductImageUpload({
 
     try {
       const filesArray = Array.from(files);
-      for (let i = 0; i < filesArray.length; i++) {
-        const file = filesArray[i];
+      for (const file of filesArray) {
+        if (!file) continue;
         
-        if (!multiple && i > 0) break;
+        const currentIndex = filesArray.indexOf(file);
+        if (!multiple && currentIndex > 0) break;
         if (multiple && newUrls.length >= maxFiles) {
           toast.warning(`Maximum ${maxFiles} images allowed.`);
           break;
