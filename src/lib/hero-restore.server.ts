@@ -1,7 +1,11 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import type { Database } from "@/integrations/supabase/types";
+
+type HeroSlideRow = Database["public"]["Tables"]["hero_slides"]["Row"];
+type HeroSlideInsert = Database["public"]["Tables"]["hero_slides"]["Insert"];
 
 export const restoreHeroSlides = async () => {
-  const slides = [
+  const slides: HeroSlideInsert[] = [
     {
       title: "Perfect Price",
       subtitle: "MODIFICATION IS EXPENSIVE BUT HAND IN OUR HEART",
