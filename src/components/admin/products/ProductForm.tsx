@@ -123,25 +123,25 @@ export function ProductForm({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!value.name.trim()) newErrors.name = "Product name is required.";
-    else if (value.name.trim().length < 2) newErrors.name = "Product name must be at least 2 characters.";
+    if (!value["name"].trim()) newErrors["name"] = "Product name is required.";
+    else if (value["name"].trim().length < 2) newErrors["name"] = "Product name must be at least 2 characters.";
 
-    if (!value.sku.trim()) newErrors.sku = "SKU is required.";
+    if (!value["sku"].trim()) newErrors["sku"] = "SKU is required.";
 
-    if (!value.price.trim()) newErrors.price = "Regular price is required.";
-    else if (!(Number(value.price) > 0)) newErrors.price = "Please enter a valid regular price greater than 0.";
+    if (!value["price"].trim()) newErrors["price"] = "Regular price is required.";
+    else if (!(Number(value["price"]) > 0)) newErrors["price"] = "Please enter a valid regular price greater than 0.";
 
-    if (value.offerPrice.trim()) {
-      if (!(Number(value.offerPrice) > 0)) {
-        newErrors.offerPrice = "Please enter a valid offer price.";
-      } else if (Number(value.offerPrice) >= Number(value.price)) {
-        newErrors.offerPrice = "Offer Price cannot be higher than Regular Price.";
+    if (value["offerPrice"].trim()) {
+      if (!(Number(value["offerPrice"]) > 0)) {
+        newErrors["offerPrice"] = "Please enter a valid offer price.";
+      } else if (Number(value["offerPrice"]) >= Number(value["price"])) {
+        newErrors["offerPrice"] = "Offer Price cannot be higher than Regular Price.";
       }
     }
 
-    if (!value.category) newErrors.category = "Please select a valid category.";
+    if (!value["category"]) newErrors["category"] = "Please select a valid category.";
 
-    if (!value.imageUrl.trim()) newErrors.imageUrl = "Main product image URL is required.";
+    if (!value["imageUrl"].trim()) newErrors["imageUrl"] = "Main product image URL is required.";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
