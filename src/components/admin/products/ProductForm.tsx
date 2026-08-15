@@ -258,7 +258,7 @@ export function ProductForm({
         <Field
           label="Offer price (৳)"
           optional
-          error={errors["offerPrice"]}
+          error={errors["offerPrice"] || undefined}
           example="Example: 950 (Must be lower than regular price)"
         >
           <Input
