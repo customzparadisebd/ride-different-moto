@@ -160,7 +160,7 @@ export function ProductForm({
         <Field
           label="Product name"
           required
-          error={errors["name"]}
+          error={errors["name"] || undefined}
           example="Example: Bajaj Pulsar N160 Front Mudguard"
         >
           <Input
