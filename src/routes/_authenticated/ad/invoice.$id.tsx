@@ -212,27 +212,27 @@ function InvoicePage() {
         <div className="mt-8 flex justify-end">
           <dl className="w-full max-w-[280px] space-y-2 text-sm border-t border-dashed border-neutral-700 pt-4">
             <div className="flex justify-between">
-              <dt className="text-neutral-500">Sub Total:</dt>
+              <dt className="text-neutral-500">Subtotal:</dt>
               <dd className="tabular-nums">{formatBDT(Number(order.subtotal))}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-neutral-500">Delivery Fee:</dt>
-              <dd className="tabular-nums">{formatBDT(Number(order.shipping))}</dd>
             </div>
             <div className="flex justify-between text-red-500">
               <dt>Discount:</dt>
               <dd className="tabular-nums">-{formatBDT(Number(order.discount))}</dd>
             </div>
-            <div className="flex justify-between border-t border-neutral-700 pt-2 text-lg font-black">
-              <dt className="uppercase tracking-tighter">Grand Total:</dt>
-              <dd className="tabular-nums">{formatBDT(Number(order.total))}</dd>
-            </div>
             {Number(order.advance_paid) > 0 && (
               <div className="flex justify-between text-xs text-neutral-400">
-                <dt>Advance Paid:</dt>
+                <dt>Advance Payment:</dt>
                 <dd className="tabular-nums">{formatBDT(Number(order.advance_paid))}</dd>
               </div>
             )}
+            <div className="flex justify-between">
+              <dt className="text-neutral-500">Delivery Charge:</dt>
+              <dd className="tabular-nums">{formatBDT(Number(order.shipping))}</dd>
+            </div>
+            <div className="flex justify-between border-t border-neutral-700 pt-2 text-lg font-black">
+              <dt className="uppercase tracking-tighter">Total / Payable Amount:</dt>
+              <dd className="tabular-nums">{formatBDT(Number(order.total))}</dd>
+            </div>
             {due > 0 && (
               <div className="flex justify-between border-t border-neutral-800 pt-1 font-bold text-yellow-500">
                 <dt>Due Amount:</dt>
