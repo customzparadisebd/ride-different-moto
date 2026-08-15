@@ -188,7 +188,55 @@ function DiagnosticsPage() {
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            Create automated checks to verify diagnostics access works correctly for admin, staff, and non-privileged users.</p>
+                                            I want to keep ONLY ONE Hero Slider slide. Do NOT create a second slide or add any additional slides.
+
+I have provided two poster images. These are NOT two different slides. They are two responsive versions of the SAME first and only Hero Slide.
+
+Desktop / Laptop / Tablet
+
+Use the wide/landscape poster image for desktop, laptop, and tablet screens.
+
+The poster should automatically scale and adapt according to the screen size while preserving its original design, typography, text placement, background texture, colors, and overall composition.
+
+Do not stretch, distort, or unnecessarily crop the poster.
+
+Mobile
+
+Use the tall/portrait poster image specifically for mobile devices.
+
+Do NOT simply resize the desktop poster for mobile. The portrait poster I provided must be used as the mobile version of the SAME Hero Slide.
+
+The mobile poster should be automatically optimized and scaled according to the mobile screen's width, height, and aspect ratio. Adjust the image sizing and positioning responsively so that the poster looks natural and professional on different mobile screen sizes.
+
+Important: The mobile version should remain visually faithful to the original poster. Do not change its text, typography, colors, graphics, or design. Avoid cutting off important text or visual elements.
+
+Responsive Requirements
+
+There must be ONLY ONE Hero Slide.
+
+Desktop/Laptop → Use the wide landscape poster.
+
+Tablet → Use the wide landscape poster with responsive scaling.
+
+Mobile → Use the tall portrait poster.
+
+Automatically switch between the two image assets based on responsive breakpoints.
+
+Do not create separate slides for mobile and desktop.
+
+Do not change the poster's original text or design.
+
+Do not stretch or distort either image.
+
+Avoid unnecessary cropping.
+
+Keep the poster properly centered and visually balanced.
+
+The Hero section height and image dimensions must automatically adapt to different screen sizes.
+
+The entire Hero Slide must remain clean, responsive, and professional across desktop, tablet, and mobile devices.
+
+In short: ONE Hero Slide, TWO responsive image assets — wide version for Desktop/Tablet and portrait version for Mobile.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
