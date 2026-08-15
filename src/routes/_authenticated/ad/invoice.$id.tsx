@@ -120,11 +120,15 @@ function InvoicePage() {
             </h2>
             <div className="space-y-2 text-sm">
               <p className="flex justify-between sm:justify-start sm:gap-4">
-                <span className="text-neutral-500">Invoice No:</span>
+                <span className="text-neutral-500">Invoice Number:</span>
                 <span className="font-bold">#{order.invoice_no}</span>
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
-                <span className="text-neutral-500">Date:</span>
+                <span className="text-neutral-500">Order ID:</span>
+                <span className="font-mono text-[10px]">{order.id}</span>
+              </p>
+              <p className="flex justify-between sm:justify-start sm:gap-4">
+                <span className="text-neutral-500">Order Date:</span>
                 <span>
                   {new Date(order.created_at).toLocaleString("en-GB", {
                     day: "2-digit",
@@ -134,6 +138,10 @@ function InvoicePage() {
                     minute: "2-digit",
                   })}
                 </span>
+              </p>
+              <p className="flex justify-between sm:justify-start sm:gap-4">
+                <span className="text-neutral-500">Order Status:</span>
+                <span className="uppercase font-bold tracking-wider">{order.status}</span>
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
                 <span className="text-neutral-500">Payment:</span>
@@ -147,13 +155,20 @@ function InvoicePage() {
               Invoice To
             </h2>
             <div className="space-y-2 text-sm">
-              <p className="font-bold">{order.customer_name}</p>
-              <p className="break-words text-neutral-400 print:text-neutral-600">
-                {order.address_line}, {order.city}
+              <p className="font-bold flex gap-2">
+                <span className="text-neutral-500 font-normal">Customer Name:</span>
+                {order.customer_name}
               </p>
-              <p className="text-neutral-300 print:text-neutral-700">
-                Phone: {order.customer_phone}
+              <p className="text-neutral-300 print:text-neutral-700 flex gap-2">
+                <span className="text-neutral-500 font-normal">Phone Number:</span>
+                {order.customer_phone}
               </p>
+              <div className="flex gap-2">
+                <span className="text-neutral-500 shrink-0">Full Address:</span>
+                <p className="break-words text-neutral-400 print:text-neutral-600">
+                  {order.address_line}, {order.city}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -163,7 +178,7 @@ function InvoicePage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-dashed border-neutral-700 text-xs font-bold uppercase tracking-wider text-neutral-500">
               <tr>
-                <th className="py-3 px-2">Product Description</th>
+                <th className="py-3 px-2">Product Name</th>
                 <th className="py-3 px-2 text-center">Qty</th>
                 <th className="py-3 px-2 text-right">Price</th>
                 <th className="py-3 px-2 text-right">Total</th>
