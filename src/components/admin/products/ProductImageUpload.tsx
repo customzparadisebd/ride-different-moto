@@ -211,7 +211,7 @@ export function ProductImageUpload({
                       variant="ghost"
                       size="icon"
                       className="h-5 w-5"
-                      onClick={() => retryUpload(upload)}
+                      onClick={() = aria-label="Refresh"> retryUpload(upload)}
                     >
                       <RefreshCw className="h-3 w-3" />
                     </Button>
@@ -220,7 +220,7 @@ export function ProductImageUpload({
                     variant="ghost"
                     size="icon"
                     className="h-5 w-5"
-                    onClick={() => setUploads((prev) => prev.filter((u) => u.id !== upload.id))}
+                    onClick={() = aria-label="Close"> setUploads((prev) => prev.filter((u) => u.id !== upload.id))}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -269,7 +269,7 @@ export function ProductImageUpload({
                 variant="destructive"
                 size="icon"
                 className="h-8 w-8 rounded-full"
-                onClick={() => removeImage(index)}
+                onClick={() = aria-label="Close"> removeImage(index)}
               >
                 <X className="h-4 w-4" />
               </Button>

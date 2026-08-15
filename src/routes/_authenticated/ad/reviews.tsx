@@ -238,7 +238,7 @@ function ReviewsPage() {
                     variant="ghost"
                     size="icon"
                     className="size-8"
-                    onClick={() => {
+                    onClick={() = aria-label="Edit"> {
                       setEditingReview(review);
                       setIsDialogOpen(true);
                     }}
@@ -249,7 +249,7 @@ function ReviewsPage() {
                     variant="ghost"
                     size="icon"
                     className="size-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                    onClick={() => {
+                    onClick={() = aria-label="Delete"> {
                       if (confirm("Are you sure you want to delete this review?")) {
                         deleteMutation.mutate(review.id);
                       }

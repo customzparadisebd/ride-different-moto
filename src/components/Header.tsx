@@ -95,7 +95,7 @@ export function Header() {
             variant="ghost"
             size="icon"
             className="relative"
-            onClick={() => setCartOpen(true)}
+            onClick={() = aria-label="Open cart"> setCartOpen(true)}
             aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
           >
             <ShoppingBag />

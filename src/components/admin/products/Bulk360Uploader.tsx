@@ -133,7 +133,7 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
                       size="icon"
                       variant="ghost"
                       className="size-8 rounded-full text-white hover:bg-white/20"
-                      onClick={() => setIsPlaying(!isPlaying)}
+                      onClick={() = aria-label="Pause"> setIsPlaying(!isPlaying)}
                     >
                       {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
                     </Button>

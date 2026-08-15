@@ -277,7 +277,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                     variant="steel"
                     size="icon"
                     className="h-7 w-7 rounded-full shadow-lg border-2 border-background"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() = aria-label="Change photo"> fileInputRef.current?.click()}
                     disabled={isUpdating}
                     title="Change image"
                   >

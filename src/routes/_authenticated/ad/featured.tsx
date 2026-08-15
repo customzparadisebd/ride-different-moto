@@ -102,7 +102,7 @@ function SortableItem({ id, product, onRemove, onUpdate }: any) {
           variant="ghost"
           size="icon"
           className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-          onClick={() => onRemove(id)}
+          onClick={() = aria-label="Delete"> onRemove(id)}
         >
           <Trash2 className="size-4" />
         </Button>

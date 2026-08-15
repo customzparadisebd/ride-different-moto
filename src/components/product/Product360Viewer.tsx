@@ -168,8 +168,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
             variant="ghost"
             size="icon"
             className="rounded-full hover:bg-white/10"
-            onClick={onClose}
-          >
+            onClick={onClose} aria-label="Close">
             <X className="size-6" />
           </Button>
         </div>

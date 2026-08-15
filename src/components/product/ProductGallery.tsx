@@ -168,7 +168,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
               variant="ghost"
               size="icon"
               className="absolute right-6 top-6 z-[110] size-12 text-white hover:bg-white/10"
-              onClick={() => setIsFullscreen(false)}
+              onClick={() = aria-label="Close"> setIsFullscreen(false)}
               aria-label="Close zoom"
             >
               <X className="size-8" />

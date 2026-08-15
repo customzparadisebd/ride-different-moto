@@ -209,7 +209,7 @@ function AdminHeroSlides() {
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() = aria-label="Upload"> fileInputRef.current?.click()}
                   disabled={uploadingType === "desktop-new"}
                 >
                   {uploadingType === "desktop-new" ? (
@@ -244,7 +244,7 @@ function AdminHeroSlides() {
                   type="button"
                   variant="outline"
                   size="icon"
-                  onClick={() => mobileFileInputRef.current?.click()}
+                  onClick={() = aria-label="Upload"> mobileFileInputRef.current?.click()}
                   disabled={uploadingType === "mobile-new"}
                 >
                   {uploadingType === "mobile-new" ? (
@@ -345,7 +345,7 @@ function AdminHeroSlides() {
                             type="button"
                             variant="outline"
                             size="icon"
-                            onClick={() => fileInputRef.current?.click()}
+                            onClick={() = aria-label="Upload"> fileInputRef.current?.click()}
                             disabled={uploadingType === `desktop-${slide.id}`}
                           >
                             {uploadingType === `desktop-${slide.id}` ? (
@@ -382,7 +382,7 @@ function AdminHeroSlides() {
                             type="button"
                             variant="outline"
                             size="icon"
-                            onClick={() => mobileFileInputRef.current?.click()}
+                            onClick={() = aria-label="Upload"> mobileFileInputRef.current?.click()}
                             disabled={uploadingType === `mobile-${slide.id}`}
                           >
                             {uploadingType === `mobile-${slide.id}` ? (
@@ -485,7 +485,7 @@ function AdminHeroSlides() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                              onClick={() => setEditingId(slide.id)}
+                              onClick={() = aria-label="Edit"> setEditingId(slide.id)}
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
@@ -493,7 +493,7 @@ function AdminHeroSlides() {
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                              onClick={() => {
+                              onClick={() = aria-label="Delete"> {
                                 if (confirm("Delete this slide?"))
                                   deleteMutation.mutate({ data: slide.id });
                               }}
