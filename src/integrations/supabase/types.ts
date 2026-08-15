@@ -719,6 +719,38 @@ export type Database = {
           },
         ]
       }
+      invoice_collisions: {
+        Row: {
+          attempted_order_payload: Json | null
+          detected_at: string | null
+          existing_order_id: string | null
+          id: string
+          invoice_no: string
+        }
+        Insert: {
+          attempted_order_payload?: Json | null
+          detected_at?: string | null
+          existing_order_id?: string | null
+          id?: string
+          invoice_no: string
+        }
+        Update: {
+          attempted_order_payload?: Json | null
+          detected_at?: string | null
+          existing_order_id?: string | null
+          id?: string
+          invoice_no?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_collisions_existing_order_id_fkey"
+            columns: ["existing_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invoice_settings: {
         Row: {
           current_number: number
@@ -1664,6 +1696,24 @@ export type Database = {
         }
         Relationships: []
       }
+      stress_test_settings: {
+        Row: {
+          current_number: number
+          id: string
+          updated_at: string | null
+        }
+        Insert: {
+          current_number?: number
+          id?: string
+          updated_at?: string | null
+        }
+        Update: {
+          current_number?: number
+          id?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       suppliers: {
         Row: {
           address: string | null
@@ -1757,7 +1807,9 @@ export type Database = {
     }
     Functions: {
       generate_czp_invoice_id: { Args: never; Returns: string }
-      generate_next_invoice_no: { Args: never; Returns: string }
+      generate_next_invoice_no:
+        | { Args: never; Returns: string }
+        | { Args: { is_test?: boolean }; Returns: string }
       has_permission: {
         Args: { _permission: string; _user_id: string }
         Returns: boolean

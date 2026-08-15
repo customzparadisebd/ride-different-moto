@@ -12,7 +12,8 @@ export const invoiceSettingsInput = z.object({
     .max(20)
     .transform((v) => v.toUpperCase()),
   startNumber: z.number().int().min(1).max(999999),
-  currentNumber: z.number().int().min(0).max(999999),
+  currentNumber: z.number().int().min(0).max(999999), // This represents the LAST used number
+  nextNumber: z.number().int().min(1).max(999999).optional(), // Used for setting the NEXT serial
 });
 
 export type InvoiceSettings = z.infer<typeof invoiceSettingsInput>;
