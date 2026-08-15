@@ -19,18 +19,57 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isPreloaded, setIsPreloaded] = useState(false);
   const lastX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const totalImages = images.length;
 
-  // Preload all images for smooth rotation
+  // Progressive loading: Load first, middle, and end frames first for quick visual feedback
   useEffect(() => {
-    images.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
-  }, [images]);
+    if (totalImages === 0) return;
+    
+    const priorityIndices = new Set([
+      0, 
+      Math.floor(totalImages / 4), 
+      Math.floor(totalImages / 2), 
+      Math.floor(3 * totalImages / 4)
+    ]);
+    
+    const loadPriority = async () => {
+      const priorityPromises = Array.from(priorityIndices).map(idx => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = resolve;
+          img.onerror = resolve;
+          img.src = images[idx];
+        });
+      });
+      await Promise.all(priorityPromises);
+      
+      // After priority, load the rest
+      let loadedCount = priorityIndices.size;
+      setProgress(Math.round((loadedCount / totalImages) * 100));
+      
+      images.forEach((src, idx) => {
+        if (priorityIndices.has(idx)) return;
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          setProgress(Math.round((loadedCount / totalImages) * 100));
+          if (loadedCount === totalImages) setIsPreloaded(true);
+        };
+        img.onerror = () => {
+          loadedCount++;
+          setProgress(Math.round((loadedCount / totalImages) * 100));
+          if (loadedCount === totalImages) setIsPreloaded(true);
+        };
+        img.src = src;
+      });
+    };
+
+    loadPriority();
+  }, [images, totalImages]);
 
   const handleStart = (clientX: number) => {
     setIsDragging(true);
@@ -87,20 +126,20 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
     };
   }, [isDragging, handleMove]);
 
-  // Loading progress calculation
+  // Keyboard support for accessibility
   useEffect(() => {
-    if (totalImages === 0) return;
-    
-    let loadedCount = 0;
-    images.forEach(src => {
-      const img = new Image();
-      img.onload = () => {
-        loadedCount++;
-        setProgress(Math.round((loadedCount / totalImages) * 100));
-      };
-      img.src = src;
-    });
-  }, [images, totalImages]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setCurrentIndex((prev) => (prev - 1 + totalImages) % totalImages);
+      } else if (e.key === "ArrowRight") {
+        setCurrentIndex((prev) => (prev + 1) % totalImages);
+      } else if (e.key === "Escape") {
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [totalImages, onClose]);
 
   return (
     <div 
