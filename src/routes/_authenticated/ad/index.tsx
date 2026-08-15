@@ -56,6 +56,7 @@ export const Route = createFileRoute("/_authenticated/ad/")({
  * Provides a real-time overview of business metrics using Recharts.
  */
 function AdminDashboard() {
+  const { access } = Route.useRouteContext();
   const fetchMetrics = useServerFn(getDashboardMetrics);
   const [showSteadfastInfo, setShowSteadfastInfo] = useState(false);
   const query = useQuery({ 
@@ -120,8 +121,12 @@ function AdminDashboard() {
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
         <div 
-          onClick={() => setShowSteadfastInfo(true)} 
-          className="cursor-pointer group"
+          onClick={() => {
+            if (access.isSuperAdmin || access.primaryRole === "admin") {
+              setShowSteadfastInfo(true);
+            }
+          }} 
+          className={access.isSuperAdmin || access.primaryRole === "admin" ? "cursor-pointer group" : "cursor-default group"}
         >
           <StatCard 
             title="STEADFAST SUCCESS" 
