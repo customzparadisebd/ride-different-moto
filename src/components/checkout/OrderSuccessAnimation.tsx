@@ -13,8 +13,14 @@ export function OrderSuccessAnimation({ className = "" }: { className?: string }
           muted
           loop
           playsInline
-          className="h-full w-full object-contain"
+          disablePictureInPicture
+          className="h-full w-full object-contain pointer-events-none"
           onContextMenu={(e) => e.preventDefault()}
+          onEnded={(e) => {
+            const video = e.currentTarget;
+            video.currentTime = 0;
+            video.play().catch(() => {});
+          }}
         >
           <source src={orderSuccessVideo.url} type="video/mp4" />
         </video>
