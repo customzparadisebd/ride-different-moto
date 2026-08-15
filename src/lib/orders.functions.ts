@@ -148,12 +148,66 @@ export type AdminOrderListRow = AdminOrderRow & {
 const LIST_COLUMNS =
   "id, invoice_no, customer_name, customer_phone, city, address_line, delivery_zone, subtotal, discount, shipping, advance_paid, total, cod_amount, status, payment_status, payment_method, transaction_id, courier_status, courier_name, courier_tracking_id, consignment_id, tracking_url, shipment_at, order_source, created_at, created_by, assigned_to, is_pinned, is_duplicate, printed_at, print_count, notes, order_items(id, product_name, variant, image_url, unit_price, quantity, line_total)";
 
-/** Start of the current day as an ISO timestamp (used by the "Today" tab). */
-const startOfTodayISO = () => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date.toISOString();
+/** Start of the current day as an ISO timestamp in Bangladesh Time (UTC+6). */
+const getBDStartOfToday = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+  bdNow.setUTCHours(0, 0, 0, 0);
+  return new Date(bdNow.getTime() - 6 * 60 * 60 * 1000).toISOString();
 };
+
+const getBDTimeRange = (daysOffset: number = 0) => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCDate(start.getUTCDate() + daysOffset);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date(start.getTime());
+  end.setUTCHours(23, 59, 59, 999);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
+const getBDTodayShiftRange = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCHours(8, 0, 0, 0);
+
+  const end = new Date(bdNow.getTime());
+  end.setUTCHours(20, 0, 0, 0);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
+const getBDMonthRange = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCDate(1);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date(bdNow.getTime());
+  end.setUTCMonth(end.getUTCMonth() + 1);
+  end.setUTCDate(0);
+  end.setUTCHours(23, 59, 59, 999);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
 
 const sel = (columns: string): string => columns;
 
@@ -209,7 +263,7 @@ export const listOrders = createServerFn({ method: "POST" })
         query = query.eq("status", "completed");
         break;
       case "today":
-        query = query.gte("created_at", startOfTodayISO());
+        query = query.gte("created_at", getBDStartOfToday());
         break;
       case "website":
         query = query.eq("order_source", "website");
@@ -230,6 +284,26 @@ export const listOrders = createServerFn({ method: "POST" })
       case "same_phone":
         query = query.in("customer_phone", repeatPhones.length ? repeatPhones : ["__none__"]);
         break;
+      case "yesterday": {
+        const { from, to } = getBDTimeRange(-1);
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
+      case "last_7_days": {
+        const { from } = getBDTimeRange(-7);
+        query = query.gte("created_at", from);
+        break;
+      }
+      case "this_month": {
+        const { from, to } = getBDMonthRange();
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
+      case "today_shift": {
+        const { from, to } = getBDTodayShiftRange();
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
       default:
         break;
     }
@@ -250,6 +324,27 @@ export const listOrders = createServerFn({ method: "POST" })
         data.assignedTo === "none"
           ? query.is("assigned_to", null)
           : query.eq("assigned_to", data.assignedTo);
+
+    if (data.paymentMethod) query = query.eq("payment_method", data.paymentMethod);
+    if (data.productCategory) {
+      // Joining with order_items to filter by product category
+      query = query.filter("order_items.product_category", "eq", data.productCategory);
+    }
+    if (data.productId) {
+      query = query.filter("order_items.product_id", "eq", data.productId);
+    }
+    if (data.steadfastStatus) {
+      // Joint query with courier_shipments
+      const sfStatus = data.steadfastStatus;
+      if (sfStatus === "not_submitted") {
+        query = query.not("courier_shipments.courier_name", "eq", "steadfast");
+      } else {
+        query = query
+          .eq("courier_shipments.courier_name", "steadfast")
+          .eq("courier_shipments.success", sfStatus === "successful");
+      }
+    }
+
     if (data.pinned) query = query.eq("is_pinned", data.pinned === "pinned");
     // Free-text search across name, phone and invoice number.
     if (data.search) {
@@ -258,6 +353,7 @@ export const listOrders = createServerFn({ method: "POST" })
         `customer_name.ilike.${term},customer_phone.ilike.${term},invoice_no.ilike.${term}`,
       );
     }
+
 
     const from = (data.page - 1) * data.pageSize;
     const {
@@ -342,7 +438,7 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
       pending: base().eq("status", "pending"),
       cancelled: base().in("status", ["cancelled", "returned"]),
       completed: base().eq("status", "completed"),
-      today: base().gte("created_at", startOfTodayISO()),
+      today: base().gte("created_at", getBDStartOfToday()),
       website: base().eq("order_source", "website"),
       page: base().eq("order_source", "page"),
       new: base().eq("status", "pending").eq("print_count", 0),

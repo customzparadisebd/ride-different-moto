@@ -2,9 +2,13 @@ import { z } from "zod";
 
 export const customerListInput = z.object({
   search: z.string().trim().max(120).optional(),
+  customerName: z.string().trim().max(120).optional(),
+  customerPhone: z.string().trim().max(40).optional(),
+  city: z.string().trim().max(100).optional(),
+  district: z.string().trim().max(100).optional(),
   deleted: z.boolean().default(false),
   page: z.number().int().min(1).max(500).default(1),
-  pageSize: z.number().int().min(10).max(100).default(25),
+  pageSize: z.number().int().min(1).max(100).default(25),
   status: z.enum(["all", "active", "fraud"]).default("all"),
 });
 

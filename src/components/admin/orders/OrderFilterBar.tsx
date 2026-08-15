@@ -19,13 +19,18 @@ export type OrderFilters = {
   invoiceNo: string;
   customerName: string;
   customerPhone: string;
+  orderId: string;
   status: string;
   paymentStatus: string;
+  paymentMethod: string;
   source: string;
   courier: string;
   deliveryZone: string;
   assignedTo: string;
   createdBy: string;
+  productCategory: string;
+  productId: string;
+  steadfastStatus: "submitted" | "successful" | "failed" | "not_submitted" | "";
   pinned: string;
   dateFrom: string;
   dateTo: string;
@@ -37,13 +42,18 @@ export const EMPTY_ORDER_FILTERS: OrderFilters = {
   invoiceNo: "",
   customerName: "",
   customerPhone: "",
+  orderId: "",
   status: "",
   paymentStatus: "",
+  paymentMethod: "",
   source: "",
   courier: "",
   deliveryZone: "",
   assignedTo: "",
   createdBy: "",
+  productCategory: "",
+  productId: "",
+  steadfastStatus: "",
   pinned: "",
   dateFrom: "",
   dateTo: "",
@@ -63,6 +73,8 @@ export function OrderFilterBar({
   value,
   onChange,
   onReset,
+  onTabChange,
+  activeTab,
   isLoading,
   staff = [],
   couriers = [],
@@ -70,6 +82,8 @@ export function OrderFilterBar({
   value: OrderFilters;
   onChange: (next: OrderFilters) => void;
   onReset: () => void;
+  onTabChange?: (tab: any) => void;
+  activeTab?: string;
   isLoading?: boolean;
   staff?: { id: string; label: string }[];
   couriers?: string[];
@@ -78,93 +92,146 @@ export function OrderFilterBar({
   const set = (field: keyof OrderFilters) => (next: string) =>
     onChange({ ...value, [field]: next });
 
+  const QUICK_FILTERS = [
+    { value: "today", label: "Today" },
+    { value: "yesterday", label: "Yesterday" },
+    { value: "last_7_days", label: "Last 7 Days" },
+    { value: "this_month", label: "This Month" },
+    { value: "today_shift", label: "Today 8AM - 8PM" },
+  ];
+
+
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-2 shadow-sm">
-      {/* SEARCH AREA */}
-      <div className="relative flex-1 min-w-[240px]">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={value.search}
-          onChange={(e) => set("search")(e.target.value)}
-          placeholder="Ex: name, number, invoice"
-          className="h-9 pl-9 text-sm"
-          aria-label="Search orders"
-        />
+    <div className="mt-3 flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+      {/* QUICK FILTERS */}
+      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+          Status Tabs:
+        </span>
+        {[
+          { value: "all", label: "All" },
+          { value: "confirmed", label: "Confirmed" },
+          { value: "pending", label: "Pending" },
+          { value: "completed", label: "Completed" },
+          { value: "cancelled", label: "Cancelled" },
+          { value: "new", label: "New" },
+          { value: "duplicate", label: "Duplicate" },
+        ].map((tab) => (
+          <Button
+            key={tab.value}
+            variant={activeTab === tab.value ? "red" : "steel"}
+            size="sm"
+            className="h-7 px-2.5 text-[10px] font-bold uppercase"
+            onClick={() => onTabChange?.(tab.value as any)}
+          >
+            {tab.label}
+          </Button>
+        ))}
       </div>
 
-      <div className="flex items-center gap-2">
-        <Select
-          value={value.sortDir}
-          onChange={set("sortDir")}
-          placeholder="Sort"
-          allowEmpty={false}
-          className="h-9 w-[120px]"
-        >
-          <option value="desc">Latest first</option>
-          <option value="asc">Oldest first</option>
-        </Select>
-
+      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+          Date Filters:
+        </span>
+        {QUICK_FILTERS.map((q) => (
+          <Button
+            key={q.value}
+            variant={activeTab === q.value ? "red" : "steel"}
+            size="sm"
+            className="h-7 px-2.5 text-[10px] font-bold uppercase"
+            onClick={() => onTabChange?.(q.value as any)}
+          >
+            {q.label}
+          </Button>
+        ))}
         <Button
-          type="button"
-          variant="secondary"
+          variant="steel"
           size="sm"
-          className="h-9 border border-border"
-          onClick={() => setOpen((current) => !current)}
+          className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
+          onClick={onReset}
         >
-          <SlidersHorizontal className="mr-2 size-3.5" />
-          Filter Orders
+          Reset All
         </Button>
       </div>
+
+
+      <div className="flex flex-wrap items-center gap-2">
+        {/* SEARCH AREA */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={value.search}
+            onChange={(e) => set("search")(e.target.value)}
+            placeholder="Ex: name, number, invoice"
+            className="h-9 pl-9 text-sm"
+            aria-label="Search orders"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select
+            value={value.sortDir}
+            onChange={set("sortDir")}
+            placeholder="Sort"
+            allowEmpty={false}
+            className="h-9 w-[120px]"
+          >
+            <option value="desc">Latest first</option>
+            <option value="asc">Oldest first</option>
+          </Select>
+
+          <Button
+            type="button"
+            variant={open ? "red" : "secondary"}
+            size="sm"
+            className="h-9 border border-border"
+            onClick={() => setOpen((current) => !current)}
+          >
+            <SlidersHorizontal className="mr-2 size-3.5" />
+            {open ? "Hide Advanced" : "Advanced Filters"}
+          </Button>
+        </div>
+      </div>
+
 
       {/* ADVANCED FILTERS */}
       {open ? (
         <div className="mt-3 grid gap-3 border-t border-border pt-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Field label="Order ID / Invoice">
+          <Field label="Invoice No">
             <Input
               value={value.invoiceNo}
               onChange={(e) => set("invoiceNo")(e.target.value)}
-              placeholder="CZP-2601-0001"
-              className="h-11"
+              placeholder="Ex: CZP-2601-0001"
+              className="h-9"
             />
           </Field>
-          <Field label="Customer name">
+          <Field label="Order ID">
+            <Input
+              value={value.orderId}
+              onChange={(e) => set("orderId")(e.target.value)}
+              placeholder="UUID"
+              className="h-9"
+            />
+          </Field>
+          <Field label="Customer Name">
             <Input
               value={value.customerName}
               onChange={(e) => set("customerName")(e.target.value)}
               placeholder="Name"
-              className="h-11"
+              className="h-9"
             />
           </Field>
-          <Field label="Phone">
+          <Field label="Phone Number">
             <Input
               value={value.customerPhone}
               onChange={(e) => set("customerPhone")(e.target.value)}
               placeholder="01XXXXXXXXX"
               inputMode="tel"
-              className="h-11"
+              className="h-9"
             />
           </Field>
-          <Field label="Assigned user">
-            <Select value={value.assignedTo} onChange={set("assignedTo")} placeholder="Anyone">
-              <option value="none">Unassigned</option>
-              {staff.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="Created by">
-            <Select value={value.createdBy} onChange={set("createdBy")} placeholder="Anyone">
-              {staff.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="Order status">
-            <Select value={value.status} onChange={set("status")} placeholder="All statuses">
+          <Field label="Order Status">
+            <Select value={value.status} onChange={set("status")} placeholder="All Statuses" className="h-9">
               {ORDER_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {statusLabel(status)}
@@ -172,11 +239,12 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Payment status">
+          <Field label="Payment Status">
             <Select
               value={value.paymentStatus}
               onChange={set("paymentStatus")}
-              placeholder="All payments"
+              placeholder="All Payments"
+              className="h-9"
             >
               {PAYMENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
@@ -185,8 +253,53 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Source">
-            <Select value={value.source} onChange={set("source")} placeholder="All sources">
+          <Field label="Payment Method">
+            <Select
+              value={value.paymentMethod}
+              onChange={set("paymentMethod")}
+              placeholder="All Methods"
+              className="h-9"
+            >
+              <option value="cash_on_delivery">Cash on Delivery</option>
+              <option value="bkash">bKash</option>
+              <option value="nagad">Nagad</option>
+              <option value="bank_transfer">Bank Transfer</option>
+            </Select>
+          </Field>
+          <Field label="SteadFast Status">
+            <Select
+              value={value.steadfastStatus}
+              onChange={(v) => set("steadfastStatus")(v as any)}
+              placeholder="All Status"
+              className="h-9"
+            >
+              <option value="submitted">Submitted</option>
+              <option value="successful">Successful</option>
+              <option value="failed">Failed</option>
+              <option value="not_submitted">Not Submitted</option>
+            </Select>
+          </Field>
+          <Field label="Assigned Staff">
+            <Select value={value.assignedTo} onChange={set("assignedTo")} placeholder="Anyone" className="h-9">
+              <option value="none">Unassigned</option>
+              {staff.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Created By">
+            <Select value={value.createdBy} onChange={set("createdBy")} placeholder="Anyone" className="h-9">
+              {staff.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Order Source">
+            <Select value={value.source} onChange={set("source")} placeholder="All Sources" className="h-9">
               {ORDER_SOURCES.map((source) => (
                 <option key={source.value} value={source.value}>
                   {source.label}
@@ -194,8 +307,8 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Courier">
-            <Select value={value.courier} onChange={set("courier")} placeholder="All couriers">
+          <Field label="Courier Name">
+            <Select value={value.courier} onChange={set("courier")} placeholder="All Couriers" className="h-9">
               {couriers.map((courier) => (
                 <option key={courier} value={courier}>
                   {courier}
@@ -203,11 +316,12 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Delivery zone">
+          <Field label="Delivery Zone">
             <Select
               value={value.deliveryZone}
               onChange={set("deliveryZone")}
-              placeholder="All zones"
+              placeholder="All Zones"
+              className="h-9"
             >
               {DELIVERY_ZONES.map((zone) => (
                 <option key={zone.value} value={zone.value}>
@@ -216,28 +330,41 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Pinned">
-            <Select value={value.pinned} onChange={set("pinned")} placeholder="All orders">
-              <option value="pinned">Pinned only</option>
-              <option value="unpinned">Unpinned only</option>
+          <Field label="Product Category">
+             <Select value={value.productCategory} onChange={set("productCategory")} placeholder="All Categories" className="h-9">
+               <option value="graphics">Graphics</option>
+               <option value="lighting">Lighting</option>
+               <option value="seat">Seat</option>
+               <option value="exhaust">Exhaust</option>
+               <option value="handlebar">Handlebar</option>
+               <option value="body-kit">Body Kit</option>
+               <option value="accessories">Accessories</option>
+             </Select>
+          </Field>
+          <Field label="Date Range">
+            <div className="flex gap-1 items-center">
+              <Input
+                type="date"
+                value={value.dateFrom}
+                onChange={(e) => set("dateFrom")(e.target.value)}
+                className="h-9 text-xs"
+              />
+              <span className="text-muted-foreground">-</span>
+              <Input
+                type="date"
+                value={value.dateTo}
+                onChange={(e) => set("dateTo")(e.target.value)}
+                className="h-9 text-xs"
+              />
+            </div>
+          </Field>
+          <Field label="Pinned State">
+            <Select value={value.pinned} onChange={set("pinned")} placeholder="All Orders" className="h-9">
+              <option value="pinned">Pinned Only</option>
+              <option value="unpinned">Unpinned Only</option>
             </Select>
           </Field>
-          <Field label="Start date">
-            <Input
-              type="date"
-              value={value.dateFrom}
-              onChange={(e) => set("dateFrom")(e.target.value)}
-              className="h-11"
-            />
-          </Field>
-          <Field label="End date">
-            <Input
-              type="date"
-              value={value.dateTo}
-              onChange={(e) => set("dateTo")(e.target.value)}
-              className="h-11"
-            />
-          </Field>
+
           <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-4">
             <Button
               type="button"

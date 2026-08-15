@@ -140,9 +140,6 @@ export const orderStatusUpdateInput = z.object({
 
 /** Server-side filters for the admin order list. All optional. */
 export const orderFilterInput = z.object({
-  invoiceNo: optionalText(60),
-  customerName: optionalText(120),
-  customerPhone: optionalText(40),
   status: z.enum(ORDER_STATUSES).optional(),
   paymentStatus: z.enum(PAYMENT_STATUSES).optional(),
   deliveryZone: z.enum(["inside_dhaka", "dhaka_suburb", "outside_dhaka"]).optional(),
@@ -150,6 +147,11 @@ export const orderFilterInput = z.object({
   dateTo: optionalText(30),
   /** Free-text search across customer name, phone and invoice number. */
   search: optionalText(120),
+  /** Fast search by specific fields */
+  customerName: optionalText(120),
+  customerPhone: optionalText(40),
+  invoiceNo: optionalText(60),
+  orderId: z.string().uuid().optional(),
   /** Order source (website / admin / page …). */
   source: optionalText(40),
   /** Courier name as stored on the order. */
@@ -158,6 +160,13 @@ export const orderFilterInput = z.object({
   assignedTo: optionalText(60),
   /** Staff uuid of the account that created the order. */
   createdBy: optionalText(60),
+  /** Payment method filter */
+  paymentMethod: optionalText(60),
+  /** Product/Category filter */
+  productCategory: optionalText(60),
+  productId: z.string().uuid().optional(),
+  /** SteadFast Status (Submitted / Successful / Failed / Not Submitted) */
+  steadfastStatus: z.enum(["", "submitted", "successful", "failed", "not_submitted"]).default(""),
   /** Pinned filter: "" (all) | "pinned" | "unpinned". */
   pinned: z.enum(["", "pinned", "unpinned"]).default(""),
   /** Status tab (see ORDER_TABS). */
@@ -175,11 +184,16 @@ export const orderFilterInput = z.object({
       "hold",
       "cancelled",
       "same_phone",
+      // Quick filter tabs
+      "yesterday",
+      "last_7_days",
+      "this_month",
+      "today_shift",
     ])
     .default("all"),
   /** Pagination (1-based page number). */
   page: z.coerce.number().int().min(1).max(10_000).default(1),
-  pageSize: z.coerce.number().int().min(10).max(200).default(25),
+  pageSize: z.coerce.number().int().min(1).max(200).default(25),
   sortBy: z.enum(["created_at", "total", "invoice_no"]).default("created_at"),
   sortDir: z.enum(["asc", "desc"]).default("desc"),
   /** Recycle Bin view: when true, only soft-deleted orders are returned. */

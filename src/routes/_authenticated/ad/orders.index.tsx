@@ -323,13 +323,15 @@ function AdminOrderList() {
         </div>
       </div>
 
-      {/* STATUS TABS with live counts */}
-      <OrderStatusTabs value={tab} counts={countsQuery.data} onChange={applyTab} />
+      {/* Quick Filter tabs handled within OrderFilterBar */}
+
 
       <OrderFilterBar
         value={filters}
         onChange={applyFilters}
         onReset={() => applyFilters(EMPTY_ORDER_FILTERS)}
+        onTabChange={applyTab}
+        activeTab={tab}
         isLoading={ordersQuery.isFetching}
         staff={staffQuery.data ?? []}
         couriers={courierOptions}
