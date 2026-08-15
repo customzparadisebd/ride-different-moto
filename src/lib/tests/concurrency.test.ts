@@ -3,8 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // Manual client for test environment to bypass start context
 const testSupabase = createClient(
-  process.env.VITE_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env['VITE_SUPABASE_URL']!,
+  process.env['SUPABASE_SERVICE_ROLE_KEY']!
 );
 
 describe('Invoice Concurrency Uniqueness', () => {
