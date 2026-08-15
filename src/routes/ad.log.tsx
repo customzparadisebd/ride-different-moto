@@ -186,13 +186,15 @@ function AuthPage() {
       <div className="flex min-h-svh flex-col md:flex-row bg-[#0a0a0a]">
         {/* Left side: Same as login */}
         <div className="relative hidden w-full md:flex md:w-1/2 overflow-hidden bg-black items-center justify-center">
-          <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover opacity-60 pointer-events-none">
+          <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none">
             <source src={animationAsset.url} type="video/mp4" />
           </video>
+
           <div className="relative z-10 p-12 text-center">
-            <h2 className="font-display text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
-              RIDE DIFFERENT.<br /><span className="text-primary">BE DIFFERENT.</span>
+            <h2 className="font-brush text-4xl font-bold uppercase tracking-wider text-white sm:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+              RIDE DIFFERENT<br /><span className="text-primary italic">BE DIFFERENT</span>
             </h2>
+
           </div>
         </div>
 
@@ -292,16 +294,18 @@ function AuthPage() {
           muted
           loop
           playsInline
-          className="absolute inset-0 h-full w-full object-cover opacity-60 pointer-events-none"
+          className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none"
         >
           <source src={animationAsset.url} type="video/mp4" />
+
         </video>
         <div className="relative z-10 p-12 text-center">
-          <h2 className="font-display text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
-            RIDE DIFFERENT.
+          <h2 className="font-brush text-4xl font-bold uppercase tracking-wider text-white sm:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
+            RIDE DIFFERENT
             <br />
-            <span className="text-primary">BE DIFFERENT.</span>
+            <span className="text-primary italic">BE DIFFERENT</span>
           </h2>
+
         </div>
       </div>
 
