@@ -56,12 +56,14 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
         const img = new Image();
         img.onload = () => {
           loadedCount++;
-          setProgress(Math.round((loadedCount / totalImages) * 100));
+          const newProgress = Math.round((loadedCount / totalImages) * 100);
+          setProgress(newProgress);
           if (loadedCount === totalImages) setIsPreloaded(true);
         };
         img.onerror = () => {
           loadedCount++;
-          setProgress(Math.round((loadedCount / totalImages) * 100));
+          const newProgress = Math.round((loadedCount / totalImages) * 100);
+          setProgress(newProgress);
           if (loadedCount === totalImages) setIsPreloaded(true);
         };
         img.src = src;
