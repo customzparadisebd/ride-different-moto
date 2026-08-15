@@ -32,6 +32,7 @@ export const Route = createFileRoute("/_authenticated/ad")({
        throw redirect({ to: "/ad/log" });
     }
     // MFA step-up: privileged accounts must reach AAL2 before any screen loads.
+    // Every staff user must now use 2FA for account security.
     if (access.mfaRequired && !access.mfaSatisfied) {
       throw redirect({ to: "/ad/mfa" });
     }
