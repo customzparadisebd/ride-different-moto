@@ -115,6 +115,17 @@ function AdminHeroSlides() {
     onError: (e: any) => toast.error(e.message || "Failed to delete slide"),
   });
 
+  const restoreMutation = useMutation({
+    mutationFn: () => restoreSlides({ data: {} }),
+    onSuccess: () => {
+      toast.success("Old hero slides restored");
+      queryClient.invalidateQueries({ queryKey: ["hero-slides-admin"] });
+      queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to restore slides"),
+  });
+
+
   const handleSave = (id: string, formData: FormData) => {
     const data = {
       title: formData.get("title") as string,
