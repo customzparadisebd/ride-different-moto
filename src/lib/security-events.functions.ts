@@ -120,10 +120,12 @@ export const getSuspiciousIPs = createServerFn({ method: "POST" })
     const eventsData = events ?? [];
     const counts: Record<string, { ip: string, failures: number, limits: number }> = {};
     eventsData.forEach(e => {
-        if (!e.ip_address || !e.event_type) return;
-        if (!counts[e.ip_address]) counts[e.ip_address] = { ip: e.ip_address, failures: 0, limits: 0 };
-        if (e.event_type === 'login_throttle') counts[e.ip_address].failures++;
-        if (e.event_type === 'rate_limit') counts[e.ip_address].limits++;
+        const ip = e.ip_address;
+        const type = e.event_type;
+        if (!ip || !type) return;
+        if (!counts[ip]) counts[ip] = { ip, failures: 0, limits: 0 };
+        if (type === 'login_throttle') counts[ip].failures++;
+        if (type === 'rate_limit') counts[ip].limits++;
     });
 
     return Object.values(counts)
