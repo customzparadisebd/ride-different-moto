@@ -33,6 +33,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Mandatory MFA Enforcement:** Hardened two-factor authentication requirements, making TOTP enrolment mandatory for all staff roles. Blocked Admin Panel access for sessions below AAL2 assurance (Aug 15, 2026).
 - [x] **Granular RBAC System:** Implemented a hybrid role-based and permission-based access control system. Admins can now toggle specific permissions for individual staff members via the new User Permissions UI (Aug 15, 2026).
 - [x] **Personal Security Management:** Enhanced the personal security page for administrators to manage their own MFA settings and securely regenerate backup recovery codes with a verified confirmation flow (Aug 15, 2026).
+- [x] **Harmonized MFA & Staff Approval Flow:** Reordered the security gate to strictly sequence Login → MFA → Staff Approval Status Check → Admin Access. Ensured accounts in "Pending" status are blocked even with successful MFA, while maintaining existing 10-minute session validation (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
