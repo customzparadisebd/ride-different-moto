@@ -119,7 +119,7 @@ export function Header() {
               </div>
               
               <nav
-                className="flex flex-1 flex-col overflow-y-auto py-2"
+                className="flex flex-1 flex-col overflow-y-auto"
                 aria-label="Mobile"
               >
                 {navLinks.map((link) => {
@@ -132,9 +132,9 @@ export function Header() {
                       activeOptions={{ exact: link.to === "/" }}
                       activeProps={{ className: "text-primary bg-primary/5" }}
                       inactiveProps={{ className: "text-foreground/70" }}
-                      className="group flex items-center justify-between border-b border-border/50 px-4 py-3.5 transition-colors active:bg-secondary"
+                      className="group flex items-center justify-between border-b border-border/50 px-5 py-4 transition-colors active:bg-secondary"
                     >
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-4">
                         <Icon className="size-5 transition-colors group-data-[status=active]:text-primary" />
                         <span className="font-display text-[15px] font-bold uppercase tracking-wider">
                           {t(link.translationKey)}
