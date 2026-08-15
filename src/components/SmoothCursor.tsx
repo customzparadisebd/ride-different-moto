@@ -17,9 +17,9 @@ export function SmoothCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
   
   // Target position (mouse/pointer coordinates)
-  const mouseRef = useRef({ x: 0, y: 0 });
+  const mouseRef = useRef({ x: -100, y: -100 });
   // Current position of the ring (interpolated)
-  const currentRef = useRef({ x: 0, y: 0 });
+  const currentRef = useRef({ x: -100, y: -100 });
   // Offset to position circle below the pointer
   const Y_OFFSET = 20;
   // Interpolation factor (0.10 to 0.20 for natural movement)
@@ -28,7 +28,6 @@ export function SmoothCursor() {
   useEffect(() => {
     setMounted(true);
     
-    // Track pointer/mouse movement
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
@@ -61,7 +60,6 @@ export function SmoothCursor() {
 
   if (!mounted) return null;
 
-  // Render into body to ensure it's on top of everything
   return createPortal(
     <div
       ref={ringRef}
@@ -73,9 +71,9 @@ export function SmoothCursor() {
         border: "1.8px solid #06B6D4",
         backgroundColor: "transparent",
         boxShadow: "0 0 14px rgba(6, 182, 212, 0.30)",
-        // Initial position off-screen
-        transform: "translate3d(-100px, -100px, 0)",
+        transform: "translate3d(-100px, -100px, 0) translate(-50%, -50%)",
       }}
+      data-testid="smooth-cursor"
     />,
     document.body
   );
