@@ -18,6 +18,7 @@ import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPan
 import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSettingsPanel";
 import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSettingsPanel";
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getMyAccess } from "@/lib/orders.functions";
@@ -269,9 +270,17 @@ function AdminSettings() {
         </form>
       )}
 
-      {/* INVOICE SETTINGS — COMPLETED (Admin / Super Admin only) */}
-      <div className="mt-6 space-y-6">
-        <InvoiceSettingsPanel canManage={canManage} />
+      {/* INVOICE SETTINGS LINK — COMPLETED (Admin / Super Admin only) */}
+      <div className="mt-6 rounded-xl border border-border bg-card p-4 shadow-card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display text-sm font-bold uppercase tracking-wide">Invoice Numbering</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Manage prefix, sequence and labeling rules.</p>
+          </div>
+          <Button variant="outline" size="sm" asChild>
+            <Link to="/ad/settings/invoice">Manage Invoices</Link>
+          </Button>
+        </div>
       </div>
 
       {/* STEADFAST API INTEGRATION — COMPLETED (Admin / Super Admin only) */}
