@@ -7,6 +7,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
@@ -42,12 +43,15 @@ function InvoicePage() {
         await markPrinted({ data: { orderIds: [id] } });
         void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
         void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+        toast.success("Print process completed and recorded");
       } catch (err) {
         console.error("Failed to mark order as printed:", err);
+        toast.error("Print was successful but failed to record status");
       }
       window.removeEventListener("afterprint", onAfterPrint);
     };
 
+    toast.info("Opening print preview...", { duration: 2000 });
     window.addEventListener("afterprint", onAfterPrint);
     window.print();
   };

@@ -472,7 +472,7 @@ export const markOrdersPrinted = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => orderPrintInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
-    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersManage);
 
@@ -505,6 +505,13 @@ export const markOrdersPrinted = createServerFn({ method: "POST" })
         }),
       ),
     );
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.orderPrinted,
+      targetType: "order",
+      targetId: data.orderIds.join(","),
+      targetLabel: `${data.orderIds.length} order(s)`,
+      newValue: { printed_at: now, orderIds: data.orderIds },
+    });
     return { ok: true, printed: data.orderIds.length };
   });
 
