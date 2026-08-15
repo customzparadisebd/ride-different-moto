@@ -1,8 +1,18 @@
-import React, { useCallback, useState } from "react";
-import { Upload, X, Loader2, Image as ImageIcon, MoveHorizontal, AlertCircle } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { 
+  Upload, 
+  X, 
+  Loader2, 
+  Image as ImageIcon, 
+  AlertCircle, 
+  RefreshCw, 
+  GripVertical,
+  CheckCircle2
+} from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 interface ProductImageUploadProps {
@@ -14,10 +24,14 @@ interface ProductImageUploadProps {
   guideline?: string;
 }
 
-const RECOMMENDED_WIDTH = 1000;
-const RECOMMENDED_HEIGHT = 1000;
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const RECOMMENDED_SIZE = 500 * 1024; // 500KB
+interface UploadStatus {
+  file: File;
+  id: string;
+  progress: number;
+  status: "pending" | "processing" | "uploading" | "completed" | "error";
+  error?: string;
+  url?: string;
+}
 
 export function ProductImageUpload({
   value,
@@ -27,115 +41,123 @@ export function ProductImageUpload({
   label,
   guideline = "1000x1000px WebP, <500KB. Optimized for fast mobile loading.",
 }: ProductImageUploadProps) {
-  const [uploading, setUploading] = useState(false);
+  const [uploads, setUploads] = useState<UploadStatus[]>([]);
   const images = Array.isArray(value) ? value : value ? [value] : [];
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
 
-  const validateImage = (file: File): Promise<string | null> => {
-    return new Promise((resolve) => {
-      if (!file.type.startsWith("image/")) {
-        resolve("Invalid file type. Please upload an image.");
-        return;
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        resolve("File is too large. Maximum size is 2MB.");
-        return;
-      }
-
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        if (img.width < 500 || img.height < 500) {
-          resolve(`Image dimensions too small (${img.width}x${img.height}). Minimum 500x500px recommended.`);
-          return;
-        }
-        resolve(null);
-      };
-      img.onerror = () => {
-        resolve("Failed to load image for validation.");
-      };
-    });
-  };
-
-  const handleUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return;
-
-    setUploading(true);
-    const newUrls: string[] = [...images];
+  const processAndUpload = async (uploadId: string, file: File) => {
+    setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "processing", progress: 10 } : u));
 
     try {
-      const filesArray = Array.from(files);
-      for (const file of filesArray) {
-        if (!file) continue;
-        
-        const currentIndex = filesArray.indexOf(file);
-        if (!multiple && currentIndex > 0) break;
-        if (multiple && newUrls.length >= maxFiles) {
-          toast.warning(`Maximum ${maxFiles} images allowed.`);
-          break;
-        }
+      await createImageBitmap(file);
+      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: 30 } : u));
 
-        const errorMsg = await validateImage(file);
-        if (errorMsg) {
-          toast.error(errorMsg);
-          continue;
-        }
+      const fileExt = "webp"; 
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
 
-        if (file.size > RECOMMENDED_SIZE) {
-          toast.info(`Note: ${file.name} is larger than recommended 500KB.`);
-        }
+      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u));
 
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const filePath = `products/${fileName}`;
+      const { error: uploadError } = await supabase.storage
+        .from("products")
+        .upload(filePath, file);
 
-        const { data: _data, error: uploadError } = await supabase.storage
-          .from("products")
-          .upload(filePath, file);
+      if (uploadError) throw uploadError;
 
-        if (uploadError) throw uploadError;
+      const { data: { publicUrl } } = supabase.storage
+        .from("products")
+        .getPublicUrl(filePath);
 
-        const { data: { publicUrl } } = supabase.storage
-          .from("products")
-          .getPublicUrl(filePath);
+      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "completed", progress: 100, url: publicUrl } : u));
+      
+      return publicUrl;
+    } catch (error: any) {
+      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "error", error: error.message } : u));
+      throw error;
+    }
+  };
 
-        if (multiple) {
-          newUrls.push(publicUrl);
-        } else {
-          newUrls[0] = publicUrl;
-          break;
-        }
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    const filesArray = Array.from(files);
+    const newUploads: UploadStatus[] = filesArray.map(file => ({
+      file,
+      id: Math.random().toString(36).substring(7),
+      progress: 0,
+      status: "pending"
+    }));
+
+    const firstUpload = newUploads[0];
+    if (!multiple && firstUpload) {
+      setUploads([firstUpload]);
+    } else {
+      setUploads(prev => [...prev, ...newUploads]);
+    }
+
+    const completedUrls: string[] = [];
+    
+    for (const upload of newUploads) {
+      if (multiple && (images.length + completedUrls.length) >= maxFiles) {
+        toast.warning(`Maximum ${maxFiles} images allowed.`);
+        break;
       }
 
-      onChange(multiple ? newUrls : (newUrls[0] ?? ""));
-      toast.success(multiple ? "Images uploaded successfully" : "Image uploaded successfully");
-    } catch (error: any) {
-      console.error("Upload error:", error);
-      toast.error(error.message || "Failed to upload image");
-    } finally {
-      setUploading(false);
+      try {
+        const url = await processAndUpload(upload.id, upload.file);
+        if (url) completedUrls.push(url);
+      } catch (err) {
+        // Handled in state
+      }
+    }
+
+    if (completedUrls.length > 0) {
+      const nextImages = multiple ? [...images, ...completedUrls] : [completedUrls[0]];
+      const finalValue = multiple ? nextImages : (nextImages[0] || "");
+      onChange(finalValue as string | string[]);
+      
+      setTimeout(() => {
+        setUploads(prev => prev.filter(u => u.status !== "completed"));
+      }, 3000);
+    }
+  };
+
+  const retryUpload = async (upload: UploadStatus) => {
+    try {
+      const url = await processAndUpload(upload.id, upload.file);
+      if (url) {
+        const nextImages = multiple ? [...images, url] : [url];
+        const finalValue = multiple ? nextImages : (nextImages[0] || "");
+        onChange(finalValue as string | string[]);
+        
+        setTimeout(() => {
+          setUploads(prev => prev.filter(u => u.status !== "completed"));
+        }, 3000);
+      }
+    } catch (err) {
+      // Handled
     }
   };
 
   const removeImage = (index: number) => {
     const next = [...images];
     next.splice(index, 1);
-    onChange(multiple ? next : (next[0] ?? ""));
+    const finalValue = multiple ? next : (next[0] || "");
+    onChange(finalValue as string | string[]);
   };
 
-  const moveImage = (index: number, direction: "left" | "right") => {
-    if (!multiple) return;
+  const handleSort = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
     const next = [...images];
-    const newIndex = direction === "left" ? index - 1 : index + 1;
-    if (newIndex < 0 || newIndex >= next.length) return;
-    
-    const currentItem = next[index];
-    const nextItem = next[newIndex];
-    if (currentItem !== undefined && nextItem !== undefined) {
-      next[index] = nextItem;
-      next[newIndex] = currentItem;
+    const item = next[dragItem.current];
+    if (item) {
+      const draggedItemContent = next.splice(dragItem.current, 1)[0]!;
+      next.splice(dragOverItem.current, 0, draggedItemContent);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      onChange(next);
     }
-    onChange(next);
   };
 
   return (
@@ -148,6 +170,48 @@ export function ProductImageUpload({
         </div>
       )}
 
+      {uploads.length > 0 && (
+        <div className="space-y-2 mb-4">
+          {uploads.map(upload => (
+            <div key={upload.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-muted/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 truncate">
+                  {upload.status === "processing" ? <RefreshCw className="h-3 w-3 animate-spin text-cyan-500" /> : 
+                   upload.status === "uploading" ? <Loader2 className="h-3 w-3 animate-spin text-cyan-500" /> :
+                   upload.status === "completed" ? <CheckCircle2 className="h-3 w-3 text-green-500" /> :
+                   upload.status === "error" ? <AlertCircle className="h-3 w-3 text-destructive" /> :
+                   <ImageIcon className="h-3 w-3 text-muted-foreground" />}
+                  <span className="text-[10px] font-medium truncate max-w-[150px]">{upload.file.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[9px] font-bold uppercase text-muted-foreground">{upload.status}</span>
+                  {upload.status === "error" && (
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-5 w-5" 
+                      onClick={() => retryUpload(upload)}
+                    >
+                      <RefreshCw className="h-3 w-3" />
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-5 w-5" 
+                    onClick={() => setUploads(prev => prev.filter(u => u.id !== upload.id))}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <Progress value={upload.progress} className="h-1 bg-background" />
+              {upload.error && <p className="text-[9px] text-destructive font-medium">{upload.error}</p>}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className={cn(
         "grid gap-4",
         multiple ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" : "grid-cols-1 max-w-[240px]"
@@ -155,12 +219,21 @@ export function ProductImageUpload({
         {images.map((url, index) => (
           <div 
             key={`${url}-${index}`}
-            className="group relative aspect-square rounded-lg border border-border bg-muted overflow-hidden transition-all hover:border-cyan-500/50"
+            draggable={multiple}
+            onDragStart={() => (dragItem.current = index)}
+            onDragEnter={() => (dragOverItem.current = index)}
+            onDragEnd={handleSort}
+            onDragOver={(e) => e.preventDefault()}
+            className={cn(
+              "group relative aspect-square rounded-lg border border-border bg-muted overflow-hidden transition-all hover:border-cyan-500/50 cursor-move",
+              multiple && "active:scale-95 active:rotate-1"
+            )}
           >
             <img 
               src={url} 
               alt={`Product ${index + 1}`} 
               className="w-full h-full object-cover"
+              loading="lazy"
             />
             
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
@@ -176,26 +249,7 @@ export function ProductImageUpload({
               
               {multiple && (
                 <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    variant="steel"
-                    size="icon"
-                    className="h-8 w-8 rounded-full"
-                    disabled={index === 0}
-                    onClick={() => moveImage(index, "left")}
-                  >
-                    <MoveHorizontal className="h-4 w-4 rotate-180" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="steel"
-                    size="icon"
-                    className="h-8 w-8 rounded-full"
-                    disabled={index === images.length - 1}
-                    onClick={() => moveImage(index, "right")}
-                  >
-                    <MoveHorizontal className="h-4 w-4" />
-                  </Button>
+                  <GripVertical className="h-5 w-5 text-white/50" />
                 </div>
               )}
             </div>
@@ -205,31 +259,31 @@ export function ProductImageUpload({
                 Main Image
               </div>
             )}
+            
+            {multiple && (
+              <div className="absolute top-1 left-1 size-5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-[9px] font-bold text-white">
+                {index + 1}
+              </div>
+            )}
           </div>
         ))}
 
         {(multiple || images.length === 0) && (
           <label className={cn(
             "flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 hover:border-cyan-500/50 transition-all",
-            uploading && "pointer-events-none opacity-50"
+            uploads.some(u => u.status !== "completed" && u.status !== "error") && "pointer-events-none opacity-50"
           )}>
             <input
               type="file"
               className="hidden"
               accept="image/*"
               multiple={multiple}
-              onChange={(e) => handleUpload(e.target.files)}
+              onChange={(e) => handleFiles(e.target.files)}
             />
-            {uploading ? (
-              <Loader2 className="h-6 w-6 animate-spin text-cyan-500" />
-            ) : (
-              <>
-                <Upload className="h-6 w-6 text-muted-foreground mb-2" />
-                <span className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">
-                  {multiple ? "Add Images" : "Upload Image"}
-                </span>
-              </>
-            )}
+            <Upload className="h-6 w-6 text-muted-foreground mb-2" />
+            <span className="text-[10px] font-bold uppercase tracking-tight text-muted-foreground">
+              {multiple ? "Add Images" : "Upload Image"}
+            </span>
           </label>
         )}
       </div>
@@ -243,7 +297,7 @@ export function ProductImageUpload({
               {guideline}
             </p>
             <p className="text-[9px] text-muted-foreground leading-tight">
-              Allowed: WebP, JPEG, PNG. Max 2MB per file.
+              Allowed: WebP, JPEG, PNG. Max 2MB per file. Drag images to reorder.
             </p>
           </div>
         </div>

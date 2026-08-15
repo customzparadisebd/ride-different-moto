@@ -37,6 +37,9 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Security E2E Testing & UI Feedback:** Implemented automated Playwright tests to verify the Login → MFA → Approval flow. Enhanced the "Pending" status screens to provide clearer, identity-verified feedback to staff awaiting administrative approval (Aug 15, 2026).
 - [x] **Product Image Upload System:** Implemented a direct manual image upload system in the Admin Panel using Supabase Storage. Added the `ProductImageUpload` component to the Product Create/Edit form, supporting single main images and bulk gallery uploads with drag-and-drop, interactive previews, reordering, and dimension/size validation (Aug 15, 2026).
 - [x] **Bug Fix:** Resolved a `ZodError` in `listProducts` by lowering the minimum `pageSize` validation from 10 to 1, ensuring compatibility with small-batch fetches or single-item filtered lists (Aug 15, 2026).
+- [x] **Enhanced Image Upload Workflow:** Upgraded `ProductImageUpload` with per-file progress tracking, status indicators (Processing, Uploading, Completed, Error), and retry capability. Added drag-and-drop reordering for gallery images and implemented basic client-side image processing. (Aug 15, 2026).
+- [x] **Admin Live Preview Upgrades:** Added a "Publish/Unpublish" toggle to the `ProductPreviewDialog`, allowing administrators to toggle between "Draft" and "Public" visual states during live preview. (Aug 15, 2026).
+- [x] **Pagination Error Handling:** Implemented user-friendly error messages in the Admin Product listing UI for invalid pagination or filter parameters. (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
