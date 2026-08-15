@@ -8,8 +8,9 @@ export const ORDER_STATUSES = [
   "processing",
   "shipped",
   "delivered",
-  "cancelled", "returned",
+  "cancelled",
   "returned",
+  "completed",
 ] as const;
 
 export const PAYMENT_STATUSES = ["unpaid", "partial", "paid", "refunded"] as const;
