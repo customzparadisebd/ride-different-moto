@@ -23,7 +23,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Admin Customer Filtering & Pagination:** Added robust search (name, phone, email, location), status filters (All, Active, Fraud), and pagination to the Admin Customers list (Aug 15, 2026).
 - [x] **Customer Audit Trail:** Enabled a secure, Admin-only audit trail view for customer records, tracking sensitive operations (delete, restore, purge, profile edits) including IP tracking, delete reasons, and profile diffing (Aug 15, 2026).
 - [x] **Bulk Customer Actions:** Implemented checkbox selection and bulk soft-deletion (Recycle Bin) for customer records, restricted to Admin/Super Admin roles (Aug 15, 2026).
-- [x] **SteadFast Success Counter:** Integrated a dedicated "SteadFast Success" metric on the Admin Dashboard to track confirmed API bookings, linked to filtered order results (Aug 15, 2026).
+- [x] **SteadFast Success Counter:** Integrated a dedicated "SteadFast Success" metric on the Admin Dashboard to track confirmed API bookings, including a details popup showing the last successful submission timestamp and order reference (Aug 15, 2026).
 - [x] **Audit Trail UI Enhancements:** Added real-time search and pagination to the Admin Customer Audit Trail modal for improved performance on mobile and large datasets (Aug 15, 2026).
 
 ## Documentation Strategy
