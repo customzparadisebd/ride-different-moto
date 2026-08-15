@@ -89,8 +89,9 @@ export function ProductImageUpload({
       status: "pending"
     }));
 
-    if (!multiple && newUploads.length > 0) {
-      setUploads([newUploads[0]]);
+    const firstUpload = newUploads[0];
+    if (!multiple && firstUpload) {
+      setUploads([firstUpload]);
     } else {
       setUploads(prev => [...prev, ...newUploads]);
     }
