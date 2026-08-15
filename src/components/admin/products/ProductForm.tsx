@@ -201,12 +201,12 @@ export function ProductForm({
         <Field
           label="Category"
           required
-          error={errors.category}
+          error={errors["category"]}
           example="Select the primary category"
         >
           <select
             className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow"
-            value={value.category}
+            value={value["category"]}
             onChange={(e) => set("category", e.target.value)}
           >
             {PRODUCT_CATEGORIES.map((category) => (
@@ -219,14 +219,14 @@ export function ProductForm({
         <Field
           label="Main Image URL"
           required
-          error={errors.imageUrl}
+          error={errors["imageUrl"]}
           example="Example: https://.../image.webp"
           guideline="Recommended: 1000x1000px WebP, <200KB. Optimized for fast mobile loading."
         >
           <Input
             className="h-11"
             placeholder="https://example.com/product-image.jpg"
-            value={value.imageUrl}
+            value={value["imageUrl"]}
             onChange={(e) => set("imageUrl", e.target.value)}
           />
         </Field>
