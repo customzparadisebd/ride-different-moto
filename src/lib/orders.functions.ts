@@ -652,22 +652,43 @@ export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersManage);
 
+    // COMPLETED status is restricted to Admin/Super Admin
+    if (data.status === "completed") {
+      const { hasRole } = await import("./admin.server");
+      const isAdmin =
+        (await hasRole(context.userId, "super_admin")) || (await hasRole(context.userId, "admin"));
+      if (!isAdmin) {
+        throw new Error("Only Admin or Super Admin can mark orders as COMPLETED.");
+      }
+    }
+
     const { error } = await context.supabase
       .from("orders")
       .update({ status: data.status })
       .in("id", data.orderIds);
     if (error) throw new Error("Could not update the selected orders.");
 
+    const { deductInventoryForOrder } = await import("./inventory.server");
+
     await Promise.all(
-      data.orderIds.map((orderId: string) =>
-        logOrderEvent(orderId, {
+      data.orderIds.map(async (orderId: string) => {
+        await logOrderEvent(orderId, {
           eventType: "order_updated",
           message: `Status changed to ${data.status} (bulk update)`,
           actor: context.userId,
           actorLabel: "admin",
           metadata: { status: data.status, bulk: true },
-        }),
-      ),
+        });
+
+        // Trigger stock deduction if bulk changing to COMPLETED
+        if (data.status === "completed") {
+          try {
+            await deductInventoryForOrder(orderId);
+          } catch (e) {
+            console.error(`Bulk stock deduction failed for ${orderId}:`, e);
+          }
+        }
+      }),
     );
 
     await auditFromActor(actor, {
