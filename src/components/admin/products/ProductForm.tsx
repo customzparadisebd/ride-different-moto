@@ -41,6 +41,9 @@ export type ProductFormValue = {
   isFeatured: boolean;
   isNewArrival: boolean;
   isActive: boolean;
+  videoEnabled: boolean;
+  videoPlatform: string;
+  videoUrl: string;
 };
 
 export const emptyProductForm: ProductFormValue = {
@@ -64,6 +67,9 @@ export const emptyProductForm: ProductFormValue = {
   isFeatured: false,
   isNewArrival: false,
   isActive: true,
+  videoEnabled: false,
+  videoPlatform: "youtube",
+  videoUrl: "",
 };
 
 export function toProductInput(value: ProductFormValue): ProductInput {
@@ -95,6 +101,9 @@ export function toProductInput(value: ProductFormValue): ProductInput {
     isFeatured: value.isFeatured,
     isNewArrival: value.isNewArrival,
     isActive: value.isActive,
+    videoEnabled: value.videoEnabled,
+    videoPlatform: value.videoPlatform as any,
+    videoUrl: value.videoUrl.trim(),
   };
 }
 

@@ -15,7 +15,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./storefront.shared";
 
 const PRODUCT_FIELDS =
-  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, deleted_at, sort_order";
+  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, video_enabled, video_platform, video_url, deleted_at, sort_order";
 
 const COLOR_FIELDS = "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
@@ -95,6 +95,9 @@ function toProduct(
     colors,
     has360View: Boolean(row["has_360_view"]),
     product360Images,
+    videoEnabled: Boolean(row["video_enabled"]),
+    videoPlatform: (row["video_platform"] as any) || null,
+    videoUrl: (row["video_url"] as string | null) || null,
     sortOrder,
   };
 }
