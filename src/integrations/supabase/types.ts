@@ -964,6 +964,51 @@ export type Database = {
         }
         Relationships: []
       }
+      order_damages: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          processed_by: string
+          product_id: string
+          quantity: number
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          processed_by: string
+          product_id: string
+          quantity: number
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          processed_by?: string
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_damages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_damages_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_events: {
         Row: {
           actor: string | null
@@ -1051,6 +1096,100 @@ export type Database = {
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_returns: {
+        Row: {
+          created_at: string
+          id: string
+          order_id: string
+          processed_by: string
+          product_id: string
+          quantity: number
+          reason: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          order_id: string
+          processed_by: string
+          product_id: string
+          quantity: number
+          reason?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          order_id?: string
+          processed_by?: string
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_returns_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_returns_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_stock_deductions: {
+        Row: {
+          deducted_at: string
+          id: string
+          order_id: string
+          order_item_id: string
+          product_id: string
+          quantity: number
+        }
+        Insert: {
+          deducted_at?: string
+          id?: string
+          order_id: string
+          order_item_id: string
+          product_id: string
+          quantity: number
+        }
+        Update: {
+          deducted_at?: string
+          id?: string
+          order_id?: string
+          order_item_id?: string
+          product_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_stock_deductions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_stock_deductions_order_item_id_fkey"
+            columns: ["order_item_id"]
+            isOneToOne: true
+            referencedRelation: "order_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_stock_deductions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]
@@ -1370,6 +1509,7 @@ export type Database = {
           name: string
           offer_enabled: boolean
           offer_price: number | null
+          out_of_stock_toggle: boolean | null
           price: number
           sku: string
           slug: string
@@ -1415,6 +1555,7 @@ export type Database = {
           name: string
           offer_enabled?: boolean
           offer_price?: number | null
+          out_of_stock_toggle?: boolean | null
           price?: number
           sku: string
           slug: string
@@ -1460,6 +1601,7 @@ export type Database = {
           name?: string
           offer_enabled?: boolean
           offer_price?: number | null
+          out_of_stock_toggle?: boolean | null
           price?: number
           sku?: string
           slug?: string
