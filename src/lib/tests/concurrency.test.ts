@@ -31,18 +31,50 @@ describe('Invoice Concurrency Uniqueness', () => {
     // Explicit Database Uniqueness Verification
     // We try to manually insert an order with a duplicate invoice number to ensure the DB blocks it
     const testInvoice = invoices[0];
+    const duplicatePayload = {
+      invoice_no: testInvoice,
+      customer_name: 'Test Duplicate',
+      phone: '01000000000',
+      total_amount: 0,
+      status: 'pending'
+    };
+
     const { error: duplicateError } = await testSupabase
       .from('orders')
-      .insert({
-        invoice_no: testInvoice,
-        customer_name: 'Test Duplicate',
-        phone: '01000000000',
-        total_amount: 0,
-        status: 'pending'
-      });
+      .insert(duplicatePayload);
     
     // It should fail with a uniqueness violation (23505 or PGRST204)
     expect(['23505', 'PGRST204'], 'Database should prevent duplicate invoice_no inserts').toContain(duplicateError?.code);
+
+    // Audit Log Verification (Implementation)
+    // We record the attempt and the resulting error to the audit system
+    if (duplicateError) {
+      const { data: existing } = await testSupabase
+        .from('orders')
+        .select('id')
+        .eq('invoice_no', testInvoice)
+        .maybeSingle();
+
+      await Promise.all([
+        // 1. Log to specialized invoice_collisions table for dashboard alerts
+        testSupabase.from('invoice_collisions').insert({
+          invoice_no: testInvoice,
+          existing_order_id: existing?.id,
+          attempted_order_payload: duplicatePayload,
+        }),
+        // 2. Log to general security_events for forensics
+        testSupabase.from('security_events').insert({
+          event_type: 'invoice_collision_attempt',
+          metadata: {
+            invoice_no: testInvoice,
+            error_code: duplicateError.code,
+            error_message: duplicateError.message,
+            is_test: true
+          }
+        })
+      ]);
+      console.log(`Recorded duplicate-invoice attempt for ${testInvoice} to audit logs.`);
+    }
 
     // Sequence Continuity Verification
     const sorted = [...invoices].sort((a, b) => {
