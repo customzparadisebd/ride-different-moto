@@ -346,8 +346,6 @@ function Field({
 }) {
   return (
     <div className={rest.className}>
-  return (
-    <div className={className}>
       <Label htmlFor={id} className="text-xs uppercase tracking-wider text-muted-foreground">
         {label}
       </Label>
@@ -363,5 +361,7 @@ function Field({
         />
       </div>
     </div>
+  );
+}
   );
 }
