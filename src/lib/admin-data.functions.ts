@@ -3,20 +3,46 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
-type MetricRow = {
-  created_at: string;
-  total: number;
-  advance_paid: number;
-  status: string;
-  payment_status: string;
-};
-
 const startOfDayISO = (daysAgo: number) => {
   const date = new Date();
   date.setHours(0, 0, 0, 0);
   date.setDate(date.getDate() - daysAgo);
   return date.toISOString();
 };
+
+/**
+ * Calculates Today's Sales based on successful SteadFast submissions
+ * in the Bangladesh Standard Time (UTC+6) window of 8:00 AM to 8:00 PM.
+ */
+function getTodaysSalesWindow() {
+  // Current UTC time
+  const now = new Date();
+  
+  // Bangladesh is UTC+6
+  const offset = 6 * 60; // 6 hours in minutes
+  const bdNow = new Date(now.getTime() + offset * 60000);
+  
+  // Create start (8:00 AM BD) and end (8:00 PM BD) for "today" in BD time
+  const bdStart = new Date(bdNow);
+  bdStart.setUTCHours(8, 0, 0, 0);
+  
+  const bdEnd = new Date(bdNow);
+  bdEnd.setUTCHours(20, 0, 0, 0);
+
+  // If current BD time is before 8:00 AM, the "sales window" might be empty or 
+  // refer to the previous day? Requirement says "Orders submitted between 8:00 PM 
+  // and 8:00 AM should not be counted in the current day's sales window."
+  // So we just take the range for the current BD day.
+  
+  // Convert back to UTC for querying the database
+  const utcStart = new Date(bdStart.getTime() - offset * 60000);
+  const utcEnd = new Date(bdEnd.getTime() - offset * 60000);
+  
+  return {
+    start: utcStart.toISOString(),
+    end: utcEnd.toISOString(),
+  };
+}
 
 export const getDashboardMetrics = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -37,8 +63,9 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     const monthISO = monthStart.toISOString();
 
     const historyStart = startOfDayISO(13); // Last 14 days
+    const salesWindow = getTodaysSalesWindow();
 
-    const [orders, recent, inventory, statusCountsRaw, steadfastStats] = await Promise.all([
+    const [orders, recent, inventory, statusCountsRaw, steadfastStats, todaysSalesShipments] = await Promise.all([
       context.supabase
         .from("orders")
         .select("created_at, total, status")
@@ -59,6 +86,14 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .from("steadfast_stats" as any)
         .select("successful_submissions_count, last_success_at, last_order_id, last_invoice_no")
         .maybeSingle(),
+      // Fetch successful SteadFast submissions in the specified window
+      context.supabase
+        .from("courier_shipments")
+        .select("order_id, cod_amount, delivery_charge")
+        .eq("courier_name", "SteadFast")
+        .eq("success", true)
+        .gte("booked_at", salesWindow.start)
+        .lte("booked_at", salesWindow.end)
     ]);
 
     const orderRows = (orders.data as any[]) ?? [];
@@ -67,6 +102,24 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     // Revenue logic: ONLY from 'completed' orders as per requirement
     const getRevenue = (rows: any[]) =>
       rows.filter((r) => r.status === "completed").reduce((sum, r) => sum + Number(r.total), 0);
+
+    // TODAY'S SALES Calculation (SteadFast window rule)
+    // "Calculate the displayed sales amount from the applicable order amount according to the existing order/payment logic."
+    // We need the order totals for these shipments.
+    let todaysSalesTotal = 0;
+    const shipmentOrderIds = (todaysSalesShipments.data as any[])?.map(s => s.order_id) || [];
+    
+    if (shipmentOrderIds.length > 0) {
+      // Get unique order IDs to avoid double counting
+      const uniqueOrderIds = [...new Set(shipmentOrderIds)];
+      const { data: shipmentOrders } = await context.supabase
+        .from("orders")
+        .select("total")
+        .in("id", uniqueOrderIds)
+        .is("deleted_at", null);
+      
+      todaysSalesTotal = (shipmentOrders as any[])?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
+    }
 
     const productRows = (inventory.data as any[]) ?? [];
     const activeProducts = productRows.filter((p) => p.is_active);
@@ -116,8 +169,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
 
     return {
       today: {
-        orders: todayRows.length,
-        revenue: getRevenue(todayRows),
+        orders: shipmentOrderIds.length,
+        revenue: todaysSalesTotal,
       },
       month: {
         orders: orderRows.length,
