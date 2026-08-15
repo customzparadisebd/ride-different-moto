@@ -108,30 +108,64 @@ export function ProductForm({
   onCancel: () => void;
 }) {
   const [value, setValue] = useState<ProductFormValue>(initial);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const set = <K extends keyof ProductFormValue>(key: K, next: ProductFormValue[K]) =>
+  const set = <K extends keyof ProductFormValue>(key: K, next: ProductFormValue[K]) => {
     setValue((current) => ({ ...current, [key]: next }));
+    if (errors[key]) {
+      setErrors((prev) => {
+        const nextErrors = { ...prev };
+        delete nextErrors[key];
+        return nextErrors;
+      });
+    }
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!value.name.trim()) newErrors.name = "Product name is required.";
+    else if (value.name.trim().length < 2) newErrors.name = "Product name must be at least 2 characters.";
+
+    if (!value.sku.trim()) newErrors.sku = "SKU is required.";
+
+    if (!value.price.trim()) newErrors.price = "Regular price is required.";
+    else if (!(Number(value.price) > 0)) newErrors.price = "Please enter a valid regular price greater than 0.";
+
+    if (value.offerPrice.trim()) {
+      if (!(Number(value.offerPrice) > 0)) {
+        newErrors.offerPrice = "Please enter a valid offer price.";
+      } else if (Number(value.offerPrice) >= Number(value.price)) {
+        newErrors.offerPrice = "Offer Price cannot be higher than Regular Price.";
+      }
+    }
+
+    if (!value.category) newErrors.category = "Please select a valid category.";
+
+    if (!value.imageUrl.trim()) newErrors.imageUrl = "Main product image URL is required.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (value.name.trim().length < 2) return setError("Enter the product name.");
-    if (value.sku.trim().length < 2) return setError("Enter an SKU.");
-    if (!(Number(value.price) > 0)) return setError("Enter a regular price greater than zero.");
-    if (value.offerPrice.trim() && Number(value.offerPrice) >= Number(value.price)) {
-      return setError("The offer price must be lower than the regular price.");
+    if (validate()) {
+      onSubmit(value);
     }
-    setError(null);
-    onSubmit(value);
-    return undefined;
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        <Field label="Product name">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field
+          label="Product name"
+          required
+          error={errors.name}
+          example="Example: Bajaj Pulsar N160 Front Mudguard"
+        >
           <Input
             className="h-11"
+            placeholder="Enter full product name"
             value={value.name}
             onChange={(event) => {
               set("name", event.target.value);
@@ -139,19 +173,39 @@ export function ProductForm({
             }}
           />
         </Field>
-        <Field label="SKU">
-          <Input className="h-11" value={value.sku} onChange={(e) => set("sku", e.target.value)} />
-        </Field>
-        <Field label="URL slug">
+        <Field
+          label="SKU"
+          required
+          error={errors.sku}
+          example="Example: CZP-MUD-001"
+        >
           <Input
             className="h-11"
+            placeholder="Unique stock keeping unit"
+            value={value.sku}
+            onChange={(e) => set("sku", e.target.value)}
+          />
+        </Field>
+        <Field
+          label="URL slug"
+          required
+          example="Example: pulsar-n160-front-mudguard"
+        >
+          <Input
+            className="h-11"
+            placeholder="URL-friendly identifier"
             value={value.slug}
             onChange={(e) => set("slug", slugify(e.target.value))}
           />
         </Field>
-        <Field label="Category">
+        <Field
+          label="Category"
+          required
+          error={errors.category}
+          example="Select the primary category"
+        >
           <select
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow"
             value={value.category}
             onChange={(e) => set("category", e.target.value)}
           >
@@ -162,70 +216,123 @@ export function ProductForm({
             ))}
           </select>
         </Field>
-        <Field label="Image URL">
+        <Field
+          label="Main Image URL"
+          required
+          error={errors.imageUrl}
+          example="Example: https://.../image.webp"
+          guideline="Recommended: 1000x1000px WebP, <200KB. Optimized for fast mobile loading."
+        >
           <Input
             className="h-11"
+            placeholder="https://example.com/product-image.jpg"
             value={value.imageUrl}
             onChange={(e) => set("imageUrl", e.target.value)}
           />
         </Field>
-        <Field label="Bike compatibility (comma separated)">
+        <Field
+          label="Bike compatibility"
+          example="Example: Pulsar N160, Pulsar N250, Dominar 400"
+        >
           <Input
             className="h-11"
-            placeholder="Yamaha R15 V3, Pulsar NS160"
+            placeholder="Comma separated bike models"
             value={value.bikeCompatibility}
             onChange={(e) => set("bikeCompatibility", e.target.value)}
           />
         </Field>
-        <Field label="Regular price (৳)">
+        <Field
+          label="Regular price (৳)"
+          required
+          error={errors.price}
+          example="Example: 1200"
+        >
           <Input
             className="h-11"
             inputMode="numeric"
+            placeholder="0.00"
             value={value.price}
             onChange={(e) => set("price", e.target.value)}
           />
         </Field>
-        <Field label="Offer price (৳, optional)">
+        <Field
+          label="Offer price (৳)"
+          optional
+          error={errors.offerPrice}
+          example="Example: 950 (Must be lower than regular price)"
+        >
           <Input
             className="h-11"
             inputMode="numeric"
+            placeholder="Optional discount price"
             value={value.offerPrice}
             onChange={(e) => set("offerPrice", e.target.value)}
           />
         </Field>
-        <Field label="Stock quantity">
+        <Field
+          label="Stock quantity"
+          required
+          example="Example: 25"
+        >
           <Input
             className="h-11"
             inputMode="numeric"
+            placeholder="Available stock"
             value={value.stockQty}
             onChange={(e) => set("stockQty", e.target.value)}
           />
         </Field>
-        <Field label="Custom badge text (optional)">
+        <Field
+          label="Custom badge text"
+          optional
+          example="Example: Best Seller, Limited Edition"
+        >
           <Input
             className="h-11"
-            placeholder="Top Seller"
+            placeholder="Badge text (e.g. 15% OFF)"
             value={value.badgeText}
             onChange={(e) => set("badgeText", e.target.value)}
           />
         </Field>
-        <Field label="Description" className="sm:col-span-2">
+        <Field
+          label="Short Description"
+          required
+          example="Example: High-quality carbon fiber mudguard for Bajaj Pulsar N160."
+          className="sm:col-span-2"
+        >
           <Textarea
-            rows={3}
+            rows={2}
+            placeholder="Brief overview for search and catalog pages"
             value={value.description}
             onChange={(e) => set("description", e.target.value)}
           />
         </Field>
-        <Field label="Full product details" className="sm:col-span-2">
+        <Field
+          label="Full product details"
+          required
+          example="Include materials, fitment, included items, and installation instructions."
+          className="sm:col-span-2"
+        >
           <Textarea
-            rows={4}
-            placeholder="Materials, fitment notes, what is in the box…"
+            rows={5}
+            placeholder="Full technical specifications and details"
             value={value.details}
             onChange={(e) => set("details", e.target.value)}
           />
         </Field>
-        <Field label="Gallery image URLs (one per line)" className="sm:col-span-2">
-          <Textarea rows={3} value={value.images} onChange={(e) => set("images", e.target.value)} />
+        <Field
+          label="Gallery image URLs"
+          optional
+          example="Paste one URL per line"
+          guideline="Recommended: Up to 5 additional images. 1000x1000px WebP format."
+          className="sm:col-span-2"
+        >
+          <Textarea
+            rows={3}
+            placeholder="https://example.com/gallery1.webp&#10;https://example.com/gallery2.webp"
+            value={value.images}
+            onChange={(e) => set("images", e.target.value)}
+          />
         </Field>
       </div>
 
@@ -265,7 +372,11 @@ export function ProductForm({
         </p>
       ) : null}
 
-      {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
+      {Object.keys(errors).length > 0 ? (
+        <p className="text-sm font-bold text-destructive animate-in fade-in slide-in-from-top-1 duration-200">
+          Please correct the highlighted fields before saving.
+        </p>
+      ) : null}
 
       <div className="flex flex-wrap gap-2">
         <Button type="submit" variant="red" size="touch" disabled={isPending}>
@@ -283,15 +394,49 @@ function Field({
   label,
   children,
   className,
+  required,
+  optional,
+  error,
+  example,
+  guideline,
 }: {
   label: string;
   children: React.ReactNode;
   className?: string;
+  required?: boolean;
+  optional?: boolean;
+  error?: string;
+  example?: string;
+  guideline?: string;
 }) {
   return (
     <div className={className}>
-      <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
-      <div className="mt-1.5">{children}</div>
+      <div className="flex items-center justify-between mb-1.5">
+        <Label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
+          {label}
+          {required && <span className="text-destructive font-black" title="Required">*</span>}
+          {optional && <span className="text-[10px] font-medium lowercase text-muted-foreground/60">(Optional)</span>}
+        </Label>
+        {example && (
+          <span className="text-[10px] italic text-muted-foreground/50 hidden sm:inline truncate max-w-[200px]">
+            {example}
+          </span>
+        )}
+      </div>
+      <div>
+        {children}
+        {guideline && (
+          <p className="mt-1.5 text-[10px] leading-tight text-cyan-500 font-medium">
+            <span className="font-bold uppercase mr-1 opacity-70">Recommended:</span>
+            {guideline}
+          </p>
+        )}
+        {error && (
+          <p className="mt-1 text-xs font-semibold text-destructive animate-in fade-in slide-in-from-top-1">
+            {error}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
