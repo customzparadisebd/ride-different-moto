@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AddUserDialog } from "@/components/admin/AddUserDialog";
 import { UserActivityDialog } from "@/components/admin/UserActivityDialog";
+import { UserPermissionsDialog } from "@/components/admin/UserPermissionsDialog";
 
 import {
   deleteStaff,
@@ -61,6 +62,9 @@ function StaffPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [activityUserId, setActivityUserId] = useState<string | null>(null);
   const [activityUserName, setActivityUserName] = useState<string>("");
+  const [permissionsUserId, setPermissionsUserId] = useState<string | null>(null);
+  const [permissionsUserName, setPermissionsUserName] = useState<string>("");
+  const [initialPermissions, setInitialPermissions] = useState<Permission[]>([]);
 
   const staff = useQuery({ 
     queryKey: ["admin-staff"], 
@@ -250,6 +254,18 @@ function StaffPage() {
                             <Edit2 className="mr-2 size-3.5" />
                             Edit Name
                           </DropdownMenuItem>
+                          
+                          {access.isSuperAdmin && !isSelf && (
+                            <DropdownMenuItem onClick={() => {
+                              setPermissionsUserId(member.id);
+                              setPermissionsUserName(member.full_name);
+                              setInitialPermissions(member.permissions || []);
+                            }}>
+                              <Shield className="mr-2 size-3.5" />
+                              Edit Permissions
+                            </DropdownMenuItem>
+                          )}
+
                           <DropdownMenuItem onClick={() => handlePasswordReset(member.id)}>
                             <KeyRound className="mr-2 size-3.5" />
                             Change Password
@@ -315,6 +331,14 @@ function StaffPage() {
         userName={activityUserName || ""}
         open={!!activityUserId}
         onOpenChange={(open) => !open && setActivityUserId(null)}
+      />
+
+      <UserPermissionsDialog
+        userId={permissionsUserId}
+        userName={permissionsUserName}
+        initialPermissions={initialPermissions}
+        open={!!permissionsUserId}
+        onOpenChange={(open) => !open && setPermissionsUserId(null)}
       />
     </div>
   );
