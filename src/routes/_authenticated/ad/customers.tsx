@@ -303,6 +303,7 @@ function CustomerAuditTrailButton({
     queryKey: ["admin-customer-audit", customerId, page, search],
     queryFn: () => fetchAudit({ data: { customerId, page, search } }),
     enabled: isOpen,
+    placeholderData: (prev) => prev,
   });
 
   if (!canView) return null;

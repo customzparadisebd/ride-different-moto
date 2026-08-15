@@ -107,7 +107,7 @@ function AdminDashboard() {
           icon={<ShoppingCart className="h-4 w-4 text-sky-500" />}
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
-        <Link to="/ad/orders" search={{ courier: 'SteadFast' }}>
+        <Link to="/ad/orders" search={{ courier: 'SteadFast' } as any}>
           <StatCard 
             title="STEADFAST SUCCESS" 
             value={data.steadfastSuccessCount}

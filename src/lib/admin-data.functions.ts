@@ -65,6 +65,10 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .select("id, stock_qty, low_stock_threshold, is_active")
         .is("deleted_at", null),
       context.supabase
+        .from("orders")
+        .select("status")
+        .is("deleted_at", null),
+      context.supabase
         .from("steadfast_stats")
         .select("successful_submissions_count")
         .maybeSingle(),
@@ -86,7 +90,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     const outOfStock = productRows.filter(p => (p.stock_qty || 0) <= 0);
 
     const statusCounts: Record<string, number> = {};
-    (statusCountsRaw.data ?? []).forEach(r => {
+    const countsArr = Array.isArray(statusCountsRaw.data) ? statusCountsRaw.data : [];
+    countsArr.forEach((r: any) => {
       statusCounts[r.status] = (statusCounts[r.status] ?? 0) + 1;
     });
 

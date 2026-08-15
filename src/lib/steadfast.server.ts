@@ -161,7 +161,7 @@ export async function bookOrderWithSteadfast(
       })
       .eq("id", order.id);
 
-    await supabaseAdmin.rpc("increment_steadfast_count");
+    await supabaseAdmin.rpc("increment_steadfast_count" as any);
 
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
