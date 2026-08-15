@@ -86,6 +86,12 @@ const ADMINISTRATION: NavItem[] = [
     icon: Settings,
     permission: PERMISSIONS.productsManage,
   },
+  {
+    to: "/ad/settings/invoice",
+    label: "Invoice settings",
+    icon: ScrollText,
+    permission: PERMISSIONS.productsManage,
+  },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
   {
     to: "/ad/security-events",

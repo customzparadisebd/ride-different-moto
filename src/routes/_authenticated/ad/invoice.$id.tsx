@@ -76,13 +76,18 @@ function InvoicePage() {
     <div className="mx-auto min-h-screen bg-neutral-900 p-4 font-mono text-white print:bg-white print:p-0 print:text-black sm:p-8">
       {/* Action Bar */}
       <div className="mx-auto mb-6 flex max-w-[680px] items-center justify-between gap-3 print:hidden">
-        <Link
-          to="/ad/orders/$id"
-          params={{ id }}
-          className="text-xs uppercase tracking-wider text-neutral-400 hover:text-white underline transition-colors"
-        >
-          ← Back to order
-        </Link>
+        <div className="flex flex-col">
+          <Link
+            to="/ad/orders/$id"
+            params={{ id }}
+            className="text-xs uppercase tracking-wider text-neutral-400 hover:text-white underline transition-colors"
+          >
+            ← Back to order
+          </Link>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-primary mt-1">
+            Invoice Preview
+          </span>
+        </div>
         <Button variant="red" size="sm" onClick={handlePrint}>
           Print / Save PDF
         </Button>
@@ -120,11 +125,15 @@ function InvoicePage() {
             </h2>
             <div className="space-y-2 text-sm">
               <p className="flex justify-between sm:justify-start sm:gap-4">
-                <span className="text-neutral-500">Invoice No:</span>
+                <span className="text-neutral-500">Invoice Number:</span>
                 <span className="font-bold">#{order.invoice_no}</span>
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
-                <span className="text-neutral-500">Date:</span>
+                <span className="text-neutral-500">Order ID:</span>
+                <span className="font-mono text-[10px]">{order.id}</span>
+              </p>
+              <p className="flex justify-between sm:justify-start sm:gap-4">
+                <span className="text-neutral-500">Order Date:</span>
                 <span>
                   {new Date(order.created_at).toLocaleString("en-GB", {
                     day: "2-digit",
@@ -134,6 +143,10 @@ function InvoicePage() {
                     minute: "2-digit",
                   })}
                 </span>
+              </p>
+              <p className="flex justify-between sm:justify-start sm:gap-4">
+                <span className="text-neutral-500">Order Status:</span>
+                <span className="uppercase font-bold tracking-wider">{order.status}</span>
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
                 <span className="text-neutral-500">Payment:</span>
@@ -147,13 +160,20 @@ function InvoicePage() {
               Invoice To
             </h2>
             <div className="space-y-2 text-sm">
-              <p className="font-bold">{order.customer_name}</p>
-              <p className="break-words text-neutral-400 print:text-neutral-600">
-                {order.address_line}, {order.city}
+              <p className="font-bold flex gap-2">
+                <span className="text-neutral-500 font-normal">Customer Name:</span>
+                {order.customer_name}
               </p>
-              <p className="text-neutral-300 print:text-neutral-700">
-                Phone: {order.customer_phone}
+              <p className="text-neutral-300 print:text-neutral-700 flex gap-2">
+                <span className="text-neutral-500 font-normal">Phone Number:</span>
+                {order.customer_phone}
               </p>
+              <div className="flex gap-2">
+                <span className="text-neutral-500 shrink-0">Full Address:</span>
+                <p className="break-words text-neutral-400 print:text-neutral-600">
+                  {order.address_line}, {order.city}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -163,7 +183,7 @@ function InvoicePage() {
           <table className="w-full text-left text-sm">
             <thead className="border-b border-dashed border-neutral-700 text-xs font-bold uppercase tracking-wider text-neutral-500">
               <tr>
-                <th className="py-3 px-2">Product Description</th>
+                <th className="py-3 px-2">Product Name</th>
                 <th className="py-3 px-2 text-center">Qty</th>
                 <th className="py-3 px-2 text-right">Price</th>
                 <th className="py-3 px-2 text-right">Total</th>
@@ -197,27 +217,27 @@ function InvoicePage() {
         <div className="mt-8 flex justify-end">
           <dl className="w-full max-w-[280px] space-y-2 text-sm border-t border-dashed border-neutral-700 pt-4">
             <div className="flex justify-between">
-              <dt className="text-neutral-500">Sub Total:</dt>
+              <dt className="text-neutral-500">Subtotal:</dt>
               <dd className="tabular-nums">{formatBDT(Number(order.subtotal))}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-neutral-500">Delivery Fee:</dt>
-              <dd className="tabular-nums">{formatBDT(Number(order.shipping))}</dd>
             </div>
             <div className="flex justify-between text-red-500">
               <dt>Discount:</dt>
               <dd className="tabular-nums">-{formatBDT(Number(order.discount))}</dd>
             </div>
-            <div className="flex justify-between border-t border-neutral-700 pt-2 text-lg font-black">
-              <dt className="uppercase tracking-tighter">Grand Total:</dt>
-              <dd className="tabular-nums">{formatBDT(Number(order.total))}</dd>
-            </div>
             {Number(order.advance_paid) > 0 && (
               <div className="flex justify-between text-xs text-neutral-400">
-                <dt>Advance Paid:</dt>
+                <dt>Advance Payment:</dt>
                 <dd className="tabular-nums">{formatBDT(Number(order.advance_paid))}</dd>
               </div>
             )}
+            <div className="flex justify-between">
+              <dt className="text-neutral-500">Delivery Charge:</dt>
+              <dd className="tabular-nums">{formatBDT(Number(order.shipping))}</dd>
+            </div>
+            <div className="flex justify-between border-t border-neutral-700 pt-2 text-lg font-black">
+              <dt className="uppercase tracking-tighter">Total / Payable Amount:</dt>
+              <dd className="tabular-nums">{formatBDT(Number(order.total))}</dd>
+            </div>
             {due > 0 && (
               <div className="flex justify-between border-t border-neutral-800 pt-1 font-bold text-yellow-500">
                 <dt>Due Amount:</dt>

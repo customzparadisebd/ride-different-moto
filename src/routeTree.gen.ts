@@ -53,6 +53,7 @@ import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
 import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
+import { Route as AuthenticatedAdSettingsInvoiceRouteImport } from './routes/_authenticated/ad/settings/invoice'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -281,6 +282,12 @@ const AuthenticatedAdOrdersNewRoute =
     path: '/orders/new',
     getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
+const AuthenticatedAdSettingsInvoiceRoute =
+  AuthenticatedAdSettingsInvoiceRouteImport.update({
+    id: '/invoice',
+    path: '/invoice',
+    getParentRoute: () => AuthenticatedAdSettingsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -318,13 +325,14 @@ export interface FileRoutesByFullPath {
   '/ad/security': typeof AuthenticatedAdSecurityRoute
   '/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
-  '/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/ad/settings': typeof AuthenticatedAdSettingsRouteWithChildren
   '/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
   '/ad/': typeof AuthenticatedAdIndexRoute
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
   '/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -362,13 +370,14 @@ export interface FileRoutesByTo {
   '/ad/security': typeof AuthenticatedAdSecurityRoute
   '/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
-  '/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/ad/settings': typeof AuthenticatedAdSettingsRouteWithChildren
   '/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
   '/ad': typeof AuthenticatedAdIndexRoute
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
   '/ad/orders': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesById {
@@ -409,13 +418,14 @@ export interface FileRoutesById {
   '/_authenticated/ad/security': typeof AuthenticatedAdSecurityRoute
   '/_authenticated/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/_authenticated/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
-  '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRoute
+  '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRouteWithChildren
   '/_authenticated/ad/staff': typeof AuthenticatedAdStaffRoute
   '/api/hero/upload': typeof ApiHeroUploadRoute
   '/_authenticated/ad/': typeof AuthenticatedAdIndexRoute
   '/_authenticated/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/_authenticated/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/_authenticated/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/_authenticated/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
   '/_authenticated/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRouteTypes {
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
     | '/ad/orders/new'
+    | '/ad/settings/invoice'
     | '/ad/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -507,6 +518,7 @@ export interface FileRouteTypes {
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
     | '/ad/orders/new'
+    | '/ad/settings/invoice'
     | '/ad/orders'
   id:
     | '__root__'
@@ -553,6 +565,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/invoice/$id'
     | '/_authenticated/ad/orders/$id'
     | '/_authenticated/ad/orders/new'
+    | '/_authenticated/ad/settings/invoice'
     | '/_authenticated/ad/orders/'
   fileRoutesById: FileRoutesById
 }
@@ -892,8 +905,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdOrdersNewRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/_authenticated/ad/settings/invoice': {
+      id: '/_authenticated/ad/settings/invoice'
+      path: '/invoice'
+      fullPath: '/ad/settings/invoice'
+      preLoaderRoute: typeof AuthenticatedAdSettingsInvoiceRouteImport
+      parentRoute: typeof AuthenticatedAdSettingsRoute
+    }
   }
 }
+
+interface AuthenticatedAdSettingsRouteChildren {
+  AuthenticatedAdSettingsInvoiceRoute: typeof AuthenticatedAdSettingsInvoiceRoute
+}
+
+const AuthenticatedAdSettingsRouteChildren: AuthenticatedAdSettingsRouteChildren =
+  {
+    AuthenticatedAdSettingsInvoiceRoute: AuthenticatedAdSettingsInvoiceRoute,
+  }
+
+const AuthenticatedAdSettingsRouteWithChildren =
+  AuthenticatedAdSettingsRoute._addFileChildren(
+    AuthenticatedAdSettingsRouteChildren,
+  )
 
 interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdAuditLogRoute: typeof AuthenticatedAdAuditLogRoute
@@ -909,7 +943,7 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
   AuthenticatedAdSecurityDashboardRoute: typeof AuthenticatedAdSecurityDashboardRoute
   AuthenticatedAdSecurityEventsRoute: typeof AuthenticatedAdSecurityEventsRoute
-  AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
+  AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRouteWithChildren
   AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
   AuthenticatedAdIndexRoute: typeof AuthenticatedAdIndexRoute
   AuthenticatedAdInvoiceIdRoute: typeof AuthenticatedAdInvoiceIdRoute
@@ -932,7 +966,7 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
   AuthenticatedAdSecurityDashboardRoute: AuthenticatedAdSecurityDashboardRoute,
   AuthenticatedAdSecurityEventsRoute: AuthenticatedAdSecurityEventsRoute,
-  AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
+  AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRouteWithChildren,
   AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
   AuthenticatedAdIndexRoute: AuthenticatedAdIndexRoute,
   AuthenticatedAdInvoiceIdRoute: AuthenticatedAdInvoiceIdRoute,

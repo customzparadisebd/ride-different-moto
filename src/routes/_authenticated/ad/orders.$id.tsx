@@ -107,7 +107,7 @@ function AdminOrderDetail() {
         </Link>
         <Button variant="steel" size="sm" asChild>
           <Link to="/ad/invoice/$id" params={{ id: order.id }}>
-            Print invoice
+            Preview / Print Invoice
           </Link>
         </Button>
       </div>
