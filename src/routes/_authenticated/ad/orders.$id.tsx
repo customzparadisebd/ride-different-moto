@@ -116,11 +116,11 @@ function AdminOrderDetail() {
           {order.invoice_no}
         </h1>
         {order.is_pinned && (
-          <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 text-primary ring-1 ring-primary/40">
-            <Clock className="size-4" />
+          <div className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 ring-1 ring-primary/40">
+            <Pin className="size-3 text-primary fill-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Pinned</span>
           </div>
         )}
-        {order.is_pinned && <div className="rounded-full bg-primary/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary ring-1 ring-primary/40">Pinned</div>}
         <StatusBadge value={order.status} />
         <StatusBadge value={order.payment_status} />
         <StatusBadge value={order.courier_status} />
