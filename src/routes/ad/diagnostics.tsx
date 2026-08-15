@@ -96,6 +96,11 @@ function DiagnosticsPage() {
     },
   ];
 
+  const serverInfo = diagContext as {
+    supabaseConfig: { url: string; projectRef: string };
+    serverEnv: { nodeEnv: string; viteAppEnv: string; resolvedEnv: string };
+  };
+
   return (
     <div className="space-y-6">
       <div>
