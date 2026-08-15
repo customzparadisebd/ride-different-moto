@@ -120,7 +120,7 @@ export async function resolveActor(
       // reach the panel until an Admin/Super Admin approves them. Only the
       // documented owner account is auto-approved.
       access_status: isOwner ? "approved" : "pending",
-      mfa_required: isOwner,
+      mfa_required: true, // Everyone is now required to have MFA
       approved_at: isOwner ? new Date().toISOString() : null,
     });
   } else if (email) {
