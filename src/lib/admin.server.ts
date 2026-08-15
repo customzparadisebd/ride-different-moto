@@ -204,7 +204,7 @@ export async function resolveActor(
     isStaff: roles.length > 0 && status === "approved",
     // MFA is satisfied when Supabase issued an AAL2 token (password + TOTP).
     mfaSatisfied: claims?.aal === "aal2",
-    mfaRequired: isSuperAdmin || !!profile.data?.mfa_required,
+    mfaRequired: true, // Everyone is now required to have MFA
     sessionId,
     sessionRevoked,
     loginApprovalPending: status === "pending" && !isOwner,
