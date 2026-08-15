@@ -654,9 +654,7 @@ export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
 
     // COMPLETED status is restricted to Admin/Super Admin
     if (data.status === "completed") {
-      const { hasRole } = await import("./admin.server");
-      const isAdmin =
-        (await hasRole(context.userId, "super_admin")) || (await hasRole(context.userId, "admin"));
+      const isAdmin = actor.roles.includes("super_admin") || actor.roles.includes("admin");
       if (!isAdmin) {
         throw new Error("Only Admin or Super Admin can mark orders as COMPLETED.");
       }
