@@ -681,7 +681,7 @@ export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
         // Trigger stock deduction if bulk changing to COMPLETED
         if (data.status === "completed") {
           try {
-            await deductInventoryForOrder(orderId);
+            await deductInventoryForOrder(orderId, context.userId, "admin");
           } catch (e) {
             console.error(`Bulk stock deduction failed for ${orderId}:`, e);
           }
