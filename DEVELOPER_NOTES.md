@@ -29,6 +29,8 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Migration Readiness:** Authored `MIGRATION_GUIDE.md` and `ENV_TEMPLATE.md`. Generated a lossless SQL replay package in `supabase/exports/` including schema, data, and sequence synchronization (Aug 15, 2026).
 - [x] **Bug Fix:** Resolved 500 error in `getHeroSlides` by moving `supabaseAdmin` import inside the handler to prevent SSR environment variable resolution issues.
 - [x] **Admin Logo Optimization:** Enhanced Admin Panel logo with responsive sizing (h-10 to h-20) for better visibility and visual balance on larger desktop screens (Aug 15, 2026).
+- [x] **360° Product Viewer System:** Implemented a full-stack image-sequence viewer. Includes a dedicated Admin management panel for uploading, reordering, and enabling 360° views per-product, clear image guidelines (WebP, 1000x1000px), and a smooth interactive storefront viewer with drag/swipe support and lazy-loading for performance (Aug 15, 2026).
+
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.

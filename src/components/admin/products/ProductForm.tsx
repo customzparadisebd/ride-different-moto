@@ -27,6 +27,7 @@ export type ProductFormValue = {
   category: string;
   bikeCompatibility: string;
   isUniversal: boolean;
+  has360View: boolean;
   description: string;
   details: string;
   images: string;
@@ -49,6 +50,7 @@ export const emptyProductForm: ProductFormValue = {
   category: "accessories",
   bikeCompatibility: "",
   isUniversal: false,
+  has360View: false,
   description: "",
   details: "",
   images: "",
@@ -75,6 +77,7 @@ export function toProductInput(value: ProductFormValue): ProductInput {
       .map((entry) => entry.trim())
       .filter(Boolean),
     isUniversal: value.isUniversal,
+    has360View: value.has360View,
     description: value.description.trim(),
     details: value.details.trim(),
     // One gallery image URL per line.
@@ -341,6 +344,11 @@ export function ProductForm({
           label="Active (visible on the website)"
           checked={value.isActive}
           onChange={(v) => set("isActive", v)}
+        />
+        <Check
+          label="Enable 360° View"
+          checked={value.has360View}
+          onChange={(v) => set("has360View", v)}
         />
         <Check
           label="Universal fit"

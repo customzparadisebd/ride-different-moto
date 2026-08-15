@@ -9,11 +9,17 @@
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
 import { ProductGallery } from "@/components/product/ProductGallery";
+import { RotateCw } from "lucide-react";
+
+// 360 viewer is large, load lazily
+const Product360Viewer = lazy(() => 
+  import("@/components/product/Product360Viewer").then(m => ({ default: m.Product360Viewer }))
+);
 
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
@@ -129,6 +135,7 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
   const navigate = useNavigate();
   const [colorId, setColorId] = useState<string | null>(product.colors[0]?.id ?? null);
   const [qty, setQty] = useState(1);
+  const [show360, setShow360] = useState(false);
 
 
   const color = useMemo(
@@ -171,6 +178,30 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
           productName={product.name} 
           activeColorImage={color?.image ?? null} 
         />
+
+        {product.has360View && product.product360Images.length > 0 ? (
+          <div className="mt-4 flex justify-center lg:hidden">
+            <Button
+              variant="outline"
+              size="sm"
+              className="group flex items-center gap-2 rounded-full border-primary/30 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:border-primary hover:bg-primary/10"
+              onClick={() => setShow360(true)}
+            >
+              <RotateCw className="size-4 transition-transform group-hover:rotate-180" />
+              Interactive 360° View
+            </Button>
+          </div>
+        ) : null}
+
+        {show360 && (
+          <Suspense fallback={null}>
+            <Product360Viewer
+              images={product.product360Images}
+              productName={product.name}
+              onClose={() => setShow360(false)}
+            />
+          </Suspense>
+        )}
 
 
 
@@ -215,6 +246,24 @@ function ProductDetail({ product }: { product: StorefrontProduct }) {
 
           {product.description ? (
             <p className="mt-4 text-sm text-muted-foreground">{product.description}</p>
+          ) : null}
+
+          {product.has360View && product.product360Images.length > 0 ? (
+            <div className="mt-6 hidden lg:block">
+              <Button
+                variant="outline"
+                className="group flex items-center gap-3 rounded-xl border-primary/30 bg-primary/5 px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/10"
+                onClick={() => setShow360(true)}
+              >
+                <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:rotate-180">
+                  <RotateCw className="size-5" />
+                </div>
+                <div>
+                  <div className="text-left leading-none">Interactive</div>
+                  <div className="mt-1 text-left text-[10px] opacity-70">Experience 360° Rotation</div>
+                </div>
+              </Button>
+            </div>
           ) : null}
 
           {/* Colour chips: visible name + swatch, large touch targets. */}

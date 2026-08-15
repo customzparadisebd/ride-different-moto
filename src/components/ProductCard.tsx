@@ -9,6 +9,7 @@
 // ============================================================
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { RotateCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { SafeImage } from "@/components/SafeImage";
@@ -86,6 +87,12 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           {product.newArrival && (
             <span className="rounded border border-border bg-background px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-foreground sm:text-[10px]">
               New
+            </span>
+          )}
+          {product.has360View && (
+            <span className="flex items-center gap-1 rounded bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary-foreground sm:text-[10px]">
+              <RotateCw className="size-2.5 sm:size-3" />
+              360°
             </span>
           )}
         </div>

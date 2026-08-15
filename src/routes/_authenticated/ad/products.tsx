@@ -21,6 +21,7 @@ import {
   toProductInput,
 } from "@/components/admin/products/ProductForm";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
+import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +69,7 @@ type ProductRow = {
   is_featured: boolean;
   is_new_arrival: boolean;
   is_active: boolean;
+  has_360_view: boolean;
 };
 
 function toFormValue(row: ProductRow): ProductFormValue {
@@ -79,6 +81,7 @@ function toFormValue(row: ProductRow): ProductFormValue {
     category: row.category,
     bikeCompatibility: (row.bike_compatibility ?? []).join(", "),
     isUniversal: row.is_universal,
+    has360View: row.has_360_view ?? false,
     description: row.description ?? "",
     details: row.details ?? "",
     images: Array.isArray(row.images) ? (row.images as string[]).join("\n") : "",
@@ -113,6 +116,8 @@ function AdminProducts() {
   const [creating, setCreating] = useState(false);
   // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
   const [colorsFor, setColorsFor] = useState<ProductRow | null>(null);
+  // PRODUCT 360 MANAGEMENT
+  const [view360For, setView360For] = useState<ProductRow | null>(null);
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
@@ -247,6 +252,16 @@ function AdminProducts() {
           }
           canManage={canManage}
           onClose={() => setColorsFor(null)}
+        />
+      ) : null}
+
+      {view360For ? (
+        <Product360Panel
+          key={view360For.id}
+          productId={view360For.id}
+          productName={view360For.name}
+          canManage={canManage}
+          onClose={() => setView360For(null)}
         />
       ) : null}
 
@@ -434,6 +449,14 @@ function AdminProducts() {
                       </Button>
                       <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
                         Colours
+                      </Button>
+                      <Button
+                        variant="steel"
+                        size="sm"
+                        disabled={!canManage}
+                        onClick={() => setView360For(row)}
+                      >
+                        360 View
                       </Button>
                       <Button
                         variant="steel"
