@@ -55,7 +55,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
         (payload) => {
           const data = payload.new;
           toast.error("DUPLICATE INVOICE DETECTED", {
-            description: `Attempted Invoice: ${data.invoice_no}. Check collision logs immediately.`,
+            description: `Attempted Invoice: ${data['invoice_no']}. Check collision logs immediately.`,
             duration: 10000,
             icon: <AlertTriangle className="h-4 w-4 text-destructive" />,
           });
