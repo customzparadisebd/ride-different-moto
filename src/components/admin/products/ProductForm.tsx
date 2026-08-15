@@ -176,7 +176,7 @@ export function ProductForm({
         <Field
           label="SKU"
           required
-          error={errors["sku"]}
+          error={errors["sku"] || undefined}
           example="Example: CZP-MUD-001"
         >
           <Input
