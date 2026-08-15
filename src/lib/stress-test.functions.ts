@@ -13,7 +13,7 @@ export const runInvoiceStressTest = createServerFn({ method: "POST" })
     
     // We execute 10 calls to the database function simultaneously
     const tasks = Array.from({ length: 10 }).map(() => 
-      supabaseAdmin.rpc('generate_next_invoice_no')
+      supabaseAdmin.rpc('generate_next_invoice_no', { is_test: true })
     );
     
     const results = await Promise.all(tasks);

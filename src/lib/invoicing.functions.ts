@@ -55,12 +55,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       .eq("id", "default")
       .maybeSingle();
 
-    const { error } = await context.supabase
+      const { error } = await context.supabase
       .from("invoice_settings")
       .update({
         prefix: data.prefix,
         start_number: data.startNumber,
-        current_number: data.currentNumber,
+        current_number: data.currentNumber - 1, // Store n-1 so next generation gives n
         updated_at: new Date().toISOString(),
         updated_by: actor.userId,
       })
