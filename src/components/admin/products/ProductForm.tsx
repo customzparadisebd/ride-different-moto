@@ -6,6 +6,8 @@
 // Security: Presentation only; the server re-validates every field.
 // ============================================================
 import { useState } from "react";
+import { Play } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +21,7 @@ import {
   type ProductInput,
 } from "@/lib/products.shared";
 import { ProductImageUpload } from "./ProductImageUpload";
+import { VideoPreview } from "./VideoPreview";
 
 export type ProductFormValue = {
   name: string;
@@ -400,7 +403,7 @@ export function ProductForm({
           </div>
           <Switch
             checked={value.videoEnabled}
-            onCheckedChange={(v) => set("videoEnabled", v)}
+            onCheckedChange={(v: boolean) => set("videoEnabled", v)}
             className="data-[state=checked]:bg-red-500"
           />
         </div>
