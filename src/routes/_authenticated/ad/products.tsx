@@ -83,6 +83,7 @@ type ProductRow = {
   video_enabled: boolean;
   video_platform: string | null;
   video_url: string | null;
+  out_of_stock_toggle: boolean;
 };
 
 function toFormValue(row: ProductRow): ProductFormValue {
