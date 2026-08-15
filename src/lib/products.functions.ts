@@ -29,6 +29,12 @@ import {
   productColorReorderInput,
   PRODUCT_COLOR_COLUMNS,
   productColorToRow,
+  product360ImageInput,
+  product360ListInput,
+  product360DeleteInput,
+  product360ReorderInput,
+  PRODUCT_360_COLUMNS,
+  product360ToRow,
   PRODUCT_COLUMNS,
   PRODUCT_TOGGLE_COLUMNS,
   productToRow,
@@ -428,4 +434,103 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+// ============================================================
+// PRODUCT 360 VIEWER (admin)
+// Purpose: Manage 360° image sequences per product.
+// ============================================================
+export const listProduct360Images = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => product360ListInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.ordersView,
+    );
+
+    const { data: rows, error } = await context.supabase
+      .from("product_360_images")
+      .select(PRODUCT_360_COLUMNS)
+      .eq("product_id", data.productId)
+      .order("display_order");
+    if (error) throw new Error("Could not load the 360° images.");
+    return { rows: rows ?? [] };
+  });
+
+export const saveProduct360Image = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => product360ImageInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const row = product360ToRow(data);
+    if (data.id) {
+      const { error } = await context.supabase.from("product_360_images").update(row).eq("id", data.id);
+      if (error) throw new Error("Could not save the 360° image.");
+    } else {
+      const { error } = await context.supabase.from("product_360_images").insert(row);
+      if (error) throw new Error("Could not add the 360° image.");
+    }
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product_360_image",
+      targetId: data.id ?? data.productId,
+      newValue: row,
+    });
+    return { ok: true };
+  });
+
+export const deleteProduct360Image = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => product360DeleteInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const before = await context.supabase
+      .from("product_360_images")
+      .select(PRODUCT_360_COLUMNS)
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!before.data) throw new Error("360° image not found.");
+
+    const { error } = await context.supabase.from("product_360_images").delete().eq("id", data.id);
+    if (error) throw new Error("Could not remove the 360° image.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product_360_image",
+      targetId: data.id,
+      oldValue: before.data,
+    });
+    return { ok: true };
+  });
+
+export const reorderProduct360Images = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => product360ReorderInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.productsManage,
+    );
+
+    await Promise.all(
+      data.ids.map((id, index) =>
+        context.supabase
+          .from("product_360_images")
+          .update({ display_order: index })
+          .eq("id", id)
+          .eq("product_id", data.productId),
+      ),
+    );
+    return { ok: true };
+  });
+
 
