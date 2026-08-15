@@ -129,7 +129,7 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
                 />
                 <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <Button
+                    <Button aria-label="Pause preview"
                       size="icon"
                       variant="ghost"
                       className="size-8 rounded-full text-white hover:bg-white/20"

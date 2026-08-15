@@ -207,7 +207,7 @@ export function ProductImageUpload({
                     {upload.status}
                   </span>
                   {upload.status === "error" && (
-                    <Button
+                    <Button aria-label="Retry upload"
                       variant="ghost"
                       size="icon"
                       className="h-5 w-5"
@@ -216,7 +216,7 @@ export function ProductImageUpload({
                       <RefreshCw className="h-3 w-3" />
                     </Button>
                   )}
-                  <Button
+                  <Button aria-label="Remove"
                     variant="ghost"
                     size="icon"
                     className="h-5 w-5"
@@ -264,7 +264,7 @@ export function ProductImageUpload({
             />
 
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-              <Button
+              <Button aria-label="Remove"
                 type="button"
                 variant="destructive"
                 size="icon"

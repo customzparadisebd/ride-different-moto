@@ -191,7 +191,7 @@ export function Product360Panel({
               Live Scrubber Preview
             </Label>
             <div className="flex items-center gap-2">
-              <Button
+              <Button aria-label="Pause preview"
                 size="icon"
                 variant="ghost"
                 className="size-7 rounded-full text-white hover:bg-white/10"

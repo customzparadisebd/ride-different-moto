@@ -206,7 +206,7 @@ function CityRow({
           onClick={onMoveDown} aria-label="Move down">
           <ArrowDown className="size-4" />
         </Button>
-        <Button
+        <Button aria-label="Delete"
           type="button"
           variant="ghost"
           size="icon"
