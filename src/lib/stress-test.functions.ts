@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 /**
@@ -37,6 +36,6 @@ export const runInvoiceStressTest = createServerFn({ method: "POST" })
       unique: uniqueInvoices.size,
       duplicates,
       invoices: invoices.sort(),
-      errors: errors.map(e => e.message)
+      errors: errors.map(e => (e as any)?.message || "Unknown error")
     };
   });
