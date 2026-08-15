@@ -35,6 +35,8 @@ function AdminHeroSlides() {
   const addSlide = useServerFn(createHeroSlide);
   const editSlide = useServerFn(updateHeroSlide);
   const removeSlide = useServerFn(deleteHeroSlide);
+  const restoreSlides = useServerFn(restoreOldHeroSlides);
+
 
   const { data: slides = [], isLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
