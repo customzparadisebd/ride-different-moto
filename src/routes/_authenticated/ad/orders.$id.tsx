@@ -18,7 +18,7 @@ import { getSteadfastTracking } from "@/lib/steadfast.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Clock, Truck, AlertCircle } from "lucide-react";
+import { Clock, Truck, AlertCircle, Pin } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
   head: () => ({
