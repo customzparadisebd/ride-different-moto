@@ -263,7 +263,7 @@ export const listOrders = createServerFn({ method: "POST" })
         query = query.eq("status", "completed");
         break;
       case "today":
-        query = query.gte("created_at", startOfTodayISO());
+        query = query.gte("created_at", getBDStartOfToday());
         break;
       case "website":
         query = query.eq("order_source", "website");
