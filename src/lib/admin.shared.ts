@@ -187,6 +187,10 @@ export const AUDIT_ACTIONS = {
   staffPasswordChanged: "staff.password_changed",
   staffProfileUpdated: "staff.profile_updated",
   invoiceSettingsUpdated: "settings.invoice_updated",
+  loginApprovalCreated: "auth.login_approval_created",
+  loginApprovalApproved: "auth.login_approval_approved",
+  loginApprovalRejected: "auth.login_approval_rejected",
+  loginApprovalExpired: "auth.login_approval_expired",
 } as const;
 
 export const staffStatusInput = z.object({
