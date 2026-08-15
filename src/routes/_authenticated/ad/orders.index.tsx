@@ -340,12 +340,15 @@ function AdminOrderList() {
                 const onAfterPrint = async () => {
                   try {
                     await markPrinted({ data: { orderIds: selected } });
+                    toast.success(`Print completed for ${selected.length} order(s)`);
                     refreshOrders();
                   } catch (err) {
                     console.error("Failed to mark orders as printed:", err);
+                    toast.error("Print finished but failed to update status");
                   }
                   win.removeEventListener("afterprint", onAfterPrint);
                 };
+                toast.info("Preparing print for selected orders...", { duration: 2000 });
                 win.addEventListener("afterprint", onAfterPrint);
               }
             }}

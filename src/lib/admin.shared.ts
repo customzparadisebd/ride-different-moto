@@ -149,6 +149,7 @@ export const AUDIT_ACTIONS = {
   orderCreated: "order.created",
   orderUpdated: "order.updated",
   orderStatusChanged: "order.status_changed",
+  orderPrinted: "order.printed",
   orderNoteAdded: "order.note_added",
   orderBulkStatusChanged: "order.bulk_status_changed",
   settingsUpdated: "settings.updated",
