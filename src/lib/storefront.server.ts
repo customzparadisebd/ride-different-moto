@@ -84,6 +84,7 @@ function toProduct(
     offerPrice: offer,
     stockQty,
     inStock: stockQty > 0,
+    outOfStockManual: Boolean(row["out_of_stock_toggle"]),
     universal: Boolean(row["is_universal"]),
     bikeCompatibility: Array.isArray(row["bike_compatibility"])
       ? (row["bike_compatibility"] as string[])
