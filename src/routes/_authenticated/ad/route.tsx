@@ -23,18 +23,21 @@ export const Route = createFileRoute("/_authenticated/ad")({
       throw redirect({ to: "/ad/denied" });
     }
     if (access.sessionRevoked) throw redirect({ to: "/ad/denied" });
+    
+    // MFA step-up: privileged accounts must reach AAL2 before any screen loads.
+    // Every staff user must now use 2FA for account security.
+    if (access.mfaRequired && !access.mfaSatisfied) {
+      throw redirect({ to: "/ad/mfa" });
+    }
+
     if (!access.isStaff) throw redirect({ to: "/ad/denied" });
+
     // Staff Login Approval System: Staff must be approved for the current session.
     // getMyAccess already handles the redirection trigger via loginApprovalPending
     if (access.loginApprovalPending) {
        // Signing out here forces the ad.log.tsx logic to trigger the approval flow
        // if they somehow bypassed it or for every fresh login.
        throw redirect({ to: "/ad/log" });
-    }
-    // MFA step-up: privileged accounts must reach AAL2 before any screen loads.
-    // Every staff user must now use 2FA for account security.
-    if (access.mfaRequired && !access.mfaSatisfied) {
-      throw redirect({ to: "/ad/mfa" });
     }
     return { access };
   },
