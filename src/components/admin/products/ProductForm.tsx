@@ -394,6 +394,11 @@ export function ProductForm({
           checked={value.badgeEnabled}
           onChange={(v) => set("badgeEnabled", v)}
         />
+        <Check
+          label="Manual Stock Out"
+          checked={value.outOfStockToggle}
+          onChange={(v) => set("outOfStockToggle", v)}
+        />
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 space-y-4">
