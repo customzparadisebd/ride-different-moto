@@ -1,7 +1,7 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Shield, Globe, User, AlertTriangle, Radio, Lock, Activity, RefreshCw } from "lucide-react";
+import { Shield, Globe, User, AlertTriangle, Radio, Lock, Activity, RefreshCw, Beaker, CheckCircle2, XCircle } from "lucide-react";
 import { format } from "date-fns";
 import {
   AreaChart,
@@ -28,6 +28,7 @@ import {
   getSuspiciousIPs,
   listSecurityEvents,
 } from "@/lib/security-events.functions";
+import { runInvoiceStressTest } from "@/lib/stress-test.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 // BD Timezone is UTC+6
@@ -49,6 +50,8 @@ export const Route = createFileRoute("/_authenticated/ad/security-dashboard")({
 function SecurityDashboardPage() {
   const queryClient = useQueryClient();
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [stressResult, setStressResult] = useState<any>(null);
+  const [isStressing, setIsStressing] = useState(false);
 
   const { data: stats, refetch: refetchStats } = useSuspenseQuery({
     queryKey: ["security-stats"],
@@ -69,6 +72,18 @@ function SecurityDashboardPage() {
     setIsRefreshing(true);
     await Promise.all([refetchStats(), refetchSuspicious(), refetchEvents()]);
     setIsRefreshing(false);
+  };
+
+  const runStressTest = async () => {
+    setIsStressing(true);
+    try {
+      const result = await runInvoiceStressTest();
+      setStressResult(result);
+    } catch (err) {
+      setStressResult({ success: false, errors: ["Request failed"] });
+    } finally {
+      setIsStressing(false);
+    }
   };
 
   useEffect(() => {
@@ -307,6 +322,119 @@ function SecurityDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Invoice Concurrency Stress Test */}
+      <Card className="bg-black/40 border-white/5 border-l-4 border-l-primary">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <Beaker className="h-4 w-4 text-primary" />
+              Invoice Serial Stress Test
+            </CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Verify atomic sequence generation under simultaneous load
+            </CardDescription>
+          </div>
+          <button
+            onClick={runStressTest}
+            disabled={isStressing}
+            className="flex items-center gap-2 px-6 py-2 bg-primary hover:bg-primary/90 rounded-md text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 text-primary-foreground shadow-[0_0_15px_rgba(var(--primary),0.3)]"
+          >
+            {isStressing ? (
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Radio className="h-3.5 w-3.5" />
+            )}
+            {isStressing ? "Running..." : "Launch Test"}
+          </button>
+        </CardHeader>
+        <CardContent>
+          {stressResult ? (
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 rounded-lg bg-white/5 border border-white/10">
+                <div
+                  className={`h-12 w-12 rounded-full flex items-center justify-center ${stressResult.success ? "bg-green-500/20" : "bg-red-500/20"}`}
+                >
+                  {stressResult.success ? (
+                    <CheckCircle2 className="h-6 w-6 text-green-500" />
+                  ) : (
+                    <XCircle className="h-6 w-6 text-red-500" />
+                  )}
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold uppercase tracking-tight text-white">
+                    {stressResult.success ? "Test Passed" : "Test Failed"}
+                  </h4>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    {stressResult.total} simultaneous requests processed.{" "}
+                    {stressResult.duplicates} duplicates found.
+                  </p>
+                </div>
+                <div className="ml-auto flex items-center gap-6">
+                  <div className="text-right">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                      Unique IDs
+                    </p>
+                    <p className="text-xl font-black text-white">{stressResult.unique}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">
+                      Target
+                    </p>
+                    <p className="text-xl font-black text-white">{stressResult.total}</p>
+                  </div>
+                </div>
+              </div>
+
+              {stressResult.invoices.length > 0 && (
+                <div className="rounded-md border border-white/5 bg-black/20 p-3">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2">
+                    Generated Sequence
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {stressResult.invoices.map((inv: string, i: number) => (
+                      <Badge
+                        key={i}
+                        variant="secondary"
+                        className="font-mono text-[10px] bg-white/5 border-white/10 text-white/80"
+                      >
+                        {inv}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {stressResult.errors.length > 0 && (
+                <div className="p-3 rounded-md bg-red-500/10 border border-red-500/20">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-red-500 mb-1">
+                    Errors Encountered
+                  </p>
+                  <ul className="list-disc list-inside text-xs text-red-400/80 font-medium">
+                    {stressResult.errors.map((err: string, i: number) => (
+                      <li key={i}>{err}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-white/5 rounded-xl bg-white/[0.02]">
+              <div className="h-16 w-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                <Beaker className="h-8 w-8 text-white/20" />
+              </div>
+              <h4 className="text-sm font-bold uppercase tracking-widest text-white/40">
+                Ready to Stress Test
+              </h4>
+              <p className="text-[10px] text-muted-foreground max-w-xs mt-2 font-medium">
+                Launches 10 parallel database requests to the atomic sequence generator to verify
+                row-level locking and uniqueness.
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
 
       {/* Recent Events Table */}
       <Card className="bg-black/40 border-white/5">
