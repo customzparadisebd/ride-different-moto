@@ -106,7 +106,32 @@ export function OrderFilterBar({
       {/* QUICK FILTERS */}
       <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
-          Quick Filters:
+          Status Tabs:
+        </span>
+        {[
+          { value: "all", label: "All" },
+          { value: "confirmed", label: "Confirmed" },
+          { value: "pending", label: "Pending" },
+          { value: "completed", label: "Completed" },
+          { value: "cancelled", label: "Cancelled" },
+          { value: "new", label: "New" },
+          { value: "duplicate", label: "Duplicate" },
+        ].map((tab) => (
+          <Button
+            key={tab.value}
+            variant={activeTab === tab.value ? "red" : "steel"}
+            size="sm"
+            className="h-7 px-2.5 text-[10px] font-bold uppercase"
+            onClick={() => onTabChange?.(tab.value as any)}
+          >
+            {tab.label}
+          </Button>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+          Date Filters:
         </span>
         {QUICK_FILTERS.map((q) => (
           <Button
@@ -114,7 +139,7 @@ export function OrderFilterBar({
             variant={activeTab === q.value ? "red" : "steel"}
             size="sm"
             className="h-7 px-2.5 text-[10px] font-bold uppercase"
-            onClick={() => onTabChange?.(q.value)}
+            onClick={() => onTabChange?.(q.value as any)}
           >
             {q.label}
           </Button>
@@ -125,9 +150,10 @@ export function OrderFilterBar({
           className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
           onClick={onReset}
         >
-          Clear All
+          Reset All
         </Button>
       </div>
+
 
       <div className="flex flex-wrap items-center gap-2">
         {/* SEARCH AREA */}
