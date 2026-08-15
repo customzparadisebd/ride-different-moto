@@ -52,6 +52,7 @@ export const productInput = z.object({
   isFeatured: z.boolean().default(false),
   isNewArrival: z.boolean().default(false),
   isActive: z.boolean().default(true),
+  has360View: z.boolean().default(false),
 });
 export type ProductInput = z.input<typeof productInput>;
 
@@ -83,6 +84,33 @@ export const productColorReorderInput = z.object({
 
 export const PRODUCT_COLOR_COLUMNS =
   "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
+
+// PRODUCT 360 VIEWER (admin contracts)
+// Purpose: Manage 360° image sequences per product.
+export const product360ImageInput = z.object({
+  id: z.string().uuid().optional(),
+  productId: z.string().uuid(),
+  imageUrl: z.string().trim().min(1).max(600),
+  displayOrder: z.number().int().min(0).max(999).default(0),
+});
+export type Product360ImageInput = z.input<typeof product360ImageInput>;
+
+export const product360ListInput = z.object({ productId: z.string().uuid() });
+export const product360DeleteInput = z.object({ id: z.string().uuid() });
+export const product360ReorderInput = z.object({
+  productId: z.string().uuid(),
+  ids: z.array(z.string().uuid()).min(1).max(100),
+});
+
+export const PRODUCT_360_COLUMNS = "id, product_id, image_url, display_order";
+
+export function product360ToRow(data: ReturnType<typeof product360ImageInput.parse>) {
+  return {
+    product_id: data.productId,
+    image_url: data.imageUrl,
+    display_order: data.displayOrder,
+  };
+}
 
 export function productColorToRow(data: ReturnType<typeof productColorInput.parse>) {
   return {
@@ -127,7 +155,7 @@ export const productStockInput = z.object({
 
 export const productToggleInput = z.object({
   id: z.string().uuid(),
-  field: z.enum(["isActive", "isBestDeal", "isFeatured", "isNewArrival", "badgeEnabled"]),
+  field: z.enum(["isActive", "isBestDeal", "isFeatured", "isNewArrival", "badgeEnabled", "has360View"]),
   value: z.boolean(),
 });
 
@@ -160,7 +188,7 @@ export const categoryLabel = (value: string) =>
 
 /** Column list + row mappers live here so the server-function module stays a thin wrapper. */
 export const PRODUCT_COLUMNS =
-  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, details, images, badge_enabled, badge_text, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, deleted_at, deleted_by, delete_reason, created_at, updated_at";
+  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, details, images, badge_enabled, badge_text, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, has_360_view, deleted_at, deleted_by, delete_reason, created_at, updated_at";
 
 export const PRODUCT_TOGGLE_COLUMNS = {
   isActive: "is_active",
@@ -168,6 +196,7 @@ export const PRODUCT_TOGGLE_COLUMNS = {
   isFeatured: "is_featured",
   isNewArrival: "is_new_arrival",
   badgeEnabled: "badge_enabled",
+  has360View: "has_360_view",
 } as const;
 
 
@@ -192,5 +221,6 @@ export function productToRow(data: ReturnType<typeof productInput.parse>) {
     is_featured: data.isFeatured,
     is_new_arrival: data.isNewArrival,
     is_active: data.isActive,
+    has_360_view: data.has360View,
   };
 }
