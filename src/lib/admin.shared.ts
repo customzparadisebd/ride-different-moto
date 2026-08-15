@@ -120,6 +120,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "content.manage",
     "zones.manage",
     "reviews.manage",
+    "login_approvals.manage",
   ],
   manager: [
     "orders.view",
