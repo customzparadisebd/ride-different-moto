@@ -18,6 +18,7 @@ import { formatBDT } from "@/lib/format";
 import { getMyAccess, listOrders } from "@/lib/orders.functions";
 import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
+import { listAdminCustomers, restoreCustomer, purgeCustomer } from "@/lib/customers.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
   head: () => ({ meta: [{ title: "Recycle Bin — CZP Ops" }, { property: "og:title", content: "Recycle Bin — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
@@ -35,9 +36,6 @@ function RecycleBin() {
   const purgeProductFn = useServerFn(purgeProduct);
   const restoreOrderFn = useServerFn(restoreOrder);
   const purgeOrderFn = useServerFn(purgeOrder);
-  
-  // NOTE: Server functions are imported directly to avoid top-level await issues
-  const { listAdminCustomers, restoreCustomer, purgeCustomer } = await import("@/lib/customers.functions");
   const fetchCustomers = useServerFn(listAdminCustomers);
   const restoreCustomerFn = useServerFn(restoreCustomer);
   const purgeCustomerFn = useServerFn(purgeCustomer);
