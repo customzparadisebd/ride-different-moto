@@ -19,13 +19,18 @@ export type OrderFilters = {
   invoiceNo: string;
   customerName: string;
   customerPhone: string;
+  orderId: string;
   status: string;
   paymentStatus: string;
+  paymentMethod: string;
   source: string;
   courier: string;
   deliveryZone: string;
   assignedTo: string;
   createdBy: string;
+  productCategory: string;
+  productId: string;
+  steadfastStatus: "submitted" | "successful" | "failed" | "not_submitted" | "";
   pinned: string;
   dateFrom: string;
   dateTo: string;
@@ -37,13 +42,18 @@ export const EMPTY_ORDER_FILTERS: OrderFilters = {
   invoiceNo: "",
   customerName: "",
   customerPhone: "",
+  orderId: "",
   status: "",
   paymentStatus: "",
+  paymentMethod: "",
   source: "",
   courier: "",
   deliveryZone: "",
   assignedTo: "",
   createdBy: "",
+  productCategory: "",
+  productId: "",
+  steadfastStatus: "",
   pinned: "",
   dateFrom: "",
   dateTo: "",
