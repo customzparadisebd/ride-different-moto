@@ -55,11 +55,16 @@ function RecycleBin() {
     queryKey: ["admin-recycle-bin", "orders"],
     queryFn: () => fetchOrders({ data: { deleted: true, pageSize: 50 } as never }),
   });
+  const customersQuery = useQuery({
+    queryKey: ["admin-recycle-bin", "customers"],
+    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 50 } as any }),
+  });
 
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["admin-recycle-bin"] });
     void queryClient.invalidateQueries({ queryKey: ["admin-products"] });
     void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+    void queryClient.invalidateQueries({ queryKey: ["admin-customers"] });
   };
   const onError = (error: Error) => toast.error(error.message || "That action failed.");
 
@@ -95,6 +100,22 @@ function RecycleBin() {
     },
     onError,
   });
+  const restoreCustomerMutation = useMutation({
+    mutationFn: restoreCustomerFn,
+    onSuccess: () => {
+      toast.success("Customer restored");
+      refresh();
+    },
+    onError,
+  });
+  const purgeCustomerMutation = useMutation({
+    mutationFn: purgeCustomerFn,
+    onSuccess: () => {
+      toast.success("Customer permanently deleted");
+      refresh();
+    },
+    onError,
+  });
 
   const productRows = (productsQuery.data?.rows ?? []) as unknown as Array<{
     id: string;
@@ -105,6 +126,7 @@ function RecycleBin() {
     delete_reason: string | null;
   }>;
   const orderRows = ordersQuery.data?.rows ?? [];
+  const customerRows = (customersQuery.data?.rows ?? []) as any[];
 
   return (
     <section className="mx-auto max-w-5xl">
@@ -123,11 +145,11 @@ function RecycleBin() {
           Products ({productRows.length})
         </Button>
         <Button
-          variant={tab === "orders" ? "red" : "steel"}
+          variant={tab === "customers" ? "red" : "steel"}
           size="sm"
-          onClick={() => setTab("orders")}
+          onClick={() => setTab("customers")}
         >
-          Orders ({orderRows.length})
+          Customers ({customerRows.length})
         </Button>
       </div>
 
@@ -259,6 +281,75 @@ function RecycleBin() {
                           if (!typed) return;
                           purgeOrderMutation.mutate({
                             data: { id: row.id, confirmInvoiceNo: typed },
+                          });
+                        }}
+                      >
+                        Delete forever
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
+          <table className="w-full min-w-[720px] text-sm">
+            <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
+              <tr>
+                <th className="p-3">Name</th>
+                <th className="p-3">Phone</th>
+                <th className="p-3">City</th>
+                <th className="p-3 text-right">Orders</th>
+                <th className="p-3 text-right">Spent</th>
+                <th className="p-3 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {customersQuery.isLoading && (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-muted-foreground">
+                    Loading…
+                  </td>
+                </tr>
+              )}
+              {!customersQuery.isLoading && customerRows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="p-6 text-center text-muted-foreground">
+                    No deleted customers.
+                  </td>
+                </tr>
+              )}
+              {customerRows.map((row) => (
+                <tr key={row.id} className="border-b border-border last:border-0">
+                  <td className="p-3 font-semibold">{row.name}</td>
+                  <td className="p-3 text-muted-foreground">{row.phone}</td>
+                  <td className="p-3 text-muted-foreground">{row.city || "—"}</td>
+                  <td className="p-3 text-right">{row.total_orders || 0}</td>
+                  <td className="p-3 text-right font-semibold">{formatBDT(Number(row.lifetime_value || 0))}</td>
+                  <td className="p-3">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="steel"
+                        size="sm"
+                        disabled={!canManageOrders || restoreCustomerMutation.isPending}
+                        onClick={() => restoreCustomerMutation.mutate({ data: { id: row.id } })}
+                      >
+                        Restore
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        disabled={!isSuperAdmin || purgeCustomerMutation.isPending}
+                        onClick={() => {
+                          const typed = window.prompt(
+                            `Permanent delete cannot be undone. Type the customer phone to confirm:\n${row.phone}`,
+                            "",
+                          );
+                          if (!typed) return;
+                          purgeCustomerMutation.mutate({
+                            data: { id: row.id, confirmPhone: typed },
                           });
                         }}
                       >
