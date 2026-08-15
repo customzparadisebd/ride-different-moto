@@ -188,8 +188,9 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
   const wasPrice = compareAtPrice(product, color);
   const gallery = product.gallery.length ? product.gallery : [""];
 
+  const isActuallyInStock = product.inStock && !product.outOfStockManual;
   const add = (thenCheckout: boolean) => {
-    if (!product.inStock) return;
+    if (!isActuallyInStock) return;
     addItem({ product, color, qty });
     if (thenCheckout) {
       void navigate({ to: "/checkout" });
