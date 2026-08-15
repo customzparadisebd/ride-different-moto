@@ -30,17 +30,14 @@ function DiagnosticsPage() {
   const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] || "Not Set";
 
   const maskValue = (val: string, type: "url" | "token") => {
-    if (val === "Not Set") return val;
+    if (val === "Not Set" || !val) return "Not Set";
+    
+    // Safety: In any technical view, never show the project reference or full URL
     if (type === "url") {
-      try {
-        const url = new URL(val);
-        const projectRef = url.hostname.split(".")[0];
-        return `${url.protocol}//${projectRef}.supabase.co (Redacted)`;
-      } catch {
-        return val.substring(0, 10) + "... (Redacted)";
-      }
+      return "https://[REDACTED].supabase.co (Security Masked)";
     }
-    return val.substring(0, 4) + "****" + val.substring(val.length - 4);
+    
+    return " [REDACTED] ";
   };
 
   if (contextLoading || diagLoading) {
