@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { SafeImage } from "@/components/SafeImage";
 import { getBikeModels, getHeroSlides } from "@/data/catalog";
+import { site } from "@/data/site";
 
 const title = "Gallery — Customz Paradise BD";
 const description =
@@ -15,9 +16,9 @@ export const Route = createFileRoute("/gallery")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/gallery" },
+      { property: "og:url", content: `${site.url}/gallery` },
     ],
-    links: [{ rel: "canonical", href: "/gallery" }],
+    links: [{ rel: "canonical", href: `${site.url}/gallery` }],
   }),
   component: GalleryPage,
 });
