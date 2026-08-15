@@ -1537,6 +1537,41 @@ export type Database = {
         }
         Relationships: []
       }
+      steadfast_stats: {
+        Row: {
+          id: string
+          last_invoice_no: string | null
+          last_order_id: string | null
+          last_success_at: string | null
+          successful_submissions_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          last_invoice_no?: string | null
+          last_order_id?: string | null
+          last_success_at?: string | null
+          successful_submissions_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          last_invoice_no?: string | null
+          last_order_id?: string | null
+          last_success_at?: string | null
+          successful_submissions_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "steadfast_stats_last_order_id_fkey"
+            columns: ["last_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_settings: {
         Row: {
           created_at: string
@@ -1695,6 +1730,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_steadfast_count: {
+        Args: { invoice_no: string; order_id: string }
+        Returns: undefined
       }
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
