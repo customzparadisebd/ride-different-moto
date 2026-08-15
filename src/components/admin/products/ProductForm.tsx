@@ -244,28 +244,28 @@ export function ProductForm({
         <Field
           label="Regular price (৳)"
           required
-          error={errors.price}
+          error={errors["price"]}
           example="Example: 1200"
         >
           <Input
             className="h-11"
             inputMode="numeric"
             placeholder="0.00"
-            value={value.price}
+            value={value["price"]}
             onChange={(e) => set("price", e.target.value)}
           />
         </Field>
         <Field
           label="Offer price (৳)"
           optional
-          error={errors.offerPrice}
+          error={errors["offerPrice"]}
           example="Example: 950 (Must be lower than regular price)"
         >
           <Input
             className="h-11"
             inputMode="numeric"
             placeholder="Optional discount price"
-            value={value.offerPrice}
+            value={value["offerPrice"]}
             onChange={(e) => set("offerPrice", e.target.value)}
           />
         </Field>
