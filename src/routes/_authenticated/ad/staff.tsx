@@ -279,11 +279,22 @@ function StaffPage() {
                             className={member.access_status === 'approved' ? "text-red-500 focus:text-red-500 focus:bg-red-500/5" : "text-emerald-500 focus:text-emerald-500 focus:bg-emerald-500/5"}
                           >
                             {member.access_status === 'approved' ? (
-                              <><UserX className="mr-2 size-3.5" />Deactivate Account</>
+                              <><UserX className="mr-2 size-3.5" />Suspend Account</>
+                            ) : member.access_status === 'pending' ? (
+                              <><UserCheck className="mr-2 size-3.5" />Approve Account</>
                             ) : (
                               <><UserCheck className="mr-2 size-3.5" />Activate Account</>
                             )}
                           </DropdownMenuItem>
+                          
+                          {member.access_status !== 'revoked' && (
+                            <DropdownMenuItem 
+                              onClick={() => void run(member.id, () => setStaffStatus({ data: { userId: member.id, status: 'revoked' } }), "Account access revoked.")}
+                              className="text-red-600 focus:text-red-600 focus:bg-red-600/5"
+                            >
+                              <UserX className="mr-2 size-3.5" />Revoke Access
+                            </DropdownMenuItem>
+                          )}
                           
                           {!isSelf && access.isSuperAdmin && (
                             <>
