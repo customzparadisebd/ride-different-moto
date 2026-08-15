@@ -62,6 +62,9 @@ export const getMyAccess = createServerFn({ method: "POST" })
     return {
       userId: actor.userId,
       email: actor.email,
+      fullName: actor.fullName,
+      gender: actor.gender,
+      avatarUrl: actor.avatarUrl,
       roles: actor.roles,
       primaryRole: actor.primaryRole,
       permissions: actor.permissions,

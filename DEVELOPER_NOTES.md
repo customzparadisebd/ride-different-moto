@@ -41,6 +41,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Admin Live Preview Upgrades:** Added a "Publish/Unpublish" toggle to the `ProductPreviewDialog`, allowing administrators to toggle between "Draft" and "Public" visual states during live preview. (Aug 15, 2026).
 - [x] **Enhanced Admin Avatar System:** Implemented a professional and flexible avatar system for Admin Panel users. Includes preset options (Adventurer, Bottts, etc.) and manual custom uploads with client-side preview, validation (1MB limit), and optimization recommendations (400x400px WebP/JPEG/PNG). (Aug 15, 2026).
 - [x] **Staff List Avatar Integration:** Updated the Admin Staff list to display real-time user avatars (presets or custom) instead of generic icons. (Aug 15, 2026).
+- [x] **RBAC & Gate Alignment:** Synchronized `getMyAccess` and `AdminAccess` types to ensure full profile metadata (fullName, avatarUrl, gender) is available to all Admin Panel components and guards. (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
