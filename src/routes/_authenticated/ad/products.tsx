@@ -18,13 +18,14 @@ import {
   emptyProductForm,
    ProductForm,
   type ProductFormValue,
-  toProductInput,
+   toProductInput,
 } from "@/components/admin/products/ProductForm";
 import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
+import { listProductColors, listProduct360Images } from "@/lib/products.functions";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -590,12 +591,21 @@ function ProductPreviewDialog({
 }) {
   const fetchProduct = useServerFn(listProducts);
   
+  const fetchColors = useServerFn(listProductColors);
+  const fetch360 = useServerFn(listProduct360Images);
+  
   const { data: existingProduct } = useQuery({
     queryKey: ["admin-product-detail", productId],
     queryFn: async () => {
       if (!productId) return null;
-      const res = await fetchProduct({ data: { search: productId, page: 1, pageSize: 1 } as any });
-      return res.rows[0] || null;
+      const [pRes, cRes, iRes] = await Promise.all([
+        fetchProduct({ data: { search: productId, page: 1, pageSize: 1 } as any }),
+        fetchColors({ data: { productId } }),
+        fetch360({ data: { productId } }),
+      ]);
+      const product = pRes.rows[0];
+      if (!product) return null;
+      return { ...product, colors: cRes.rows, product360Images: iRes.rows.map(r => r.image_url) };
     },
     enabled: !!productId,
   });
