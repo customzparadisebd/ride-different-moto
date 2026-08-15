@@ -65,48 +65,66 @@ function AdminCustomers() {
         {query.data?.total ?? 0} customer(s) · grouped by mobile number
       </p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Input
-          value={search}
-          onChange={(event) => {
-            setSearch(event.target.value);
-            setPage(1);
-          }}
-          placeholder="Search by name, phone, email, city..."
-          className="h-11 max-w-sm"
-        />
-
-        <div className="flex rounded-lg border border-border bg-card p-1 shadow-sm">
+      <div className="mt-4 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-border/50">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+            Quick Filters:
+          </span>
           {(["all", "active", "fraud"] as const).map((s) => (
-            <button
+            <Button
               key={s}
+              variant={status === s ? "red" : "steel"}
+              size="sm"
+              className="h-7 px-2.5 text-[10px] font-bold uppercase"
               onClick={() => {
                 setStatus(s);
                 setPage(1);
               }}
-              className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors rounded-md ${
-                status === s
-                  ? "bg-primary text-primary-foreground shadow-sm"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
             >
               {s}
-            </button>
+            </Button>
           ))}
+          <Button
+            variant="steel"
+            size="sm"
+            className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
+            onClick={() => {
+              setSearch("");
+              setStatus("all");
+              setPage(1);
+            }}
+          >
+            Clear Filters
+          </Button>
         </div>
 
-        {selectedIds.length > 0 && (
-          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
-            <span className="text-xs font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
-              {selectedIds.length} Selected
-            </span>
-            <CustomerBulkDeleteButton
-              ids={selectedIds}
-              onSuccess={() => setSelectedIds([])}
-              canManage={canManage}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative flex-1 min-w-[240px] max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+              placeholder="Search by name, phone, email, city..."
+              className="h-9 pl-9 text-sm"
             />
           </div>
-        )}
+
+          {selectedIds.length > 0 && (
+            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+              <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
+                {selectedIds.length} Selected
+              </span>
+              <CustomerBulkDeleteButton
+                ids={selectedIds}
+                onSuccess={() => setSelectedIds([])}
+                canManage={canManage}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
