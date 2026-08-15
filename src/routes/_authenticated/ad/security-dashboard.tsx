@@ -332,7 +332,7 @@ function SecurityDashboardPage() {
               Invoice Serial Stress Test
             </CardTitle>
             <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
-              Verify atomic sequence generation under simultaneous load
+              Verify atomic sequence generation under simultaneous load. (Isolated test: Does not affect production serials. Max 10 concurrent requests.)
             </CardDescription>
           </div>
           <button

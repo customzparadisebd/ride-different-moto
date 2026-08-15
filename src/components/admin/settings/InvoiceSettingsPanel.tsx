@@ -32,6 +32,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
         prefix: current.prefix,
         startNumber: current.startNumber,
         currentNumber: current.currentNumber,
+        nextNumber: current.nextNumber,
       });
     }
   }, [current]);
@@ -64,6 +65,11 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
         className="mt-4 space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
+          if (draft.nextNumber !== undefined && draft.nextNumber !== current?.nextNumber) {
+            if (!confirm(`Are you sure you want to change the NEXT invoice serial to ${draft.prefix}-${draft.nextNumber}? This affects future orders.`)) {
+              return;
+            }
+          }
           mutation.mutate({ data: draft as never });
         }}
       >
@@ -113,25 +119,40 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
 
           <div className="space-y-1.5">
             <Label
+              htmlFor="nextNumber"
+              className="text-[10px] font-bold uppercase tracking-wider text-primary"
+            >
+              Set Next Invoice Serial
+            </Label>
+            <Input
+              id="nextNumber"
+              type="number"
+              placeholder="e.g. 100"
+              className="h-10 font-bold border-primary/50"
+              value={draft.nextNumber ?? ""}
+              disabled={!canManage || mutation.isPending}
+              onChange={(e) =>
+                setDraft((c) => ({ ...c, nextNumber: parseInt(e.target.value) || 1 }))
+              }
+              min={1}
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Manually override the NEXT number to be generated.
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label
               htmlFor="currentNumber"
               className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
             >
-              Current Sequence Number
+              Last Used Serial
             </Label>
-            <Input
-              id="currentNumber"
-              type="number"
-              placeholder="e.g. 0"
-              className="h-10 font-bold"
-              value={draft.currentNumber}
-              disabled={!canManage || mutation.isPending}
-              onChange={(e) =>
-                setDraft((c) => ({ ...c, currentNumber: parseInt(e.target.value) || 0 }))
-              }
-              min={0}
-            />
+            <div className="h-10 px-3 flex items-center rounded-md border border-input bg-neutral-900 font-mono text-sm">
+              {current?.currentNumber ?? 0}
+            </div>
             <p className="text-[10px] text-muted-foreground">
-              Set this manually to jump the sequence.
+              Informational only. Use "Next Serial" to jump sequence.
             </p>
           </div>
 
@@ -141,7 +162,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
                 Next Invoice Preview
               </span>
               <p className="font-mono text-lg font-bold">
-                {draft.prefix}-{Math.max(draft.startNumber, draft.currentNumber + 1)
+                {draft.prefix}-{Math.max(draft.startNumber, draft.nextNumber ?? (draft.currentNumber + 1))
                   .toString()
                   .padStart(2, "0")}
               </p>
