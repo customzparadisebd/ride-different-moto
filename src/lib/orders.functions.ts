@@ -71,6 +71,7 @@ export const getMyAccess = createServerFn({ method: "POST" })
       mfaRequired: actor.mfaRequired,
       mfaSatisfied: actor.mfaSatisfied,
       sessionRevoked: actor.sessionRevoked,
+      loginApprovalPending: actor.loginApprovalPending,
     };
   });
 
