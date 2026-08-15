@@ -22,7 +22,19 @@ export const customerPurgeInput = z.object({
   confirmPhone: z.string().trim().min(1).max(40),
 });
 
+export const customerUpdateInput = z.object({
+  id: z.string().uuid(),
+  name: z.string().trim().min(1).max(100).optional(),
+  email: z.string().trim().email().max(100).optional().nullable(),
+  phone: z.string().trim().min(5).max(20).optional(),
+  city: z.string().trim().max(100).optional().nullable(),
+  district: z.string().trim().max(100).optional().nullable(),
+  area: z.string().trim().max(100).optional().nullable(),
+  address: z.string().trim().max(500).optional().nullable(),
+});
+
 export type CustomerListInput = z.infer<typeof customerListInput>;
 export type CustomerDeleteInput = z.infer<typeof customerDeleteInput>;
 export type CustomerRestoreInput = z.infer<typeof customerRestoreInput>;
 export type CustomerPurgeInput = z.infer<typeof customerPurgeInput>;
+export type CustomerUpdateInput = z.infer<typeof customerUpdateInput>;

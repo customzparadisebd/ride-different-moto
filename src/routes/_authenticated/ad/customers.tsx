@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail } from "@/lib/customers.functions";
+import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail, updateAdminCustomer } from "@/lib/customers.functions";
 import { formatBDT } from "@/lib/format";
 import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
@@ -142,6 +142,10 @@ function AdminCustomers() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2">
+                      <CustomerEditButton 
+                        customer={customer}
+                        canManage={canManage}
+                      />
                       <CustomerAuditTrailButton 
                         customerId={customer.id} 
                         customerName={customer.name}

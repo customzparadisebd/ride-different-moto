@@ -6,7 +6,8 @@ import {
   customerListInput, 
   customerDeleteInput, 
   customerRestoreInput, 
-  customerPurgeInput 
+  customerPurgeInput,
+  customerUpdateInput 
 } from "./customers.shared";
 
 export const listAdminCustomers = createServerFn({ method: "POST" })
@@ -176,4 +177,44 @@ export const getCustomerAuditTrail = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not load customer audit trail.");
 
     return logs ?? [];
+  });
+
+export const updateAdminCustomer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => customerUpdateInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // Only Admin and Super Admin can edit customer profiles
+    assertAccess(actor, PERMISSIONS.customersManage);
+
+    const before = await context.supabase
+      .from("customers")
+      .select("*")
+      .eq("id", data.id)
+      .maybeSingle();
+    
+    if (!before.data) throw new Error("Customer not found.");
+
+    const { id, ...patch } = data;
+    const { error } = await context.supabase
+      .from("customers")
+      .update(patch as any)
+      .eq("id", id);
+      
+    if (error) throw new Error("Could not update customer.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.customerUpdated,
+      targetType: "customer",
+      targetId: id,
+      targetLabel: before.data.name,
+      oldValue: Object.fromEntries(
+        Object.keys(patch).map(key => [key, (before.data as any)[key]])
+      ),
+      newValue: patch,
+    });
+
+    return { ok: true };
   });
