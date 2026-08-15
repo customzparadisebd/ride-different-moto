@@ -264,4 +264,5 @@ export const printOrders = (rows: AdminOrderListRow[], title = "Orders"): Window
   // without a more complex messaging system. For bulk list printing, 
   // the 'afterprint' event should be handled by the UI component that calls this.
   win.print();
+  return win;
 };
