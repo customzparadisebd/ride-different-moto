@@ -188,7 +188,8 @@ export const getSteadfastLogs = createServerFn({ method: "GET" })
 
     const { data: logs, error } = await supabaseAdmin
       .from("courier_api_logs")
-      .select(`
+      .select(
+        `
         id,
         action,
         success,
@@ -196,21 +197,22 @@ export const getSteadfastLogs = createServerFn({ method: "GET" })
         message,
         created_at,
         profiles(email)
-      `)
+      `,
+      )
       .eq("courier_id", courier.id)
       .order("created_at", { ascending: false })
       .limit(20);
 
     if (error) throw new Error("Could not load API logs.");
 
-    return (logs ?? []).map(l => ({
+    return (logs ?? []).map((l) => ({
       id: l.id,
       action: l.action,
       success: l.success,
       status_code: l.status_code,
       message: l.message,
       created_at: l.created_at,
-      actor_email: (l.profiles as any)?.email ?? null
+      actor_email: (l.profiles as any)?.email ?? null,
     }));
   });
 
@@ -239,14 +241,14 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
     const res = await fetch(`${ctx.baseUrl}/cancel_order/${order.consignment_id}`, {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Content-Type": "application/json",
         "Api-Key": ctx.credentials.api_key ?? "",
-        "Secret-Key": ctx.credentials.api_secret ?? ""
-      }
+        "Secret-Key": ctx.credentials.api_secret ?? "",
+      },
     });
 
-    const payload = await res.json() as any;
+    const payload = (await res.json()) as any;
     const success = res.ok && (payload.status === 200 || payload.status === "200");
 
     await logCourierApi({
@@ -256,7 +258,7 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
       success,
       statusCode: String(res.status),
       message: payload.message || (success ? "Cancelled successfully" : "Failed to cancel"),
-      actorId: context.userId
+      actorId: context.userId,
     });
 
     if (success) {
@@ -266,7 +268,7 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
           courier_status: "cancelled",
           consignment_id: null,
           courier_tracking_id: null,
-          tracking_url: null
+          tracking_url: null,
         })
         .eq("id", order.id);
 
@@ -275,7 +277,7 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
         event_type: "courier.shipment_cancelled",
         message: `SteadFast shipment cancelled. ${payload.message || ""}`,
         actor: context.userId,
-        actor_label: actor.email ?? "staff"
+        actor_label: actor.email ?? "staff",
       });
     }
 
@@ -312,18 +314,21 @@ export const getSteadfastTracking = createServerFn({ method: "POST" })
 
     // 2. Fetch latest from API (real-time check)
     try {
-      const res = await fetch(`${ctx.baseUrl}/status_by_cid/${encodeURIComponent(order.consignment_id)}`, {
-        method: "GET",
-        headers: {
-          "Accept": "application/json",
-          "Api-Key": ctx.credentials.api_key ?? "",
-          "Secret-Key": ctx.credentials.api_secret ?? ""
-        }
-      });
+      const res = await fetch(
+        `${ctx.baseUrl}/status_by_cid/${encodeURIComponent(order.consignment_id)}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Api-Key": ctx.credentials.api_key ?? "",
+            "Secret-Key": ctx.credentials.api_secret ?? "",
+          },
+        },
+      );
 
       if (res.ok) {
-        const payload = await res.json() as any;
-        // Steadfast status_by_cid usually returns latest. 
+        const payload = (await res.json()) as any;
+        // Steadfast status_by_cid usually returns latest.
         // We add it to the timeline if it's new/relevant.
         const latestStatus = payload.delivery_status || payload.status;
         if (latestStatus) {
@@ -333,8 +338,8 @@ export const getSteadfastTracking = createServerFn({ method: "POST" })
               status: latestStatus,
               message: payload.message || "Latest status from API",
               time: new Date().toISOString(),
-              raw: payload
-            }
+              raw: payload,
+            },
           };
         }
       }
@@ -344,8 +349,6 @@ export const getSteadfastTracking = createServerFn({ method: "POST" })
 
     return { events: storedEvents ?? [] };
   });
-
-
 
 // ------------------------------------------------------------
 // BULK SEND — validate, book, report per order
@@ -404,9 +407,7 @@ export const bulkSendToSteadfast = createServerFn({ method: "POST" })
 
     const sent = results.filter((row) => row.success).length;
     await auditFromActor(actor, {
-      action: sent
-        ? AUDIT_ACTIONS.courierShipmentCreated
-        : AUDIT_ACTIONS.courierShipmentFailed,
+      action: sent ? AUDIT_ACTIONS.courierShipmentCreated : AUDIT_ACTIONS.courierShipmentFailed,
       targetType: "order",
       targetId: null,
       targetLabel: `SteadFast bulk · ${sent}/${results.length}`,

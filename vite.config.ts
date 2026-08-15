@@ -20,13 +20,13 @@ export default defineConfig({
       rollupOptions: {
         output: {
           manualChunks: (id) => {
-            if (id.includes('node_modules')) {
-              if (id.includes('react')) return 'vendor-react';
-              if (id.includes('@tanstack')) return 'vendor-tanstack';
-              return 'vendor';
+            if (id.includes("node_modules")) {
+              if (id.includes("react")) return "vendor-react";
+              if (id.includes("@tanstack")) return "vendor-tanstack";
+              return "vendor";
             }
             return undefined;
-          }
+          },
         },
       },
     },

@@ -37,13 +37,13 @@ export function ReviewSection() {
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:py-24">
       <SectionHeading eyebrow="What riders say" title="Customer Reviews" />
-      
+
       <div className="relative mt-10">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex gap-6">
             {reviews.map((review: any) => (
-              <div 
-                key={review.id} 
+              <div
+                key={review.id}
                 className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%]"
               >
                 <div className="flex h-full flex-col rounded-3xl border border-border bg-card p-8 shadow-card transition-colors hover:border-primary/40">
@@ -53,26 +53,24 @@ export function ReviewSection() {
                         key={i}
                         className={cn(
                           "size-4 fill-current",
-                          i < review.rating ? "text-yellow-500" : "text-muted"
+                          i < review.rating ? "text-yellow-500" : "text-muted",
                         )}
                       />
                     ))}
                   </div>
-                  
+
                   <Quote className="mb-4 size-8 text-primary/20" />
-                  
+
                   <p className="mb-6 flex-grow text-lg leading-relaxed text-foreground/90 italic">
                     "{review.comment}"
                   </p>
-                  
+
                   <div className="mt-auto">
                     <p className="font-display text-lg font-bold uppercase tracking-tight">
                       {review.customer_name}
                     </p>
                     {review.bike_model && (
-                      <p className="text-sm text-muted-foreground">
-                        {review.bike_model}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{review.bike_model}</p>
                     )}
                   </div>
                 </div>
@@ -89,7 +87,9 @@ export function ReviewSection() {
                 onClick={() => emblaApi?.scrollTo(i)}
                 className={cn(
                   "h-1.5 rounded-full transition-all",
-                  selectedIndex === i ? "w-8 bg-primary" : "w-2 bg-border hover:bg-muted-foreground"
+                  selectedIndex === i
+                    ? "w-8 bg-primary"
+                    : "w-2 bg-border hover:bg-muted-foreground",
                 )}
                 aria-label={`Go to slide ${i + 1}`}
               />

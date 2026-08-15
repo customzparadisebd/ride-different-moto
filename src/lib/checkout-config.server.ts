@@ -29,9 +29,30 @@ function publicClient() {
 }
 
 const FALLBACK_ZONES: DeliveryZoneOption[] = [
-  { id: "inside_dhaka", slug: "inside_dhaka", name: "Inside Dhaka", charge: 200, isActive: true, sortOrder: 1 },
-  { id: "dhaka_suburb", slug: "dhaka_suburb", name: "Suburban Dhaka", charge: 200, isActive: true, sortOrder: 2 },
-  { id: "outside_dhaka", slug: "outside_dhaka", name: "Outside Dhaka", charge: 200, isActive: true, sortOrder: 3 },
+  {
+    id: "inside_dhaka",
+    slug: "inside_dhaka",
+    name: "Inside Dhaka",
+    charge: 200,
+    isActive: true,
+    sortOrder: 1,
+  },
+  {
+    id: "dhaka_suburb",
+    slug: "dhaka_suburb",
+    name: "Suburban Dhaka",
+    charge: 200,
+    isActive: true,
+    sortOrder: 2,
+  },
+  {
+    id: "outside_dhaka",
+    slug: "outside_dhaka",
+    name: "Outside Dhaka",
+    charge: 200,
+    isActive: true,
+    sortOrder: 3,
+  },
 ];
 
 /** Active cities + active zones + WhatsApp support details for the checkout page. */
@@ -77,7 +98,8 @@ export async function fetchCheckoutConfig(): Promise<CheckoutConfig> {
     zones: zoneList.length ? zoneList : FALLBACK_ZONES,
     whatsappPhone: settings.data?.whatsapp_phone ?? "+8801890722202",
     whatsappMessage:
-      settings.data?.whatsapp_message ?? "Having any problem with your order? Contact us on WhatsApp.",
+      settings.data?.whatsapp_message ??
+      "Having any problem with your order? Contact us on WhatsApp.",
   };
 }
 
@@ -96,7 +118,11 @@ export async function resolveZoneCharge(slug: string): Promise<number> {
 
 /** Confirms the submitted city is one of the active cities. */
 export async function assertCityAllowed(city: string): Promise<void> {
-  const { data } = await publicClient().from("cities").select("id").eq("is_active", true).limit(1000);
+  const { data } = await publicClient()
+    .from("cities")
+    .select("id")
+    .eq("is_active", true)
+    .limit(1000);
   if (!data || data.length === 0) return; // no list configured yet — accept free text
   const { data: match } = await publicClient()
     .from("cities")

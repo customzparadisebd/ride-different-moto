@@ -15,27 +15,32 @@ Ensure the Admin Panel access flow correctly sequences MFA and Staff Approval wh
 ### Backend Logic Refinement
 
 #### `src/routes/_authenticated/ad/route.tsx`
+
 - Reorder the gate sequence:
   1. Revocation check (session validity).
   2. **MFA check** (identity verification).
   3. **Staff Status check** (account approval).
   4. **Login Approval check** (10-minute session approval).
-- Ensure `mfaSatisfied` is required *before* any staff status or session approval logic is considered terminal.
+- Ensure `mfaSatisfied` is required _before_ any staff status or session approval logic is considered terminal.
 
 #### `src/lib/admin.server.ts`
+
 - Audit `resolveActor` to ensure `isStaff` is strictly `roles.length > 0 && status === 'approved'`.
 - Ensure `loginApprovalPending` logic correctly respects the `pending` status of new accounts.
 
 ### UI Improvements
 
 #### `src/routes/_authenticated/ad/staff.tsx`
+
 - Refine the status management UI to clearly distinguish between **Account Status** (Permanent: Approved, Suspended, etc.) and **Session Approval** (Temporary: 10m window).
 - Ensure Super Admins can easily Reject/Suspend accounts, which will immediately revoke all active sessions for that user.
 
 #### `src/routes/ad.log.tsx`
-- Ensure the "Waiting for Approval" screen only appears *after* identity (Login + MFA) is fully established.
+
+- Ensure the "Waiting for Approval" screen only appears _after_ identity (Login + MFA) is fully established.
 
 ### Technical Details
+
 - **MFA Policy:** `mfa_required` remains `true` for all staff. Supabase AAL2 is the baseline for identity.
 - **RBAC:** Roles (Super Admin, Admin, Manager, Staff) and permissions remain unchanged.
 - **Audit Logs:** All status changes (Approve, Reject, Activate, Deactivate, Suspend) are recorded in `admin_audit_log`.
@@ -43,10 +48,12 @@ Ensure the Admin Panel access flow correctly sequences MFA and Staff Approval wh
 ## Verification Plan
 
 ### Automated Tests
+
 - Run `lovable-exec test` to verify no regressions in RBAC permissions.
 - Verify `assertAccess` logic in `admin.server.ts` via unit tests if applicable.
 
 ### Manual Verification
+
 - Sign in with a new staff account: Verify it triggers MFA first, then shows "Pending Approval" (if not yet approved).
 - As Super Admin: Approve the account. Verify the staff user is then redirected to the Dashboard.
 - As Super Admin: Suspend the account. Verify the staff user is immediately kicked out to a "Denied" page.

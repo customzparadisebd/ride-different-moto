@@ -50,7 +50,12 @@ export const placeOrder = createServerFn({ method: "POST" })
       { ...data, items },
       { source: "website", shipping, actorLabel: "customer" },
     );
-    return { orderId: order.orderId, invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
+    return {
+      orderId: order.orderId,
+      invoiceNo: order.invoiceNo,
+      total: order.total,
+      duplicate: order.duplicate,
+    };
   });
 
 /** Admin: does the signed-in account have staff access? Used by the route gate. */
@@ -201,7 +206,7 @@ export const listOrders = createServerFn({ method: "POST" })
         query = query.in("status", ["cancelled", "returned"]);
         break;
       case "completed":
-        query = query.eq("status", "delivered");
+        query = query.eq("status", "completed");
         break;
       case "today":
         query = query.gte("created_at", startOfTodayISO());
@@ -270,7 +275,9 @@ export const listOrders = createServerFn({ method: "POST" })
     // Resolve created-by / assigned-to labels for the rows on this page only.
     const staffIds = [
       ...new Set(
-        (rows ?? []).flatMap((row) => [row.created_by, row.assigned_to]).filter(Boolean) as string[],
+        (rows ?? [])
+          .flatMap((row) => [row.created_by, row.assigned_to])
+          .filter(Boolean) as string[],
       ),
     ];
     const staffLabels: Record<string, string> = {};
@@ -334,7 +341,7 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
       confirmed: base().eq("status", "confirmed"),
       pending: base().eq("status", "pending"),
       cancelled: base().in("status", ["cancelled", "returned"]),
-      completed: base().eq("status", "delivered"),
+      completed: base().eq("status", "completed"),
       today: base().gte("created_at", startOfTodayISO()),
       website: base().eq("order_source", "website"),
       page: base().eq("order_source", "page"),

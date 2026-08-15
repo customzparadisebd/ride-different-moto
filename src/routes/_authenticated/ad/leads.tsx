@@ -2,19 +2,19 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { format } from "date-fns";
-import { 
-  MessageSquare, 
-  Calendar, 
-  Phone, 
-  Mail, 
-  User, 
-  Download, 
+import {
+  MessageSquare,
+  Calendar,
+  Phone,
+  Mail,
+  User,
+  Download,
   MoreVertical,
   CheckCircle2,
   Clock,
   PhoneCall,
   StickyNote,
-  Save
+  Save,
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,15 +44,23 @@ export const Route = createFileRoute("/_authenticated/ad/leads")({
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }> = {
   new: { label: "New", color: "bg-blue-500/10 text-blue-500 border-blue-500/20", icon: Clock },
-  contacted: { label: "Contacted", color: "bg-amber-500/10 text-amber-500 border-amber-500/20", icon: PhoneCall },
-  closed: { label: "Closed", color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20", icon: CheckCircle2 },
+  contacted: {
+    label: "Contacted",
+    color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    icon: PhoneCall,
+  },
+  closed: {
+    label: "Closed",
+    color: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+    icon: CheckCircle2,
+  },
 };
 
 function LeadsPage() {
   const queryClient = useQueryClient();
   const fetchLeads = useServerFn(getLeads);
   const updateStatusFn = useServerFn(updateLeadStatus);
-  
+
   const [editingLead, setEditingLead] = useState<any>(null);
   const [notes, setNotes] = useState("");
 
@@ -62,7 +70,7 @@ function LeadsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (vars: { id: string; status: any; internalNotes?: string }) => 
+    mutationFn: (vars: { id: string; status: any; internalNotes?: string }) =>
       updateStatusFn({ data: vars }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "leads"] });
@@ -71,13 +79,22 @@ function LeadsPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Failed to update lead");
-    }
+    },
   });
 
   const handleExportCSV = () => {
     if (leads.length === 0) return;
-    
-    const headers = ["Date", "Name", "Phone", "Email", "Source", "Status", "Message", "Internal Notes"];
+
+    const headers = [
+      "Date",
+      "Name",
+      "Phone",
+      "Email",
+      "Source",
+      "Status",
+      "Message",
+      "Internal Notes",
+    ];
     const rows = leads.map((l: any) => [
       format(new Date(l.created_at), "yyyy-MM-dd HH:mm"),
       l.name,
@@ -91,7 +108,7 @@ function LeadsPage() {
 
     const csvContent = [
       headers.join(","),
-      ...rows.map(r => r.map(cell => `"${cell}"`).join(","))
+      ...rows.map((r) => r.map((cell) => `"${cell}"`).join(",")),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -109,12 +126,16 @@ function LeadsPage() {
     <div className="flex flex-col gap-8 p-8">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">Customer Leads</h1>
-          <p className="text-muted-foreground">Manage messages and workflow for customer inquiries.</p>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-tight text-foreground">
+            Customer Leads
+          </h1>
+          <p className="text-muted-foreground">
+            Manage messages and workflow for customer inquiries.
+          </p>
         </div>
-        <Button 
-          onClick={handleExportCSV} 
-          variant="outline" 
+        <Button
+          onClick={handleExportCSV}
+          variant="outline"
           className="w-full sm:w-auto"
           disabled={leads.length === 0}
         >
@@ -140,9 +161,12 @@ function LeadsPage() {
           {leads.map((lead: any) => {
             const status = STATUS_CONFIG[lead.status] || STATUS_CONFIG["new"];
             const StatusIcon = status?.icon || Clock;
-            
+
             return (
-              <Card key={lead.id} className="group relative overflow-hidden border-border bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-md">
+              <Card
+                key={lead.id}
+                className="group relative overflow-hidden border-border bg-card shadow-sm transition-all hover:border-primary/40 hover:shadow-md"
+              >
                 <CardHeader className="pb-2">
                   <div className="flex items-start justify-between">
                     <Badge variant="outline" className={`capitalize ${status?.color || ""}`}>
@@ -160,21 +184,31 @@ function LeadsPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem onClick={() => {
-                            setEditingLead(lead);
-                            setNotes(lead.internal_notes || "");
-                          }}>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingLead(lead);
+                              setNotes(lead.internal_notes || "");
+                            }}
+                          >
                             <StickyNote className="mr-2 size-4" />
                             Internal Notes
                           </DropdownMenuItem>
                           <div className="my-1 h-px bg-muted" />
-                          <DropdownMenuItem onClick={() => updateMutation.mutate({ id: lead.id, status: "new" })}>
+                          <DropdownMenuItem
+                            onClick={() => updateMutation.mutate({ id: lead.id, status: "new" })}
+                          >
                             Mark as New
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => updateMutation.mutate({ id: lead.id, status: "contacted" })}>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              updateMutation.mutate({ id: lead.id, status: "contacted" })
+                            }
+                          >
                             Mark as Contacted
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => updateMutation.mutate({ id: lead.id, status: "closed" })}>
+                          <DropdownMenuItem
+                            onClick={() => updateMutation.mutate({ id: lead.id, status: "closed" })}
+                          >
                             Mark as Closed
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -190,16 +224,26 @@ function LeadsPage() {
                   <div className="grid grid-cols-1 gap-2 text-sm">
                     <div className="flex items-center gap-2">
                       <Phone className="size-3.5 text-muted-foreground" />
-                      <a href={`tel:${lead.phone}`} className="font-medium hover:text-primary transition-colors">{lead.phone}</a>
+                      <a
+                        href={`tel:${lead.phone}`}
+                        className="font-medium hover:text-primary transition-colors"
+                      >
+                        {lead.phone}
+                      </a>
                     </div>
                     {lead.email && (
                       <div className="flex items-center gap-2">
                         <Mail className="size-3.5 text-muted-foreground" />
-                        <a href={`mailto:${lead.email}`} className="truncate text-muted-foreground hover:text-primary transition-colors">{lead.email}</a>
+                        <a
+                          href={`mailto:${lead.email}`}
+                          className="truncate text-muted-foreground hover:text-primary transition-colors"
+                        >
+                          {lead.email}
+                        </a>
                       </div>
                     )}
                   </div>
-                  
+
                   {lead.message && (
                     <div className="rounded-xl bg-muted/30 p-3 text-sm leading-relaxed text-muted-foreground">
                       <p className="line-clamp-3 italic">"{lead.message}"</p>
@@ -212,13 +256,18 @@ function LeadsPage() {
                         <StickyNote className="size-3" />
                         Internal Note
                       </div>
-                      <p className="text-xs text-foreground/80 line-clamp-2">{lead.internal_notes}</p>
+                      <p className="text-xs text-foreground/80 line-clamp-2">
+                        {lead.internal_notes}
+                      </p>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground/60">
                     <span>Source: {lead.source.replace("_", " ")}</span>
-                    <Badge variant="outline" className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter opacity-40 group-hover:opacity-100 transition-opacity">
+                    <Badge
+                      variant="outline"
+                      className="h-5 px-1.5 text-[9px] uppercase font-bold tracking-tighter opacity-40 group-hover:opacity-100 transition-opacity"
+                    >
                       ID: {lead.id.slice(0, 8)}
                     </Badge>
                   </div>
@@ -235,21 +284,25 @@ function LeadsPage() {
             <DialogTitle>Internal Notes for {editingLead?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <Textarea 
-              placeholder="Add internal followup notes here..." 
+            <Textarea
+              placeholder="Add internal followup notes here..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               className="min-h-[120px] resize-none focus-visible:ring-primary"
             />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingLead(null)}>Cancel</Button>
-            <Button 
-              onClick={() => updateMutation.mutate({ 
-                id: editingLead.id, 
-                status: editingLead.status, 
-                internalNotes: notes 
-              })}
+            <Button variant="outline" onClick={() => setEditingLead(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() =>
+                updateMutation.mutate({
+                  id: editingLead.id,
+                  status: editingLead.status,
+                  internalNotes: notes,
+                })
+              }
               disabled={updateMutation.isPending}
             >
               <Save className="mr-2 size-4" />

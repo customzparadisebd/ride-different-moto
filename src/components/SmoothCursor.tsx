@@ -10,13 +10,13 @@ export function SmoothCursor() {
   const ringRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: -100, y: -100 });
   const currentRef = useRef({ x: -100, y: -100 });
-  
+
   const Y_OFFSET = 20;
   const LERP_FACTOR = 0.15;
 
   useEffect(() => {
     setMounted(true);
-    
+
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
@@ -62,6 +62,6 @@ export function SmoothCursor() {
       }}
       data-testid="smooth-cursor"
     />,
-    document.body
+    document.body,
   );
 }

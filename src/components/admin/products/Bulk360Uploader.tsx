@@ -36,7 +36,10 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
   }, [isPlaying, previewImages.length]);
 
   const validateUrls = (text: string) => {
-    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    const lines = text
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     const errors: string[] = [];
     const valid: string[] = [];
 
@@ -67,8 +70,8 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
       toast.error("Paste some image URLs first.");
       return;
     }
-    
-    await onSave(previewImages.map(imageUrl => ({ imageUrl })));
+
+    await onSave(previewImages.map((imageUrl) => ({ imageUrl })));
     setUrls("");
     setPreviewImages([]);
   };
@@ -87,7 +90,7 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
           <Label className="text-xs text-muted-foreground uppercase tracking-wider">
             Paste Image URLs (One per line)
           </Label>
-          <Textarea 
+          <Textarea
             placeholder="https://.../frame-01.webp&#10;https://.../frame-02.webp"
             rows={10}
             className="font-mono text-xs"
@@ -100,7 +103,10 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
           {validationErrors.length > 0 && (
             <div className="rounded-lg bg-destructive/5 p-3 border border-destructive/20 space-y-1">
               {validationErrors.map((err, i) => (
-                <div key={i} className="flex items-center gap-2 text-[10px] text-destructive font-medium">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 text-[10px] text-destructive font-medium"
+                >
                   <AlertCircle className="size-3" />
                   {err}
                 </div>
@@ -116,27 +122,27 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
           <div className="aspect-square w-full rounded-xl border border-border bg-black relative overflow-hidden group">
             {previewImages.length > 0 ? (
               <>
-                <img 
-                  src={previewImages[currentIndex]} 
-                  alt="Preview" 
+                <img
+                  src={previewImages[currentIndex]}
+                  alt="Preview"
                   className="size-full object-contain"
                 />
                 <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent flex flex-col gap-3">
                   <div className="flex items-center gap-3">
-                    <Button 
-                      size="icon" 
-                      variant="ghost" 
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       className="size-8 rounded-full text-white hover:bg-white/20"
                       onClick={() => setIsPlaying(!isPlaying)}
                     >
                       {isPlaying ? <Pause className="size-4" /> : <Play className="size-4" />}
                     </Button>
-                    <Slider 
-                      value={[currentIndex]} 
-                      max={previewImages.length - 1} 
+                    <Slider
+                      value={[currentIndex]}
+                      max={previewImages.length - 1}
                       step={1}
                       onValueChange={([val]) => {
-                        if (typeof val === 'number') {
+                        if (typeof val === "number") {
                           setCurrentIndex(val);
                           setIsPlaying(false);
                         }
@@ -158,16 +164,19 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
             )}
           </div>
           <div className="flex items-start gap-2 text-[10px] text-muted-foreground bg-secondary/50 p-2 rounded">
-             <Info className="size-3 shrink-0 mt-0.5" />
-             <p>Pre-save sequence scrubber: drag the slider to verify the rotation order manually before confirming.</p>
+            <Info className="size-3 shrink-0 mt-0.5" />
+            <p>
+              Pre-save sequence scrubber: drag the slider to verify the rotation order manually
+              before confirming.
+            </p>
           </div>
         </div>
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button 
-          variant="red" 
-          size="touch" 
+        <Button
+          variant="red"
+          size="touch"
           disabled={isPending || previewImages.length === 0 || validationErrors.length > 0}
           onClick={handleSubmit}
         >

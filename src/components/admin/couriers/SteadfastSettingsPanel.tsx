@@ -14,7 +14,7 @@ import { format } from "date-fns";
 import { Activity, AlertCircle, CheckCircle2, ShieldCheck, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
- 
+
 import { PasswordInput } from "@/components/PasswordInput";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,6 @@ import {
 } from "@/lib/steadfast.functions";
 import { CLEAR_SECRET, STEADFAST_DEFAULT_BASE_URL } from "@/lib/steadfast.shared";
 
-
 export function SteadfastSettingsPanel() {
   const queryClient = useQueryClient();
   const load = useServerFn(getSteadfastSettings);
@@ -35,19 +34,17 @@ export function SteadfastSettingsPanel() {
   const testConn = useServerFn(testSteadfastConnection);
   const loadLogs = useServerFn(getSteadfastLogs);
 
-
   const settings = useQuery({
     queryKey: ["steadfast-settings"],
     queryFn: () => load(),
     retry: false,
   });
- 
+
   const logsQuery = useQuery({
     queryKey: ["steadfast-logs"],
     queryFn: () => loadLogs(),
     enabled: !!settings.data?.configured,
   });
-
 
   const [baseUrl, setBaseUrl] = useState(STEADFAST_DEFAULT_BASE_URL);
   const [isActive, setIsActive] = useState(false);
@@ -70,7 +67,7 @@ export function SteadfastSettingsPanel() {
     },
     onError: (error: Error) => toast.error(error.message || "Could not save the settings."),
   });
- 
+
   const testMutation = useMutation({
     mutationFn: () => testConn({}),
     onSuccess: (res: any) => {
@@ -83,8 +80,6 @@ export function SteadfastSettingsPanel() {
     },
     onError: (error: Error) => toast.error(error.message || "Connection test failed."),
   });
-
-
 
   // Staff / Manager accounts get a 403 from the server function — hide the section.
   if (settings.isError) return null;
@@ -103,9 +98,7 @@ export function SteadfastSettingsPanel() {
         </div>
         <span
           className={`rounded-md px-2 py-1 text-xs font-semibold uppercase ${
-            stored?.configured
-              ? "bg-primary/15 text-primary"
-              : "bg-muted text-muted-foreground"
+            stored?.configured ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
           }`}
         >
           {stored?.configured ? "Active" : "Not ready"}
@@ -203,7 +196,6 @@ export function SteadfastSettingsPanel() {
               </Button>
             ) : null}
             {stored?.hasApiKey || stored?.hasApiSecret ? (
-
               <Button
                 type="button"
                 variant="steel"
@@ -226,7 +218,7 @@ export function SteadfastSettingsPanel() {
           </div>
         </form>
       )}
- 
+
       {/* API ERROR LOGS */}
       {stored?.configured && (
         <div className="mt-8 border-t border-border pt-6">
@@ -245,9 +237,8 @@ export function SteadfastSettingsPanel() {
             >
               Refresh Logs
             </Button>
-
           </div>
- 
+
           <div className="mt-4 overflow-hidden rounded-lg border border-border bg-muted/30">
             <table className="w-full text-left text-xs">
               <thead className="border-b border-border bg-muted/50 font-semibold uppercase text-muted-foreground">
@@ -293,7 +284,10 @@ export function SteadfastSettingsPanel() {
                         )}
                       </td>
                       <td className="px-3 py-2 font-mono text-[10px]">{log.status_code || "-"}</td>
-                      <td className="max-w-[200px] truncate px-3 py-2 text-muted-foreground" title={log.message || ""}>
+                      <td
+                        className="max-w-[200px] truncate px-3 py-2 text-muted-foreground"
+                        title={log.message || ""}
+                      >
                         {log.message || "-"}
                       </td>
                     </tr>

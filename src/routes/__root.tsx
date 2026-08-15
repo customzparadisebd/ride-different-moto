@@ -33,31 +33,34 @@ function NotFoundComponent() {
   const logFn = useServerFn(logNotFound);
 
   useEffect(() => {
-    void logFn({ data: { path: pathname, referrer: typeof document !== "undefined" ? document.referrer : null } });
+    void logFn({
+      data: {
+        path: pathname,
+        referrer: typeof document !== "undefined" ? document.referrer : null,
+      },
+    });
   }, [pathname, logFn]);
-  
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <div className="w-full max-w-lg text-center">
         <div className="relative mx-auto mb-10 w-full max-w-[320px] overflow-hidden rounded-xl bg-muted/30 sm:max-w-[500px] lg:max-w-[600px]">
-          <img 
-            src={errorGif.url} 
-            alt="Page not found" 
+          <img
+            src={errorGif.url}
+            alt="Page not found"
             className="h-auto w-full object-contain transition-transform duration-500 hover:scale-105"
             loading="eager"
           />
         </div>
-        
-        <h1 className="text-6xl font-black tracking-tighter text-foreground sm:text-8xl">
-          404
-        </h1>
+
+        <h1 className="text-6xl font-black tracking-tighter text-foreground sm:text-8xl">404</h1>
         <h2 className="mt-4 text-2xl font-bold uppercase tracking-wide text-foreground sm:text-3xl">
           Page Not Found
         </h2>
         <p className="mx-auto mt-4 max-w-sm text-base text-muted-foreground sm:text-lg">
           The page you're looking for doesn't exist or has been moved to a different path.
         </p>
-        
+
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
             to={isPrivateArea ? "/ad" : "/"}
@@ -151,58 +154,58 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": site.name,
-          "url": site.url,
-          "logo": `${site.url}/logo-main.png`,
-          "contactPoint": {
+          name: site.name,
+          url: site.url,
+          logo: `${site.url}/logo-main.png`,
+          contactPoint: {
             "@type": "ContactPoint",
-            "telephone": site.phoneDisplay,
-            "contactType": "customer service",
-            "areaServed": "BD",
-            "availableLanguage": ["en", "bn"]
+            telephone: site.phoneDisplay,
+            contactType: "customer service",
+            areaServed: "BD",
+            availableLanguage: ["en", "bn"],
           },
-          "sameAs": site.socials.map(s => s.href)
-        })
+          sameAs: site.socials.map((s) => s.href),
+        }),
       },
       {
         type: "application/ld+json",
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
-          "name": site.name,
-          "image": `${site.url}/logo-main.png`,
+          name: site.name,
+          image: `${site.url}/logo-main.png`,
           "@id": site.url,
-          "url": site.url,
-          "telephone": site.phoneDisplay,
-          "address": {
+          url: site.url,
+          telephone: site.phoneDisplay,
+          address: {
             "@type": "PostalAddress",
-            "streetAddress": "Sector 10",
-            "addressLocality": "Uttara",
-            "addressRegion": "Dhaka",
-            "postalCode": "1230",
-            "addressCountry": "BD"
+            streetAddress: "Sector 10",
+            addressLocality: "Uttara",
+            addressRegion: "Dhaka",
+            postalCode: "1230",
+            addressCountry: "BD",
           },
-          "geo": {
+          geo: {
             "@type": "GeoCoordinates",
-            "latitude": 23.8759,
-            "longitude": 90.3795
+            latitude: 23.8759,
+            longitude: 90.3795,
           },
-          "openingHoursSpecification": {
+          openingHoursSpecification: {
             "@type": "OpeningHoursSpecification",
-            "dayOfWeek": [
+            dayOfWeek: [
               "Monday",
               "Tuesday",
               "Wednesday",
               "Thursday",
               "Friday",
               "Saturday",
-              "Sunday"
+              "Sunday",
             ],
-            "opens": "09:00",
-            "closes": "21:00"
-          }
-        })
-      }
+            opens: "09:00",
+            closes: "21:00",
+          },
+        }),
+      },
     ],
   }),
 
@@ -234,17 +237,17 @@ function RootComponent() {
 
   // Source Protection: Discourage casual inspection
   useEffect(() => {
-    if (typeof window === 'undefined' || !import.meta.env.PROD) return;
+    if (typeof window === "undefined" || !import.meta.env.PROD) return;
 
     const handleContextMenu = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
       e.preventDefault();
     };
-    
-    document.addEventListener('contextmenu', handleContextMenu);
+
+    document.addEventListener("contextmenu", handleContextMenu);
     return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
+      document.removeEventListener("contextmenu", handleContextMenu);
     };
   }, []);
 
@@ -255,7 +258,7 @@ function RootComponent() {
           <CartProvider>
             <div className="flex min-h-svh flex-col overflow-x-hidden">
               {isPrivateArea ? null : <Header />}
-              <main className={`flex-1 ${isPrivateArea ? '' : 'pt-14 sm:pt-16'}`}>
+              <main className={`flex-1 ${isPrivateArea ? "" : "pt-14 sm:pt-16"}`}>
                 <Outlet />
               </main>
               {isPrivateArea ? null : <Footer />}

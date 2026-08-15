@@ -89,7 +89,7 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
   };
 
   // Only Super Admin can create Super Admins
-  const availableRoles = ROLES.filter(r => r !== 'super_admin' || isSuperAdmin);
+  const availableRoles = ROLES.filter((r) => r !== "super_admin" || isSuperAdmin);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -101,7 +101,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
       </DialogTrigger>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl uppercase tracking-wider">Add New User</DialogTitle>
+          <DialogTitle className="font-display text-xl uppercase tracking-wider">
+            Add New User
+          </DialogTitle>
           <DialogDescription>
             Create a new administrative account. Fill in all required fields.
           </DialogDescription>
@@ -115,7 +117,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
                 name="fullName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name <span className="text-primary">*</span></FormLabel>
+                    <FormLabel>
+                      Full Name <span className="text-primary">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="Type full name" {...field} />
                     </FormControl>
@@ -129,7 +133,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email <span className="text-primary">*</span></FormLabel>
+                    <FormLabel>
+                      Email <span className="text-primary">*</span>
+                    </FormLabel>
                     <FormControl>
                       <Input placeholder="user@example.com" type="email" {...field} />
                     </FormControl>
@@ -157,7 +163,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
                 name="role"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role <span className="text-primary">*</span></FormLabel>
+                    <FormLabel>
+                      Role <span className="text-primary">*</span>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -182,7 +190,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password <span className="text-primary">*</span></FormLabel>
+                    <FormLabel>
+                      Password <span className="text-primary">*</span>
+                    </FormLabel>
                     <FormControl>
                       <PasswordInput placeholder="Minimum 8 characters" {...field} />
                     </FormControl>
@@ -196,7 +206,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status <span className="text-primary">*</span></FormLabel>
+                    <FormLabel>
+                      Status <span className="text-primary">*</span>
+                    </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
                         <SelectTrigger>

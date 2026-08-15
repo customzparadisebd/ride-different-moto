@@ -23,7 +23,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getSecurityStats, getSuspiciousIPs, listSecurityEvents } from "@/lib/security-events.functions";
+import {
+  getSecurityStats,
+  getSuspiciousIPs,
+  listSecurityEvents,
+} from "@/lib/security-events.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 // BD Timezone is UTC+6
@@ -33,11 +37,11 @@ const toBDTime = (date: string | Date) => {
 };
 
 export const Route = createFileRoute("/_authenticated/ad/security-dashboard")({
-  head: () => ({ 
+  head: () => ({
     meta: [
       { title: "Security Dashboard — CZP Ops" },
-      { name: "description", content: "Real-time security monitoring for Customz Paradise BD" }
-    ] 
+      { name: "description", content: "Real-time security monitoring for Customz Paradise BD" },
+    ],
   }),
   component: SecurityDashboardPage,
 });
@@ -77,7 +81,7 @@ function SecurityDashboardPage() {
           queryClient.invalidateQueries({ queryKey: ["security-stats"] });
           queryClient.invalidateQueries({ queryKey: ["recent-security-events"] });
           queryClient.invalidateQueries({ queryKey: ["suspicious-ips"] });
-        }
+        },
       )
       .subscribe();
 
@@ -93,7 +97,10 @@ function SecurityDashboardPage() {
           <h1 className="font-display text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
             <Shield className="h-8 w-8 text-primary" />
             Security Monitoring
-            <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse">
+            <Badge
+              variant="outline"
+              className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse"
+            >
               <Radio className="h-3 w-3" />
               Live
             </Badge>
@@ -102,12 +109,12 @@ function SecurityDashboardPage() {
             Real-time threat detection and incident response
           </p>
         </div>
-        <button 
+        <button
           onClick={refreshAll}
           disabled={isRefreshing}
           className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
         >
-          <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
           Refresh Data
         </button>
       </div>
@@ -118,8 +125,12 @@ function SecurityDashboardPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Auth Failures</p>
-                <h3 className="text-2xl font-black text-white group-hover:text-red-500 transition-colors">{stats.authFailures}</h3>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                  Auth Failures
+                </p>
+                <h3 className="text-2xl font-black text-white group-hover:text-red-500 transition-colors">
+                  {stats.authFailures}
+                </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">Last 24 hours</p>
               </div>
               <div className="h-10 w-10 rounded-lg bg-red-500/10 flex items-center justify-center border border-red-500/20 group-hover:scale-110 transition-transform">
@@ -133,9 +144,15 @@ function SecurityDashboardPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Rate Limits</p>
-                <h3 className="text-2xl font-black text-white group-hover:text-amber-500 transition-colors">{stats.rateLimits}</h3>
-                <p className="text-[10px] text-muted-foreground mt-1 font-medium">Violations recorded</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                  Rate Limits
+                </p>
+                <h3 className="text-2xl font-black text-white group-hover:text-amber-500 transition-colors">
+                  {stats.rateLimits}
+                </h3>
+                <p className="text-[10px] text-muted-foreground mt-1 font-medium">
+                  Violations recorded
+                </p>
               </div>
               <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
                 <Activity className="h-5 w-5 text-amber-500" />
@@ -148,9 +165,15 @@ function SecurityDashboardPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Suspicious IPs</p>
-                <h3 className="text-2xl font-black text-white group-hover:text-blue-500 transition-colors">{stats.suspiciousIPs}</h3>
-                <p className="text-[10px] text-muted-foreground mt-1 font-medium">Unique addresses</p>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                  Suspicious IPs
+                </p>
+                <h3 className="text-2xl font-black text-white group-hover:text-blue-500 transition-colors">
+                  {stats.suspiciousIPs}
+                </h3>
+                <p className="text-[10px] text-muted-foreground mt-1 font-medium">
+                  Unique addresses
+                </p>
               </div>
               <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-transform">
                 <Globe className="h-5 w-5 text-blue-500" />
@@ -163,8 +186,12 @@ function SecurityDashboardPage() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Total Events</p>
-                <h3 className="text-2xl font-black text-white group-hover:text-green-500 transition-colors">{stats.totalEvents}</h3>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                  Total Events
+                </p>
+                <h3 className="text-2xl font-black text-white group-hover:text-green-500 transition-colors">
+                  {stats.totalEvents}
+                </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">System wide</p>
               </div>
               <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center border border-green-500/20 group-hover:scale-110 transition-transform">
@@ -183,7 +210,9 @@ function SecurityDashboardPage() {
               <Activity className="h-4 w-4 text-primary" />
               Security Event Timeline
             </CardTitle>
-            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">Incident frequency per hour (Last 24h)</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Incident frequency per hour (Last 24h)
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
@@ -196,24 +225,28 @@ function SecurityDashboardPage() {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
-                  <XAxis 
-                    dataKey="time" 
-                    stroke="#ffffff40" 
-                    fontSize={10} 
-                    tickLine={false} 
+                  <XAxis
+                    dataKey="time"
+                    stroke="#ffffff40"
+                    fontSize={10}
+                    tickLine={false}
                     axisLine={false}
-                    tick={{ fill: '#ffffff40', fontWeight: 'bold' }}
+                    tick={{ fill: "#ffffff40", fontWeight: "bold" }}
                   />
-                  <YAxis 
-                    stroke="#ffffff40" 
-                    fontSize={10} 
-                    tickLine={false} 
+                  <YAxis
+                    stroke="#ffffff40"
+                    fontSize={10}
+                    tickLine={false}
                     axisLine={false}
-                    tick={{ fill: '#ffffff40', fontWeight: 'bold' }}
+                    tick={{ fill: "#ffffff40", fontWeight: "bold" }}
                   />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#121212', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                    itemStyle={{ color: '#ef4444', fontSize: '12px', fontWeight: 'bold' }}
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#121212",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "8px",
+                    }}
+                    itemStyle={{ color: "#ef4444", fontSize: "12px", fontWeight: "bold" }}
                   />
                   <Area
                     type="monotone"
@@ -236,15 +269,22 @@ function SecurityDashboardPage() {
               <AlertTriangle className="h-4 w-4 text-amber-500" />
               Top Suspicious IPs
             </CardTitle>
-            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">Addresses flagged for excessive failures</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Addresses flagged for excessive failures
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {suspiciousIPs.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-8">No suspicious activity detected.</p>
+                <p className="text-xs text-muted-foreground text-center py-8">
+                  No suspicious activity detected.
+                </p>
               ) : (
                 suspiciousIPs.map((ip) => (
-                  <div key={ip.ip} className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5">
+                  <div
+                    key={ip.ip}
+                    className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5"
+                  >
                     <div className="flex items-center gap-3">
                       <Globe className="h-4 w-4 text-muted-foreground" />
                       <div>
@@ -254,7 +294,10 @@ function SecurityDashboardPage() {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-500 bg-amber-500/5 uppercase tracking-widest">
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] border-amber-500/30 text-amber-500 bg-amber-500/5 uppercase tracking-widest"
+                    >
                       Flagged
                     </Badge>
                   </div>
@@ -273,9 +316,14 @@ function SecurityDashboardPage() {
               <Activity className="h-4 w-4 text-primary" />
               Recent Incidents
             </CardTitle>
-            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">Latest security events across the platform</CardDescription>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Latest security events across the platform
+            </CardDescription>
           </div>
-          <Badge variant="outline" className="border-white/10 text-white/60 text-[10px] uppercase tracking-widest font-bold">
+          <Badge
+            variant="outline"
+            className="border-white/10 text-white/60 text-[10px] uppercase tracking-widest font-bold"
+          >
             Real-time Feed
           </Badge>
         </CardHeader>
@@ -284,32 +332,48 @@ function SecurityDashboardPage() {
             <Table>
               <TableHeader className="bg-white/5">
                 <TableRow className="hover:bg-transparent border-white/5">
-                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-[180px]">Timestamp (BD)</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Event Type</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">IP Address</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Actor/Email</TableHead>
-                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-right">Route</TableHead>
+                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground w-[180px]">
+                    Timestamp (BD)
+                  </TableHead>
+                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Event Type
+                  </TableHead>
+                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    IP Address
+                  </TableHead>
+                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Actor/Email
+                  </TableHead>
+                  <TableHead className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground text-right">
+                    Route
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {recentEvents.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground text-xs uppercase tracking-widest">
+                    <TableCell
+                      colSpan={5}
+                      className="h-32 text-center text-muted-foreground text-xs uppercase tracking-widest"
+                    >
                       No recent security events
                     </TableCell>
                   </TableRow>
                 ) : (
                   recentEvents.map((event) => (
-                    <TableRow key={event.id} className="border-white/5 hover:bg-white/5 transition-colors group">
+                    <TableRow
+                      key={event.id}
+                      className="border-white/5 hover:bg-white/5 transition-colors group"
+                    >
                       <TableCell className="text-[11px] font-mono text-white/60">
                         {format(toBDTime(event.created_at || new Date()), "yyyy-MM-dd HH:mm:ss")}
                       </TableCell>
                       <TableCell>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`uppercase text-[9px] tracking-widest px-2 py-0 ${
-                            event.event_type === "rate_limit" 
-                              ? "border-amber-500/50 text-amber-500 bg-amber-500/5" 
+                            event.event_type === "rate_limit"
+                              ? "border-amber-500/50 text-amber-500 bg-amber-500/5"
                               : "border-red-500/50 text-red-500 bg-red-500/5"
                           }`}
                         >

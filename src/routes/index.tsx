@@ -80,10 +80,10 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);
-  const heroSlidesQuery = useQuery({ 
-    queryKey: ["hero-slides"], 
+  const heroSlidesQuery = useQuery({
+    queryKey: ["hero-slides"],
     queryFn: () => fetchHeroSlides({ data: {} }),
-    placeholderData: (prev) => prev
+    placeholderData: (prev) => prev,
   });
   const bikeModels = getBikeModels();
   // ALL PRODUCTS SECTION
@@ -95,11 +95,10 @@ function Index() {
     .filter((product) => product.bestDeal || product.featured)
     .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
 
-
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — {t('section.home.h1')}
+        {site.name} — {t("section.home.h1")}
       </h1>
 
       <SectionBoundary label="hero">
@@ -112,21 +111,30 @@ function Index() {
 
       <SectionBoundary label="universal-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow={t('section.universal.eyebrow')} title={t('section.universal.title')} />
+          <SectionHeading
+            eyebrow={t("section.universal.eyebrow")}
+            title={t("section.universal.title")}
+          />
           <ProductGrid products={universalProducts} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="best-deals">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow={t('section.bestDeals.eyebrow')} title={t('section.bestDeals.title')} />
+          <SectionHeading
+            eyebrow={t("section.bestDeals.eyebrow")}
+            title={t("section.bestDeals.title")}
+          />
           <ProductGrid products={bestDeals} />
         </section>
       </SectionBoundary>
 
       <SectionBoundary label="all-products">
         <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading eyebrow={`${products.length} ${t('section.allProducts.eyebrow')}`} title={t('section.allProducts.title')} />
+          <SectionHeading
+            eyebrow={`${products.length} ${t("section.allProducts.eyebrow")}`}
+            title={t("section.allProducts.title")}
+          />
           {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
           <ProductBrowser products={products} />
         </section>
@@ -136,11 +144,9 @@ function Index() {
         <AboutSection />
       </SectionBoundary>
 
-
       <SectionBoundary label="store">
         <StoreComingSoon />
       </SectionBoundary>
-
 
       <SectionBoundary label="contact">
         <ContactSection />

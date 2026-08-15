@@ -8,23 +8,22 @@ import { useLanguage } from "@/lib/i18n";
 export function ContactSection() {
   const { t } = useLanguage();
   const getWhatsAppHref = () => {
-    const text = encodeURIComponent("Hello Customz Paradise BD, I'm interested in modifying my bike. Can you help me?");
+    const text = encodeURIComponent(
+      "Hello Customz Paradise BD, I'm interested in modifying my bike. Can you help me?",
+    );
     return `https://wa.me/${site.whatsappNumber}?text=${text}`;
   };
 
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:py-24" id="contact">
       <div className="w-full">
-        <SectionHeading
-          eyebrow={t('section.contact.eyebrow')}
-          title={t('section.contact.title')}
-        />
+        <SectionHeading eyebrow={t("section.contact.eyebrow")} title={t("section.contact.title")} />
         <div className="mb-6 sm:mb-8" />
-        
+
         <p className="mb-8 max-w-2xl text-sm text-muted-foreground sm:mb-10 sm:text-base lg:text-lg">
-          {t('section.contact.p1')}
+          {t("section.contact.p1")}
         </p>
- 
+
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <a
             href={getWhatsAppHref()}
@@ -36,11 +35,13 @@ export function ContactSection() {
               <WhatsAppIcon className="size-6" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">WhatsApp</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
+                WhatsApp
+              </h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.phoneDisplay}</p>
             </div>
           </a>
- 
+
           <a
             href="https://m.me/customzparadisebd"
             target="_blank"
@@ -51,17 +52,21 @@ export function ContactSection() {
               <FacebookIcon className="size-6" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">{t('section.contact.messenger')}</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
+                {t("section.contact.messenger")}
+              </h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">Customz Paradise BD</p>
             </div>
           </a>
- 
+
           <div className="flex flex-col items-center gap-4 rounded-xl border border-border bg-card p-6 text-center shadow-card sm:col-span-2 sm:p-8 lg:col-span-1">
             <div className="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
               <Store className="size-6" />
             </div>
             <div className="min-w-0">
-              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">{t('section.contact.office')}</h3>
+              <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
+                {t("section.contact.office")}
+              </h3>
               <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.address}</p>
             </div>
           </div>

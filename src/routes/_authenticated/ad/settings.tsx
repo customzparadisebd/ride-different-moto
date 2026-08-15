@@ -26,7 +26,13 @@ import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.share
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
-  head: () => ({ meta: [{ title: "Settings — CZP Ops" }, { property: "og:title", content: "Settings — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Settings — CZP Ops" },
+      { property: "og:title", content: "Settings — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: AdminSettings,
 });
 
@@ -38,7 +44,7 @@ function AdminSettings() {
   const navigate = useNavigate();
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
-  
+
   // ACCESS CONTROL: Restrict Staff from settings
   useEffect(() => {
     if (accessQuery.data) {
@@ -197,31 +203,39 @@ function AdminSettings() {
                 </div>
               </div>
             </div>
-            
+
             {/* FLOATING WHATSAPP CONTROLS */}
             <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-              <h2 className="font-display text-sm font-bold uppercase tracking-wide">Floating WhatsApp Button</h2>
+              <h2 className="font-display text-sm font-bold uppercase tracking-wide">
+                Floating WhatsApp Button
+              </h2>
               <p className="mt-1 text-xs text-muted-foreground">
                 Control the fixed floating chat button visible across the entire store.
               </p>
-              
+
               <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <label className="flex items-center gap-3">
                   <input
                     type="checkbox"
                     className="h-4 w-4 accent-primary"
                     checked={draft.whatsappFloatingEnabled}
-                    onChange={(e) => setDraft(c => ({ ...c, whatsappFloatingEnabled: e.target.checked }))}
+                    onChange={(e) =>
+                      setDraft((c) => ({ ...c, whatsappFloatingEnabled: e.target.checked }))
+                    }
                   />
                   <span className="text-sm font-medium">Show Floating Button</span>
                 </label>
 
                 <div className="flex items-center gap-3">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">Position</Label>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Position
+                  </Label>
                   <select
                     className="h-9 rounded-md border border-input bg-background px-3 text-xs focus:ring-1 focus:ring-primary outline-none"
                     value={draft.whatsappFloatingPosition}
-                    onChange={(e) => setDraft(c => ({ ...c, whatsappFloatingPosition: e.target.value as any }))}
+                    onChange={(e) =>
+                      setDraft((c) => ({ ...c, whatsappFloatingPosition: e.target.value as any }))
+                    }
                   >
                     <option value="bottom-right">Bottom Right</option>
                     <option value="bottom-left">Bottom Left</option>

@@ -22,22 +22,22 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
   const [isPreloaded, setIsPreloaded] = useState(false);
   const lastX = useRef<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const totalImages = images.length;
 
   // Progressive loading: Load first, middle, and end frames first for quick visual feedback
   useEffect(() => {
     if (totalImages === 0) return;
-    
+
     const priorityIndices = new Set([
-      0, 
-      Math.floor(totalImages / 4), 
-      Math.floor(totalImages / 2), 
-      Math.floor(3 * totalImages / 4)
+      0,
+      Math.floor(totalImages / 4),
+      Math.floor(totalImages / 2),
+      Math.floor((3 * totalImages) / 4),
     ]);
-    
+
     const loadPriority = async () => {
-      const priorityPromises = Array.from(priorityIndices).map(idx => {
+      const priorityPromises = Array.from(priorityIndices).map((idx) => {
         const src = images[idx];
         if (!src) return Promise.resolve();
         return new Promise((resolve) => {
@@ -48,11 +48,11 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
         });
       });
       await Promise.all(priorityPromises);
-      
+
       // After priority, load the rest
       let loadedCount = priorityIndices.size;
       setProgress(Math.round((loadedCount / totalImages) * 100));
-      
+
       images.forEach((src, idx) => {
         if (priorityIndices.has(idx)) return;
         const img = new Image();
@@ -80,25 +80,28 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
     lastX.current = clientX;
   };
 
-  const handleMove = useCallback((clientX: number) => {
-    if (!isDragging || lastX.current === null) return;
+  const handleMove = useCallback(
+    (clientX: number) => {
+      if (!isDragging || lastX.current === null) return;
 
-    const deltaX = clientX - lastX.current;
-    // Sensivity: pixels to move one frame
-    const sensitivity = 10; 
-    
-    if (Math.abs(deltaX) > sensitivity) {
-      const framesToMove = Math.floor(deltaX / sensitivity);
-      
-      setCurrentIndex((prev) => {
-        let next = (prev - framesToMove) % totalImages;
-        if (next < 0) next = totalImages + next;
-        return next;
-      });
-      
-      lastX.current = clientX;
-    }
-  }, [isDragging, totalImages]);
+      const deltaX = clientX - lastX.current;
+      // Sensivity: pixels to move one frame
+      const sensitivity = 10;
+
+      if (Math.abs(deltaX) > sensitivity) {
+        const framesToMove = Math.floor(deltaX / sensitivity);
+
+        setCurrentIndex((prev) => {
+          let next = (prev - framesToMove) % totalImages;
+          if (next < 0) next = totalImages + next;
+          return next;
+        });
+
+        lastX.current = clientX;
+      }
+    },
+    [isDragging, totalImages],
+  );
 
   const handleEnd = () => {
     setIsDragging(false);
@@ -146,7 +149,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
   }, [totalImages, onClose]);
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
@@ -159,9 +162,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
             <h2 className="font-display text-lg font-bold uppercase tracking-tight sm:text-2xl">
               360° View
             </h2>
-            <p className="truncate text-xs text-muted-foreground sm:text-sm">
-              {productName}
-            </p>
+            <p className="truncate text-xs text-muted-foreground sm:text-sm">{productName}</p>
           </div>
           <Button
             variant="ghost"
@@ -188,7 +189,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
             ref={containerRef}
             className={cn(
               "relative aspect-square w-full max-w-[800px] cursor-grab select-none overflow-hidden touch-none",
-              isDragging && "cursor-grabbing"
+              isDragging && "cursor-grabbing",
             )}
             onMouseDown={(e) => handleStart(e.clientX)}
             onTouchStart={(e) => {
@@ -204,7 +205,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
                 alt={`${productName} frame ${index + 1}`}
                 className={cn(
                   "absolute inset-0 h-full w-full object-contain transition-opacity duration-75",
-                  index === currentIndex ? "opacity-100" : "opacity-0"
+                  index === currentIndex ? "opacity-100" : "opacity-0",
                 )}
                 draggable={false}
               />
@@ -220,15 +221,15 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
 
         {/* Footer controls */}
         <div className="mt-6 flex items-center justify-center gap-4">
-           <div className="h-1 flex-1 max-w-md overflow-hidden rounded-full bg-white/10">
-              <div 
-                className="h-full bg-primary transition-all duration-300"
-                style={{ width: `${((currentIndex + 1) / totalImages) * 100}%` }}
-              />
-           </div>
-           <span className="font-mono text-[10px] text-muted-foreground uppercase">
-             Frame {currentIndex + 1} / {totalImages}
-           </span>
+          <div className="h-1 flex-1 max-w-md overflow-hidden rounded-full bg-white/10">
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: `${((currentIndex + 1) / totalImages) * 100}%` }}
+            />
+          </div>
+          <span className="font-mono text-[10px] text-muted-foreground uppercase">
+            Frame {currentIndex + 1} / {totalImages}
+          </span>
         </div>
       </div>
     </div>

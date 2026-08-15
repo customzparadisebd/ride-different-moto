@@ -88,13 +88,18 @@ function ReviewsPage() {
     <div className="flex flex-col gap-8 p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-tight">Customer Reviews</h1>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-tight">
+            Customer Reviews
+          </h1>
           <p className="text-muted-foreground">Manage testimonials shown on the homepage.</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => {
-          setIsDialogOpen(open);
-          if (!open) setEditingReview(null);
-        }}>
+        <Dialog
+          open={isDialogOpen}
+          onOpenChange={(open) => {
+            setIsDialogOpen(open);
+            if (!open) setEditingReview(null);
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="font-bold uppercase tracking-wide">
               <Plus className="mr-2 size-4" />
@@ -109,41 +114,41 @@ function ReviewsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="customer_name">Customer Name</Label>
-                  <Input 
-                    id="customer_name" 
-                    name="customer_name" 
-                    defaultValue={editingReview?.customer_name} 
-                    required 
+                  <Input
+                    id="customer_name"
+                    name="customer_name"
+                    defaultValue={editingReview?.customer_name}
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="rating">Rating (1-5)</Label>
-                  <Input 
-                    id="rating" 
-                    name="rating" 
-                    type="number" 
-                    min="1" 
-                    max="5" 
-                    defaultValue={editingReview?.rating || 5} 
-                    required 
+                  <Input
+                    id="rating"
+                    name="rating"
+                    type="number"
+                    min="1"
+                    max="5"
+                    defaultValue={editingReview?.rating || 5}
+                    required
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="bike_model">Bike Model (Optional)</Label>
-                <Input 
-                  id="bike_model" 
-                  name="bike_model" 
-                  defaultValue={editingReview?.bike_model} 
+                <Input
+                  id="bike_model"
+                  name="bike_model"
+                  defaultValue={editingReview?.bike_model}
                   placeholder="e.g. Pulsar N160"
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="comment">Comment</Label>
-                <Textarea 
-                  id="comment" 
-                  name="comment" 
-                  defaultValue={editingReview?.comment} 
+                <Textarea
+                  id="comment"
+                  name="comment"
+                  defaultValue={editingReview?.comment}
                   rows={4}
                   required
                 />
@@ -151,24 +156,27 @@ function ReviewsPage() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="sort_order">Sort Order</Label>
-                  <Input 
-                    id="sort_order" 
-                    name="sort_order" 
-                    type="number" 
-                    defaultValue={editingReview?.sort_order || 0} 
+                  <Input
+                    id="sort_order"
+                    name="sort_order"
+                    type="number"
+                    defaultValue={editingReview?.sort_order || 0}
                   />
                 </div>
                 <div className="flex items-center gap-3 pt-8">
-                  <Switch 
-                    id="is_active" 
-                    name="is_active" 
-                    defaultChecked={editingReview ? editingReview.is_active : true} 
+                  <Switch
+                    id="is_active"
+                    name="is_active"
+                    defaultChecked={editingReview ? editingReview.is_active : true}
                   />
                   <Label htmlFor="is_active">Active</Label>
                 </div>
               </div>
               <DialogFooter>
-                <Button type="submit" disabled={createMutation.isPending || updateMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={createMutation.isPending || updateMutation.isPending}
+                >
                   {editingReview ? "Update Review" : "Save Review"}
                 </Button>
               </DialogFooter>
@@ -195,22 +203,40 @@ function ReviewsPage() {
                   <div className="flex items-center gap-2">
                     <span className="font-bold">{review.customer_name}</span>
                     {review.is_active ? (
-                      <Badge variant="outline" className="border-green-500/30 bg-green-500/5 text-green-500 text-[10px] h-4">Active</Badge>
+                      <Badge
+                        variant="outline"
+                        className="border-green-500/30 bg-green-500/5 text-green-500 text-[10px] h-4"
+                      >
+                        Active
+                      </Badge>
                     ) : (
-                      <Badge variant="outline" className="border-red-500/30 bg-red-500/5 text-red-500 text-[10px] h-4">Inactive</Badge>
+                      <Badge
+                        variant="outline"
+                        className="border-red-500/30 bg-red-500/5 text-red-500 text-[10px] h-4"
+                      >
+                        Inactive
+                      </Badge>
                     )}
                   </div>
                   <div className="flex gap-0.5">
                     {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className={cn("size-3", i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-muted")} />
+                      <Star
+                        key={i}
+                        className={cn(
+                          "size-3",
+                          i < review.rating ? "fill-yellow-500 text-yellow-500" : "text-muted",
+                        )}
+                      />
                     ))}
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-1 italic">"{review.comment}"</p>
+                  <p className="text-sm text-muted-foreground line-clamp-1 italic">
+                    "{review.comment}"
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="size-8"
                     onClick={() => {
                       setEditingReview(review);
@@ -219,9 +245,9 @@ function ReviewsPage() {
                   >
                     <Edit2 className="size-4" />
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="size-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
                     onClick={() => {
                       if (confirm("Are you sure you want to delete this review?")) {

@@ -21,9 +21,9 @@ Implement multi-select bulk actions for order status and SteadFast Courier assig
 
 ## Technical Details
 
-- **Bulk Status Update**: 
+- **Bulk Status Update**:
   - Enhance `bulkUpdateOrderStatus` in `orders.functions.ts` to handle the selected IDs and log audit events for each.
-- **SteadFast Integration**: 
+- **SteadFast Integration**:
   - Update `SteadfastBulkDialog.tsx` to ensure it uses the official logo SVG: `https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg`.
 - **Order Calculation Logic**:
   - Implement real-time calculations in the `ManualOrderForm.tsx` to handle `Subtotal - Discount + Shipping - Advance = Due`.

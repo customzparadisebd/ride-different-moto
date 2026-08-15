@@ -41,7 +41,6 @@ export type StorefrontProduct = {
   sortOrder: number | null;
 };
 
-
 export const productSlugInput = z.object({ slug: z.string().trim().min(1).max(160) });
 
 /** Base price the customer pays before any colour surcharge. */

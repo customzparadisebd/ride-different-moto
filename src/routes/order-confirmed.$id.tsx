@@ -11,7 +11,10 @@ export const Route = createFileRoute("/order-confirmed/$id")({
   head: () => ({
     meta: [
       { title: `Order Confirmed — ${site.name}` },
-      { name: "description", content: "Thank you for your order! Your motorcycle parts modification is being processed." },
+      {
+        name: "description",
+        content: "Thank you for your order! Your motorcycle parts modification is being processed.",
+      },
       { property: "og:title", content: `Order Confirmed — ${site.name}` },
       { property: "og:type", content: "website" },
       { name: "robots", content: "noindex, nofollow" },
@@ -24,7 +27,9 @@ export const Route = createFileRoute("/order-confirmed/$id")({
   notFoundComponent: () => (
     <div className="mx-auto max-w-xl px-4 py-20 text-center">
       <h1 className="font-display text-3xl font-bold uppercase">Order not found</h1>
-      <p className="mt-2 text-sm text-muted-foreground">We couldn't find the order you're looking for.</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        We couldn't find the order you're looking for.
+      </p>
       <Button variant="red" size="touch" className="mt-6" asChild>
         <Link to="/shop">Back to Shop</Link>
       </Button>
@@ -63,7 +68,7 @@ function OrderConfirmedPage() {
         @keyframes czp-reveal{to{opacity:1;transform:translateY(0)}}
         @media (prefers-reduced-motion: reduce){.czp-reveal{animation:none;opacity:1;transform:none}}
       `}</style>
-      
+
       <OrderSuccessAnimation />
 
       <h1
@@ -72,9 +77,13 @@ function OrderConfirmedPage() {
       >
         Order Confirmed
       </h1>
-      
-      <p className="czp-reveal mt-2 text-sm text-muted-foreground" style={{ animationDelay: "1.08s" }}>
-        Thank you, <strong>{order.customer_name}</strong>! Our team will call you at <strong>{order.customer_phone}</strong> shortly to confirm delivery details.
+
+      <p
+        className="czp-reveal mt-2 text-sm text-muted-foreground"
+        style={{ animationDelay: "1.08s" }}
+      >
+        Thank you, <strong>{order.customer_name}</strong>! Our team will call you at{" "}
+        <strong>{order.customer_phone}</strong> shortly to confirm delivery details.
       </p>
 
       <div
@@ -82,18 +91,23 @@ function OrderConfirmedPage() {
         style={{ animationDelay: "1.1s" }}
       >
         <div className="bg-secondary/30 p-5 border-b border-border">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">Invoice Number</p>
+          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+            Invoice Number
+          </p>
           <p className="font-display text-3xl font-bold text-primary">{order.invoice_no}</p>
         </div>
-        
+
         <div className="p-5 space-y-6">
           <div>
-            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">Order Items</h2>
+            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-2">
+              Order Items
+            </h2>
             <ul className="space-y-2">
               {items.map((item: any) => (
                 <li key={item.id} className="flex justify-between text-sm">
                   <span className="text-muted-foreground">
-                    {item.product_name} {item.variant ? `(${item.variant})` : ""} <span className="text-foreground font-medium">x{item.quantity}</span>
+                    {item.product_name} {item.variant ? `(${item.variant})` : ""}{" "}
+                    <span className="text-foreground font-medium">x{item.quantity}</span>
                   </span>
                   <span className="font-medium">{formatBDT(item.line_total)}</span>
                 </li>
@@ -103,7 +117,9 @@ function OrderConfirmedPage() {
 
           <div className="flex justify-between items-center border-t border-border pt-4">
             <span className="text-sm font-semibold uppercase">Total Amount Payable</span>
-            <span className="font-display text-2xl font-bold text-primary">{formatBDT(order.total)}</span>
+            <span className="font-display text-2xl font-bold text-primary">
+              {formatBDT(order.total)}
+            </span>
           </div>
 
           <div className="text-xs text-muted-foreground border-t border-border pt-4 grid grid-cols-2 gap-4">
@@ -114,7 +130,7 @@ function OrderConfirmedPage() {
             </div>
             <div className="text-right">
               <p className="font-semibold text-foreground uppercase mb-1">Payment Method</p>
-              <p className="capitalize">{order.payment_method.replace(/_/g, ' ')}</p>
+              <p className="capitalize">{order.payment_method.replace(/_/g, " ")}</p>
             </div>
           </div>
         </div>
@@ -132,8 +148,13 @@ function OrderConfirmedPage() {
         </Button>
       </div>
 
-      <div className="czp-reveal mt-8 rounded-lg border border-border bg-secondary/60 p-4 text-center" style={{ animationDelay: "1.35s" }}>
-        <p className="text-xs text-muted-foreground">Having any problem with your order? Need help tracking?</p>
+      <div
+        className="czp-reveal mt-8 rounded-lg border border-border bg-secondary/60 p-4 text-center"
+        style={{ animationDelay: "1.35s" }}
+      >
+        <p className="text-xs text-muted-foreground">
+          Having any problem with your order? Need help tracking?
+        </p>
         <a
           href={`https://wa.me/${site.whatsappNumber}?text=Hi! I need help with my order ${order.invoice_no} on Customz Paradise BD.`}
           target="_blank"

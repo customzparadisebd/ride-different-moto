@@ -167,7 +167,12 @@ function CityRow({
         onChange={(event) => setName(event.target.value)}
         onBlur={() => {
           if (name.trim() && name.trim() !== city.name) {
-            onSave({ id: city.id, name: name.trim(), isActive: city.isActive, sortOrder: city.sortOrder });
+            onSave({
+              id: city.id,
+              name: name.trim(),
+              isActive: city.isActive,
+              sortOrder: city.sortOrder,
+            });
           }
         }}
         disabled={!canManage}
@@ -193,7 +198,13 @@ function CityRow({
         <Button type="button" variant="ghost" size="icon" disabled={!canManage} onClick={onMoveUp}>
           <ArrowUp className="size-4" />
         </Button>
-        <Button type="button" variant="ghost" size="icon" disabled={!canManage} onClick={onMoveDown}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          disabled={!canManage}
+          onClick={onMoveDown}
+        >
           <ArrowDown className="size-4" />
         </Button>
         <Button

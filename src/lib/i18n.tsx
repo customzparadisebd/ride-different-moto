@@ -36,12 +36,15 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.rights": "All rights reserved.",
     "section.about.eyebrow": "Our Story",
     "section.about.title": "About Us",
-    "section.about.p1": "is more than just a parts shop. We are a dedicated motorcycle modification hub born from a passion for unique builds and high-performance aesthetics.",
-    "section.about.p2": "Established with a clear vision to redefine the motorcycling landscape in Bangladesh, we source and develop premium modification kits that help riders express their individuality on every journey.",
+    "section.about.p1":
+      "is more than just a parts shop. We are a dedicated motorcycle modification hub born from a passion for unique builds and high-performance aesthetics.",
+    "section.about.p2":
+      "Established with a clear vision to redefine the motorcycling landscape in Bangladesh, we source and develop premium modification kits that help riders express their individuality on every journey.",
     "section.store.eyebrow": "Uttara Branch",
     "section.store.title": "Physical Store Coming Soon",
     "section.store.location": "Location",
-    "section.store.p1": "Until our grand opening, every order is processed through our website with express delivery support across Bangladesh. Our workshop team is already active for custom kit fittings.",
+    "section.store.p1":
+      "Until our grand opening, every order is processed through our website with express delivery support across Bangladesh. Our workshop team is already active for custom kit fittings.",
     "section.home.h1": "premium motorcycle modification parts and accessories in Bangladesh",
     "section.models.eyebrow": "Find your fit",
     "section.models.title": "Explore by Bike Model",
@@ -53,7 +56,8 @@ const translations: Record<Language, Record<string, string>> = {
     "section.allProducts.eyebrow": "products",
     "section.contact.eyebrow": "Get in touch",
     "section.contact.title": "Contact Us",
-    "section.contact.p1": "Have questions about our modification kits or need advice for your build? Reach out to our experts directly or visit our office.",
+    "section.contact.p1":
+      "Have questions about our modification kits or need advice for your build? Reach out to our experts directly or visit our office.",
     "section.contact.messenger": "Messenger",
     "section.contact.office": "Office",
   },
@@ -76,12 +80,15 @@ const translations: Record<Language, Record<string, string>> = {
     "footer.rights": "সর্বস্বত্ব সংরক্ষিত।",
     "section.about.eyebrow": "আমাদের গল্প",
     "section.about.title": "আমাদের সম্পর্কে",
-    "section.about.p1": "একটি পার্টস শপের চেয়েও বেশি। আমরা মোটরসাইকেল মডিফিকেশনের একটি বিশেষ হাব, যা তৈরি হয়েছে ইউনিক বিল্ড এবং হাই-পারফরম্যান্স নান্দনিকতার প্রতি ভালোবাসা থেকে।",
-    "section.about.p2": "বাংলাদেশে মোটরসাইক্লিং দৃশ্যপট নতুনভাবে সংজ্ঞায়িত করার স্পষ্ট লক্ষ্য নিয়ে প্রতিষ্ঠিত, আমরা প্রিমিয়াম মডিফিকেশন কিট সংগ্রহ ও উন্নয়ন করি যা রাইডারদের প্রতিটি ভ্রমণে তাদের নিজস্বতা প্রকাশ করতে সাহায্য করে।",
+    "section.about.p1":
+      "একটি পার্টস শপের চেয়েও বেশি। আমরা মোটরসাইকেল মডিফিকেশনের একটি বিশেষ হাব, যা তৈরি হয়েছে ইউনিক বিল্ড এবং হাই-পারফরম্যান্স নান্দনিকতার প্রতি ভালোবাসা থেকে।",
+    "section.about.p2":
+      "বাংলাদেশে মোটরসাইক্লিং দৃশ্যপট নতুনভাবে সংজ্ঞায়িত করার স্পষ্ট লক্ষ্য নিয়ে প্রতিষ্ঠিত, আমরা প্রিমিয়াম মডিফিকেশন কিট সংগ্রহ ও উন্নয়ন করি যা রাইডারদের প্রতিটি ভ্রমণে তাদের নিজস্বতা প্রকাশ করতে সাহায্য করে।",
     "section.store.eyebrow": "উত্তরা শাখা",
     "section.store.title": "ফিজিক্যাল স্টোর শীঘ্রই আসছে",
     "section.store.location": "অবস্থান",
-    "section.store.p1": "আমাদের গ্র্যান্ড ওপেনিং পর্যন্ত, প্রতিটি অর্ডার আমাদের ওয়েবসাইটের মাধ্যমে প্রসেস করা হচ্ছে এবং পুরো বাংলাদেশে এক্সপ্রেস ডেলিভারি সাপোর্ট রয়েছে। আমাদের ওয়ার্কশপ টিম ইতিমধ্যে কাস্টম কিট ফিটিং-এর জন্য সক্রিয় রয়েছে।",
+    "section.store.p1":
+      "আমাদের গ্র্যান্ড ওপেনিং পর্যন্ত, প্রতিটি অর্ডার আমাদের ওয়েবসাইটের মাধ্যমে প্রসেস করা হচ্ছে এবং পুরো বাংলাদেশে এক্সপ্রেস ডেলিভারি সাপোর্ট রয়েছে। আমাদের ওয়ার্কশপ টিম ইতিমধ্যে কাস্টম কিট ফিটিং-এর জন্য সক্রিয় রয়েছে।",
     "section.home.h1": "বাংলাদেশে প্রিমিয়াম মোটরসাইকেল মডিফিকেশন পার্টস এবং এক্সেসরিজ",
     "section.models.eyebrow": "আপনার ফিট খুঁজুন",
     "section.models.title": "বাইক মডেল অনুযায়ী এক্সপ্লোর করুন",
@@ -93,7 +100,8 @@ const translations: Record<Language, Record<string, string>> = {
     "section.allProducts.eyebrow": "টি প্রোডাক্ট",
     "section.contact.eyebrow": "যোগাযোগ করুন",
     "section.contact.title": "আমাদের সাথে যোগাযোগ",
-    "section.contact.p1": "আমাদের মডিফিকেশন কিট সম্পর্কে প্রশ্ন আছে বা আপনার বাইক বিল্ডের জন্য পরামর্শ প্রয়োজন? সরাসরি আমাদের বিশেষজ্ঞদের সাথে যোগাযোগ করুন বা আমাদের অফিসে ভিজিট করুন।",
+    "section.contact.p1":
+      "আমাদের মডিফিকেশন কিট সম্পর্কে প্রশ্ন আছে বা আপনার বাইক বিল্ডের জন্য পরামর্শ প্রয়োজন? সরাসরি আমাদের বিশেষজ্ঞদের সাথে যোগাযোগ করুন বা আমাদের অফিসে ভিজিট করুন।",
     "section.contact.messenger": "মেসেঞ্জার",
     "section.contact.office": "অফিস",
   },
@@ -135,7 +143,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     (key: string) => {
       return translations[language][key] || key;
     },
-    [language]
+    [language],
   );
 
   return (

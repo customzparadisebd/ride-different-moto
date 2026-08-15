@@ -16,14 +16,25 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail, updateAdminCustomer } from "@/lib/customers.functions";
+import {
+  listAdminCustomers,
+  softDeleteCustomer,
+  getCustomerAuditTrail,
+  updateAdminCustomer,
+} from "@/lib/customers.functions";
 import { formatBDT } from "@/lib/format";
 import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
 import { FraudMarkBadge } from "@/components/admin/customers/FraudMarkBadge";
 
 export const Route = createFileRoute("/_authenticated/ad/customers")({
-  head: () => ({ meta: [{ title: "Customers — CZP Ops" }, { property: "og:title", content: "Customers — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Customers — CZP Ops" },
+      { property: "og:title", content: "Customers — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: AdminCustomers,
 });
 
@@ -64,7 +75,7 @@ function AdminCustomers() {
           placeholder="Search by name, phone, email, city..."
           className="h-11 max-w-sm"
         />
-        
+
         <div className="flex rounded-lg border border-border bg-card p-1 shadow-sm">
           {(["all", "active", "fraud"] as const).map((s) => (
             <button
@@ -83,14 +94,14 @@ function AdminCustomers() {
             </button>
           ))}
         </div>
-        
+
         {selectedIds.length > 0 && (
           <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
             <span className="text-xs font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
               {selectedIds.length} Selected
             </span>
-            <CustomerBulkDeleteButton 
-              ids={selectedIds} 
+            <CustomerBulkDeleteButton
+              ids={selectedIds}
               onSuccess={() => setSelectedIds([])}
               canManage={canManage}
             />
@@ -103,13 +114,13 @@ function AdminCustomers() {
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
               <th className="p-3 w-10">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="accent-primary"
                   checked={customers.length > 0 && selectedIds.length === customers.length}
                   onChange={(e) => {
                     if (e.target.checked) {
-                      setSelectedIds(customers.map(c => c.id));
+                      setSelectedIds(customers.map((c) => c.id));
                     } else {
                       setSelectedIds([]);
                     }
@@ -142,17 +153,20 @@ function AdminCustomers() {
             )}
             {customers.map((customer) => (
               <>
-                <tr key={customer.phone} className={`border-b border-border transition-colors ${selectedIds.includes(customer.id) ? 'bg-primary/5' : ''}`}>
+                <tr
+                  key={customer.phone}
+                  className={`border-b border-border transition-colors ${selectedIds.includes(customer.id) ? "bg-primary/5" : ""}`}
+                >
                   <td className="p-3">
-                    <input 
-                      type="checkbox" 
+                    <input
+                      type="checkbox"
                       className="accent-primary"
                       checked={selectedIds.includes(customer.id)}
                       onChange={(e) => {
                         if (e.target.checked) {
-                          setSelectedIds(prev => [...prev, customer.id]);
+                          setSelectedIds((prev) => [...prev, customer.id]);
                         } else {
-                          setSelectedIds(prev => prev.filter(id => id !== customer.id));
+                          setSelectedIds((prev) => prev.filter((id) => id !== customer.id));
                         }
                       }}
                     />
@@ -160,9 +174,9 @@ function AdminCustomers() {
                   <td className="p-3">
                     <div className="flex items-center justify-between gap-4">
                       <span className="font-bold">{customer.name}</span>
-                      <FraudMarkBadge 
-                        phoneNumber={customer.phone} 
-                        customerName={customer.name} 
+                      <FraudMarkBadge
+                        phoneNumber={customer.phone}
+                        customerName={customer.name}
                         canManage={canManage}
                       />
                     </div>
@@ -178,20 +192,19 @@ function AdminCustomers() {
                   </td>
                   <td className="p-3 text-right font-semibold">{customer.total_orders || 0}</td>
                   <td className="p-3 text-right text-muted-foreground">—</td>
-                  <td className="p-3 text-right font-semibold">{formatBDT(Number(customer.lifetime_value || 0))}</td>
+                  <td className="p-3 text-right font-semibold">
+                    {formatBDT(Number(customer.lifetime_value || 0))}
+                  </td>
                   <td className="p-3 whitespace-nowrap text-muted-foreground">
                     {new Date(customer.updated_at).toLocaleDateString("en-GB")}
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <CustomerEditButton 
-                        customer={customer}
-                        canManage={canManage}
-                      />
-                      <CustomerAuditTrailButton 
-                        customerId={customer.id} 
+                      <CustomerEditButton customer={customer} canManage={canManage} />
+                      <CustomerAuditTrailButton
+                        customerId={customer.id}
                         customerName={customer.name}
-                        canView={canManage} 
+                        canView={canManage}
                       />
                       <Button
                         variant="steel"
@@ -202,10 +215,7 @@ function AdminCustomers() {
                       >
                         {openPhone === customer.phone ? "Hide orders" : "View orders"}
                       </Button>
-                      <CustomerDeleteButton 
-                        customer={customer} 
-                        canManage={canManage} 
-                      />
+                      <CustomerDeleteButton customer={customer} canManage={canManage} />
                     </div>
                   </td>
                 </tr>
@@ -285,12 +295,12 @@ function Pagination({
   );
 }
 
-function CustomerAuditTrailButton({ 
-  customerId, 
+function CustomerAuditTrailButton({
+  customerId,
   customerName,
-  canView 
-}: { 
-  customerId: string; 
+  canView,
+}: {
+  customerId: string;
   customerName: string;
   canView: boolean;
 }) {
@@ -298,7 +308,7 @@ function CustomerAuditTrailButton({
   const [isOpen, setIsOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  
+
   const query = useQuery({
     queryKey: ["admin-customer-audit", customerId, page, search],
     queryFn: () => fetchAudit({ data: { customerId, page, search } }),
@@ -325,10 +335,10 @@ function CustomerAuditTrailButton({
                 Close
               </Button>
             </div>
-            
+
             <div className="p-4 border-b border-border bg-secondary/20">
-              <Input 
-                placeholder="Search audit actions..." 
+              <Input
+                placeholder="Search audit actions..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -337,18 +347,25 @@ function CustomerAuditTrailButton({
                 className="h-9 text-xs"
               />
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-4">
               {query.isLoading ? (
                 <p className="text-center text-sm text-muted-foreground">Loading audit logs...</p>
               ) : !query.data?.logs.length ? (
-                <p className="text-center text-sm text-muted-foreground">No audit logs found for this customer.</p>
+                <p className="text-center text-sm text-muted-foreground">
+                  No audit logs found for this customer.
+                </p>
               ) : (
                 <div className="space-y-4">
                   {query.data.logs.map((log: any) => (
-                    <div key={log.id} className="rounded-lg border border-border bg-secondary/30 p-3 text-sm">
+                    <div
+                      key={log.id}
+                      className="rounded-lg border border-border bg-secondary/30 p-3 text-sm"
+                    >
                       <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2 mb-2">
-                        <span className="font-bold text-primary">{log.action.replace("customer.", "").toUpperCase()}</span>
+                        <span className="font-bold text-primary">
+                          {log.action.replace("customer.", "").toUpperCase()}
+                        </span>
                         <span className="text-xs text-muted-foreground">
                           {new Date(log.created_at).toLocaleString("en-GB")}
                         </span>
@@ -356,7 +373,9 @@ function CustomerAuditTrailButton({
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
                           <p className="text-muted-foreground">Actor</p>
-                          <p>{log.actor_email} ({log.actor_role})</p>
+                          <p>
+                            {log.actor_email} ({log.actor_role})
+                          </p>
                         </div>
                         <div>
                           <p className="text-muted-foreground">IP Address</p>
@@ -365,7 +384,9 @@ function CustomerAuditTrailButton({
                       </div>
                       {log.metadata?.reason && (
                         <div className="mt-2 rounded bg-red-500/10 p-2 text-xs text-red-400 border border-red-500/20">
-                          <p className="font-semibold uppercase text-[10px] opacity-70">Delete Reason</p>
+                          <p className="font-semibold uppercase text-[10px] opacity-70">
+                            Delete Reason
+                          </p>
                           <p>{log.metadata.reason}</p>
                         </div>
                       )}
@@ -377,11 +398,11 @@ function CustomerAuditTrailButton({
 
             {query.data && query.data.total > query.data.pageSize && (
               <div className="border-t border-border p-3 bg-secondary/10 flex items-center justify-between">
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   disabled={page === 1}
-                  onClick={() => setPage(p => p - 1)}
+                  onClick={() => setPage((p) => p - 1)}
                   className="text-xs h-7"
                 >
                   Prev
@@ -389,11 +410,11 @@ function CustomerAuditTrailButton({
                 <span className="text-[10px] font-bold text-muted-foreground uppercase">
                   Page {page} of {Math.ceil(query.data.total / query.data.pageSize)}
                 </span>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   disabled={page >= Math.ceil(query.data.total / query.data.pageSize)}
-                  onClick={() => setPage(p => p + 1)}
+                  onClick={() => setPage((p) => p + 1)}
                   className="text-xs h-7"
                 >
                   Next
@@ -407,18 +428,18 @@ function CustomerAuditTrailButton({
   );
 }
 
-function CustomerBulkDeleteButton({ 
-  ids, 
+function CustomerBulkDeleteButton({
+  ids,
   onSuccess,
-  canManage 
-}: { 
-  ids: string[]; 
+  canManage,
+}: {
+  ids: string[];
   onSuccess: () => void;
   canManage: boolean;
 }) {
   const queryClient = useQueryClient();
   const deleteCustomerFn = useServerFn(softDeleteCustomer);
-  
+
   const mutation = useMutation({
     mutationFn: deleteCustomerFn,
     onSuccess: (res: any) => {
@@ -438,7 +459,10 @@ function CustomerBulkDeleteButton({
       className="h-8 text-[10px] font-bold uppercase tracking-wider"
       disabled={mutation.isPending}
       onClick={() => {
-        const reason = window.prompt(`Reason for bulk deleting ${ids.length} customers (optional):`, "");
+        const reason = window.prompt(
+          `Reason for bulk deleting ${ids.length} customers (optional):`,
+          "",
+        );
         if (reason === null) return;
         mutation.mutate({ data: { ids, reason } as any });
       }}
@@ -448,13 +472,7 @@ function CustomerBulkDeleteButton({
   );
 }
 
-function CustomerEditButton({ 
-  customer, 
-  canManage 
-}: { 
-  customer: any; 
-  canManage: boolean;
-}) {
+function CustomerEditButton({ customer, canManage }: { customer: any; canManage: boolean }) {
   const queryClient = useQueryClient();
   const updateCustomerFn = useServerFn(updateAdminCustomer);
   const [isOpen, setIsOpen] = useState(false);
@@ -497,65 +515,79 @@ function CustomerEditButton({
                 Close
               </Button>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Full Name</label>
-                <Input 
-                  value={formData.name} 
-                  onChange={e => setFormData(d => ({ ...d, name: e.target.value }))}
+                <label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Full Name
+                </label>
+                <Input
+                  value={formData.name}
+                  onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Phone</label>
-                <Input 
-                  value={formData.phone} 
-                  onChange={e => setFormData(d => ({ ...d, phone: e.target.value }))}
+                <label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Phone
+                </label>
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => setFormData((d) => ({ ...d, phone: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Email</label>
-                <Input 
+                <label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Email
+                </label>
+                <Input
                   type="email"
-                  value={formData.email} 
-                  onChange={e => setFormData(d => ({ ...d, email: e.target.value }))}
+                  value={formData.email}
+                  onChange={(e) => setFormData((d) => ({ ...d, email: e.target.value }))}
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase text-muted-foreground">District</label>
-                  <Input 
-                    value={formData.district} 
-                    onChange={e => setFormData(d => ({ ...d, district: e.target.value }))}
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">
+                    District
+                  </label>
+                  <Input
+                    value={formData.district}
+                    onChange={(e) => setFormData((d) => ({ ...d, district: e.target.value }))}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-semibold uppercase text-muted-foreground">City</label>
-                  <Input 
-                    value={formData.city} 
-                    onChange={e => setFormData(d => ({ ...d, city: e.target.value }))}
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">
+                    City
+                  </label>
+                  <Input
+                    value={formData.city}
+                    onChange={(e) => setFormData((d) => ({ ...d, city: e.target.value }))}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Area</label>
-                <Input 
-                  value={formData.area} 
-                  onChange={e => setFormData(d => ({ ...d, area: e.target.value }))}
+                <label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Area
+                </label>
+                <Input
+                  value={formData.area}
+                  onChange={(e) => setFormData((d) => ({ ...d, area: e.target.value }))}
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-semibold uppercase text-muted-foreground">Full Address</label>
-                <Input 
-                  value={formData.address} 
-                  onChange={e => setFormData(d => ({ ...d, address: e.target.value }))}
+                <label className="text-xs font-semibold uppercase text-muted-foreground">
+                  Full Address
+                </label>
+                <Input
+                  value={formData.address}
+                  onChange={(e) => setFormData((d) => ({ ...d, address: e.target.value }))}
                 />
               </div>
             </div>
 
             <div className="border-t border-border p-4 flex gap-2">
-              <Button 
-                className="w-full" 
+              <Button
+                className="w-full"
                 disabled={mutation.isPending}
                 onClick={() => mutation.mutate({ data: { id: customer.id, ...formData } as any })}
               >
@@ -569,16 +601,10 @@ function CustomerEditButton({
   );
 }
 
-function CustomerDeleteButton({ 
-  customer, 
-  canManage 
-}: { 
-  customer: any; 
-  canManage: boolean;
-}) {
+function CustomerDeleteButton({ customer, canManage }: { customer: any; canManage: boolean }) {
   const queryClient = useQueryClient();
   const deleteCustomerFn = useServerFn(softDeleteCustomer);
-  
+
   const mutation = useMutation({
     mutationFn: deleteCustomerFn,
     onSuccess: () => {

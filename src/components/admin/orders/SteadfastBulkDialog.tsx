@@ -96,9 +96,9 @@ export function SteadfastBulkDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <img 
-              src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" 
-              alt="SteadFast Courier" 
+            <img
+              src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg"
+              alt="SteadFast Courier"
               className="h-8 w-auto"
             />
             <DialogTitle className="font-display uppercase">Send to SteadFast</DialogTitle>
@@ -114,10 +114,7 @@ export function SteadfastBulkDialog({
         {sending ? (
           <div className="space-y-2">
             <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full bg-primary transition-all"
-                style={{ width: `${progress}%` }}
-              />
+              <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
             </div>
             <p className="text-xs text-muted-foreground">
               Sending… {done} of {orderIds.length}
@@ -129,10 +126,7 @@ export function SteadfastBulkDialog({
         {results.length > 0 ? (
           <ul className="max-h-64 space-y-2 overflow-y-auto text-sm">
             {results.map((row) => (
-              <li
-                key={row.orderId}
-                className="rounded-md border border-border p-2 leading-snug"
-              >
+              <li key={row.orderId} className="rounded-md border border-border p-2 leading-snug">
                 <span className="font-semibold">{row.invoiceNo}</span>{" "}
                 <span
                   className={

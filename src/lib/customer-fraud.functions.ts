@@ -30,21 +30,19 @@ export const setFraudMark = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    
+
     // Only admins/super admins can mark/update fraud
     assertAccess(actor, PERMISSIONS.customersManage);
 
-    const { error } = await context.supabase
-      .from("customer_fraud_marks")
-      .upsert({
-        phone_number: data.phoneNumber,
-        mark_type: data.markType,
-        label: data.label || null,
-        note: data.note,
-        marked_by: context.userId,
-        marked_by_label: actor.fullName || actor.email || "Admin",
-        updated_at: new Date().toISOString(),
-      });
+    const { error } = await context.supabase.from("customer_fraud_marks").upsert({
+      phone_number: data.phoneNumber,
+      mark_type: data.markType,
+      label: data.label || null,
+      note: data.note,
+      marked_by: context.userId,
+      marked_by_label: actor.fullName || actor.email || "Admin",
+      updated_at: new Date().toISOString(),
+    });
 
     if (error) throw new Error("Could not save fraud mark");
 
@@ -65,7 +63,7 @@ export const removeFraudMark = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    
+
     assertAccess(actor, PERMISSIONS.customersManage);
 
     const { error } = await context.supabase

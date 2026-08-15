@@ -1,17 +1,17 @@
 import { useState, useRef, useCallback } from "react";
-import { 
-  Camera, 
-  Loader2, 
-  Upload, 
-  User, 
-  Pencil, 
-  X, 
-  Check, 
+import {
+  Camera,
+  Loader2,
+  Upload,
+  User,
+  Pencil,
+  X,
+  Check,
   Info,
   Image as ImageIcon,
   ChevronRight,
   UserCircle,
-  Scissors
+  Scissors,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -36,7 +36,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCroppedImg } from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
 
-
 interface UserProfileWidgetProps {
   access: {
     userId: string;
@@ -49,16 +48,52 @@ interface UserProfileWidgetProps {
 }
 
 const PRESET_AVATARS = [
-  { id: "adventurer-1", label: "Explorer", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Felix" },
-  { id: "adventurer-2", label: "Visionary", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Aneka" },
-  { id: "adventurer-3", label: "Strategist", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Toby" },
+  {
+    id: "adventurer-1",
+    label: "Explorer",
+    url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Felix",
+  },
+  {
+    id: "adventurer-2",
+    label: "Visionary",
+    url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Aneka",
+  },
+  {
+    id: "adventurer-3",
+    label: "Strategist",
+    url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Toby",
+  },
   { id: "bottts-1", label: "Tech Lead", url: "https://api.dicebear.com/9.x/bottts/svg?seed=Pixel" },
-  { id: "bottts-2", label: "System Architect", url: "https://api.dicebear.com/9.x/bottts/svg?seed=Data" },
-  { id: "avataaars-1", label: "Professional M", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=George" },
-  { id: "avataaars-2", label: "Professional F", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Liza" },
-  { id: "miniavs-1", label: "Minimalist 1", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Zen" },
-  { id: "miniavs-2", label: "Minimalist 2", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Art" },
-  { id: "lorelei-1", label: "Creative", url: "https://api.dicebear.com/9.x/lorelei/svg?seed=Spark" },
+  {
+    id: "bottts-2",
+    label: "System Architect",
+    url: "https://api.dicebear.com/9.x/bottts/svg?seed=Data",
+  },
+  {
+    id: "avataaars-1",
+    label: "Professional M",
+    url: "https://api.dicebear.com/9.x/avataaars/svg?seed=George",
+  },
+  {
+    id: "avataaars-2",
+    label: "Professional F",
+    url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Liza",
+  },
+  {
+    id: "miniavs-1",
+    label: "Minimalist 1",
+    url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Zen",
+  },
+  {
+    id: "miniavs-2",
+    label: "Minimalist 2",
+    url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Art",
+  },
+  {
+    id: "lorelei-1",
+    label: "Creative",
+    url: "https://api.dicebear.com/9.x/lorelei/svg?seed=Spark",
+  },
 ];
 
 export function UserProfileWidget({ access }: UserProfileWidgetProps) {
@@ -73,8 +108,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
-  const roleLabel = access.primaryRole ? ROLE_LABELS[access.primaryRole as keyof typeof ROLE_LABELS] : "Staff";
-  
+  const roleLabel = access.primaryRole
+    ? ROLE_LABELS[access.primaryRole as keyof typeof ROLE_LABELS]
+    : "Staff";
+
   const defaultAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || access.userId)}`;
   const currentAvatar = access.avatarUrl || defaultAvatar;
 
@@ -125,7 +162,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
 
     setIsUpdating(true);
     setIsCropOpen(false);
-    
+
     try {
       const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
       const fileName = `${access.userId}-${Date.now()}.webp`;
@@ -135,14 +172,14 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
         .from("avatars")
         .upload(filePath, croppedBlob, {
           contentType: "image/webp",
-          upsert: true
+          upsert: true,
         });
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("avatars")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("avatars").getPublicUrl(filePath);
 
       await handleUpdateProfile({ avatarUrl: publicUrl });
       setCropImage(null);
@@ -155,7 +192,6 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
     }
   };
 
-
   const handleResetAvatar = () => {
     handleUpdateProfile({ avatarUrl: "" });
   };
@@ -166,16 +202,16 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
 
   return (
     <>
-      <div 
+      <div
         className="flex items-center gap-3 px-2 py-3 cursor-pointer hover:bg-muted/50 rounded-lg transition-colors group"
         onClick={() => setIsDialogOpen(true)}
       >
         <div className="relative shrink-0">
           <div className="h-10 w-10 rounded-full border-2 border-primary/20 overflow-hidden bg-muted flex items-center justify-center shadow-inner">
-            <img 
-              src={currentAvatar} 
-              alt="Avatar" 
-              className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+            <img
+              src={currentAvatar}
+              alt="Avatar"
+              className="h-full w-full object-cover transition-transform group-hover:scale-110"
               key={currentAvatar}
             />
           </div>
@@ -183,7 +219,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
             <Pencil className="h-2 w-2 text-primary-foreground" />
           </div>
         </div>
-        
+
         <div className="min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden">
           <p className="font-bold text-sm truncate text-foreground group-hover:text-primary transition-colors">
             {access.fullName || "User Account"}
@@ -211,10 +247,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
             <div className="flex flex-col items-center justify-center gap-4">
               <div className="relative">
                 <div className="size-24 rounded-full border-4 border-primary/10 overflow-hidden bg-muted flex items-center justify-center shadow-xl transition-all duration-500 hover:border-primary/30">
-                  <img 
-                    src={previewUrl || currentAvatar} 
-                    alt="Avatar Preview" 
-                    className="h-full w-full object-cover" 
+                  <img
+                    src={previewUrl || currentAvatar}
+                    alt="Avatar Preview"
+                    className="h-full w-full object-cover"
                   />
                   {isUpdating && (
                     <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
@@ -247,10 +283,13 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                   </Button>
                 </div>
               </div>
-              
+
               <div className="text-center">
                 <p className="font-bold text-lg">{access.fullName}</p>
-                <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest border-primary/20 text-primary">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] uppercase font-black tracking-widest border-primary/20 text-primary"
+                >
                   {roleLabel}
                 </Badge>
               </div>
@@ -258,15 +297,24 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
 
             <Tabs defaultValue="presets" className="w-full">
               <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1">
-                <TabsTrigger value="presets" className="text-[10px] font-bold uppercase tracking-widest">
+                <TabsTrigger
+                  value="presets"
+                  className="text-[10px] font-bold uppercase tracking-widest"
+                >
                   Presets
                 </TabsTrigger>
-                <TabsTrigger value="upload" className="text-[10px] font-bold uppercase tracking-widest">
+                <TabsTrigger
+                  value="upload"
+                  className="text-[10px] font-bold uppercase tracking-widest"
+                >
                   Manual Upload
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="presets" className="pt-4 animate-in fade-in slide-in-from-bottom-2">
+              <TabsContent
+                value="presets"
+                className="pt-4 animate-in fade-in slide-in-from-bottom-2"
+              >
                 <ScrollArea className="h-56 pr-4">
                   <div className="grid grid-cols-5 gap-3">
                     {PRESET_AVATARS.map((avatar) => (
@@ -276,11 +324,17 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                         disabled={isUpdating}
                         className={cn(
                           "group relative aspect-square rounded-lg border-2 overflow-hidden transition-all hover:border-primary/50 hover:scale-105 active:scale-95 bg-muted/20",
-                          access.avatarUrl === avatar.url ? "border-primary bg-primary/10 shadow-lg" : "border-transparent"
+                          access.avatarUrl === avatar.url
+                            ? "border-primary bg-primary/10 shadow-lg"
+                            : "border-transparent",
                         )}
                         title={avatar.label}
                       >
-                        <img src={avatar.url} alt={avatar.label} className="w-full h-full object-cover" />
+                        <img
+                          src={avatar.url}
+                          alt={avatar.label}
+                          className="w-full h-full object-cover"
+                        />
                         {access.avatarUrl === avatar.url && (
                           <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
                             <Check className="h-5 w-5 text-primary" />
@@ -292,25 +346,32 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 </ScrollArea>
               </TabsContent>
 
-              <TabsContent value="upload" className="pt-4 space-y-4 animate-in fade-in slide-in-from-bottom-2">
+              <TabsContent
+                value="upload"
+                className="pt-4 space-y-4 animate-in fade-in slide-in-from-bottom-2"
+              >
                 <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-muted/30">
                   <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Upload className="h-6 w-6 text-primary" />
                   </div>
                   <div className="text-center space-y-1">
-                    <p className="text-xs font-bold uppercase tracking-wide">Click or drag to upload</p>
-                    <p className="text-[10px] text-muted-foreground">Select a custom image from your device</p>
+                    <p className="text-xs font-bold uppercase tracking-wide">
+                      Click or drag to upload
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Select a custom image from your device
+                    </p>
                   </div>
-                  <input 
-                    type="file" 
-                    ref={fileInputRef} 
-                    className="hidden" 
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
                     accept="image/jpeg,image/png,image/webp"
                     onChange={handleFileUpload}
                   />
-                  <Button 
-                    variant="steel" 
-                    size="sm" 
+                  <Button
+                    variant="steel"
+                    size="sm"
                     className="mt-2 font-bold uppercase tracking-widest text-[10px]"
                     disabled={isUpdating}
                     onClick={() => fileInputRef.current?.click()}
@@ -322,7 +383,9 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 <div className="rounded-md bg-primary/5 border border-primary/20 p-3 flex gap-3">
                   <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <div className="space-y-1">
-                    <p className="text-[10px] font-black uppercase text-primary tracking-widest">Recommended Specs</p>
+                    <p className="text-[10px] font-black uppercase text-primary tracking-widest">
+                      Recommended Specs
+                    </p>
                     <ul className="text-[9px] text-muted-foreground leading-normal font-bold list-disc pl-3">
                       <li>Dimensions: 400 x 400px (1:1 Ratio)</li>
                       <li>Formats: WebP, JPEG, PNG</li>
@@ -335,8 +398,8 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
           </div>
 
           <DialogFooter className="p-4 bg-muted/30 border-t border-border gap-2">
-            <Button 
-              variant="steel" 
+            <Button
+              variant="steel"
               className="text-[10px] font-bold uppercase tracking-widest w-full sm:w-auto"
               onClick={() => setIsDialogOpen(false)}
             >
@@ -365,7 +428,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
             </div>
           </DialogHeader>
 
-          <div className="relative h-80 bg-neutral-900" aria-label="Avatar crop area. Use arrow keys to move the image.">
+          <div
+            className="relative h-80 bg-neutral-900"
+            aria-label="Avatar crop area. Use arrow keys to move the image."
+          >
             {cropImage && (
               <Cropper
                 image={cropImage}
@@ -385,7 +451,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
           <div className="p-6 space-y-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <Label 
+                <Label
                   htmlFor="zoom-slider"
                   className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
                 >
@@ -404,7 +470,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 step={0.1}
                 onValueChange={(values) => {
                   const val = values[0];
-                  if (typeof val === 'number') {
+                  if (typeof val === "number") {
                     setZoom(val);
                   }
                 }}
@@ -415,7 +481,8 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
             <div className="rounded-md bg-muted/50 p-3 border border-border flex gap-3">
               <Info className="h-4 w-4 text-primary shrink-0" />
               <p className="text-[9px] font-bold text-muted-foreground leading-relaxed">
-                Position the image within the circular boundary. Your avatar will be automatically resized to 400x400px and optimized as WebP.
+                Position the image within the circular boundary. Your avatar will be automatically
+                resized to 400x400px and optimized as WebP.
               </p>
             </div>
           </div>
@@ -457,13 +524,25 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   );
 }
 
-function Badge({ children, className, variant = "default" }: { children: React.ReactNode, className?: string, variant?: "default" | "outline" }) {
+function Badge({
+  children,
+  className,
+  variant = "default",
+}: {
+  children: React.ReactNode;
+  className?: string;
+  variant?: "default" | "outline";
+}) {
   return (
-    <span className={cn(
-      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
-      variant === "outline" ? "ring-border text-foreground" : "bg-primary/10 text-primary ring-primary/20",
-      className
-    )}>
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
+        variant === "outline"
+          ? "ring-border text-foreground"
+          : "bg-primary/10 text-primary ring-primary/20",
+        className,
+      )}
+    >
       {children}
     </span>
   );

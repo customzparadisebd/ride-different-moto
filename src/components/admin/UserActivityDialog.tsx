@@ -18,7 +18,12 @@ interface UserActivityDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function UserActivityDialog({ userId, userName, open, onOpenChange }: UserActivityDialogProps) {
+export function UserActivityDialog({
+  userId,
+  userName,
+  open,
+  onOpenChange,
+}: UserActivityDialogProps) {
   const { data: activities, isLoading } = useQuery({
     queryKey: ["staff-activity", userId],
     queryFn: () => (userId ? getStaffActivity({ data: { userId: userId as string } }) : null),
@@ -33,9 +38,7 @@ export function UserActivityDialog({ userId, userName, open, onOpenChange }: Use
             <History className="size-5 text-primary" />
             Activity Log: {userName}
           </DialogTitle>
-          <DialogDescription>
-            Recent actions and changes made by this user.
-          </DialogDescription>
+          <DialogDescription>Recent actions and changes made by this user.</DialogDescription>
         </DialogHeader>
 
         <div className="max-h-[60vh] overflow-y-auto p-6 pt-4">
@@ -46,12 +49,15 @@ export function UserActivityDialog({ userId, userName, open, onOpenChange }: Use
           ) : activities && activities.length > 0 ? (
             <div className="space-y-4">
               {activities.map((log: any) => (
-                <div key={log.id} className="flex flex-col gap-1 border-b border-border/50 pb-3 last:border-0">
+                <div
+                  key={log.id}
+                  className="flex flex-col gap-1 border-b border-border/50 pb-3 last:border-0"
+                >
                   <div className="flex flex-wrap items-center gap-x-2 text-sm">
                     <span className="font-bold text-foreground">{userName}</span>
                     <span className="text-muted-foreground">→</span>
                     <span className="font-medium text-primary uppercase tracking-tight text-xs">
-                      {log.action.replace(/\./g, ' ').replace(/_/g, ' ')}
+                      {log.action.replace(/\./g, " ").replace(/_/g, " ")}
                     </span>
                     {log.target_label && (
                       <>

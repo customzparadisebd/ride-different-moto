@@ -197,7 +197,12 @@ export const exportOrdersXlsx = async (rows: AdminOrderListRow[], name = "czp-or
 export const exportOrdersCsv = (rows: AdminOrderListRow[], name = "czp-orders") => {
   const cell = (value: string | number) => `"${String(value).replace(/"/g, '""')}"`;
   const body = rows.map((row) => toCells(row).map(cell).join(","));
-  download(new Blob([[HEADER.map(cell).join(","), ...body].join("\n")], { type: "text/csv;charset=utf-8;" }), `${name}.csv`);
+  download(
+    new Blob([[HEADER.map(cell).join(","), ...body].join("\n")], {
+      type: "text/csv;charset=utf-8;",
+    }),
+    `${name}.csv`,
+  );
 };
 
 /** Excel export — an HTML table Excel opens natively (no extra dependency). */
@@ -238,7 +243,8 @@ export const printOrders = (rows: AdminOrderListRow[], title = "Orders") => {
       </tr>`,
     )
     .join("");
-  win.document.write(`<!doctype html><html><head><meta charset="utf-8" /><title>${escapeHtml(title)}</title>
+  win.document
+    .write(`<!doctype html><html><head><meta charset="utf-8" /><title>${escapeHtml(title)}</title>
     <style>
       body{font-family:system-ui,Arial,sans-serif;padding:24px;color:#111}
       h1{font-size:18px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 12px}

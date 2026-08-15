@@ -31,7 +31,8 @@ export function EnvironmentBanner() {
         <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-tight">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           <span>
-            Environment: <span className="underline decoration-2">STAGING</span> — Data is not live. Actions will not affect production orders or inventory.
+            Environment: <span className="underline decoration-2">STAGING</span> — Data is not live.
+            Actions will not affect production orders or inventory.
           </span>
         </div>
         <button

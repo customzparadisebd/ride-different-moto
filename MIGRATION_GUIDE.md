@@ -7,13 +7,13 @@ Status: Reference document. No application code or UI is changed by this guide.
 
 ## 0. What you are moving
 
-| Layer | Today | After migration |
-| --- | --- | --- |
-| Frontend + backend (one app) | TanStack Start (React 19, Vite 8, Nitro) on Lovable hosting | Cloudflare Workers/Pages, Vercel, Netlify, or Node 22 (Docker/VPS) |
-| Database | Managed Postgres (Supabase) in Lovable Cloud | Your own Supabase project (recommended) or any Postgres + PostgREST/GoTrue |
-| Auth (admin + staff logins, MFA) | Supabase Auth (GoTrue) | Supabase Auth on your own project |
-| Storage | Bucket `avatars` (public) | Same bucket name on the new project |
-| Courier API | SteadFast credentials stored in the `couriers` table | Moves automatically with the database dump |
+| Layer                            | Today                                                       | After migration                                                            |
+| -------------------------------- | ----------------------------------------------------------- | -------------------------------------------------------------------------- |
+| Frontend + backend (one app)     | TanStack Start (React 19, Vite 8, Nitro) on Lovable hosting | Cloudflare Workers/Pages, Vercel, Netlify, or Node 22 (Docker/VPS)         |
+| Database                         | Managed Postgres (Supabase) in Lovable Cloud                | Your own Supabase project (recommended) or any Postgres + PostgREST/GoTrue |
+| Auth (admin + staff logins, MFA) | Supabase Auth (GoTrue)                                      | Supabase Auth on your own project                                          |
+| Storage                          | Bucket `avatars` (public)                                   | Same bucket name on the new project                                        |
+| Courier API                      | SteadFast credentials stored in the `couriers` table        | Moves automatically with the database dump                                 |
 
 Important: keeping Supabase as the backend on your own account is by far the
 lowest-risk route. The app talks to Supabase through the standard
@@ -48,11 +48,13 @@ require rewriting auth, MFA, RLS, and every server function.
 ## 2. Database migration (schema + data, zero data loss)
 
 ### Option A — replay the repo migrations (cleanest)
+
 ```bash
 supabase login
 supabase link --project-ref <YOUR_NEW_PROJECT_REF>
 supabase db push          # replays every file in supabase/migrations in order
 ```
+
 This recreates: all 35+ public tables, the `app_role` enum, invoice sequences,
 every trigger (`touch_updated_at`, `tr_orders_invoice_no`, …), every function
 (`has_role`, `has_permission`, `is_staff`, `is_super_admin`,
@@ -60,6 +62,7 @@ every trigger (`touch_updated_at`, `tr_orders_invoice_no`, …), every function
 RLS policies. Nothing needs to be re-authored.
 
 ### Option B — full dump/restore (if you have the old DB URL)
+
 ```bash
 pg_dump "$OLD_DB_URL" --schema=public --no-owner --no-privileges -Fc -f czp_public.dump
 pg_dump "$OLD_DB_URL" --schema=auth   --no-owner --no-privileges -Fc -f czp_auth.dump   # users
@@ -67,9 +70,11 @@ pg_restore -d "$NEW_DB_URL" --no-owner --no-privileges czp_public.dump
 ```
 
 ### Then load the data
+
 ```bash
 psql "$NEW_DB_URL" -f supabase/exports/data.sql   # generated INSERTs, FK-safe order
 ```
+
 Load order matters: `profiles` → `user_roles` → `user_permissions` →
 `brands`/`categories`/`cities`/`delivery_zones`/`couriers` → `products` →
 `product_colors` → `customers` → `orders` → `order_items` →
@@ -78,6 +83,7 @@ Load order matters: `profiles` → `user_roles` → `user_permissions` →
 `steadfast_stats`.
 
 ### Reset the sequences (critical — prevents duplicate invoice numbers)
+
 ```sql
 SELECT setval('public.invoice_number_seq', (SELECT COALESCE(MAX(current_number),1) FROM public.invoice_settings));
 SELECT setval('public.invoice_seq',        (SELECT COUNT(*)+1 FROM public.orders));
@@ -87,6 +93,7 @@ SELECT COUNT(*) FROM public.orders;   -- must equal the old count
 ```
 
 ### Verify
+
 Row-count every table on both sides and compare. Do not go live until the
 counts match, including `admin_audit_log` (append-only history).
 
@@ -118,6 +125,7 @@ Supabase Auth lives in the `auth` schema, which you must **not** hand-edit.
   `pending` and needs approval — expected behaviour, not a bug.
 
 ### Auth settings to re-apply in the new project
+
 - Site URL: `https://customzparadisebd.com`
 - Redirect URLs: `https://customzparadisebd.com/**`, plus staging domains
 - Email confirmations: keep as configured; do **not** enable anonymous sign-ups
@@ -131,17 +139,21 @@ Supabase Auth lives in the `auth` schema, which you must **not** hand-edit.
 ## 4. Storage files
 
 Bucket `avatars` (public). Recreate it, then copy the objects:
+
 ```bash
 # create the bucket on the new project first (Storage → New bucket → public)
 supabase storage cp -r ss:///avatars ./avatars-backup --project-ref <OLD_REF>
 supabase storage cp -r ./avatars-backup ss:///avatars  --project-ref <NEW_REF>
 ```
+
 Then rewrite stored URLs, because they embed the old project ref:
+
 ```sql
 UPDATE public.profiles
 SET avatar_url = replace(avatar_url, '<OLD_REF>.supabase.co', '<NEW_REF>.supabase.co')
 WHERE avatar_url LIKE '%supabase.co%';
 ```
+
 Run the same `replace()` on any product/hero image column that stores an
 absolute Supabase URL (`products.image_url`, `product_colors.image_url`,
 `hero_slides.image_url`). Bundled images imported from `src/assets` need no
@@ -153,6 +165,7 @@ action — they are fingerprinted into the build.
 
 Both are part of the migration files, so `supabase db push` restores them. After
 the push, confirm nothing is left open:
+
 ```sql
 -- every public table must have RLS on
 SELECT tablename, rowsecurity FROM pg_tables
@@ -167,6 +180,7 @@ SELECT table_name, grantee, privilege_type FROM information_schema.role_table_gr
 WHERE table_schema='public' AND grantee IN ('anon','authenticated','service_role')
 ORDER BY table_name;
 ```
+
 Rules this project relies on: public storefront tables (`products`,
 `product_colors`, `brands`, `categories`, `cities`, `delivery_zones`,
 `hero_slides`, `store_settings`, `reviews`) allow `anon` reads only;
@@ -181,6 +195,7 @@ else is gated behind `is_staff()` / `has_permission()`.
 Set these in your new host's dashboard. Never commit them.
 
 **Server-only (secret)**
+
 ```
 SUPABASE_URL=https://<new-ref>.supabase.co
 SUPABASE_PUBLISHABLE_KEY=<new anon/publishable key>
@@ -192,6 +207,7 @@ LOVABLE_API_KEY=<only if you keep using Lovable AI; otherwise drop it>
 ```
 
 **Client-visible (build-time, safe to expose)**
+
 ```
 VITE_SUPABASE_URL=https://<new-ref>.supabase.co
 VITE_SUPABASE_PUBLISHABLE_KEY=<new anon/publishable key>
@@ -199,6 +215,7 @@ VITE_SUPABASE_PROJECT_ID=<new-ref>
 ```
 
 Notes:
+
 - `VITE_*` values are inlined at build time — after changing them you **must
   rebuild**, not just restart.
 - Server variables are read inside handlers, so they are picked up on restart.
@@ -236,6 +253,7 @@ bun run build        # vite build → Nitro server bundle
 ```
 
 Runtime requirements:
+
 - **Node 22+** if you self-host (`node .output/server/index.mjs`).
 - The build targets an **edge/Worker** runtime by default. Cloudflare
   Workers/Pages, Vercel and Netlify all work with no config change.
@@ -284,6 +302,7 @@ Runtime requirements:
 7. Unfreeze. Keep the old deployment read-only for 7 days as a rollback path.
 
 ### Post-migration smoke test
+
 - [ ] Storefront home, product detail, colour selection, cart
 - [ ] Checkout → order saved → `/order-confirmed/$id` loads on refresh
 - [ ] Invoice number continues the old sequence (no duplicates, no reset)
@@ -299,18 +318,18 @@ Runtime requirements:
 
 ## 11. Risk register
 
-| Risk | Likelihood | Prevention |
-| --- | --- | --- |
-| Duplicate/reset invoice numbers | High if skipped | `setval()` step in section 2 |
-| Broken image URLs | Medium | `replace()` update in section 4 |
-| Login loop after cutover | Medium | Site URL + Redirect URLs in section 9 |
-| Google sign-in "Unsupported provider" | Medium | Enable the provider and add the new callback |
-| Permission errors on every query | Medium | Verify GRANTs in section 5 |
-| Staff locked out | Medium | Owner email auto-bootstraps; approve staff after |
-| MFA lost | Medium | Dump the `auth` schema, or re-enrol + regenerate codes |
-| SteadFast failures | Low | Test connection; confirm outbound HTTPS allowed |
-| Stale `VITE_*` values | Low | Rebuild after changing them |
-| Data loss | Low | Freeze writes, verify row counts before DNS change |
+| Risk                                  | Likelihood      | Prevention                                             |
+| ------------------------------------- | --------------- | ------------------------------------------------------ |
+| Duplicate/reset invoice numbers       | High if skipped | `setval()` step in section 2                           |
+| Broken image URLs                     | Medium          | `replace()` update in section 4                        |
+| Login loop after cutover              | Medium          | Site URL + Redirect URLs in section 9                  |
+| Google sign-in "Unsupported provider" | Medium          | Enable the provider and add the new callback           |
+| Permission errors on every query      | Medium          | Verify GRANTs in section 5                             |
+| Staff locked out                      | Medium          | Owner email auto-bootstraps; approve staff after       |
+| MFA lost                              | Medium          | Dump the `auth` schema, or re-enrol + regenerate codes |
+| SteadFast failures                    | Low             | Test connection; confirm outbound HTTPS allowed        |
+| Stale `VITE_*` values                 | Low             | Rebuild after changing them                            |
+| Data loss                             | Low             | Freeze writes, verify row counts before DNS change     |
 
 ---
 

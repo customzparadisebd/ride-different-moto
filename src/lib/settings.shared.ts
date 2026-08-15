@@ -35,7 +35,9 @@ export const storeSettingsInput = z.object({
   whatsappPhone: z.string().trim().min(6).max(40),
   whatsappMessage: z.string().trim().min(4).max(200),
   whatsappFloatingEnabled: z.boolean().default(true),
-  whatsappFloatingPosition: z.enum(["bottom-right", "bottom-left", "top-right", "top-left"]).default("bottom-right"),
+  whatsappFloatingPosition: z
+    .enum(["bottom-right", "bottom-left", "top-right", "top-left"])
+    .default("bottom-right"),
 });
 
 export type StoreSettings = z.infer<typeof storeSettingsInput>;
@@ -85,8 +87,10 @@ export function parseStoreSettingsRow(row: {
     lowStockThreshold: row.low_stock_threshold,
     whatsappPhone: row.whatsapp_phone || DEFAULT_STORE_SETTINGS.whatsappPhone,
     whatsappMessage: row.whatsapp_message || DEFAULT_STORE_SETTINGS.whatsappMessage,
-    whatsappFloatingEnabled: row.whatsapp_floating_enabled ?? DEFAULT_STORE_SETTINGS.whatsappFloatingEnabled,
-    whatsappFloatingPosition: (row.whatsapp_floating_position as any) || DEFAULT_STORE_SETTINGS.whatsappFloatingPosition,
+    whatsappFloatingEnabled:
+      row.whatsapp_floating_enabled ?? DEFAULT_STORE_SETTINGS.whatsappFloatingEnabled,
+    whatsappFloatingPosition:
+      (row.whatsapp_floating_position as any) || DEFAULT_STORE_SETTINGS.whatsappFloatingPosition,
   });
   return parsed.success ? parsed.data : DEFAULT_STORE_SETTINGS;
 }

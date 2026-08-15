@@ -19,7 +19,13 @@ const TONES: Record<string, string> = {
   out_for_delivery: "bg-blue-500/15 text-blue-400",
 };
 
-export function StatusBadge({ value, className }: { value: string | null | undefined, className?: string }) {
+export function StatusBadge({
+  value,
+  className,
+}: {
+  value: string | null | undefined;
+  className?: string;
+}) {
   if (!value) return <span className="text-muted-foreground">—</span>;
   const tone = TONES[value] ?? "bg-secondary text-secondary-foreground";
   return (

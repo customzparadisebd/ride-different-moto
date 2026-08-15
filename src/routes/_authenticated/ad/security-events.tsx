@@ -31,7 +31,6 @@ const toBDTime = (date: string | Date) => {
   return new Date(d.getTime() + 6 * 60 * 60 * 1000);
 };
 
-
 export const Route = createFileRoute("/_authenticated/ad/security-events")({
   component: SecurityEventsPage,
 });
@@ -59,7 +58,7 @@ function SecurityEventsPage() {
         () => {
           // Refetch to include new events and respect current filters
           queryClient.invalidateQueries({ queryKey: ["security-events"] });
-        }
+        },
       )
       .subscribe();
 
@@ -74,7 +73,10 @@ function SecurityEventsPage() {
         <h1 className="font-display text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
           <Shield className="h-8 w-8 text-primary" />
           Security Events
-          <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse">
+          <Badge
+            variant="outline"
+            className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse"
+          >
             <Radio className="h-3 w-3" />
             Live
           </Badge>
@@ -118,17 +120,30 @@ function SecurityEventsPage() {
             <Table>
               <TableHeader className="bg-white/5">
                 <TableRow className="hover:bg-transparent border-white/10">
-                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground w-[200px]">Timestamp (BD)</TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Event Type</TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">IP Address</TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Actor/Context</TableHead>
-                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Details</TableHead>
+                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground w-[200px]">
+                    Timestamp (BD)
+                  </TableHead>
+                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Event Type
+                  </TableHead>
+                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    IP Address
+                  </TableHead>
+                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Actor/Context
+                  </TableHead>
+                  <TableHead className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Details
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {events?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="h-32 text-center text-muted-foreground uppercase tracking-widest text-xs">
+                    <TableCell
+                      colSpan={5}
+                      className="h-32 text-center text-muted-foreground uppercase tracking-widest text-xs"
+                    >
                       No security events found
                     </TableCell>
                   </TableRow>
@@ -139,11 +154,11 @@ function SecurityEventsPage() {
                         {format(toBDTime(event.created_at || new Date()), "yyyy-MM-dd HH:mm:ss")}
                       </TableCell>
                       <TableCell>
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className={`uppercase text-[10px] tracking-widest ${
-                            event.event_type === "rate_limit" 
-                              ? "border-amber-500/50 text-amber-500 bg-amber-500/5" 
+                            event.event_type === "rate_limit"
+                              ? "border-amber-500/50 text-amber-500 bg-amber-500/5"
                               : "border-red-500/50 text-red-500 bg-red-500/5"
                           }`}
                         >
@@ -175,7 +190,7 @@ function SecurityEventsPage() {
           </div>
         </CardContent>
       </Card>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="border-amber-500/20 bg-amber-500/5">
           <CardHeader className="pb-2">
@@ -186,8 +201,8 @@ function SecurityEventsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-xs text-white/60">
-              IPs are automatically throttled when exceeding 100 requests/minute. 
-              Security events are recorded when traffic reaches 10x this threshold.
+              IPs are automatically throttled when exceeding 100 requests/minute. Security events
+              are recorded when traffic reaches 10x this threshold.
             </p>
           </CardContent>
         </Card>
@@ -200,8 +215,8 @@ function SecurityEventsPage() {
           </CardHeader>
           <CardContent>
             <p className="text-xs text-white/60">
-              Accounts are locked after 3 failed attempts. Lockouts extend progressively from 5 to 60 minutes.
-              All triggered lockouts are logged as security events.
+              Accounts are locked after 3 failed attempts. Lockouts extend progressively from 5 to
+              60 minutes. All triggered lockouts are logged as security events.
             </p>
           </CardContent>
         </Card>

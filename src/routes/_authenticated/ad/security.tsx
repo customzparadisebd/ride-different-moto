@@ -32,7 +32,13 @@ import {
 import { PERMISSIONS } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/security")({
-  head: () => ({ meta: [{ title: "Security — CZP Ops" }, { property: "og:title", content: "Security — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Security — CZP Ops" },
+      { property: "og:title", content: "Security — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: SecurityPage,
 });
 
@@ -306,7 +312,9 @@ function SecurityPage() {
               className="mt-2"
               disabled={busy}
               onClick={() => {
-                if (window.confirm("This will invalidate all previous recovery codes. Are you sure?")) {
+                if (
+                  window.confirm("This will invalidate all previous recovery codes. Are you sure?")
+                ) {
                   void newCodes();
                 }
               }}
@@ -325,16 +333,25 @@ function SecurityPage() {
               </p>
             </div>
             <p className="text-xs text-muted-foreground mb-4">
-              They are shown only once and will never be retrievable again. Store them in a secure offline vault.
+              They are shown only once and will never be retrievable again. Store them in a secure
+              offline vault.
             </p>
             <div className="grid grid-cols-2 gap-3 font-mono text-sm sm:grid-cols-4">
               {codes.map((code) => (
-                <div key={code} className="bg-background border border-border px-3 py-1.5 rounded text-center font-bold tracking-widest shadow-sm">
+                <div
+                  key={code}
+                  className="bg-background border border-border px-3 py-1.5 rounded text-center font-bold tracking-widest shadow-sm"
+                >
                   {code}
                 </div>
               ))}
             </div>
-            <Button variant="red" size="sm" className="mt-6 w-full uppercase font-bold tracking-widest" onClick={() => setCodes(null)}>
+            <Button
+              variant="red"
+              size="sm"
+              className="mt-6 w-full uppercase font-bold tracking-widest"
+              onClick={() => setCodes(null)}
+            >
               I have safely saved all codes
             </Button>
           </div>

@@ -54,10 +54,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .from("products")
         .select("id, stock_qty, low_stock_threshold, is_active")
         .is("deleted_at", null),
-      context.supabase
-        .from("orders")
-        .select("status")
-        .is("deleted_at", null),
+      context.supabase.from("orders").select("status").is("deleted_at", null),
       context.supabase
         .from("steadfast_stats" as any)
         .select("successful_submissions_count, last_success_at, last_order_id, last_invoice_no")
@@ -65,19 +62,19 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     ]);
 
     const orderRows = (orders.data as any[]) ?? [];
-    const todayRows = orderRows.filter(r => r.created_at >= todayISO);
-    
-    // Revenue logic: typically excludes cancelled/returned in BDT context unless asked otherwise.
-    // Here we include everything that isn't deleted, but filter by status for "Sales" usually implies non-cancelled.
-    const getRevenue = (rows: any[]) => rows
-      .filter(r => r.status !== 'cancelled' && r.status !== 'returned')
-      .reduce((sum, r) => sum + Number(r.total), 0);
+    const todayRows = orderRows.filter((r) => r.created_at >= todayISO);
+
+    // Revenue logic: ONLY from 'completed' orders as per requirement
+    const getRevenue = (rows: any[]) =>
+      rows.filter((r) => r.status === "completed").reduce((sum, r) => sum + Number(r.total), 0);
 
     const productRows = (inventory.data as any[]) ?? [];
-    const activeProducts = productRows.filter(p => p.is_active);
+    const activeProducts = productRows.filter((p) => p.is_active);
     const totalStock = productRows.reduce((sum, p) => sum + (p.stock_qty || 0), 0);
-    const lowStock = productRows.filter(p => p.stock_qty > 0 && p.stock_qty <= (p.low_stock_threshold || 5));
-    const outOfStock = productRows.filter(p => (p.stock_qty || 0) <= 0);
+    const lowStock = productRows.filter(
+      (p) => p.stock_qty > 0 && p.stock_qty <= (p.low_stock_threshold || 5),
+    );
+    const outOfStock = productRows.filter((p) => (p.stock_qty || 0) <= 0);
 
     const statusCounts: Record<string, number> = {};
     const countsArr = Array.isArray(statusCountsRaw.data) ? statusCountsRaw.data : [];
@@ -90,7 +87,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       .from("orders")
       .select("customer_phone")
       .is("deleted_at", null);
-    const uniqueCustomers = new Set(((customerData as any[]) ?? []).map(c => c.customer_phone)).size;
+    const uniqueCustomers = new Set(((customerData as any[]) ?? []).map((c) => c.customer_phone))
+      .size;
 
     // Revenue History (last 14 days)
     const historyRows = await context.supabase
@@ -98,34 +96,37 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       .select("created_at, total, status")
       .gte("created_at", historyStart)
       .is("deleted_at", null);
-    
+
     const revenueByDay: Record<string, number> = {};
-    ((historyRows.data as any[]) ?? []).forEach(r => {
-      if (r.status === 'cancelled' || r.status === 'returned') return;
-      const day = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    ((historyRows.data as any[]) ?? []).forEach((r) => {
+      if (r.status !== "completed") return;
+      const day = new Date(r.created_at).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      });
       revenueByDay[day] = (revenueByDay[day] ?? 0) + Number(r.total);
     });
 
     const revenueHistory = Array.from({ length: 14 }).map((_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (13 - i));
-      const day = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const day = d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
       return { date: day, revenue: revenueByDay[day] || 0 };
     });
 
     return {
       today: {
         orders: todayRows.length,
-        revenue: getRevenue(todayRows)
+        revenue: getRevenue(todayRows),
       },
       month: {
         orders: orderRows.length,
-        revenue: getRevenue(orderRows)
+        revenue: getRevenue(orderRows),
       },
       totalOrders: ((statusCountsRaw.data as any[]) ?? []).length,
-      pendingOrders: statusCounts['pending'] || 0,
-      completedOrders: (statusCounts['delivered'] || 0) + (statusCounts['completed'] || 0),
-      cancelledOrders: (statusCounts['cancelled'] || 0) + (statusCounts['returned'] || 0),
+      pendingOrders: statusCounts["pending"] || 0,
+      completedOrders: (statusCounts["delivered"] || 0) + (statusCounts["completed"] || 0),
+      cancelledOrders: (statusCounts["cancelled"] || 0) + (statusCounts["returned"] || 0),
       uniqueCustomers,
       statusCounts,
       recent: (recent.data as any[]) ?? [],
@@ -135,7 +136,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         lowStock: lowStock.length,
         outOfStock: outOfStock.length,
         lowStockItems: lowStock.slice(0, 5),
-        outOfStockItems: outOfStock.slice(0, 5)
+        outOfStockItems: outOfStock.slice(0, 5),
       },
       revenueHistory,
       steadfastSuccessCount: (steadfastStats.data as any)?.successful_submissions_count ?? 0,

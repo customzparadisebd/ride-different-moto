@@ -17,7 +17,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
   const thumbnailRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const displayImages = images.length > 0 ? images : [""];
-  
+
   useEffect(() => {
     if (activeIndex >= displayImages.length) {
       setActiveIndex(0);
@@ -28,7 +28,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (displayImages.length <= 1 || activeColorImage) return;
-      
+
       if (e.key === "ArrowRight") {
         setActiveIndex((prev) => (prev + 1) % displayImages.length);
       } else if (e.key === "ArrowLeft") {
@@ -57,7 +57,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image Container */}
-      <div 
+      <div
         className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-border bg-card"
         onClick={() => setIsFullscreen(true)}
       >
@@ -77,7 +77,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
             className="transition-transform duration-500 group-hover:scale-105"
           />
         </button>
-        
+
         {/* Zoom Hint */}
         <div className="absolute right-4 top-4 rounded-full bg-black/40 p-2 text-white opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
           <ZoomIn className="size-5" />
@@ -106,7 +106,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
 
       {/* Thumbnails Navigation */}
       {displayImages.length > 1 && (
-        <div 
+        <div
           className="flex snap-x gap-2 overflow-x-auto pb-2 scrollbar-none"
           role="tablist"
           aria-label="Product images"
@@ -114,7 +114,9 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
           {displayImages.map((image, index) => (
             <button
               key={`${image}-${index}`}
-              ref={(el) => { thumbnailRefs.current[index] = el; }}
+              ref={(el) => {
+                thumbnailRefs.current[index] = el;
+              }}
               type="button"
               role="tab"
               aria-selected={index === activeIndex && !activeColorImage}
@@ -135,7 +137,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
                 "size-20 shrink-0 snap-start overflow-hidden rounded-lg border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 index === activeIndex && !activeColorImage
                   ? "border-primary ring-2 ring-primary/20"
-                  : "border-border hover:border-primary/50"
+                  : "border-border hover:border-primary/50",
               )}
             >
               <SafeImage
@@ -181,7 +183,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
                 containerClassName="h-full w-full"
                 className="object-contain"
               />
-              
+
               {displayImages.length > 1 && !activeColorImage && (
                 <>
                   <button
@@ -203,12 +205,12 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
             </div>
 
             {/* Thumbnail Navigation in Fullscreen */}
-            <div 
-              className="absolute bottom-10 left-1/2 flex -translate-x-1/2 gap-2 overflow-x-auto px-4 py-2 scrollbar-none" 
-              onClick={e => e.stopPropagation()}
+            <div
+              className="absolute bottom-10 left-1/2 flex -translate-x-1/2 gap-2 overflow-x-auto px-4 py-2 scrollbar-none"
+              onClick={(e) => e.stopPropagation()}
               role="tablist"
             >
-               {displayImages.map((image, index) => (
+              {displayImages.map((image, index) => (
                 <button
                   key={`fs-${index}`}
                   type="button"
@@ -217,10 +219,16 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
                   onClick={() => setActiveIndex(index)}
                   className={cn(
                     "size-16 shrink-0 rounded-md border-2 overflow-hidden transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                    index === activeIndex ? "border-primary" : "border-white/20"
+                    index === activeIndex ? "border-primary" : "border-white/20",
                   )}
                 >
-                  <SafeImage src={image} alt="" width={100} height={100} containerClassName="size-full" />
+                  <SafeImage
+                    src={image}
+                    alt=""
+                    width={100}
+                    height={100}
+                    containerClassName="size-full"
+                  />
                 </button>
               ))}
             </div>

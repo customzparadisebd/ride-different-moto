@@ -50,7 +50,9 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
     <div className="rounded-xl border border-border bg-card p-4 shadow-card">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-display text-sm font-bold uppercase tracking-wide">Invoice Number Settings</h2>
+          <h2 className="font-display text-sm font-bold uppercase tracking-wide">
+            Invoice Number Settings
+          </h2>
           <p className="mt-1 text-xs text-muted-foreground">
             Configure how invoice numbers are generated for new orders.
           </p>
@@ -66,7 +68,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       >
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="prefix" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Label
+              htmlFor="prefix"
+              className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+            >
               Invoice Prefix
             </Label>
             <Input
@@ -82,7 +87,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="startNumber" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Label
+              htmlFor="startNumber"
+              className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+            >
               Starting Invoice Number
             </Label>
             <Input
@@ -92,10 +100,14 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               className="h-10 font-bold"
               value={draft.startNumber}
               disabled={!canManage || mutation.isPending}
-              onChange={(e) => setDraft((c) => ({ ...c, startNumber: parseInt(e.target.value) || 1 }))}
+              onChange={(e) =>
+                setDraft((c) => ({ ...c, startNumber: parseInt(e.target.value) || 1 }))
+              }
               min={1}
             />
-            <p className="text-[10px] text-muted-foreground">The next invoice will start from this number if current is lower.</p>
+            <p className="text-[10px] text-muted-foreground">
+              The next invoice will start from this number if current is lower.
+            </p>
           </div>
         </div>
 
@@ -104,7 +116,13 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
             <div className="text-[10px] text-muted-foreground italic">
               Current count: {current?.currentNumber ?? 0}
             </div>
-            <Button type="submit" variant="red" size="sm" className="h-9 px-4 uppercase font-bold text-[11px] tracking-wider" disabled={mutation.isPending}>
+            <Button
+              type="submit"
+              variant="red"
+              size="sm"
+              className="h-9 px-4 uppercase font-bold text-[11px] tracking-wider"
+              disabled={mutation.isPending}
+            >
               {mutation.isPending ? "Saving..." : "Save Changes"}
             </Button>
           </div>

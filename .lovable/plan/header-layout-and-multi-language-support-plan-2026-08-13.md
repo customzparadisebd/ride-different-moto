@@ -33,6 +33,7 @@ Redesign the header to ensure the main navigation is perfectly centered in the v
 ## Technical Details
 
 ### Header CSS
+
 ```css
 .header-container {
   display: flex;
@@ -65,6 +66,7 @@ Redesign the header to ensure the main navigation is perfectly centered in the v
 ```
 
 ### i18n Implementation
+
 - Use a simple `useLanguage()` hook.
 - Translation dictionary stored in a central location or per-component where appropriate.
 - Bangla font support (already included in Barlow/system fallbacks, but will verify).

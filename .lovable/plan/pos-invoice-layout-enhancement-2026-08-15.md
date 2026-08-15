@@ -5,6 +5,7 @@ Redesign the admin invoice page to match the requested POS layout with container
 ## User Review Required
 
 > [!IMPORTANT]
+>
 > - The new layout is optimized for POS style printing (max-width 680px).
 > - I will use the dark-bg logo version if available, otherwise the standard logo will be used.
 
@@ -13,17 +14,17 @@ Redesign the admin invoice page to match the requested POS layout with container
 ### Admin UI (Printable Invoice)
 
 - **Layout Redesign**: Implement a container-based layout with a maximum width of 680px for the invoice.
-- **Header Layout**: 
+- **Header Layout**:
   - Left-aligned logo (`max-width: 120px`).
   - Centered company details (Name, Helpline, Website).
-- **Metadata Columns**: 
+- **Metadata Columns**:
   - Two equal boxes for `Invoice Details` and `Invoice To`.
-- **Items Table**: 
+- **Items Table**:
   - Columns: Product Description, Qty, Price, Total.
   - Right-aligned summary block for Subtotal, Delivery Fee, Discount, and Grand Total.
-- **Footer**: 
+- **Footer**:
   - Centered "Thank you for shopping with us!" message.
-- **Responsive Handling**: 
+- **Responsive Handling**:
   - Ensure all price fields and text wrap correctly within the 680px boundary using CSS flex/grid and `overflow-hidden`.
 
 ## Technical Details

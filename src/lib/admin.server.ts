@@ -84,7 +84,12 @@ function effectivePermissions(roles: Role[], granted: string[]): Permission[] {
 
     // Hard restrict specific sections from Staff roles (non-privileged)
     if (!isPrivileged) {
-      if (p === PERMISSIONS.staffManage || p === PERMISSIONS.couriersManage || p === PERMISSIONS.apiManage || p === PERMISSIONS.couriersView) {
+      if (
+        p === PERMISSIONS.staffManage ||
+        p === PERMISSIONS.couriersManage ||
+        p === PERMISSIONS.apiManage ||
+        p === PERMISSIONS.couriersView
+      ) {
         continue;
       }
     }
@@ -207,7 +212,7 @@ export async function resolveActor(
     mfaRequired: true, // Everyone is now required to have MFA
     sessionId,
     sessionRevoked,
-    // Login approval is pending if they are already "approved" as a user 
+    // Login approval is pending if they are already "approved" as a user
     // but haven't gotten a fresh 10-minute session approval, OR if they are still 'pending'.
     loginApprovalPending: (status === "approved" || status === "pending") && !isOwner,
   };
@@ -360,12 +365,11 @@ export async function recordLoginAttempt(emailRaw: string, success: boolean) {
         event_type: "login_throttle",
         ip_address: meta.ip,
         actor_email: emailKey,
-        metadata: { retry_after: lock.retryInSeconds }
+        metadata: { retry_after: lock.retryInSeconds },
       });
     }
   }
 }
-
 
 // ============================================================
 // MFA BACKUP CODES

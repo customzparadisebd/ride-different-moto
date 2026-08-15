@@ -19,4 +19,3 @@ Perform project attribution cleanup and add code documentation.
 - Add descriptive comment blocks to `src/lib/orders.functions.ts`, `src/routes/_authenticated/ad/index.tsx`, and `src/routes/index.tsx`.
 - Standardize error reporting and auth middleware comments.
 - Audit for and replace visible platform strings in error messages and security notes.
-

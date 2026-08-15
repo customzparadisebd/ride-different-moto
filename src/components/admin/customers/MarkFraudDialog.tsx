@@ -144,17 +144,22 @@ export function MarkFraudDialog({
             />
             {markQuery.data?.marked_by_label && (
               <p className="text-[10px] text-muted-foreground italic">
-                Marked by {markQuery.data.marked_by_label} on {new Date(markQuery.data.marked_at).toLocaleString()}
+                Marked by {markQuery.data.marked_by_label} on{" "}
+                {new Date(markQuery.data.marked_at).toLocaleString()}
               </p>
             )}
           </div>
         </div>
 
         <DialogFooter className="gap-2">
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saveMutation.isPending}>
+          <Button
+            variant="outline"
+            onClick={() => onOpenChange(false)}
+            disabled={saveMutation.isPending}
+          >
             Cancel
           </Button>
-          
+
           {canManage && (
             <>
               {markQuery.data && (
@@ -171,9 +176,9 @@ export function MarkFraudDialog({
                   Remove
                 </Button>
               )}
-              <Button 
-                variant="red" 
-                onClick={handleSave} 
+              <Button
+                variant="red"
+                onClick={handleSave}
                 disabled={saveMutation.isPending || deleteMutation.isPending}
               >
                 <Save className="mr-2 size-4" />

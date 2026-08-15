@@ -8,10 +8,10 @@ export const createLoginApproval = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { resolveActor, requestMeta } = await import("./admin.server");
-    
+
     const actor = await resolveActor(context.userId, context.claims as never);
     const meta = requestMeta();
-    
+
     // Admins and Super Admins don't need approval
     if (actor.isSuperAdmin || actor.roles.includes("admin")) {
       return { status: "approved" as const };
@@ -72,15 +72,15 @@ export const getLoginApprovalStatus = createServerFn({ method: "GET" })
       .maybeSingle();
 
     if (error || !data) return { status: "expired" as const };
-    
+
     const record = data as any;
     // Handle auto-expiration
     if (record.status === "pending" && new Date(record.expires_at) < new Date()) {
-       await supabaseAdmin
+      await supabaseAdmin
         .from("staff_login_approvals" as any)
         .update({ status: "expired" })
         .eq("id", requestId);
-       return { status: "expired" as const };
+      return { status: "expired" as const };
     }
 
     return { status: record.status as string };
@@ -114,7 +114,7 @@ export const handleApprovalAction = createServerFn({ method: "POST" })
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const status = data.action === "approve" ? "approved" : "rejected";
-    
+
     const { data: request, error } = await supabaseAdmin
       .from("staff_login_approvals" as any)
       .update({
@@ -129,7 +129,10 @@ export const handleApprovalAction = createServerFn({ method: "POST" })
     if (error) throw error;
 
     await auditFromActor(actor, {
-      action: data.action === "approve" ? AUDIT_ACTIONS.loginApprovalApproved : AUDIT_ACTIONS.loginApprovalRejected,
+      action:
+        data.action === "approve"
+          ? AUDIT_ACTIONS.loginApprovalApproved
+          : AUDIT_ACTIONS.loginApprovalRejected,
       targetType: "login_approval",
       targetId: data.requestId,
       targetLabel: (request as any).email as string,

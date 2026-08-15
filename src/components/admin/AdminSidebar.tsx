@@ -52,8 +52,18 @@ const OPERATIONS: NavItem[] = [
   { to: "/ad", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/ad/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
   { to: "/ad/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
-  { to: "/ad/featured", label: "Featured & Deals", icon: LayoutDashboard, permission: PERMISSIONS.productsManage },
-  { to: "/ad/hero", label: "Hero Slider", icon: LayoutDashboard, permission: PERMISSIONS.productsManage },
+  {
+    to: "/ad/featured",
+    label: "Featured & Deals",
+    icon: LayoutDashboard,
+    permission: PERMISSIONS.productsManage,
+  },
+  {
+    to: "/ad/hero",
+    label: "Hero Slider",
+    icon: LayoutDashboard,
+    permission: PERMISSIONS.productsManage,
+  },
 
   { to: "/ad/customers", label: "Customers", icon: UsersRound, permission: PERMISSIONS.ordersView },
   { to: "/ad/couriers", label: "Couriers", icon: Truck, permission: PERMISSIONS.couriersView },
@@ -77,31 +87,30 @@ const ADMINISTRATION: NavItem[] = [
     permission: PERMISSIONS.productsManage,
   },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
-  { 
-    to: "/ad/security-events", 
-    label: "Security Events", 
-    icon: ShieldCheck, 
-    permission: PERMISSIONS.securityManage 
+  {
+    to: "/ad/security-events",
+    label: "Security Events",
+    icon: ShieldCheck,
+    permission: PERMISSIONS.securityManage,
   },
-  { 
-    to: "/ad/security-dashboard", 
-    label: "Security Stats", 
-    icon: Activity, 
-    permission: PERMISSIONS.securityManage 
+  {
+    to: "/ad/security-dashboard",
+    label: "Security Stats",
+    icon: Activity,
+    permission: PERMISSIONS.securityManage,
   },
   {
     to: "/ad/login-requests",
     label: "Login Requests",
     icon: KeyRound,
-    permission: PERMISSIONS.loginApprovalsManage
+    permission: PERMISSIONS.loginApprovalsManage,
   },
 ];
-
 
 export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isPrivileged = access.primaryRole === "super_admin" || access.primaryRole === "admin";
-  
+
   const allowed = (item: NavItem) => {
     if (!item.permission || permissions.includes(item.permission)) {
       // Hard restrict Staff from specific paths in UI even if they have the permission bit
@@ -159,7 +168,7 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
             </p>
           </div>
         </div>
-        
+
         <div className="mt-4 px-1 group-data-[collapsible=icon]:hidden">
           <UserProfileWidget access={access} />
         </div>

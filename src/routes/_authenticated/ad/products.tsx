@@ -16,9 +16,9 @@ import { toast } from "sonner";
 
 import {
   emptyProductForm,
-   ProductForm,
+  ProductForm,
   type ProductFormValue,
-   toProductInput,
+  toProductInput,
 } from "@/components/admin/products/ProductForm";
 import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
@@ -48,7 +48,13 @@ import {
 import { getStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/products")({
-  head: () => ({ meta: [{ title: "Products — CZP Ops" }, { property: "og:title", content: "Products — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Products — CZP Ops" },
+      { property: "og:title", content: "Products — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: AdminProducts,
 });
 
@@ -117,7 +123,7 @@ function AdminProducts() {
   const [stockFilter, setStockFilter] = useState<(typeof STOCK_FILTERS)[number]>("all");
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<ProductRow | null>(null);
-   const [creating, setCreating] = useState(false);
+  const [creating, setCreating] = useState(false);
   const [previewing, setPreviewing] = useState<ProductFormValue | null>(null);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
   // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
@@ -139,7 +145,7 @@ function AdminProducts() {
         });
       } catch (err: any) {
         toast.error("Invalid pagination or filter parameters", {
-          description: err.message || "Please check your search filters."
+          description: err.message || "Please check your search filters.",
         });
         throw err;
       }
@@ -228,7 +234,7 @@ function AdminProducts() {
             <ProductForm
               initial={emptyProductForm}
               isPending={createMutation.isPending}
-               submitLabel="Create product"
+              submitLabel="Create product"
               onCancel={() => setCreating(false)}
               onPreview={(v) => {
                 setPreviewing(v);
@@ -248,7 +254,7 @@ function AdminProducts() {
               key={editing.id}
               initial={toFormValue(editing)}
               isPending={updateMutation.isPending}
-               submitLabel="Save changes"
+              submitLabel="Save changes"
               onCancel={() => setEditing(null)}
               onPreview={(v) => {
                 setPreviewing(v);
@@ -598,10 +604,10 @@ function ProductPreviewDialog({
   onClose: () => void;
 }) {
   const fetchProduct = useServerFn(listProducts);
-  
+
   const fetchColors = useServerFn(listProductColors);
   const fetch360 = useServerFn(listProduct360Images);
-  
+
   const { data: existingProduct } = useQuery({
     queryKey: ["admin-product-detail", productId],
     queryFn: async () => {
@@ -613,7 +619,7 @@ function ProductPreviewDialog({
       ]);
       const product = pRes.rows[0];
       if (!product) return null;
-      return { ...product, colors: cRes.rows, product360Images: iRes.rows.map(r => r.image_url) };
+      return { ...product, colors: cRes.rows, product360Images: iRes.rows.map((r) => r.image_url) };
     },
     enabled: !!productId,
   });
@@ -632,7 +638,10 @@ function ProductPreviewDialog({
     stockQty: Number(value.stockQty),
     inStock: Number(value.stockQty) > 0,
     universal: value.isUniversal,
-    bikeCompatibility: value.bikeCompatibility.split(",").map(s => s.trim()).filter(Boolean),
+    bikeCompatibility: value.bikeCompatibility
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
     bestDeal: value.isBestDeal,
     featured: value.isFeatured,
     newArrival: value.isNewArrival,

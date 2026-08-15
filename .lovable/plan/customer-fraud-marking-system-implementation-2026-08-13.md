@@ -3,6 +3,7 @@
 Implement a professional fraud detection and marking system for CUSTOMZ PARADISE BD. This system will allow admins to flag suspicious customers by their phone number, ensuring that these warnings are visible across all management sections (Orders, Customers, etc.) to prevent fraudulent transactions.
 
 ## User-facing changes
+
 - **Mark Fraud Action**: New "Mark Fraud" button/icon next to customer phone numbers in the Order List, Order Details, and Customer List.
 - **Visual Warnings**: High-visibility fraud badges (Red "Fraud" or "Warning") displayed near phone numbers for flagged customers.
 - **Fraud Details**: Clicking a fraud badge opens a dialog showing the reason, label (e.g., success rate percentage), and admin notes.
@@ -10,6 +11,7 @@ Implement a professional fraud detection and marking system for CUSTOMZ PARADISE
 - **Consistent Tracking**: Fraud status is linked to the phone number, making it appear automatically for any new order from the same customer.
 
 ## Technical details
+
 - **Database Schema**:
   - `public.customer_fraud_marks`: New table keyed by `phone_number`.
   - Fields: `mark_type` (fraud/warning), `label`, `note` (required), `marked_by`, `marked_at`.

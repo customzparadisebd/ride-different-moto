@@ -1,7 +1,7 @@
 export async function getCroppedImg(
   imageSrc: string,
   pixelCrop: { x: number; y: number; width: number; height: number },
-  rotation = 0
+  rotation = 0,
 ): Promise<Blob> {
   const image = await createImage(imageSrc);
   const canvas = document.createElement("canvas");
@@ -14,11 +14,7 @@ export async function getCroppedImg(
   const rotRad = (rotation * Math.PI) / 180;
 
   // calculate bounding box of the rotated image
-  const { width: bBoxWidth, height: bBoxHeight } = rotateSize(
-    image.width,
-    image.height,
-    rotation
-  );
+  const { width: bBoxWidth, height: bBoxHeight } = rotateSize(image.width, image.height, rotation);
 
   // set canvas size to match the bounding box
   canvas.width = bBoxWidth;
@@ -34,12 +30,7 @@ export async function getCroppedImg(
 
   // croppedAreaPixels values are bounding box relative
   // extract the cropped image using these values
-  const data = ctx.getImageData(
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height
-  );
+  const data = ctx.getImageData(pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height);
 
   // set canvas width to final desired crop size - resizing to 400x400
   canvas.width = 400;
@@ -48,14 +39,14 @@ export async function getCroppedImg(
   // paste generated rotate image with correct offsets for x,y crop values.
   ctx.putImageData(data, 0, 0);
 
-  // We want to scale the 400x400 area if the data is different size, 
+  // We want to scale the 400x400 area if the data is different size,
   // but putImageData doesn't scale.
   // Instead, we use another canvas to resize.
   const finalCanvas = document.createElement("canvas");
   finalCanvas.width = 400;
   finalCanvas.height = 400;
   const finalCtx = finalCanvas.getContext("2d");
-  
+
   if (!finalCtx) throw new Error("No 2d context for final canvas");
 
   // Create a temporary canvas to draw the cropped data
@@ -71,10 +62,14 @@ export async function getCroppedImg(
 
   // As a blob
   return new Promise((resolve, reject) => {
-    finalCanvas.toBlob((file) => {
-      if (file) resolve(file);
-      else reject(new Error("Canvas is empty"));
-    }, "image/webp", 0.9);
+    finalCanvas.toBlob(
+      (file) => {
+        if (file) resolve(file);
+        else reject(new Error("Canvas is empty"));
+      },
+      "image/webp",
+      0.9,
+    );
   });
 }
 
@@ -91,9 +86,7 @@ function rotateSize(width: number, height: number, rotation: number) {
   const rotRad = (rotation * Math.PI) / 180;
 
   return {
-    width:
-      Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
-    height:
-      Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
+    width: Math.abs(Math.cos(rotRad) * width) + Math.abs(Math.sin(rotRad) * height),
+    height: Math.abs(Math.sin(rotRad) * width) + Math.abs(Math.cos(rotRad) * height),
   };
 }

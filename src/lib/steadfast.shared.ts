@@ -54,7 +54,6 @@ export type SteadfastApiLog = {
 };
 
 export type BulkShipmentRow = {
-
   orderId: string;
   invoiceNo: string;
   success: boolean;

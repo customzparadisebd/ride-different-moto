@@ -47,7 +47,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     // Only Admin/Super Admin allowed per requirements.
-    assertAccess(actor, PERMISSIONS.apiManage); 
+    assertAccess(actor, PERMISSIONS.apiManage);
 
     const before = await context.supabase
       .from("invoice_settings")
