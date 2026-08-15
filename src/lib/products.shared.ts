@@ -133,7 +133,7 @@ export const productListInput = z.object({
   activeOnly: z.boolean().default(false),
   deleted: z.boolean().default(false),
   page: z.number().int().min(1).max(500).default(1),
-  pageSize: z.number().int().min(10).max(100).default(25),
+  pageSize: z.number().int().min(1).max(100).default(25),
 });
 
 export const productDeleteInput = z.object({
