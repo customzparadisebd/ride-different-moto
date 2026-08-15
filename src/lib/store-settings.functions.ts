@@ -53,7 +53,7 @@ export const getStoreSettings = createServerFn({ method: "GET" }).handler(
 
 export const saveStoreSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => storeSettingsInput.parse(input))
+  .validator((input: unknown) => storeSettingsInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

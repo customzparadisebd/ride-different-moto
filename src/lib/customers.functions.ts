@@ -12,7 +12,7 @@ import {
 
 export const listAdminCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerListInput.parse(input ?? {}))
+  .validator((input: unknown) => customerListInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -56,7 +56,7 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
 
 export const softDeleteCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerDeleteInput.parse(input))
+  .validator((input: unknown) => customerDeleteInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -100,7 +100,7 @@ export const softDeleteCustomer = createServerFn({ method: "POST" })
 
 export const restoreCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerRestoreInput.parse(input))
+  .validator((input: unknown) => customerRestoreInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -133,7 +133,7 @@ export const restoreCustomer = createServerFn({ method: "POST" })
 
 export const purgeCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerPurgeInput.parse(input))
+  .validator((input: unknown) => customerPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -173,7 +173,7 @@ export const purgeCustomer = createServerFn({ method: "POST" })
 
 export const getCustomerAuditTrail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         customerId: z.string().uuid(),
@@ -221,7 +221,7 @@ export const getCustomerAuditTrail = createServerFn({ method: "POST" })
 
 export const updateAdminCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => customerUpdateInput.parse(input))
+  .validator((input: unknown) => customerUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

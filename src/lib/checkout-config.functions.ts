@@ -68,7 +68,7 @@ export const listCheckoutConfig = createServerFn({ method: "GET" })
 
 export const saveCity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cityInput.parse(input))
+  .validator((input: unknown) => cityInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -95,7 +95,7 @@ export const saveCity = createServerFn({ method: "POST" })
 
 export const deleteCity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cityIdInput.parse(input))
+  .validator((input: unknown) => cityIdInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -116,7 +116,7 @@ export const deleteCity = createServerFn({ method: "POST" })
 /** Persists the new display order as sent by the admin list. */
 export const reorderCities = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => cityReorderInput.parse(input))
+  .validator((input: unknown) => cityReorderInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -134,7 +134,7 @@ export const reorderCities = createServerFn({ method: "POST" })
 
 export const saveDeliveryZone = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => zoneUpdateInput.parse(input))
+  .validator((input: unknown) => zoneUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

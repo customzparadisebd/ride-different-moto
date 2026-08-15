@@ -12,7 +12,7 @@ const fraudMarkInput = z.object({
 
 export const getFraudMark = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ phoneNumber: z.string() }).parse(input))
+  .validator((input: unknown) => z.object({ phoneNumber: z.string() }).parse(input))
   .handler(async ({ data, context }) => {
     const { data: mark, error } = await context.supabase
       .from("customer_fraud_marks")
@@ -26,7 +26,7 @@ export const getFraudMark = createServerFn({ method: "POST" })
 
 export const setFraudMark = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => fraudMarkInput.parse(input))
+  .validator((input: unknown) => fraudMarkInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -59,7 +59,7 @@ export const setFraudMark = createServerFn({ method: "POST" })
 
 export const removeFraudMark = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ phoneNumber: z.string() }).parse(input))
+  .validator((input: unknown) => z.object({ phoneNumber: z.string() }).parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

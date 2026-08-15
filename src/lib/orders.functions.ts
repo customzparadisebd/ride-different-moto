@@ -31,7 +31,7 @@ import {
 
 /** Public: the storefront checkout. Prices are resolved server-side. */
 export const placeOrder = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => checkoutSubmitInput.parse(input))
+  .validator((input: unknown) => checkoutSubmitInput.parse(input))
   .handler(async ({ data }) => {
     const [{ createOrder }, { priceCartLines }, checkoutConfig] = await Promise.all([
       import("./orders.server"),
@@ -216,7 +216,7 @@ const likeTerm = (value: string) => `%${value.replace(/[%_\\]/g, (c) => `\\${c}`
 
 export const listOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderFilterInput.parse(input ?? {}))
+  .validator((input: unknown) => orderFilterInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -495,7 +495,7 @@ export const listOrderStaff = createServerFn({ method: "POST" })
 // ============================================================
 export const setOrderPinned = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderPinInput.parse(input))
+  .validator((input: unknown) => orderPinInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -529,7 +529,7 @@ export const setOrderPinned = createServerFn({ method: "POST" })
 
 export const assignOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderAssignInput.parse(input))
+  .validator((input: unknown) => orderAssignInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -565,7 +565,7 @@ export const assignOrders = createServerFn({ method: "POST" })
 
 export const markOrdersPrinted = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderPrintInput.parse(input))
+  .validator((input: unknown) => orderPrintInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -618,7 +618,7 @@ export const markOrdersPrinted = createServerFn({ method: "POST" })
 // ============================================================
 export const getOrderActivity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
+  .validator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -644,7 +644,7 @@ export const getOrderActivity = createServerFn({ method: "POST" })
 // ============================================================
 export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderBulkStatusInput.parse(input))
+  .validator((input: unknown) => orderBulkStatusInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -682,7 +682,7 @@ export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
 
 export const getOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
+  .validator((input: { orderId: string }) => ({ orderId: String(input.orderId) }))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -728,7 +728,7 @@ export const getOrder = createServerFn({ method: "POST" })
 // ============================================================
 export const updateOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderStatusUpdateInput.parse(input))
+  .validator((input: unknown) => orderStatusUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -816,7 +816,7 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
 /** Admin: manual order entry — same database and invoice series as the website. */
 export const createManualOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => adminOrderInput.parse(input))
+  .validator((input: unknown) => adminOrderInput.parse(input))
   .handler(async ({ data, context }) => {
     const { createOrder } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");

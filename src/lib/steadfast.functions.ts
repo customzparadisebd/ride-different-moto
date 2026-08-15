@@ -92,7 +92,7 @@ export const getSteadfastSettings = createServerFn({ method: "GET" })
 // ------------------------------------------------------------
 export const saveSteadfastSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => steadfastSettingsInput.parse(input))
+  .validator((input: unknown) => steadfastSettingsInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -218,7 +218,7 @@ export const getSteadfastLogs = createServerFn({ method: "GET" })
 
 export const cancelSteadfastShipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -286,7 +286,7 @@ export const cancelSteadfastShipment = createServerFn({ method: "POST" })
 
 export const getSteadfastTracking = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ orderId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -355,7 +355,7 @@ export const getSteadfastTracking = createServerFn({ method: "POST" })
 // ------------------------------------------------------------
 export const bulkSendToSteadfast = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => bulkSteadfastInput.parse(input))
+  .validator((input: unknown) => bulkSteadfastInput.parse(input))
   .handler(async ({ data, context }): Promise<{ results: BulkShipmentRow[] }> => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

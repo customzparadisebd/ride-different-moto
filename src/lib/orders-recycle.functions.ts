@@ -15,7 +15,7 @@ import { orderPurgeInput, orderRecycleInput, orderRestoreInput } from "./orders.
 
 export const recycleOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderRecycleInput.parse(input))
+  .validator((input: unknown) => orderRecycleInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { logOrderEvent } = await import("./orders.server");
@@ -57,7 +57,7 @@ export const recycleOrder = createServerFn({ method: "POST" })
 
 export const restoreOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderRestoreInput.parse(input))
+  .validator((input: unknown) => orderRestoreInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { logOrderEvent } = await import("./orders.server");
@@ -93,7 +93,7 @@ export const restoreOrder = createServerFn({ method: "POST" })
 
 export const purgeOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderPurgeInput.parse(input))
+  .validator((input: unknown) => orderPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

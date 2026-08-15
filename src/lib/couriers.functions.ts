@@ -83,7 +83,7 @@ export const listCouriers = createServerFn({ method: "GET" })
 
 export const saveCourier = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => courierInput.parse(input))
+  .validator((input: unknown) => courierInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -210,7 +210,7 @@ export const saveCourier = createServerFn({ method: "POST" })
 
 export const setCourierActive = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => courierActiveInput.parse(input))
+  .validator((input: unknown) => courierActiveInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -237,7 +237,7 @@ export const setCourierActive = createServerFn({ method: "POST" })
 
 export const deleteCourier = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => courierIdInput.parse(input))
+  .validator((input: unknown) => courierIdInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -264,7 +264,7 @@ export const deleteCourier = createServerFn({ method: "POST" })
 
 export const testCourierConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => courierIdInput.parse(input))
+  .validator((input: unknown) => courierIdInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -298,7 +298,7 @@ export const testCourierConnection = createServerFn({ method: "POST" })
 
 export const bookShipment = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => bookShipmentInput.parse(input))
+  .validator((input: unknown) => bookShipmentInput.parse(input))
   .handler(async ({ data, context }): Promise<ShipmentResult> => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -447,7 +447,7 @@ export const bookShipment = createServerFn({ method: "POST" })
 
 export const refreshShipmentStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => trackShipmentInput.parse(input))
+  .validator((input: unknown) => trackShipmentInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

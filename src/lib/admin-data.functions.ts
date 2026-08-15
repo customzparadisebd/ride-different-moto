@@ -212,7 +212,7 @@ type CustomerRow = {
 
 export const listCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ search: z.string().trim().max(120).optional() }).parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
