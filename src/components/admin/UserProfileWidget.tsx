@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { 
   Camera, 
   Loader2, 
@@ -10,10 +10,12 @@ import {
   Info,
   Image as ImageIcon,
   ChevronRight,
-  UserCircle
+  UserCircle,
+  Scissors
 } from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import Cropper, { Area } from "react-easy-crop";
 
 import { ROLE_LABELS } from "@/lib/admin.shared";
 import { Button } from "@/components/ui/button";
@@ -31,6 +33,9 @@ import { updateAdminProfile } from "@/lib/admin.functions";
 import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getCroppedImg } from "@/lib/cropImage";
+import { Slider } from "@/components/ui/slider";
+
 
 interface UserProfileWidgetProps {
   access: {
