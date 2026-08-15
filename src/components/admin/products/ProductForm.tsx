@@ -222,20 +222,29 @@ export function ProductForm({
             ))}
           </select>
         </Field>
-        <Field
-          label="Main Image URL"
-          required
-          error={errors["imageUrl"] || undefined}
-          example="Example: https://.../image.webp"
-          guideline="Recommended: 1000x1000px WebP, <200KB. Optimized for fast mobile loading."
-        >
-          <Input
-            className="h-11"
-            placeholder="https://example.com/product-image.jpg"
+        <div className="sm:col-span-2">
+          <ProductImageUpload
+            label="Main Product Image"
             value={value["imageUrl"]}
-            onChange={(e) => set("imageUrl", e.target.value)}
+            onChange={(url) => set("imageUrl", url as string)}
+            multiple={false}
           />
-        </Field>
+          <div className="mt-4">
+            <Field
+              label="Or Paste Image URL"
+              optional
+              error={errors["imageUrl"] || undefined}
+              example="Example: https://.../image.webp"
+            >
+              <Input
+                className="h-11"
+                placeholder="https://example.com/product-image.jpg"
+                value={value["imageUrl"]}
+                onChange={(e) => set("imageUrl", e.target.value)}
+              />
+            </Field>
+          </div>
+        </div>
         <Field
           label="Bike compatibility"
           example="Example: Pulsar N160, Pulsar N250, Dominar 400"
@@ -326,20 +335,29 @@ export function ProductForm({
             onChange={(e) => set("details", e.target.value)}
           />
         </Field>
-        <Field
-          label="Gallery image URLs"
-          optional
-          example="Paste one URL per line"
-          guideline="Recommended: Up to 5 additional images. 1000x1000px WebP format."
-          className="sm:col-span-2"
-        >
-          <Textarea
-            rows={3}
-            placeholder="https://example.com/gallery1.webp&#10;https://example.com/gallery2.webp"
-            value={value.images}
-            onChange={(e) => set("images", e.target.value)}
+        <div className="sm:col-span-2">
+          <ProductImageUpload
+            label="Gallery Images"
+            multiple
+            value={value.images.split(/\r?\n/).filter(Boolean)}
+            onChange={(urls) => set("images", (urls as string[]).join("\n"))}
+            guideline="Up to 10 additional images. 1000x1000px WebP format recommended."
           />
-        </Field>
+          <div className="mt-4">
+            <Field
+              label="Or Gallery image URLs (One per line)"
+              optional
+              example="Paste one URL per line"
+            >
+              <Textarea
+                rows={3}
+                placeholder="https://example.com/gallery1.webp&#10;https://example.com/gallery2.webp"
+                value={value.images}
+                onChange={(e) => set("images", e.target.value)}
+              />
+            </Field>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-2 sm:grid-cols-3">
