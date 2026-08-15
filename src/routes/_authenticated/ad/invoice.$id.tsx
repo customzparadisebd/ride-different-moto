@@ -4,14 +4,14 @@
 // Status: COMPLETED
 // Security: Same permission-checked getOrder server function
 // ============================================================
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 import { formatBDT } from "@/lib/format";
-import { getOrder } from "@/lib/orders.functions";
+import { getOrder, markOrdersPrinted } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel } from "@/lib/orders.shared";
 import logoDark from "@/assets/logo-dark-bg.png.asset.json";
 
@@ -29,10 +29,28 @@ export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
 function InvoicePage() {
   const { id } = Route.useParams();
   const fetchOrder = useServerFn(getOrder);
+  const markPrinted = useServerFn(markOrdersPrinted);
+  const queryClient = useQueryClient();
   const query = useQuery({
     queryKey: ["admin-order", id],
     queryFn: () => fetchOrder({ data: { orderId: id } }),
   });
+
+  const handlePrint = () => {
+    const onAfterPrint = async () => {
+      try {
+        await markPrinted({ data: { orderIds: [id] } });
+        void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
+        void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      } catch (err) {
+        console.error("Failed to mark order as printed:", err);
+      }
+      window.removeEventListener("afterprint", onAfterPrint);
+    };
+
+    window.addEventListener("afterprint", onAfterPrint);
+    window.print();
+  };
 
   if (query.isLoading) {
     return <p className="p-10 text-center text-sm text-muted-foreground">Loading invoice…</p>;
@@ -55,7 +73,7 @@ function InvoicePage() {
         >
           ← Back to order
         </Link>
-        <Button variant="red" size="sm" onClick={() => window.print()}>
+        <Button variant="red" size="sm" onClick={handlePrint}>
           Print / Save PDF
         </Button>
       </div>
