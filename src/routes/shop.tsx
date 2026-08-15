@@ -4,6 +4,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ProductBrowser } from "@/components/ProductBrowser";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { site } from "@/data/site";
 
 const title = "Shop Motorcycle Modification Parts & Accessories — Customz Paradise BD";
 const description =
