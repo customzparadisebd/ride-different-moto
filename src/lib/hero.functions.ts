@@ -1,35 +1,35 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabase } from "@/integrations/supabase/client";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
 export const getHeroSlides = createServerFn({ method: "GET" })
   .inputValidator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
-  const query = supabase.from("hero_slides").select("*");
-  
-  if (!admin) {
-    query.eq("is_active", true);
-  }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const query = supabaseAdmin.from("hero_slides").select("*");
 
-  const { data, error } = await query.order("sort_order", { ascending: true });
-    
-  if (error) throw new Error(error.message);
-  
-  return data.map(slide => ({
-    id: slide.id,
-    bikeName: slide.title,
-    label: slide.subtitle || undefined,
-    image: slide.image_url,
-    mobileImage: (slide as any).mobile_image_url || undefined,
-    alt: slide.title,
-    bikeSlug: slide.link_url || "all-products",
-    order: slide.sort_order,
-    active: slide.is_active,
-    isFullBanner: slide.title.includes("Perfect Price"),
-  }));
-});
+    if (!admin) {
+      query.eq("is_active", true);
+    }
+
+    const { data, error } = await query.order("sort_order", { ascending: true });
+
+    if (error) throw new Error(error.message);
+
+    return (data || []).map((slide) => ({
+      id: slide.id,
+      bikeName: slide.title,
+      label: slide.subtitle || undefined,
+      image: slide.image_url,
+      mobileImage: (slide as any).mobile_image_url || undefined,
+      alt: slide.title,
+      bikeSlug: slide.link_url || "all-products",
+      order: slide.sort_order,
+      active: slide.is_active,
+      isFullBanner: slide.title.includes("Perfect Price"),
+    }));
+  });
 
 export const updateHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
