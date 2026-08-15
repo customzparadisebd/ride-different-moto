@@ -13,7 +13,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
-import { Moon, Sun, Clock, AlertCircle, ShieldCheck } from "lucide-react";
+import { Moon, Sun, Clock, AlertCircle, ShieldCheck, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { EnvironmentBanner } from "@/components/admin/EnvironmentBanner";
@@ -43,6 +44,30 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   const { theme, toggleTheme } = useTheme();
   const [time, setTime] = useState(new Date());
   const env = getEnvironment();
+
+  useEffect(() => {
+    // Real-time listener for invoice collisions
+    const collisionChannel = supabase
+      .channel("invoice-collisions")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "invoice_collisions" },
+        (payload) => {
+          const data = payload.new;
+          toast.error("DUPLICATE INVOICE DETECTED", {
+            description: `Attempted Invoice: ${data.invoice_no}. Check collision logs immediately.`,
+            duration: 10000,
+            icon: <AlertTriangle className="h-4 w-4 text-destructive" />,
+          });
+          queryClient.invalidateQueries({ queryKey: ["security-stats"] });
+        },
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(collisionChannel);
+    };
+  }, [queryClient]);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
