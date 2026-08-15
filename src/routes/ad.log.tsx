@@ -108,6 +108,18 @@ function AuthPage() {
   const handlePostAuth = async (userId: string) => {
     setBusy(true);
     try {
+      // Security: We fetch access state to see if MFA is satisfied before asking for approval
+      const { getMyAccess } = await import("@/lib/orders.functions");
+      const access = await getMyAccess({});
+      
+      // If MFA is required but not satisfied, we shouldn't show approval screen yet.
+      // The route gate will handle redirection to /ad/mfa if they try to access /ad.
+      // But if they are on /ad/log, we should let them finish MFA first.
+      if (access.mfaRequired && !access.mfaSatisfied) {
+        void navigate({ to: "/ad/mfa" });
+        return;
+      }
+
       const approval = await createLoginApproval({});
       if (approval.status === "approved") {
         void navigate({ to: "/ad", replace: true });
@@ -115,13 +127,11 @@ function AuthPage() {
         setApprovalRequestId(approval.requestId || null);
         setApprovalStatus("pending");
         setRequestTime(format(new Date(), "hh:mm:ss a"));
-        // We stay on this page to show the waiting screen
       }
     } catch (err) {
       console.error("Approval check failed", err);
-      // If it fails, sign out to be safe
-      await supabase.auth.signOut();
-      toast.error("Security check failed. Please try again.");
+      // We don't sign out automatically here because they might just need to finish MFA
+      toast.error("Security check failed. Please ensure MFA is completed.");
     } finally {
       setBusy(false);
     }

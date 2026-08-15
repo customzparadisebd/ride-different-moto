@@ -24,19 +24,23 @@ export const Route = createFileRoute("/_authenticated/ad")({
     }
     if (access.sessionRevoked) throw redirect({ to: "/ad/denied" });
     
-    // MFA step-up: privileged accounts must reach AAL2 before any screen loads.
-    // Every staff user must now use 2FA for account security.
+    // 1. MFA Verification (Identity Check)
+    // Every staff user must use 2FA for account security.
     if (access.mfaRequired && !access.mfaSatisfied) {
       throw redirect({ to: "/ad/mfa" });
     }
 
-    if (!access.isStaff) throw redirect({ to: "/ad/denied" });
+    // 2. Staff Status Check (Permanent Account Approval)
+    // Accounts in 'pending', 'suspended', etc., are blocked even if MFA is passed.
+    if (!access.isStaff) {
+       // If account is pending, they might need to go to the log page to see status
+       if (access.status === 'pending') throw redirect({ to: "/ad/log" });
+       throw redirect({ to: "/ad/denied" });
+    }
 
-    // Staff Login Approval System: Staff must be approved for the current session.
+    // 3. Login Approval Check (Temporary Session Validation)
     // getMyAccess already handles the redirection trigger via loginApprovalPending
     if (access.loginApprovalPending) {
-       // Signing out here forces the ad.log.tsx logic to trigger the approval flow
-       // if they somehow bypassed it or for every fresh login.
        throw redirect({ to: "/ad/log" });
     }
     return { access };
