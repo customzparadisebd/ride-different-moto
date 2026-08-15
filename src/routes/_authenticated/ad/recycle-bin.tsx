@@ -151,6 +151,13 @@ function RecycleBin() {
         >
           Customers ({customerRows.length})
         </Button>
+        <Button
+          variant={tab === "orders" ? "red" : "steel"}
+          size="sm"
+          onClick={() => setTab("orders")}
+        >
+          Orders ({orderRows.length})
+        </Button>
       </div>
 
       {tab === "products" ? (
@@ -222,7 +229,7 @@ function RecycleBin() {
             </tbody>
           </table>
         </div>
-      ) : (
+      ) : tab === "orders" ? (
         <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
