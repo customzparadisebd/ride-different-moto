@@ -20,6 +20,7 @@ export type InvoiceSettings = z.infer<typeof invoiceSettingsInput>;
 export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   prefix: "CZP",
   startNumber: 1,
+  currentNumber: 0,
 };
 
 export type InvoiceSettingsRow = {
