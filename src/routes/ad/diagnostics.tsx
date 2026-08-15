@@ -188,7 +188,7 @@ function DiagnosticsPage() {
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            restore my old hero sider</p>
+                                            Ensure the compact mobile navigation never overflows on smaller viewports by making it scrollable only when necessary.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
