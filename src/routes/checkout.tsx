@@ -146,11 +146,11 @@ function CheckoutPage() {
         <OrderSuccessAnimation />
         <h1
           className="czp-reveal mt-4 font-display text-3xl font-bold uppercase tracking-wide"
-          style={{ animationDelay: "0.85s" }}
+          style={{ animationDelay: "0.95s" }}
         >
           Order Confirmed
         </h1>
-        <p className="czp-reveal mt-2 text-sm text-muted-foreground" style={{ animationDelay: "0.98s" }}>
+        <p className="czp-reveal mt-2 text-sm text-muted-foreground" style={{ animationDelay: "1.08s" }}>
           Thank you! Our team will call you shortly to confirm delivery details.
         </p>
         <div
