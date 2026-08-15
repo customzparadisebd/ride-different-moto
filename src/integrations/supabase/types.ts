@@ -1189,6 +1189,41 @@ export type Database = {
           },
         ]
       }
+      product_360_images: {
+        Row: {
+          created_at: string | null
+          display_order: number
+          id: string
+          image_url: string
+          product_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url: string
+          product_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_order?: number
+          id?: string
+          image_url?: string
+          product_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_360_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_colors: {
         Row: {
           created_at: string
@@ -1256,6 +1291,7 @@ export type Database = {
           details: string | null
           dimensions: string | null
           discount_percent: number
+          has_360_view: boolean | null
           id: string
           image_url: string | null
           images: Json
@@ -1297,6 +1333,7 @@ export type Database = {
           details?: string | null
           dimensions?: string | null
           discount_percent?: number
+          has_360_view?: boolean | null
           id?: string
           image_url?: string | null
           images?: Json
@@ -1338,6 +1375,7 @@ export type Database = {
           details?: string | null
           dimensions?: string | null
           discount_percent?: number
+          has_360_view?: boolean | null
           id?: string
           image_url?: string | null
           images?: Json
