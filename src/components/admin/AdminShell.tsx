@@ -32,6 +32,9 @@ export type AdminAccess = {
   permissions: Permission[];
   isSuperAdmin: boolean;
   mfaSatisfied: boolean;
+  fullName: string | null;
+  avatarUrl: string | null;
+  gender: string | null;
 };
 
 export function AdminShell({ access, children }: { access: AdminAccess; children: ReactNode }) {
