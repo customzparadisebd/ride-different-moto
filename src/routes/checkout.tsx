@@ -180,7 +180,7 @@ function CheckoutPage() {
             />
             <Field
               id="customerPhone"
-              label="Mobile number *"
+              label="Mobile number (WhatsApp) *"
               value={form.customerPhone}
               onChange={update("customerPhone")}
               error={errors["customerPhone"]}
