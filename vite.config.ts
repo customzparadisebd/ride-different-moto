@@ -12,4 +12,23 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    build: {
+      sourcemap: false, // Security: Disable production sourcemaps
+      minify: "terser", // Ensure deep minification
+      cssMinify: true,
+      rollupOptions: {
+        output: {
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor-react';
+              if (id.includes('@tanstack')) return 'vendor-tanstack';
+              return 'vendor';
+            }
+            return undefined;
+          }
+        },
+      },
+    },
+  },
 });

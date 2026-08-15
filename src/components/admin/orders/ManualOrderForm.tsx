@@ -184,20 +184,24 @@ export function ManualOrderForm({
       <fieldset className="rounded-xl border border-border bg-card p-4 shadow-card">
         <legend className="px-1 font-display text-sm font-bold uppercase">Customer</legend>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field label="Full name">
+          <Field label="Full name" htmlFor="manual-customer-name">
             <Input
+              id="manual-customer-name"
               value={form.customerName}
               onChange={(e) => set("customerName")(e.target.value)}
               className="h-11"
+              required
             />
           </Field>
-          <Field label="Mobile number">
+          <Field label="Mobile number" htmlFor="manual-customer-phone">
             <Input
+              id="manual-customer-phone"
               value={form.customerPhone}
               onChange={(e) => set("customerPhone")(e.target.value)}
               inputMode="tel"
               placeholder="01712345678"
               className="h-11"
+              required
             />
           </Field>
           <Field label="Email (optional)">
@@ -416,14 +420,18 @@ function Field({
   label,
   children,
   className,
+  htmlFor,
 }: {
   label: string;
   children: React.ReactNode;
   className?: string;
+  htmlFor?: string;
 }) {
   return (
     <div className={className}>
-      <Label className="text-xs uppercase tracking-wider text-muted-foreground">{label}</Label>
+      <Label htmlFor={htmlFor} className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </Label>
       <div className="mt-1.5">{children}</div>
     </div>
   );
