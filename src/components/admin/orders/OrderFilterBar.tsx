@@ -187,44 +187,25 @@ export function OrderFilterBar({
               className="h-9"
             />
           </Field>
-          <Field label="Customer name">
+          <Field label="Customer Name">
             <Input
               value={value.customerName}
               onChange={(e) => set("customerName")(e.target.value)}
               placeholder="Name"
-              className="h-11"
+              className="h-9"
             />
           </Field>
-          <Field label="Phone">
+          <Field label="Phone Number">
             <Input
               value={value.customerPhone}
               onChange={(e) => set("customerPhone")(e.target.value)}
               placeholder="01XXXXXXXXX"
               inputMode="tel"
-              className="h-11"
+              className="h-9"
             />
           </Field>
-          <Field label="Assigned user">
-            <Select value={value.assignedTo} onChange={set("assignedTo")} placeholder="Anyone">
-              <option value="none">Unassigned</option>
-              {staff.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="Created by">
-            <Select value={value.createdBy} onChange={set("createdBy")} placeholder="Anyone">
-              {staff.map((member) => (
-                <option key={member.id} value={member.id}>
-                  {member.label}
-                </option>
-              ))}
-            </Select>
-          </Field>
-          <Field label="Order status">
-            <Select value={value.status} onChange={set("status")} placeholder="All statuses">
+          <Field label="Order Status">
+            <Select value={value.status} onChange={set("status")} placeholder="All Statuses" className="h-9">
               {ORDER_STATUSES.map((status) => (
                 <option key={status} value={status}>
                   {statusLabel(status)}
@@ -232,11 +213,12 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Payment status">
+          <Field label="Payment Status">
             <Select
               value={value.paymentStatus}
               onChange={set("paymentStatus")}
-              placeholder="All payments"
+              placeholder="All Payments"
+              className="h-9"
             >
               {PAYMENT_STATUSES.map((status) => (
                 <option key={status} value={status}>
@@ -245,8 +227,53 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Source">
-            <Select value={value.source} onChange={set("source")} placeholder="All sources">
+          <Field label="Payment Method">
+            <Select
+              value={value.paymentMethod}
+              onChange={set("paymentMethod")}
+              placeholder="All Methods"
+              className="h-9"
+            >
+              <option value="cash_on_delivery">Cash on Delivery</option>
+              <option value="bkash">bKash</option>
+              <option value="nagad">Nagad</option>
+              <option value="bank_transfer">Bank Transfer</option>
+            </Select>
+          </Field>
+          <Field label="SteadFast Status">
+            <Select
+              value={value.steadfastStatus}
+              onChange={(v) => set("steadfastStatus")(v as any)}
+              placeholder="All Status"
+              className="h-9"
+            >
+              <option value="submitted">Submitted</option>
+              <option value="successful">Successful</option>
+              <option value="failed">Failed</option>
+              <option value="not_submitted">Not Submitted</option>
+            </Select>
+          </Field>
+          <Field label="Assigned Staff">
+            <Select value={value.assignedTo} onChange={set("assignedTo")} placeholder="Anyone" className="h-9">
+              <option value="none">Unassigned</option>
+              {staff.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Created By">
+            <Select value={value.createdBy} onChange={set("createdBy")} placeholder="Anyone" className="h-9">
+              {staff.map((member) => (
+                <option key={member.id} value={member.id}>
+                  {member.label}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label="Order Source">
+            <Select value={value.source} onChange={set("source")} placeholder="All Sources" className="h-9">
               {ORDER_SOURCES.map((source) => (
                 <option key={source.value} value={source.value}>
                   {source.label}
@@ -254,8 +281,8 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Courier">
-            <Select value={value.courier} onChange={set("courier")} placeholder="All couriers">
+          <Field label="Courier Name">
+            <Select value={value.courier} onChange={set("courier")} placeholder="All Couriers" className="h-9">
               {couriers.map((courier) => (
                 <option key={courier} value={courier}>
                   {courier}
@@ -263,11 +290,12 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Delivery zone">
+          <Field label="Delivery Zone">
             <Select
               value={value.deliveryZone}
               onChange={set("deliveryZone")}
-              placeholder="All zones"
+              placeholder="All Zones"
+              className="h-9"
             >
               {DELIVERY_ZONES.map((zone) => (
                 <option key={zone.value} value={zone.value}>
@@ -276,28 +304,41 @@ export function OrderFilterBar({
               ))}
             </Select>
           </Field>
-          <Field label="Pinned">
-            <Select value={value.pinned} onChange={set("pinned")} placeholder="All orders">
-              <option value="pinned">Pinned only</option>
-              <option value="unpinned">Unpinned only</option>
+          <Field label="Product Category">
+             <Select value={value.productCategory} onChange={set("productCategory")} placeholder="All Categories" className="h-9">
+               <option value="graphics">Graphics</option>
+               <option value="lighting">Lighting</option>
+               <option value="seat">Seat</option>
+               <option value="exhaust">Exhaust</option>
+               <option value="handlebar">Handlebar</option>
+               <option value="body-kit">Body Kit</option>
+               <option value="accessories">Accessories</option>
+             </Select>
+          </Field>
+          <Field label="Date Range">
+            <div className="flex gap-1 items-center">
+              <Input
+                type="date"
+                value={value.dateFrom}
+                onChange={(e) => set("dateFrom")(e.target.value)}
+                className="h-9 text-xs"
+              />
+              <span className="text-muted-foreground">-</span>
+              <Input
+                type="date"
+                value={value.dateTo}
+                onChange={(e) => set("dateTo")(e.target.value)}
+                className="h-9 text-xs"
+              />
+            </div>
+          </Field>
+          <Field label="Pinned State">
+            <Select value={value.pinned} onChange={set("pinned")} placeholder="All Orders" className="h-9">
+              <option value="pinned">Pinned Only</option>
+              <option value="unpinned">Unpinned Only</option>
             </Select>
           </Field>
-          <Field label="Start date">
-            <Input
-              type="date"
-              value={value.dateFrom}
-              onChange={(e) => set("dateFrom")(e.target.value)}
-              className="h-11"
-            />
-          </Field>
-          <Field label="End date">
-            <Input
-              type="date"
-              value={value.dateTo}
-              onChange={(e) => set("dateTo")(e.target.value)}
-              className="h-11"
-            />
-          </Field>
+
           <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-4">
             <Button
               type="button"
