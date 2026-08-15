@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminContext } from "@/lib/admin.functions";
 import { getDiagnosticsContext } from "@/lib/diagnostics.functions";
 import { PERMISSIONS } from "@/lib/admin.shared";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/ad/diagnostics")({
@@ -209,6 +210,7 @@ Add a diagnostics panel that traces the exact condition and config values that t
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
