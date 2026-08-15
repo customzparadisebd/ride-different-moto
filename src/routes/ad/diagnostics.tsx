@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getAdminContext } from "@/lib/admin.functions";
 import { getDiagnosticsContext } from "@/lib/diagnostics.functions";
 import { PERMISSIONS } from "@/lib/admin.shared";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/ad/diagnostics")({
@@ -96,6 +97,11 @@ function DiagnosticsPage() {
     },
   ];
 
+  const serverInfo = diagContext as {
+    supabaseConfig: { url: string; projectRef: string };
+    serverEnv: { nodeEnv: string; viteAppEnv: string; resolvedEnv: string };
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -120,7 +126,59 @@ function DiagnosticsPage() {
         ))}
       </div>
 
-      <Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-500" />
+              Runtime Connectivity Audit
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="space-y-2">
+              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Supabase Connection</p>
+              <div className="rounded border bg-muted/30 p-3 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Project Ref (Client):</span>
+                  <span className="font-mono font-bold text-primary">
+                    {supabaseUrl.split('.')[0].split('//')[1] || "Unknown"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Project Ref (Server):</span>
+                  <span className="font-mono font-bold text-primary">
+                    {serverInfo?.supabaseConfig?.projectRef || "N/A"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Target URL:</span>
+                  <span className="font-mono">{maskValue(supabaseUrl, "url")}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Environment Handshake</p>
+              <div className="rounded border bg-muted/30 p-3 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Server Resolved:</span>
+                  <span className={cn(
+                    "font-bold uppercase",
+                    serverInfo?.serverEnv?.resolvedEnv === 'production' ? "text-emerald-500" : "text-amber-500"
+                  )}>
+                    {serverInfo?.serverEnv?.resolvedEnv || "Unknown"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Node Runtime:</span>
+                  <span className="font-mono">{serverInfo?.serverEnv?.nodeEnv || "N/A"}</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
         <CardHeader>
           <CardTitle>Environment Detection Logic</CardTitle>
         </CardHeader>
@@ -130,27 +188,10 @@ function DiagnosticsPage() {
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            In the Admin Panel header, I can see a “STAGING” badge next to the admin profile.
+                                            Implement a runtime check that confirms which Supabase project (URL/project ref) the Admin Panel is connected to and display that result in diagnostics for staff.
 
-Please audit the project and explain exactly why this badge is being displayed.
 
-Determine whether the current application/environment is actually running in a staging environment or whether this is only a UI label.
-
-Do NOT change or remove anything yet.
-
-First report:
-
-What triggers the “STAGING” badge.
-
-Which environment variable, configuration, route, or code is responsible for it.
-
-Whether the current Admin Panel is connected to the production or staging Supabase/project.
-
-Whether removing the badge would only change the UI or would affect the actual environment.
-
-Whether the current setup is safe for production use.
-
-Do not make any changes until the audit is complete.</p>
+Add a diagnostics panel that traces the exact condition and config values that trigger the “STAGING” badge in the Admin Panel header.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
@@ -169,6 +210,7 @@ Do not make any changes until the audit is complete.</p>
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
