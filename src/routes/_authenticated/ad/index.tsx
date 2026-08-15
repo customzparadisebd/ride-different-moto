@@ -10,7 +10,9 @@ import {
   Layers, 
   AlertTriangle, 
   Box,
-  UserPlus
+  UserPlus,
+  Clock,
+  ExternalLink
 } from "lucide-react";
 import { 
   Area, 
@@ -23,9 +25,18 @@ import {
   YAxis,
   Cell
 } from "recharts";
+import { useState } from "react";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getDashboardMetrics } from "@/lib/admin-data.functions";
 
@@ -46,6 +57,7 @@ export const Route = createFileRoute("/_authenticated/ad/")({
  */
 function AdminDashboard() {
   const fetchMetrics = useServerFn(getDashboardMetrics);
+  const [showSteadfastInfo, setShowSteadfastInfo] = useState(false);
   const query = useQuery({ 
     queryKey: ["admin-dashboard"], 
     queryFn: () => fetchMetrics({}),
@@ -107,15 +119,108 @@ function AdminDashboard() {
           icon={<ShoppingCart className="h-4 w-4 text-sky-500" />}
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
-        <Link to="/ad/orders" search={{ status: 'processing' } as any}>
+        <div 
+          onClick={() => setShowSteadfastInfo(true)} 
+          className="cursor-pointer group"
+        >
           <StatCard 
             title="STEADFAST SUCCESS" 
             value={data.steadfastSuccessCount}
             subtitle="Successfully booked" 
-            icon={<TrendingUp className="h-4 w-4 text-brand-red" />}
-            gradient="bg-linear-to-br from-brand-red/5 to-white dark:from-brand-red/10 dark:to-background"
+            icon={<TrendingUp className="h-4 w-4 text-brand-red group-hover:scale-110 transition-transform" />}
+            gradient="bg-linear-to-br from-brand-red/5 to-white dark:from-brand-red/10 dark:to-background group-hover:from-brand-red/10 group-hover:to-brand-red/5 transition-all duration-300 ring-1 ring-transparent group-hover:ring-brand-red/20"
           />
-        </Link>
+        </div>
+
+        <Dialog open={showSteadfastInfo} onOpenChange={setShowSteadfastInfo}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-brand-red" />
+                SteadFast Integration
+              </DialogTitle>
+              <DialogDescription>
+                Summary of the latest successful API submission.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Success Count</p>
+                  <p className="text-2xl font-bold text-foreground">{data.steadfastSuccessCount}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Status</p>
+                  <p className="text-sm font-bold text-emerald-500 flex items-center gap-1.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    CONNECTED
+                  </p>
+                </div>
+              </div>
+
+              {data.steadfastLastSuccessAt ? (
+                <div className="rounded-xl border border-border/50 bg-muted/30 p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="h-4 w-4" />
+                      <span className="text-xs font-semibold uppercase tracking-tight">Last Success</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-muted-foreground/60">
+                      {new Date(data.steadfastLastSuccessAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                    </span>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground font-medium">Order Reference</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-lg font-bold font-mono text-brand-red">
+                        {data.steadfastLastInvoiceNo || "CZP-2026-XXXX"}
+                      </p>
+                      {data.steadfastLastOrderId && (
+                        <Link 
+                          to="/ad/orders/$id" 
+                          params={{ id: data.steadfastLastOrderId }}
+                          className="flex items-center gap-1 text-[10px] font-bold text-sky-500 hover:text-sky-600 transition-colors uppercase tracking-widest"
+                        >
+                          View Order
+                          <ExternalLink className="h-3 w-3" />
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-border/40 text-[10px] text-muted-foreground/60 font-medium">
+                    {new Date(data.steadfastLastSuccessAt).toLocaleDateString('en-GB', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-6 text-muted-foreground text-xs font-medium">
+                  No successful submissions recorded yet.
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="text-xs font-bold"
+                onClick={() => setShowSteadfastInfo(false)}
+              >
+                Close
+              </Button>
+              <Link to="/ad/orders" search={{ courier: 'SteadFast' } as any}>
+                <Button size="sm" className="text-xs font-bold bg-brand-red hover:bg-brand-red/90 text-white">
+                  View All Shipments
+                </Button>
+              </Link>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Secondary Stats Grid */}
