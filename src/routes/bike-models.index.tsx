@@ -2,6 +2,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { SafeImage } from "@/components/SafeImage";
 import { getBikeModels } from "@/data/catalog";
+import { site } from "@/data/site";
 
 const title = "Bike Models — Customz Paradise BD";
 const description =
@@ -15,9 +16,9 @@ export const Route = createFileRoute("/bike-models/")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/bike-models" },
+      { property: "og:url", content: `${site.url}/bike-models` },
     ],
-    links: [{ rel: "canonical", href: "/bike-models" }],
+    links: [{ rel: "canonical", href: `${site.url}/bike-models` }],
   }),
   component: BikeModelsPage,
 });

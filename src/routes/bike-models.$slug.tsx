@@ -5,6 +5,7 @@ import { ProductGrid } from "@/components/ProductCard";
 import { SafeImage } from "@/components/SafeImage";
 import { getBikeModel } from "@/data/catalog";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { site } from "@/data/site";
 
 export const Route = createFileRoute("/bike-models/$slug")({
   loader: ({ params, context }) => {
@@ -31,9 +32,9 @@ export const Route = createFileRoute("/bike-models/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `/bike-models/${params.slug}` },
+        { property: "og:url", content: `${site.url}/bike-models/${params.slug}` },
       ],
-      links: [{ rel: "canonical", href: `/bike-models/${params.slug}` }],
+      links: [{ rel: "canonical", href: `${site.url}/bike-models/${params.slug}` }],
     };
   },
   component: BikeModelPage,
