@@ -185,10 +185,88 @@ function DiagnosticsPage() {
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted p-4 font-mono text-xs">
             <p className="font-bold text-primary mb-2">// Detection logic from src/lib/env.ts</p>
-            <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+            <p className="whitespace-pre-wrap">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            Change only the Delivery Zone dropdown: add a default unselected placeholder option such as “Select delivery zone”. Do not change anything else.</p>
+                                            Add an optional Product Video feature to the existing product system.
+
+This feature must be available individually for every product.
+
+Admin Panel — Product Add/Edit
+
+Inside each product's Add/Edit form, add a new section:
+
+Product Video
+
+Enable Product Video → [ ON / OFF ]
+
+The toggle must be independent for every product.
+
+When OFF:
+
+No video will be displayed for that product.
+
+Do not show an empty video section or placeholder on the Product Details page.
+
+When ON:
+
+Show the video configuration fields:
+
+Video Platform → YouTube / Facebook / Instagram / TikTok
+
+Video URL → input field
+
+Video Preview → preview the linked video
+
+Save the video settings specifically for that product.
+
+Product Details Page
+
+When a customer opens a product:
+
+If Product Video is OFF:
+→ Do not display anything related to Product Video.
+
+If Product Video is ON:
+→ Display a clean Product Video section below the main product information/description.
+
+Show the video as a professional thumbnail/card with:
+
+▶ Watch Product Video
+
+When the customer clicks it, open the video in a clean responsive modal/popup without leaving the product page.
+
+Important Requirements
+
+The ON/OFF toggle must exist for every individual product.
+
+One product can have Video ON while another product remains OFF.
+
+Do NOT enable video globally for all products.
+
+Do NOT require every product to have a video.
+
+Do NOT change the existing product layout or other product features.
+
+Keep the feature fully responsive on desktop, tablet, and mobile.
+
+Use the existing website's red, black, and white branding.
+
+The video section should only appear when the specific product's video toggle is ON.
+
+If the toggle is turned OFF later, the video section must automatically disappear from that product's Details page.
+
+Keep all existing product data and functionality unchanged.
+
+Example
+
+Product A → Video: ON → Video appears on Product A Details page.
+
+Product B → Video: OFF → No video section appears.
+
+Product C → Video: ON → Its own video appears.
+
+Each product must have its own independent video ON/OFF setting and video URL.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
