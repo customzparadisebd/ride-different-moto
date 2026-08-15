@@ -308,12 +308,25 @@ function CheckoutPage() {
                 <dd className="font-display text-lg font-bold text-primary">{formatBDT(total)}</dd>
               </div>
             </dl>
+
+            {outOfStockItems.length > 0 && (
+              <div className="mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive animate-in fade-in zoom-in-95">
+                <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
+                  <AlertCircle className="size-3.5" />
+                  Stock Alert
+                </div>
+                <p className="mt-1 opacity-90">
+                  Some items in your cart have insufficient stock. Please reduce quantities.
+                </p>
+              </div>
+            )}
+
             <Button
               type="submit"
               variant="red"
               size="touch"
               className="mt-4 w-full"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || outOfStockItems.length > 0}
             >
               {mutation.isPending ? "Placing order…" : "Place Order"}
             </Button>
