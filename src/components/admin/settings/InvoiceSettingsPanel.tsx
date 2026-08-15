@@ -107,8 +107,45 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               min={1}
             />
             <p className="text-[10px] text-muted-foreground">
-              The next invoice will start from this number if current is lower.
+              The sequence will follow this if current is lower.
             </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="currentNumber"
+              className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              Current Sequence Number
+            </Label>
+            <Input
+              id="currentNumber"
+              type="number"
+              placeholder="e.g. 0"
+              className="h-10 font-bold"
+              value={draft.currentNumber}
+              disabled={!canManage || mutation.isPending}
+              onChange={(e) =>
+                setDraft((c) => ({ ...c, currentNumber: parseInt(e.target.value) || 0 }))
+              }
+              min={0}
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Set this manually to jump the sequence.
+            </p>
+          </div>
+
+          <div className="space-y-1.5 sm:col-span-2">
+            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+                Next Invoice Preview
+              </span>
+              <p className="font-mono text-lg font-bold">
+                {draft.prefix}-{Math.max(draft.startNumber, draft.currentNumber + 1)
+                  .toString()
+                  .padStart(2, "0")}
+              </p>
+            </div>
           </div>
         </div>
 
