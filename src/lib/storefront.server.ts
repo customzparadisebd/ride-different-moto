@@ -15,7 +15,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./storefront.shared";
 
 const PRODUCT_FIELDS =
-  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, deleted_at, sort_order";
+  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, deleted_at, sort_order";
 
 const COLOR_FIELDS = "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
@@ -61,7 +61,7 @@ function toColor(row: ProductRow): StorefrontColor {
   };
 }
 
-function toProduct(row: ProductRow, colors: StorefrontColor[]): StorefrontProduct {
+function toProduct(row: ProductRow, colors: StorefrontColor[], product360Images: string[] = []): StorefrontProduct {
   const sortOrder = row["sort_order"] === null ? null : num(row["sort_order"]);
 
   const image = (row["image_url"] as string | null) ?? null;
@@ -89,6 +89,8 @@ function toProduct(row: ProductRow, colors: StorefrontColor[]): StorefrontProduc
     newArrival: Boolean(row["is_new_arrival"]),
     badgeText: row["badge_enabled"] ? ((row["badge_text"] as string | null) ?? null) : null,
     colors,
+    has360View: Boolean(row["has_360_view"]),
+    product360Images,
     sortOrder,
   };
 }
@@ -134,14 +136,24 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
   if (!data) return null;
 
   const row = data as any;
-  const { data: colorRows } = await supabase
-    .from("product_colors")
-    .select(COLOR_FIELDS)
-    .eq("product_id", String(row["id"]))
-    .eq("is_active", true)
-    .order("sort_order");
+  const [colorRows, imageRows] = await Promise.all([
+    supabase
+      .from("product_colors")
+      .select(COLOR_FIELDS)
+      .eq("product_id", String(row["id"]))
+      .eq("is_active", true)
+      .order("sort_order"),
+    supabase
+      .from("product_360_images")
+      .select("image_url")
+      .eq("product_id", String(row["id"]))
+      .order("display_order"),
+  ]);
 
-  return toProduct(row, ((colorRows ?? []) as ProductRow[]).map(toColor));
+  const colors = ((colorRows.data ?? []) as ProductRow[]).map(toColor);
+  const images = ((imageRows.data ?? []) as ProductRow[]).map(r => String(r.image_url));
+
+  return toProduct(row, colors, images);
 }
 
 export type PricedLine = {

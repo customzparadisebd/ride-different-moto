@@ -67,7 +67,11 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
     if (!isDragging) return undefined;
 
     const onMouseMove = (e: MouseEvent) => handleMove(e.clientX);
-    const onTouchMove = (e: TouchEvent) => handleMove(e.touches[0].clientX);
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches && e.touches[0]) {
+        handleMove(e.touches[0].clientX);
+      }
+    };
     const onEnd = () => handleEnd();
 
     window.addEventListener("mousemove", onMouseMove);
@@ -144,7 +148,11 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
               isDragging && "cursor-grabbing"
             )}
             onMouseDown={(e) => handleStart(e.clientX)}
-            onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+            onTouchStart={(e) => {
+              if (e.touches && e.touches[0]) {
+                handleStart(e.touches[0].clientX);
+              }
+            }}
           >
             {images.map((src, index) => (
               <img

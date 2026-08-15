@@ -36,6 +36,8 @@ export type StorefrontProduct = {
   newArrival: boolean;
   badgeText: string | null;
   colors: StorefrontColor[];
+  has360View: boolean;
+  product360Images: string[];
   sortOrder: number | null;
 };
 
