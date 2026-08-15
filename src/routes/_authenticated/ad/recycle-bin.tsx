@@ -24,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
   component: RecycleBin,
 });
 
-type Tab = "products" | "orders";
+type Tab = "products" | "orders" | "customers";
 
 function RecycleBin() {
   const queryClient = useQueryClient();
@@ -35,6 +35,10 @@ function RecycleBin() {
   const purgeProductFn = useServerFn(purgeProduct);
   const restoreOrderFn = useServerFn(restoreOrder);
   const purgeOrderFn = useServerFn(purgeOrder);
+  const { listAdminCustomers, restoreCustomer, purgeCustomer } = await import("@/lib/customers.functions");
+  const fetchCustomers = useServerFn(listAdminCustomers);
+  const restoreCustomerFn = useServerFn(restoreCustomer);
+  const purgeCustomerFn = useServerFn(purgeCustomer);
 
   const [tab, setTab] = useState<Tab>("products");
 
