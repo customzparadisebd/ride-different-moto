@@ -129,7 +129,12 @@ export function ProductImageUpload({
     const newIndex = direction === "left" ? index - 1 : index + 1;
     if (newIndex < 0 || newIndex >= next.length) return;
     
-    [next[index], next[newIndex]] = [next[newIndex], next[index]];
+    const currentItem = next[index];
+    const nextItem = next[newIndex];
+    if (currentItem !== undefined && nextItem !== undefined) {
+      next[index] = nextItem;
+      next[newIndex] = currentItem;
+    }
     onChange(next);
   };
 
