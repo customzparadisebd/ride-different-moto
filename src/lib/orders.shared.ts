@@ -140,9 +140,6 @@ export const orderStatusUpdateInput = z.object({
 
 /** Server-side filters for the admin order list. All optional. */
 export const orderFilterInput = z.object({
-  invoiceNo: optionalText(60),
-  customerName: optionalText(120),
-  customerPhone: optionalText(40),
   status: z.enum(ORDER_STATUSES).optional(),
   paymentStatus: z.enum(PAYMENT_STATUSES).optional(),
   deliveryZone: z.enum(["inside_dhaka", "dhaka_suburb", "outside_dhaka"]).optional(),
