@@ -227,9 +227,9 @@ export const exportOrdersExcel = (rows: AdminOrderListRow[], name = "czp-orders"
  * Print / PDF export — opens a clean printable sheet in a new window.
  * The browser print dialog provides "Save as PDF".
  */
-export const printOrders = (rows: AdminOrderListRow[], title = "Orders") => {
+export const printOrders = (rows: AdminOrderListRow[], title = "Orders"): Window | null => {
   const win = window.open("", "_blank", "width=1200,height=800");
-  if (!win) return;
+  if (!win) return null;
   const body = rows
     .map(
       (row) => `<tr>
@@ -258,5 +258,10 @@ export const printOrders = (rows: AdminOrderListRow[], title = "Orders") => {
     </body></html>`);
   win.document.close();
   win.focus();
+
+  // The caller is responsible for marking the orders as printed if needed,
+  // but we can't reliably detect "print success" across origins in a new window
+  // without a more complex messaging system. For bulk list printing, 
+  // the 'afterprint' event should be handled by the UI component that calls this.
   win.print();
 };

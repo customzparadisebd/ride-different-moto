@@ -335,8 +335,19 @@ function AdminOrderList() {
             size="sm"
             className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
             onClick={() => {
-              printOrders(selectedRows, "Selected orders");
-              if (canManage) printMutation.mutate({ data: { orderIds: selected } });
+              const win = printOrders(selectedRows, "Selected orders");
+              if (canManage && win) {
+                const onAfterPrint = async () => {
+                  try {
+                    await markPrinted({ data: { orderIds: selected } });
+                    refreshOrders();
+                  } catch (err) {
+                    console.error("Failed to mark orders as printed:", err);
+                  }
+                  win.removeEventListener("afterprint", onAfterPrint);
+                };
+                win.addEventListener("afterprint", onAfterPrint);
+              }
             }}
           >
             Print
