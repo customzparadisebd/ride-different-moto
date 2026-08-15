@@ -26,6 +26,8 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **SteadFast Success Counter:** Integrated a dedicated "SteadFast Success" metric on the Admin Dashboard to track confirmed API bookings, including a details popup showing the last successful submission timestamp and order reference (Aug 15, 2026).
 - [x] **Audit Trail UI Enhancements:** Added real-time search and pagination to the Admin Customer Audit Trail modal for improved performance on mobile and large datasets (Aug 15, 2026).
 
+- [x] **Migration Readiness:** Authored `MIGRATION_GUIDE.md` — a complete step-by-step guide for moving the app, database, auth users, storage, RLS policies, environment variables and the SteadFast integration to external hosting with a custom domain (Aug 15, 2026).
+
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
 - Maintain strict RBAC (Super Admin/Admin/Staff).
