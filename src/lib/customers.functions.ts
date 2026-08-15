@@ -153,3 +153,26 @@ export const purgeCustomer = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+export const getCustomerAuditTrail = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ customerId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // Only Admin and Super Admin can view specific audit trails for customers
+    const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
+    if (!isPrivileged) throw new Error("Only Admin and Super Admin can view customer audit trails.");
+
+    const { data: logs, error } = await context.supabase
+      .from("admin_audit_log")
+      .select("*")
+      .eq("target_type", "customer")
+      .eq("target_id", data.customerId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw new Error("Could not load customer audit trail.");
+
+    return logs ?? [];
+  });
