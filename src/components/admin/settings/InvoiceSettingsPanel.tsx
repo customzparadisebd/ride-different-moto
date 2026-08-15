@@ -31,6 +31,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       setDraft({
         prefix: current.prefix,
         startNumber: current.startNumber,
+        currentNumber: current.currentNumber,
       });
     }
   }, [current]);
