@@ -74,6 +74,7 @@ export const emptyProductForm: ProductFormValue = {
   videoEnabled: false,
   videoPlatform: "youtube",
   videoUrl: "",
+  outOfStockToggle: false,
 };
 
 export function toProductInput(value: ProductFormValue): ProductInput {
