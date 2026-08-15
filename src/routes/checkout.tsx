@@ -10,6 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { OrderSuccessAnimation } from "@/components/checkout/OrderSuccessAnimation";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -83,6 +84,18 @@ function CheckoutPage() {
 
   const selectedZone = zones.find((zone) => zone.slug === form.deliveryZone);
   const shipping = lines.length ? (selectedZone?.charge ?? 0) : 0;
+  
+  // Validation for stock availability in checkout summary
+  const outOfStockItems = useMemo(() => {
+    return lines.filter(line => {
+      // If we had the outOfStockManual flag here, we'd check it.
+      // For now, since it's resolved server-side, we'll rely on the server validation
+      // but we can at least check against stockQty if it's available in the cart line.
+      const qty = (line as any).stockQty;
+      return typeof qty === 'number' && qty < line.qty;
+    });
+  }, [lines]);
+
   const total = useMemo(() => subtotal + shipping, [subtotal, shipping]);
 
   const mutation = useMutation({
