@@ -466,6 +466,9 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
+    // Basic dimension validation check on URL
+    if (!data.imageUrl.includes("https://")) throw new Error("Invalid image URL.");
+
     const row = product360ToRow(data);
     if (data.id) {
       const { error } = await context.supabase.from("product_360_images").update(row).eq("id", data.id);
@@ -480,6 +483,40 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
       targetType: "product_360_image",
       targetId: data.id ?? data.productId,
       newValue: row,
+    });
+    return { ok: true };
+  });
+
+export const saveProduct360Sequence = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => 
+    z.object({
+      productId: z.string().uuid(),
+      items: z.array(z.object({ imageUrl: z.string().url() }))
+    }).parse(input)
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    // Delete existing and re-insert
+    await context.supabase.from("product_360_images").delete().eq("product_id", data.productId);
+    
+    const rows = data.items.map((item, index) => ({
+      product_id: data.productId,
+      image_url: item.imageUrl,
+      display_order: index
+    }));
+
+    const { error } = await context.supabase.from("product_360_images").insert(rows);
+    if (error) throw new Error("Could not bulk update sequence.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product_360_image",
+      targetId: data.productId,
+      newValue: { count: rows.length },
     });
     return { ok: true };
   });
