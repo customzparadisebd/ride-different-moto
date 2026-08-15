@@ -55,6 +55,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       invoiceNo: order.invoiceNo,
       total: order.total,
       duplicate: order.duplicate,
+      alert: order.alert,
     };
   });
 

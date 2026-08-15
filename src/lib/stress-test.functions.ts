@@ -40,3 +40,34 @@ export const runInvoiceStressTest = createServerFn({ method: "POST" })
       errors: errors.map(e => (e as any)?.message || "Unknown error")
     };
   });
+
+/**
+ * Simulate high traffic by fetching products and orders in parallel.
+ */
+export const runLoadTest = createServerFn({ method: "POST" })
+  .handler(async () => {
+    console.log("Starting load test...");
+    const start = Date.now();
+    
+    // Simulate 20 parallel read requests
+    const tasks = Array.from({ length: 20 }).map(async (_, i) => {
+      const { data: products } = await supabaseAdmin.from('products').select('id, name').limit(10);
+      const { data: orders } = await supabaseAdmin.from('orders').select('id, invoice_no').limit(10);
+      return { 
+        index: i, 
+        products: products?.length || 0, 
+        orders: orders?.length || 0 
+      };
+    });
+    
+    const results = await Promise.all(tasks);
+    const duration = Date.now() - start;
+    
+    return {
+      success: true,
+      requests: 20,
+      durationMs: duration,
+      avgRequestMs: duration / 20,
+      results
+    };
+  });

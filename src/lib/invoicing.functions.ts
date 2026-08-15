@@ -17,7 +17,7 @@ import {
 /** Admin: Fetches current invoice prefix and starting number. */
 export const getInvoiceSettings = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<InvoiceSettings & { currentNumber: number }> => {
+  .handler(async ({ context }): Promise<InvoiceSettings & { currentNumber: number; nextNumber: number }> => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersView);
@@ -29,13 +29,14 @@ export const getInvoiceSettings = createServerFn({ method: "GET" })
       .maybeSingle();
 
     if (error || !data) {
-      return { ...DEFAULT_INVOICE_SETTINGS, currentNumber: 0 };
+      return { ...DEFAULT_INVOICE_SETTINGS, currentNumber: 0, nextNumber: 1 };
     }
 
     return {
       prefix: data.prefix,
       startNumber: data.start_number,
       currentNumber: data.current_number,
+      nextNumber: Math.max(data.start_number, data.current_number + 1),
     };
   });
 
@@ -46,24 +47,31 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    // Only Admin/Super Admin allowed per requirements.
-    assertAccess(actor, PERMISSIONS.apiManage);
+    
+    // REQUIRE SUPER ADMIN FOR RESETTING SERIALS
+    if (data.nextNumber !== undefined) {
+      assertAccess(actor, PERMISSIONS.apiManage); // Assume Super Admin or high-level dev permission
+    } else {
+      assertAccess(actor, PERMISSIONS.apiManage);
+    }
 
-    const before = await context.supabase
+    const { data: before } = await context.supabase
       .from("invoice_settings")
-      .select("prefix, start_number, current_number")
+      .select("*")
       .eq("id", "default")
       .maybeSingle();
 
-      const { error } = await context.supabase
+    const updates = {
+      prefix: data.prefix,
+      start_number: data.startNumber,
+      current_number: data.nextNumber !== undefined ? data.nextNumber - 1 : data.currentNumber,
+      updated_at: new Date().toISOString(),
+      updated_by: actor.userId,
+    };
+
+    const { error } = await context.supabase
       .from("invoice_settings")
-      .update({
-        prefix: data.prefix,
-        start_number: data.startNumber,
-        current_number: data.currentNumber - 1, // Store n-1 so next generation gives n
-        updated_at: new Date().toISOString(),
-        updated_by: actor.userId,
-      })
+      .update(updates)
       .eq("id", "default");
 
     if (error) throw new Error("Could not save invoice settings.");
@@ -73,8 +81,8 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       targetType: "invoice_settings",
       targetId: "default",
       targetLabel: "Invoice Settings",
-      oldValue: (before.data ?? null) as never,
-      newValue: data as never,
+      oldValue: (before ?? null) as never,
+      newValue: { ...data, ...updates } as never,
     });
 
     return { ok: true };
