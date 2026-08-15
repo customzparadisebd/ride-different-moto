@@ -67,10 +67,9 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     const orderRows = (orders.data as any[]) ?? [];
     const todayRows = orderRows.filter(r => r.created_at >= todayISO);
     
-    // Revenue logic: typically excludes cancelled/returned in BDT context unless asked otherwise.
-    // Here we include everything that isn't deleted, but filter by status for "Sales" usually implies non-cancelled.
+    // Revenue logic: ONLY from 'completed' orders as per requirement
     const getRevenue = (rows: any[]) => rows
-      .filter(r => r.status !== 'cancelled' && r.status !== 'returned')
+      .filter(r => r.status === 'completed')
       .reduce((sum, r) => sum + Number(r.total), 0);
 
     const productRows = (inventory.data as any[]) ?? [];
