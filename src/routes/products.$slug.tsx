@@ -376,7 +376,7 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
             <Button
               variant="steel"
               size="touch"
-              disabled={!product.inStock}
+              disabled={!isActuallyInStock}
               onClick={() => add(false)}
             >
               Add to Cart
