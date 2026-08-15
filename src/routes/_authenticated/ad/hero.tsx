@@ -14,7 +14,9 @@ import {
   createHeroSlide,
   updateHeroSlide,
   deleteHeroSlide,
+  restoreOldHeroSlides,
 } from "@/lib/hero.functions";
+
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
   head: () => ({
@@ -33,6 +35,8 @@ function AdminHeroSlides() {
   const addSlide = useServerFn(createHeroSlide);
   const editSlide = useServerFn(updateHeroSlide);
   const removeSlide = useServerFn(deleteHeroSlide);
+  const restoreSlides = useServerFn(restoreOldHeroSlides);
+
 
   const { data: slides = [], isLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
@@ -111,6 +115,17 @@ function AdminHeroSlides() {
     onError: (e: any) => toast.error(e.message || "Failed to delete slide"),
   });
 
+  const restoreMutation = useMutation({
+    mutationFn: () => restoreSlides({ data: {} }),
+    onSuccess: () => {
+      toast.success("Old hero slides restored");
+      queryClient.invalidateQueries({ queryKey: ["hero-slides-admin"] });
+      queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to restore slides"),
+  });
+
+
   const handleSave = (id: string, formData: FormData) => {
     const data = {
       title: formData.get("title") as string,
@@ -151,11 +166,22 @@ function AdminHeroSlides() {
             Manage the banners displayed on the homepage. Recommended aspect ratio: 21:9 (Desktop).
           </p>
         </div>
-        {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> Add Slide
+        <div className="flex gap-2">
+          <Button
+            onClick={() => restoreMutation.mutate()}
+            variant="outline"
+            size="sm"
+            disabled={restoreMutation.isPending}
+          >
+            {restoreMutation.isPending ? "Restoring..." : "Restore Old Slides"}
           </Button>
-        )}
+          {!isAdding && (
+            <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2">
+              <Plus className="h-4 w-4" /> Add Slide
+            </Button>
+          )}
+        </div>
+
       </div>
 
       {isAdding && (
