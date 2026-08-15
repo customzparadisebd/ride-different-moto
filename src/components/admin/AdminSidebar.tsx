@@ -20,6 +20,7 @@ import {
   UsersRound,
   MessageSquare,
   Star,
+  Activity,
 } from "lucide-react";
 
 import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
@@ -79,6 +80,12 @@ const ADMINISTRATION: NavItem[] = [
     to: "/ad/security-events", 
     label: "Security Events", 
     icon: ShieldCheck, 
+    permission: PERMISSIONS.securityManage 
+  },
+  { 
+    to: "/ad/security-dashboard", 
+    label: "Security Stats", 
+    icon: Activity, 
     permission: PERMISSIONS.securityManage 
   },
 ];

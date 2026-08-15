@@ -42,6 +42,7 @@ import { Route as AuthenticatedAdProductsRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdRecycleBinRouteImport } from './routes/_authenticated/ad/recycle-bin'
 import { Route as AuthenticatedAdReviewsRouteImport } from './routes/_authenticated/ad/reviews'
 import { Route as AuthenticatedAdSecurityRouteImport } from './routes/_authenticated/ad/security'
+import { Route as AuthenticatedAdSecurityDashboardRouteImport } from './routes/_authenticated/ad/security-dashboard'
 import { Route as AuthenticatedAdSecurityEventsRouteImport } from './routes/_authenticated/ad/security-events'
 import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
 import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
@@ -217,6 +218,12 @@ const AuthenticatedAdSecurityRoute = AuthenticatedAdSecurityRouteImport.update({
   path: '/security',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
+const AuthenticatedAdSecurityDashboardRoute =
+  AuthenticatedAdSecurityDashboardRouteImport.update({
+    id: '/security-dashboard',
+    path: '/security-dashboard',
+    getParentRoute: () => AuthenticatedAdRouteRoute,
+  } as any)
 const AuthenticatedAdSecurityEventsRoute =
   AuthenticatedAdSecurityEventsRouteImport.update({
     id: '/security-events',
@@ -294,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
@@ -335,6 +343,7 @@ export interface FileRoutesByTo {
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/ad/staff': typeof AuthenticatedAdStaffRoute
@@ -379,6 +388,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/_authenticated/ad/reviews': typeof AuthenticatedAdReviewsRoute
   '/_authenticated/ad/security': typeof AuthenticatedAdSecurityRoute
+  '/_authenticated/ad/security-dashboard': typeof AuthenticatedAdSecurityDashboardRoute
   '/_authenticated/ad/security-events': typeof AuthenticatedAdSecurityEventsRoute
   '/_authenticated/ad/settings': typeof AuthenticatedAdSettingsRoute
   '/_authenticated/ad/staff': typeof AuthenticatedAdStaffRoute
@@ -423,6 +433,7 @@ export interface FileRouteTypes {
     | '/ad/recycle-bin'
     | '/ad/reviews'
     | '/ad/security'
+    | '/ad/security-dashboard'
     | '/ad/security-events'
     | '/ad/settings'
     | '/ad/staff'
@@ -464,6 +475,7 @@ export interface FileRouteTypes {
     | '/ad/recycle-bin'
     | '/ad/reviews'
     | '/ad/security'
+    | '/ad/security-dashboard'
     | '/ad/security-events'
     | '/ad/settings'
     | '/ad/staff'
@@ -507,6 +519,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/recycle-bin'
     | '/_authenticated/ad/reviews'
     | '/_authenticated/ad/security'
+    | '/_authenticated/ad/security-dashboard'
     | '/_authenticated/ad/security-events'
     | '/_authenticated/ad/settings'
     | '/_authenticated/ad/staff'
@@ -776,6 +789,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdSecurityRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/_authenticated/ad/security-dashboard': {
+      id: '/_authenticated/ad/security-dashboard'
+      path: '/security-dashboard'
+      fullPath: '/ad/security-dashboard'
+      preLoaderRoute: typeof AuthenticatedAdSecurityDashboardRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
+    }
     '/_authenticated/ad/security-events': {
       id: '/_authenticated/ad/security-events'
       path: '/security-events'
@@ -846,6 +866,7 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdRecycleBinRoute: typeof AuthenticatedAdRecycleBinRoute
   AuthenticatedAdReviewsRoute: typeof AuthenticatedAdReviewsRoute
   AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
+  AuthenticatedAdSecurityDashboardRoute: typeof AuthenticatedAdSecurityDashboardRoute
   AuthenticatedAdSecurityEventsRoute: typeof AuthenticatedAdSecurityEventsRoute
   AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
   AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
@@ -867,6 +888,7 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdRecycleBinRoute: AuthenticatedAdRecycleBinRoute,
   AuthenticatedAdReviewsRoute: AuthenticatedAdReviewsRoute,
   AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
+  AuthenticatedAdSecurityDashboardRoute: AuthenticatedAdSecurityDashboardRoute,
   AuthenticatedAdSecurityEventsRoute: AuthenticatedAdSecurityEventsRoute,
   AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
   AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
