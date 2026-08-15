@@ -47,6 +47,7 @@ export type ProductFormValue = {
   videoEnabled: boolean;
   videoPlatform: string;
   videoUrl: string;
+  outOfStockToggle: boolean;
 };
 
 export const emptyProductForm: ProductFormValue = {
