@@ -65,6 +65,11 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isCropOpen, setIsCropOpen] = useState(false);
+  const [cropImage, setCropImage] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
@@ -72,6 +77,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   
   const defaultAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || access.userId)}`;
   const currentAvatar = access.avatarUrl || defaultAvatar;
+
+  const onCropComplete = useCallback((_area: Area, pixels: Area) => {
+    setCroppedAreaPixels(pixels);
+  }, []);
 
   const handleUpdateProfile = async (updates: { avatarUrl: string }) => {
     setIsUpdating(true);
@@ -88,7 +97,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
     }
   };
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -97,27 +106,37 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
       return;
     }
 
-    if (file.size > 1 * 1024 * 1024) {
-      toast.error("File size must be less than 1MB for optimal loading");
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File size must be less than 5MB");
       return;
     }
 
-    // Client side preview
     const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreviewUrl(reader.result as string);
+    reader.onload = () => {
+      setCropImage(reader.result as string);
+      setIsCropOpen(true);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     };
     reader.readAsDataURL(file);
+  };
+
+  const handleCropSave = async () => {
+    if (!cropImage || !croppedAreaPixels) return;
 
     setIsUpdating(true);
+    setIsCropOpen(false);
+    
     try {
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${access.userId}-${Date.now()}.${fileExt}`;
+      const croppedBlob = await getCroppedImg(cropImage, croppedAreaPixels);
+      const fileName = `${access.userId}-${Date.now()}.webp`;
       const filePath = `${access.userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
-        .upload(filePath, file);
+        .upload(filePath, croppedBlob, {
+          contentType: "image/webp",
+          upsert: true
+        });
 
       if (uploadError) throw uploadError;
 
@@ -126,14 +145,16 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
         .getPublicUrl(filePath);
 
       await handleUpdateProfile({ avatarUrl: publicUrl });
+      setCropImage(null);
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error("Failed to upload image");
-      setPreviewUrl(null);
+      toast.error("Failed to process and upload image");
+      setIsCropOpen(true); // Reopen on failure
     } finally {
       setIsUpdating(false);
     }
   };
+
 
   const handleResetAvatar = () => {
     handleUpdateProfile({ avatarUrl: "" });
@@ -320,6 +341,96 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
               onClick={() => setIsDialogOpen(false)}
             >
               Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 1:1 Crop Editor Dialog */}
+      <Dialog open={isCropOpen} onOpenChange={setIsCropOpen}>
+        <DialogContent className="sm:max-w-[500px] bg-background border-border p-0 overflow-hidden shadow-2xl">
+          <DialogHeader className="p-6 bg-muted/30 border-b border-border">
+            <div className="flex items-center gap-2">
+              <div className="p-2 rounded-full bg-primary/10">
+                <Scissors className="h-4 w-4 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="font-display text-lg font-bold uppercase tracking-wider">
+                  Crop Avatar
+                </DialogTitle>
+                <DialogDescription className="text-[10px] font-bold uppercase tracking-widest opacity-60">
+                  Align to 1:1 aspect ratio
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="relative h-80 bg-neutral-900">
+            {cropImage && (
+              <Cropper
+                image={cropImage}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onCropComplete={onCropComplete}
+                onZoomChange={setZoom}
+                cropShape="round"
+                showGrid={false}
+              />
+            )}
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Zoom Level</Label>
+              <Slider
+                value={[zoom]}
+                min={1}
+                max={3}
+                step={0.1}
+                onValueChange={([v]) => setZoom(v)}
+                className="py-4"
+              />
+            </div>
+
+            <div className="rounded-md bg-muted/50 p-3 border border-border flex gap-3">
+              <Info className="h-4 w-4 text-primary shrink-0" />
+              <p className="text-[9px] font-bold text-muted-foreground leading-relaxed">
+                Position the image within the circular boundary. Your avatar will be automatically resized to 400x400px and optimized as WebP.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter className="p-4 bg-muted/30 border-t border-border flex gap-2">
+            <Button
+              variant="ghost"
+              className="flex-1 text-[10px] font-bold uppercase tracking-widest"
+              onClick={() => {
+                setIsCropOpen(false);
+                setCropImage(null);
+              }}
+              disabled={isUpdating}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="red"
+              className="flex-1 text-[10px] font-bold uppercase tracking-widest shadow-lg"
+              onClick={handleCropSave}
+              disabled={isUpdating}
+            >
+              {isUpdating ? (
+                <>
+                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Check className="mr-2 h-3 w-3" />
+                  Save & Apply
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
