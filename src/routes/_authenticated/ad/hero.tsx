@@ -14,7 +14,9 @@ import {
   createHeroSlide,
   updateHeroSlide,
   deleteHeroSlide,
+  restoreOldHeroSlides,
 } from "@/lib/hero.functions";
+
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
   head: () => ({
