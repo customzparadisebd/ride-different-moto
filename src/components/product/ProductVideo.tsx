@@ -18,7 +18,7 @@ export function ProductVideo({ platform, url, productName }: ProductVideoProps) 
     if (platform === 'youtube') {
       const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
       const match = url.match(regExp);
-      const videoId = (match && match[2].length === 11) ? match[2] : null;
+      const videoId = (match && match[2] && match[2].length === 11) ? match[2] : null;
       return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1` : url;
     }
     // Simple pass-through for others, standard embedding often requires specific platform scripts/SDKs
