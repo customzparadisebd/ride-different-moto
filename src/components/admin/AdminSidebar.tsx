@@ -89,6 +89,12 @@ const ADMINISTRATION: NavItem[] = [
     icon: Activity, 
     permission: PERMISSIONS.securityManage 
   },
+  {
+    to: "/ad/login-requests",
+    label: "Login Requests",
+    icon: KeyRound,
+    permission: PERMISSIONS.loginApprovalsManage
+  },
 ];
 
 
