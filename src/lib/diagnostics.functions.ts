@@ -55,5 +55,17 @@ export const getDiagnosticsContext = createServerFn({ method: "POST" })
       },
     });
 
-    return { ok: true };
+    return {
+      ok: true,
+      supabaseConfig: {
+        url: import.meta.env["VITE_SUPABASE_URL"] || "Not Set",
+        // Extract project ref from URL if possible (e.g. https://pqphihorljepzfdacant.supabase.co)
+        projectRef: (import.meta.env["VITE_SUPABASE_URL"] || "").split(".")[0].split("//")[1] || "Unknown",
+      },
+      serverEnv: {
+        nodeEnv: process.env.NODE_ENV,
+        viteAppEnv: import.meta.env["VITE_APP_ENV"] || "Not Set",
+        resolvedEnv: env,
+      }
+    };
   });
