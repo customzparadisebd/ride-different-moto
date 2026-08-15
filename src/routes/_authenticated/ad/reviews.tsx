@@ -234,7 +234,7 @@ function ReviewsPage() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button
+                  <Button aria-label="Edit"
                     variant="ghost"
                     size="icon"
                     className="size-8"
@@ -245,7 +245,7 @@ function ReviewsPage() {
                   >
                     <Edit2 className="size-4" />
                   </Button>
-                  <Button
+                  <Button aria-label="Delete"
                     variant="ghost"
                     size="icon"
                     className="size-8 text-destructive hover:bg-destructive/10 hover:text-destructive"

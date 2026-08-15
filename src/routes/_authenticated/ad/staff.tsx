@@ -288,8 +288,7 @@ function StaffPage() {
                             variant="ghost"
                             size="icon"
                             className="size-8 text-muted-foreground hover:text-foreground hover:bg-muted"
-                            disabled={busy}
-                          >
+                            disabled={busy} aria-label="More actions">
                             <MoreVertical className="size-4" />
                           </Button>
                         </DropdownMenuTrigger>

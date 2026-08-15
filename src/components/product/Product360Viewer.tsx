@@ -168,8 +168,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
             variant="ghost"
             size="icon"
             className="rounded-full hover:bg-white/10"
-            onClick={onClose}
-          >
+            onClick={onClose} aria-label="Close">
             <X className="size-6" />
           </Button>
         </div>
@@ -187,8 +186,11 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
 
           <div
             ref={containerRef}
+            tabIndex={0}
+            role="group"
+            aria-label={`Drag or use arrow keys to rotate ${productName}. Frame ${currentIndex + 1} of ${totalImages}.`}
             className={cn(
-              "relative aspect-square w-full max-w-[800px] cursor-grab select-none overflow-hidden touch-none",
+              "relative aspect-square w-full max-w-[800px] cursor-grab select-none overflow-hidden touch-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               isDragging && "cursor-grabbing",
             )}
             onMouseDown={(e) => handleStart(e.clientX)}

@@ -202,8 +202,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
 
   return (
     <>
-      <div
-        className="flex items-center gap-3 px-2 py-3 cursor-pointer hover:bg-muted/50 rounded-lg transition-colors group"
+      <button
+        type="button"
+        aria-label="Open profile management"
+        className="flex w-full items-center gap-3 px-2 py-3 cursor-pointer text-left hover:bg-muted/50 rounded-lg transition-colors group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         onClick={() => setIsDialogOpen(true)}
       >
         <div className="relative shrink-0">
@@ -229,7 +231,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
           </p>
         </div>
         <ChevronRight className="h-3 w-3 text-muted-foreground/30 group-data-[collapsible=icon]:hidden group-hover:text-primary transition-colors" />
-      </div>
+      </button>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-background border-border shadow-2xl">
@@ -267,6 +269,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                       onClick={handleResetAvatar}
                       disabled={isUpdating}
                       title="Remove custom avatar"
+                      aria-label="Remove custom avatar"
                     >
                       <X className="h-3.5 w-3.5" />
                     </Button>
@@ -278,6 +281,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUpdating}
                     title="Change image"
+                     aria-label="Change profile image"
                   >
                     <Camera className="h-3.5 w-3.5" />
                   </Button>

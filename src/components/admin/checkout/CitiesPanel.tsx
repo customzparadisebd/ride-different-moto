@@ -195,7 +195,7 @@ function CityRow({
         Active
       </label>
       <div className="flex items-center gap-1">
-        <Button type="button" variant="ghost" size="icon" disabled={!canManage} onClick={onMoveUp}>
+        <Button type="button" variant="ghost" size="icon" disabled={!canManage} onClick={onMoveUp} aria-label="Move up">
           <ArrowUp className="size-4" />
         </Button>
         <Button
@@ -203,11 +203,10 @@ function CityRow({
           variant="ghost"
           size="icon"
           disabled={!canManage}
-          onClick={onMoveDown}
-        >
+          onClick={onMoveDown} aria-label="Move down">
           <ArrowDown className="size-4" />
         </Button>
-        <Button
+        <Button aria-label="Delete"
           type="button"
           variant="ghost"
           size="icon"

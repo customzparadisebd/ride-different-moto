@@ -205,7 +205,7 @@ function AdminHeroSlides() {
               <Label htmlFor="image_url">Desktop Image URL</Label>
               <div className="flex gap-2">
                 <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
-                <Button
+                <Button aria-label="Upload image"
                   type="button"
                   variant="outline"
                   size="icon"
@@ -240,7 +240,7 @@ function AdminHeroSlides() {
                   name="mobile_image_url"
                   placeholder="CDN URL preferred"
                 />
-                <Button
+                <Button aria-label="Upload image"
                   type="button"
                   variant="outline"
                   size="icon"
@@ -341,7 +341,7 @@ function AdminHeroSlides() {
                             defaultValue={slide.image}
                             required
                           />
-                          <Button
+                          <Button aria-label="Upload image"
                             type="button"
                             variant="outline"
                             size="icon"
@@ -378,7 +378,7 @@ function AdminHeroSlides() {
                             id={`mobile-img-${slide.id}`}
                             defaultValue={slide.mobileImage || ""}
                           />
-                          <Button
+                          <Button aria-label="Upload image"
                             type="button"
                             variant="outline"
                             size="icon"
@@ -481,7 +481,7 @@ function AdminHeroSlides() {
                             )}
                           </div>
                           <div className="flex gap-1">
-                            <Button
+                            <Button aria-label="Edit"
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
@@ -489,7 +489,7 @@ function AdminHeroSlides() {
                             >
                               <Edit2 className="h-4 w-4" />
                             </Button>
-                            <Button
+                            <Button aria-label="Delete"
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8 text-destructive hover:bg-destructive/10"

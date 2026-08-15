@@ -670,7 +670,7 @@ function ProductPreviewDialog({
               * Showing draft content. Colors and 360 view reflect currently saved state.
             </p>
           </div>
-          <Button variant="steel" size="icon" onClick={onClose} className="rounded-full">
+          <Button variant="steel" size="icon" onClick={onClose} className="rounded-full" aria-label="Close">
             <X className="size-5" />
           </Button>
         </div>

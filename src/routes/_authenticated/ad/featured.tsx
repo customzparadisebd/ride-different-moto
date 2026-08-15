@@ -98,7 +98,7 @@ function SortableItem({ id, product, onRemove, onUpdate }: any) {
             disabled={!product.badge_enabled}
           />
         </div>
-        <Button
+        <Button aria-label="Delete"
           variant="ghost"
           size="icon"
           className="size-8 text-destructive hover:text-destructive hover:bg-destructive/10"

@@ -185,6 +185,12 @@
     color: var(--color-foreground);
   }
 
+  /* Keyboard-only focus indicator (mouse/touch interaction is unaffected) */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
   /* Global Autofill Fix for Dark Themes */
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
