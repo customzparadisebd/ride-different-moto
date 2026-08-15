@@ -113,13 +113,13 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="flex w-[75vw] max-w-[300px] flex-col overflow-hidden p-0 sm:max-w-[300px] border-l border-border/40">
-              <div className="flex items-center justify-between border-b border-border p-4 pr-12">
+              <div className="flex shrink-0 items-center justify-between border-b border-border p-4 pr-12">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <Logo className="h-7 w-auto" />
               </div>
               
               <nav
-                className="flex flex-1 flex-col overflow-y-auto"
+                className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
                 aria-label="Mobile"
               >
                 {navLinks.map((link) => {
@@ -146,7 +146,7 @@ export function Header() {
                 })}
               </nav>
 
-              <div className="space-y-3 p-4 pb-safe">
+              <div className="shrink-0 space-y-3 border-t border-border/50 p-4 pb-safe">
                 <button
                   className="flex h-11 w-full items-center justify-center rounded-xl border border-border bg-secondary/30 font-display text-xs font-bold tracking-widest uppercase transition-colors hover:bg-secondary/50"
                   onClick={() => {
