@@ -384,7 +384,7 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
             <Button
               variant="red"
               size="touch"
-              disabled={!product.inStock}
+              disabled={!isActuallyInStock}
               onClick={() => add(true)}
             >
               Buy Now
