@@ -47,14 +47,11 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-type Placed = { invoiceNo: string; total: number };
-
 function CheckoutPage() {
   const { lines, subtotal, clear } = useCart();
   const router = useRouter();
   const submitOrder = useServerFn(placeOrder);
   const config = useQuery(checkoutConfigQuery());
-  const [placed, setPlaced] = useState<Placed | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     customerName: "",
@@ -133,53 +130,6 @@ function CheckoutPage() {
     setErrors({});
     mutation.mutate({ data: parsed.data });
   };
-
-  if (placed) {
-    return (
-      <section className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <style>{`
-          .czp-reveal{opacity:0;transform:translateY(12px);animation:czp-reveal .6s cubic-bezier(.2,.8,.3,1) forwards}
-          @keyframes czp-reveal{to{opacity:1;transform:translateY(0)}}
-          @media (prefers-reduced-motion: reduce){.czp-reveal{animation:none;opacity:1;transform:none}}
-        `}</style>
-        <OrderSuccessAnimation />
-        <h1
-          className="czp-reveal mt-4 font-display text-3xl font-bold uppercase tracking-wide"
-          style={{ animationDelay: "0.95s" }}
-        >
-          Order Confirmed
-        </h1>
-        <p className="czp-reveal mt-2 text-sm text-muted-foreground" style={{ animationDelay: "1.08s" }}>
-          Thank you! Our team will call you shortly to confirm delivery details.
-        </p>
-        <div
-          className="czp-reveal mt-6 rounded-xl border border-border bg-card p-5 text-left shadow-card"
-          style={{ animationDelay: "1.1s" }}
-        >
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">Invoice ID</p>
-          <p className="font-display text-2xl font-bold text-primary">{placed.invoiceNo}</p>
-          <p className="mt-3 text-sm">
-            Amount payable: <strong>{formatBDT(placed.total)}</strong>
-          </p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Keep this invoice ID for tracking. Support: {site.phoneDisplay}
-          </p>
-        </div>
-        <div
-          className="czp-reveal mt-6 flex flex-wrap justify-center gap-2"
-          style={{ animationDelay: "1.24s" }}
-        >
-          <Button variant="red" size="touch" asChild>
-            <Link to="/shop">Continue Shopping</Link>
-          </Button>
-          <Button variant="steel" size="touch" asChild>
-            <Link to="/">Back Home</Link>
-          </Button>
-        </div>
-        <WhatsAppSupport phone={whatsappPhone} message={whatsappMessage} />
-      </section>
-    );
-  }
 
   return (
     <section className="mx-auto w-full max-w-5xl overflow-x-hidden px-4 py-8 sm:py-12">
