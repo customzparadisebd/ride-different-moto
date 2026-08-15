@@ -106,13 +106,13 @@ function AdminCustomers() {
                     </span>
                   </td>
                   <td className="p-3 text-muted-foreground">
-                    {customer.city} · {deliveryZoneLabel(customer.zone)}
+                    {customer.district || "—"} · {customer.area || "—"}
                   </td>
                   <td className="p-3 text-right font-semibold">{customer.total_orders || 0}</td>
-                  <td className="p-3 text-right text-muted-foreground">{customer.cancelled}</td>
+                  <td className="p-3 text-right text-muted-foreground">—</td>
                   <td className="p-3 text-right font-semibold">{formatBDT(Number(customer.lifetime_value || 0))}</td>
                   <td className="p-3 whitespace-nowrap text-muted-foreground">
-                    {new Date(customer.lastOrderAt).toLocaleDateString("en-GB")}
+                    {new Date(customer.updated_at).toLocaleDateString("en-GB")}
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2">
