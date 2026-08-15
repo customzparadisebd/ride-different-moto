@@ -55,7 +55,7 @@ export function FloatingWhatsApp() {
 
         {/* Tooltip-like label on hover for desktop */}
         <span className="absolute right-full mr-3 hidden whitespace-nowrap rounded-lg bg-black/80 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 lg:block">
-          Chat with us
+          Chat with Us
         </span>
 
         {/* Ping animation for attention */}
