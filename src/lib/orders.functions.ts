@@ -201,7 +201,7 @@ export const listOrders = createServerFn({ method: "POST" })
         query = query.in("status", ["cancelled", "returned"]);
         break;
       case "completed":
-        query = query.eq("status", "delivered");
+        query = query.eq("status", "completed");
         break;
       case "today":
         query = query.gte("created_at", startOfTodayISO());
