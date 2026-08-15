@@ -272,12 +272,12 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
           </div>
 
           <p className="mt-2 text-sm">
-            {product.inStock ? (
+            {isActuallyInStock ? (
               <span className="font-semibold text-primary">In stock</span>
             ) : (
               <span className="font-semibold text-muted-foreground">Out of stock</span>
             )}
-            {product.inStock && product.stockQty <= 5 ? (
+            {isActuallyInStock && product.stockQty <= 5 ? (
               <span className="text-muted-foreground"> — only {product.stockQty} left</span>
             ) : null}
           </p>
