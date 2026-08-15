@@ -47,7 +47,6 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
   useEffect(() => {
     if (!embla || paused || slides.length < 2) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const timer = window.setInterval(() => embla.scrollNext(), AUTOPLAY_MS);
     return () => window.clearInterval(timer);
   }, [embla, paused, slides.length]);
@@ -104,7 +103,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   containerClassName={cn(
                     "w-full bg-onyx",
                     slide.isFullBanner
-                      ? "aspect-[800/1000] sm:aspect-21/9"
+                      ? "aspect-[1000/1250] sm:aspect-[21/9]"
                       : "aspect-4/5 sm:aspect-16/9 lg:aspect-21/9",
                   )}
                   className="transition-transform duration-700 group-hover:scale-[1.02]"
@@ -127,46 +126,48 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 p-4 sm:p-6">
-        <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
-          {slides.map((slide, index) => (
-            <button
-              key={slide.id}
-              type="button"
-              role="tab"
-              aria-selected={selected === index}
-              aria-label={`Show ${slide.bikeName}`}
-              onClick={() => {
-                setPaused(true);
-                embla?.scrollTo(index);
-              }}
-              className={cn(
-                "h-1.5 rounded-full transition-all",
-                selected === index ? "w-8 bg-primary" : "w-4 bg-white/40 hover:bg-white/70",
-              )}
-            />
-          ))}
-        </div>
+      {slides.length > 1 && (
+        <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 p-4 sm:p-6">
+          <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
+            {slides.map((slide, index) => (
+              <button
+                key={slide.id}
+                type="button"
+                role="tab"
+                aria-selected={selected === index}
+                aria-label={`Show ${slide.bikeName}`}
+                onClick={() => {
+                  setPaused(true);
+                  embla?.scrollTo(index);
+                }}
+                className={cn(
+                  "h-1.5 rounded-full transition-all",
+                  selected === index ? "w-8 bg-primary" : "w-4 bg-white/40 hover:bg-white/70",
+                )}
+              />
+            ))}
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={scrollPrev}
-            aria-label="Previous slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
-          >
-            <ChevronLeft className="size-5" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={scrollNext}
-            aria-label="Next slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
-          >
-            <ChevronRight className="size-5" aria-hidden="true" />
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={scrollPrev}
+              aria-label="Previous slide"
+              className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            >
+              <ChevronLeft className="size-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={scrollNext}
+              aria-label="Next slide"
+              className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            >
+              <ChevronRight className="size-5" aria-hidden="true" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="sr-only" aria-live="polite">
         Slide {selected + 1} of {slides.length}
