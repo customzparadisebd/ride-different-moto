@@ -119,7 +119,7 @@ export function ProductImageUpload({
   const removeImage = (index: number) => {
     const next = [...images];
     next.splice(index, 1);
-    onChange(multiple ? next : next[0] || "");
+    onChange(multiple ? next : (next[0] ?? ""));
   };
 
   const moveImage = (index: number, direction: "left" | "right") => {
