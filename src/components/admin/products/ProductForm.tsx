@@ -390,6 +390,70 @@ export function ProductForm({
         />
       </div>
 
+      <div className="rounded-xl border border-border bg-card p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <h3 className="font-display text-base font-bold uppercase tracking-wide">Product Video</h3>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+              Showcase your product with a video link
+            </p>
+          </div>
+          <Switch
+            checked={value.videoEnabled}
+            onCheckedChange={(v) => set("videoEnabled", v)}
+            className="data-[state=checked]:bg-red-500"
+          />
+        </div>
+
+        {value.videoEnabled && (
+          <div className="grid gap-4 sm:grid-cols-2 pt-4 border-t border-border animate-in fade-in slide-in-from-top-2 duration-300">
+            <Field
+              label="Video Platform"
+              required
+              example="Select where the video is hosted"
+            >
+              <select
+                className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow"
+                value={value.videoPlatform}
+                onChange={(e) => set("videoPlatform", e.target.value)}
+              >
+                <option value="youtube">YouTube</option>
+                <option value="facebook">Facebook</option>
+                <option value="instagram">Instagram</option>
+                <option value="tiktok">TikTok</option>
+              </select>
+            </Field>
+            <Field
+              label="Video URL"
+              required
+              error={errors["videoUrl"]}
+              example="Paste the full video link"
+            >
+              <Input
+                className="h-11"
+                placeholder="https://..."
+                value={value.videoUrl}
+                onChange={(e) => set("videoUrl", e.target.value)}
+              />
+            </Field>
+
+            {value.videoUrl && (
+              <div className="sm:col-span-2 space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Video Preview
+                </Label>
+                <div className="relative aspect-video w-full max-w-md overflow-hidden rounded-lg border border-border bg-black shadow-inner">
+                  <VideoPreview
+                    platform={value.videoPlatform as any}
+                    url={value.videoUrl}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {value.offerPrice.trim() && Number(value.price) > 0 ? (
         <p className="text-xs text-muted-foreground">
           Customers will see {formatBDT(Number(value.offerPrice))} instead of{" "}
