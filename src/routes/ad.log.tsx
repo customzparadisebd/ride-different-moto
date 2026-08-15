@@ -202,7 +202,7 @@ function AuthPage() {
                       Login Request Pending
                     </h1>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your login request has been sent to an administrator. Please wait for approval.
+                      Your identity has been verified via MFA. However, your account access is currently <strong>Pending</strong>. An administrator must approve your login session before you can access the panel.
                     </p>
                     <div className="space-y-3 pt-4 border-t border-white/5 text-left text-xs uppercase tracking-widest font-bold">
                        <div className="flex justify-between">
