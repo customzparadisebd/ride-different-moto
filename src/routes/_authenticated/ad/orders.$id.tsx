@@ -115,6 +115,11 @@ function AdminOrderDetail() {
         <h1 className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-4xl font-black tracking-tighter text-primary ring-2 ring-primary/20">
           {order.invoice_no}
         </h1>
+        {order.is_pinned && (
+          <div className="flex size-8 items-center justify-center rounded-full bg-primary/20 text-primary ring-1 ring-primary/40">
+            <Clock className="size-4" />
+          </div>
+        )}
         <StatusBadge value={order.status} />
         <StatusBadge value={order.payment_status} />
         <StatusBadge value={order.courier_status} />
