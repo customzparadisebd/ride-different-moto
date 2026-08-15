@@ -1,13 +1,29 @@
 import { getEnvironment } from "@/lib/env";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, AlertTriangle, Globe, Settings, Database } from "lucide-react";
-import { createFileRoute } from "@tanstack/react-router";
+import { ShieldCheck, AlertTriangle, Globe, Settings, Database, Lock } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { getAdminContext } from "@/lib/admin.functions";
+import { getDiagnosticsContext } from "@/lib/diagnostics.functions";
+import { PERMISSIONS } from "@/lib/admin.shared";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/ad/diagnostics")({
   component: DiagnosticsPage,
 });
 
 function DiagnosticsPage() {
+  const { data: adminContext, isLoading: contextLoading } = useQuery({
+    queryKey: ["admin-context"],
+    queryFn: () => getAdminContext(),
+  });
+
+  const { data: diagContext, error: diagError, isLoading: diagLoading } = useQuery({
+    queryKey: ["diagnostics-audit"],
+    queryFn: () => getDiagnosticsContext(),
+    retry: false,
+  });
+
   const env = getEnvironment();
   const hostname = typeof window !== "undefined" ? window.location.hostname : "N/A (SSR)";
   const viteAppEnv = import.meta.env["VITE_APP_ENV"] || "Not Set";
@@ -18,7 +34,6 @@ function DiagnosticsPage() {
     if (type === "url") {
       try {
         const url = new URL(val);
-        // Only show the project ref part of the subdomain
         const projectRef = url.hostname.split(".")[0];
         return `${url.protocol}//${projectRef}.supabase.co (Redacted)`;
       } catch {
@@ -27,6 +42,34 @@ function DiagnosticsPage() {
     }
     return val.substring(0, 4) + "****" + val.substring(val.length - 4);
   };
+
+  if (contextLoading || diagLoading) {
+    return (
+      <div className="flex h-64 items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
+
+  const hasPermission = adminContext?.permissions.includes(PERMISSIONS.staffManage);
+
+  if (!hasPermission || diagError) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
+        <div className="rounded-full bg-destructive/10 p-6">
+          <Lock className="h-12 w-12 text-destructive" />
+        </div>
+        <h2 className="text-2xl font-bold">Access Denied</h2>
+        <p className="max-w-md text-muted-foreground">
+          You do not have the required permissions ({PERMISSIONS.staffManage}) to view system diagnostics.
+          This attempt has been logged for security audit.
+        </p>
+        <Button asChild variant="outline">
+          <Link to="/ad">Return to Dashboard</Link>
+        </Button>
+      </div>
+    );
+  }
 
   const data = [
     {
@@ -93,9 +136,16 @@ function DiagnosticsPage() {
             <p className="ml-4 text-amber-500">return "staging";</p>
             <p>{"}"}</p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            The "STAGING" badge appears because the current hostname does not match the production whitelist and the override variable is not set to production.
-          </p>
+          <div className="rounded-md border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-amber-500">
+            <div className="flex items-center gap-2 font-bold">
+              <ShieldCheck className="h-4 w-4" />
+              Security Note
+            </div>
+            <p className="mt-1">
+              Access to this page is restricted and every visit is recorded in the audit log.
+              Sensitive backend parameters are masked to prevent credential exposure.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
