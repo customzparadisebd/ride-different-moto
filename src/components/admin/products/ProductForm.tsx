@@ -160,29 +160,29 @@ export function ProductForm({
         <Field
           label="Product name"
           required
-          error={errors.name}
+          error={errors["name"]}
           example="Example: Bajaj Pulsar N160 Front Mudguard"
         >
           <Input
             className="h-11"
             placeholder="Enter full product name"
-            value={value.name}
+            value={value["name"]}
             onChange={(event) => {
               set("name", event.target.value);
-              if (!value.slug) set("slug", slugify(event.target.value));
+              if (!value["slug"]) set("slug", slugify(event.target.value));
             }}
           />
         </Field>
         <Field
           label="SKU"
           required
-          error={errors.sku}
+          error={errors["sku"]}
           example="Example: CZP-MUD-001"
         >
           <Input
             className="h-11"
             placeholder="Unique stock keeping unit"
-            value={value.sku}
+            value={value["sku"]}
             onChange={(e) => set("sku", e.target.value)}
           />
         </Field>
