@@ -53,6 +53,9 @@ export const productInput = z.object({
   isNewArrival: z.boolean().default(false),
   isActive: z.boolean().default(true),
   has360View: z.boolean().default(false),
+  videoEnabled: z.boolean().default(false),
+  videoPlatform: z.enum(["youtube", "facebook", "instagram", "tiktok"]).optional().nullable(),
+  videoUrl: blankable(600),
 });
 export type ProductInput = z.input<typeof productInput>;
 
