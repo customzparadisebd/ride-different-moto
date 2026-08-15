@@ -9,13 +9,11 @@ const testSupabase = createClient(
 
 describe('Invoice Concurrency Uniqueness', () => {
   it('should generate unique invoice serials under parallel load', async () => {
-    // Load counts from environment variables with safe defaults
     const concurrency = parseInt(process.env['TEST_INVOICE_CONCURRENCY'] || '10');
     const totalOrders = parseInt(process.env['TEST_INVOICE_TOTAL'] || concurrency.toString());
     
     console.log(`Running concurrency test: ${concurrency} parallel tasks for ${totalOrders} total invoices`);
 
-    // Execute calls to the database function
     const tasks = Array.from({ length: totalOrders }).map(() => 
       testSupabase.rpc('generate_next_invoice_no', { is_test: true })
     );
@@ -30,6 +28,22 @@ describe('Invoice Concurrency Uniqueness', () => {
     const uniqueInvoices = new Set(invoices);
     expect(uniqueInvoices.size).toBe(totalOrders);
     
+    // Explicit Database Uniqueness Verification
+    // We try to manually insert an order with a duplicate invoice number to ensure the DB blocks it
+    const testInvoice = invoices[0];
+    const { error: duplicateError } = await testSupabase
+      .from('orders')
+      .insert({
+        invoice_no: testInvoice,
+        customer_name: 'Test Duplicate',
+        phone: '01000000000',
+        total_amount: 0,
+        status: 'pending'
+      });
+    
+    // It should fail with a uniqueness violation (23505)
+    expect(duplicateError?.code, 'Database should prevent duplicate invoice_no inserts').toBe('23505');
+
     // Sequence Continuity Verification
     const sorted = [...invoices].sort((a, b) => {
       const numA = parseInt(a.split('-').pop() || '0');
@@ -42,8 +56,6 @@ describe('Invoice Concurrency Uniqueness', () => {
     for (let i = 0; i < sorted.length - 1; i++) {
       const currentSerial = parseInt(sorted[i]?.split('-').pop() || '0');
       const nextSerial = parseInt(sorted[i + 1]?.split('-').pop() || '0');
-      
-      // Explicit assertion: The difference between sequential serials must be exactly 1
       expect(nextSerial, `Gap detected between ${sorted[i]} and ${sorted[i+1]}`).toBe(currentSerial + 1);
     }
   });
