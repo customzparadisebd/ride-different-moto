@@ -30,6 +30,11 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
         `name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term},district.ilike.${term},area.ilike.${term}`,
       );
     }
+    if (data.customerName) query = query.ilike("name", `%${data.customerName}%`);
+    if (data.customerPhone) query = query.ilike("phone", `%${data.customerPhone}%`);
+    if (data.city) query = query.ilike("city", `%${data.city}%`);
+    if (data.district) query = query.ilike("district", `%${data.district}%`);
+
 
     if (data.status === "fraud") {
       query = query.eq("is_fraud", true);
