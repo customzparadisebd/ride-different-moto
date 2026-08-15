@@ -1,15 +1,5 @@
-// ============================================================
-// ADMIN DASHBOARD + CUSTOMER DATA
-// Purpose: Aggregated reads for the admin dashboard and the
-//          customers screen. Customers are derived from orders
-//          (grouped by phone number) — there is no separate table.
-// Status: COMPLETED
-// Security: Both endpoints require the signed-in account to hold
-//          the matching permission, resolved server-side.
-// ============================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
@@ -148,7 +138,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         outOfStockItems: outOfStock.slice(0, 5)
       },
       revenueHistory,
-      steadfastSuccessCount: steadfastStats.data?.successful_submissions_count ?? 0,
+      steadfastSuccessCount: (steadfastStats.data as any)?.successful_submissions_count ?? 0,
     };
   });
 

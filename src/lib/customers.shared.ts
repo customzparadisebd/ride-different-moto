@@ -9,7 +9,8 @@ export const customerListInput = z.object({
 });
 
 export const customerDeleteInput = z.object({
-  id: z.string().uuid(),
+  id: z.string().uuid().optional(),
+  ids: z.array(z.string().uuid()).optional(),
   reason: z.string().trim().max(300).optional(),
 });
 
