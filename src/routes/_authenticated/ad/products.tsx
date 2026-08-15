@@ -68,6 +68,7 @@ type ProductRow = {
   is_featured: boolean;
   is_new_arrival: boolean;
   is_active: boolean;
+  has_360_view: boolean;
 };
 
 function toFormValue(row: ProductRow): ProductFormValue {
@@ -79,6 +80,7 @@ function toFormValue(row: ProductRow): ProductFormValue {
     category: row.category,
     bikeCompatibility: (row.bike_compatibility ?? []).join(", "),
     isUniversal: row.is_universal,
+    has360View: row.has_360_view ?? false,
     description: row.description ?? "",
     details: row.details ?? "",
     images: Array.isArray(row.images) ? (row.images as string[]).join("\n") : "",
@@ -113,6 +115,8 @@ function AdminProducts() {
   const [creating, setCreating] = useState(false);
   // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
   const [colorsFor, setColorsFor] = useState<ProductRow | null>(null);
+  // PRODUCT 360 MANAGEMENT
+  const [view360For, setView360For] = useState<ProductRow | null>(null);
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
