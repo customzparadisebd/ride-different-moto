@@ -10,13 +10,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Search } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   listAdminCustomers,
   softDeleteCustomer,
@@ -42,7 +43,13 @@ export const Route = createFileRoute("/_authenticated/ad/customers")({
 function AdminCustomers() {
   const fetchCustomers = useServerFn(listAdminCustomers);
   const access = useServerFn(getMyAccess);
-  const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState({
+    search: "",
+    customerName: "",
+    customerPhone: "",
+    city: "",
+    district: "",
+  });
   const [status, setStatus] = useState<"all" | "active" | "fraud">("all");
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -52,8 +59,8 @@ function AdminCustomers() {
   const canManage = accessQuery.data?.permissions.includes("customers.manage") ?? false;
 
   const query = useQuery({
-    queryKey: ["admin-customers", search, status, page],
-    queryFn: () => fetchCustomers({ data: { search, status, page } }),
+    queryKey: ["admin-customers", filters, status, page],
+    queryFn: () => fetchCustomers({ data: { ...filters, status, page } }),
     placeholderData: (previous) => previous,
   });
 
@@ -90,7 +97,13 @@ function AdminCustomers() {
             size="sm"
             className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
             onClick={() => {
-              setSearch("");
+              setFilters({
+                search: "",
+                customerName: "",
+                customerPhone: "",
+                city: "",
+                district: "",
+              });
               setStatus("all");
               setPage(1);
             }}
@@ -99,32 +112,88 @@ function AdminCustomers() {
           </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex-1 min-w-[240px] max-w-sm">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(event) => {
-                setSearch(event.target.value);
-                setPage(1);
-              }}
-              placeholder="Search by name, phone, email, city..."
-              className="h-9 pl-9 text-sm"
-            />
-          </div>
-
-          {selectedIds.length > 0 && (
-            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
-              <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
-                {selectedIds.length} Selected
-              </span>
-              <CustomerBulkDeleteButton
-                ids={selectedIds}
-                onSuccess={() => setSelectedIds([])}
-                canManage={canManage}
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[240px] max-w-sm">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                value={filters.search}
+                onChange={(event) => {
+                  setFilters({ ...filters, search: event.target.value });
+                  setPage(1);
+                }}
+                placeholder="Search by name, phone, email, city..."
+                className="h-9 pl-9 text-sm"
               />
             </div>
-          )}
+            
+            <Button
+              variant="secondary"
+              size="sm"
+              className="h-9 border border-border"
+              onClick={() => {
+                const advanced = document.getElementById("advanced-filters-customers");
+                if (advanced) {
+                  advanced.classList.toggle("hidden");
+                }
+              }}
+            >
+              <SlidersHorizontal className="mr-2 size-3.5" />
+              Advanced Filters
+            </Button>
+
+            {selectedIds.length > 0 && (
+              <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+                <span className="text-[10px] font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
+                  {selectedIds.length} Selected
+                </span>
+                <CustomerBulkDeleteButton
+                  ids={selectedIds}
+                  onSuccess={() => setSelectedIds([])}
+                  canManage={canManage}
+                />
+              </div>
+            )}
+          </div>
+
+          <div id="advanced-filters-customers" className="hidden grid gap-3 rounded-xl border border-border bg-card p-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Customer Name</Label>
+              <Input
+                value={filters.customerName}
+                onChange={(e) => setFilters({ ...filters, customerName: e.target.value })}
+                placeholder="Name"
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Phone Number</Label>
+              <Input
+                value={filters.customerPhone}
+                onChange={(e) => setFilters({ ...filters, customerPhone: e.target.value })}
+                placeholder="01XXXXXXXXX"
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">City</Label>
+              <Input
+                value={filters.city}
+                onChange={(e) => setFilters({ ...filters, city: e.target.value })}
+                placeholder="Ex: Dhaka"
+                className="h-9 text-sm"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">District</Label>
+              <Input
+                value={filters.district}
+                onChange={(e) => setFilters({ ...filters, district: e.target.value })}
+                placeholder="Ex: Gazipur"
+                className="h-9 text-sm"
+              />
+            </div>
+          </div>
         </div>
       </div>
 
