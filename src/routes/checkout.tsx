@@ -342,7 +342,10 @@ function Field({
   value: string;
   onChange: (value: string) => void;
   error?: string | undefined;
+  className?: string;
 }) {
+  return (
+    <div className={rest.className}>
   return (
     <div className={className}>
       <Label htmlFor={id} className="text-xs uppercase tracking-wider text-muted-foreground">

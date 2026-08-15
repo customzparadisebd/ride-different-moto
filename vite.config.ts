@@ -19,11 +19,13 @@ export default defineConfig({
       cssMinify: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            "vendor-react": ["react", "react-dom"],
-            "vendor-tanstack": ["@tanstack/react-router", "@tanstack/react-query", "@tanstack/react-start"],
-            "vendor-ui": ["lucide-react", "framer-motion", "clsx", "tailwind-merge"],
-          },
+          manualChunks: (id) => {
+            if (id.includes('node_modules')) {
+              if (id.includes('react')) return 'vendor-react';
+              if (id.includes('@tanstack')) return 'vendor-tanstack';
+              return 'vendor';
+            }
+          }
         },
       },
     },
