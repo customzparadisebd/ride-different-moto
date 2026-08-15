@@ -58,10 +58,10 @@ export const softDeleteCustomer = createServerFn({ method: "POST" })
     const { error } = await context.supabase
       .from("customers")
       .update({
-        deleted_at: new Date().toISOString(),
+        deleted_at: new Date().toISOString() as any,
         deleted_by: context.userId,
         delete_reason: data.reason || null,
-      })
+      } as any)
       .eq("id", data.id);
     if (error) throw new Error("Could not move customer to Recycle Bin.");
 
@@ -96,7 +96,7 @@ export const restoreCustomer = createServerFn({ method: "POST" })
 
     const { error } = await context.supabase
       .from("customers")
-      .update({ deleted_at: null, deleted_by: null, delete_reason: null })
+      .update({ deleted_at: null, deleted_by: null, delete_reason: null } as any)
       .eq("id", data.id);
     if (error) throw new Error("Could not restore customer.");
 
@@ -131,7 +131,7 @@ export const purgeCustomer = createServerFn({ method: "POST" })
       throw new Error("The typed phone number does not match.");
     }
     
-    if (!before.data.deleted_at) {
+    if (!(before.data as any).deleted_at) {
       throw new Error("Move the customer to the Recycle Bin before deleting permanently.");
     }
 

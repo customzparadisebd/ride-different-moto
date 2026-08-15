@@ -35,6 +35,8 @@ function RecycleBin() {
   const purgeProductFn = useServerFn(purgeProduct);
   const restoreOrderFn = useServerFn(restoreOrder);
   const purgeOrderFn = useServerFn(purgeOrder);
+  
+  // NOTE: Server functions are imported directly to avoid top-level await issues
   const { listAdminCustomers, restoreCustomer, purgeCustomer } = await import("@/lib/customers.functions");
   const fetchCustomers = useServerFn(listAdminCustomers);
   const restoreCustomerFn = useServerFn(restoreCustomer);
