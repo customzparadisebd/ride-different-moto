@@ -211,7 +211,7 @@ function CityRow({
           variant="ghost"
           size="icon"
           disabled={!canManage}
-          onClick={() = aria-label="Delete"> {
+          onClick={() => {
             if (window.confirm(`Remove ${city.name}?`)) onRemove();
           }}
         >

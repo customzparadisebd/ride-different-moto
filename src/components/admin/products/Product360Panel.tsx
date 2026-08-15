@@ -195,7 +195,7 @@ export function Product360Panel({
                 size="icon"
                 variant="ghost"
                 className="size-7 rounded-full text-white hover:bg-white/10"
-                onClick={() = aria-label="Pause"> setIsPlaying(!isPlaying)}
+                onClick={() => setIsPlaying(!isPlaying)}
                 disabled={rows.length === 0}
               >
                 {isPlaying ? <Pause className="size-3" /> : <Play className="size-3" />}
