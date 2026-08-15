@@ -105,3 +105,14 @@ export const deleteHeroSlide = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const restoreOldHeroSlides = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { restoreHeroSlides } = await import("./hero-restore.server");
+    return restoreHeroSlides();
+  });
