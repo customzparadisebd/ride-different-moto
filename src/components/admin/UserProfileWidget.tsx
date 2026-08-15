@@ -269,6 +269,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                       onClick={handleResetAvatar}
                       disabled={isUpdating}
                       title="Remove custom avatar"
+                      aria-label="Remove custom avatar"
                     >
                       <X className="h-3.5 w-3.5" />
                     </Button>
@@ -280,6 +281,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUpdating}
                     title="Change image"
+                     aria-label="Change profile image"
                   >
                     <Camera className="h-3.5 w-3.5" />
                   </Button>
