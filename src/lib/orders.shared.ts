@@ -8,7 +8,7 @@ export const ORDER_STATUSES = [
   "processing",
   "shipped",
   "delivered",
-  "cancelled",
+  "cancelled", "returned",
   "returned",
 ] as const;
 
@@ -33,7 +33,7 @@ export const COURIER_STATUSES = [
   "out_for_delivery",
   "delivered",
   "returned",
-  "cancelled",
+  "cancelled", "returned",
   "failed",
 ] as const;
 
@@ -182,7 +182,7 @@ export const orderFilterInput = z.object({
       "new",
       "duplicate",
       "hold",
-      "cancelled",
+      "cancelled", "returned",
       "same_phone",
       // Quick filter tabs
       "yesterday",
@@ -218,7 +218,7 @@ export const ORDER_TABS = [
   { value: "new", label: "New Order" },
   { value: "duplicate", label: "Duplicate Orders" },
   { value: "hold", label: "Hold" },
-  { value: "cancelled", label: "Cancelled" },
+  { value: "cancelled", "returned", label: "Cancelled" },
   { value: "same_phone", label: "Same Phone" },
 ] as const;
 
