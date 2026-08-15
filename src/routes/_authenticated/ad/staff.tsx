@@ -48,6 +48,7 @@ import {
   PERMISSIONS,
   ROLE_LABELS,
   ACCESS_STATUS_LABELS,
+  type Permission,
 } from "@/lib/admin.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/staff")({
