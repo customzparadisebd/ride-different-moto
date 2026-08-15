@@ -61,19 +61,13 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       .eq("id", "default")
       .maybeSingle();
 
-    const updates: Record<string, any> = {
+    const updates = {
       prefix: data.prefix,
       start_number: data.startNumber,
+      current_number: data.nextNumber !== undefined ? data.nextNumber - 1 : data.currentNumber,
       updated_at: new Date().toISOString(),
       updated_by: actor.userId,
     };
-
-    // If nextNumber is provided, we set current_number to nextNumber - 1
-    if (data.nextNumber !== undefined) {
-      updates.current_number = data.nextNumber - 1;
-    } else {
-      updates.current_number = data.currentNumber;
-    }
 
     const { error } = await context.supabase
       .from("invoice_settings")
