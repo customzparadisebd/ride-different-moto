@@ -20,8 +20,8 @@ describe('Invoice Concurrency Uniqueness', () => {
     if (result.invoices.length > 1) {
       const sorted = [...result.invoices].sort();
       for (let i = 0; i < sorted.length - 1; i++) {
-        const current = parseInt(sorted[i].split('-').pop() || '0');
-        const next = parseInt(sorted[i+1].split('-').pop() || '0');
+        const current = parseInt(sorted[i]?.split('-').pop() || '0');
+        const next = parseInt(sorted[i+1]?.split('-').pop() || '0');
         expect(next).toBe(current + 1);
       }
     }
