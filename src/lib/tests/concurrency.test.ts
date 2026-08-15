@@ -19,18 +19,21 @@ describe('Invoice Concurrency Uniqueness', () => {
     );
     
     const results = await Promise.all(tasks);
+    
+    // Debug individual results to see why uniqueness fails
+    results.forEach((r, i) => {
+      if (r.error) console.error(`Task ${i} error:`, r.error);
+      else console.log(`Task ${i} result:`, r.data);
+    });
+
     const invoices = results.map(r => r.data).filter(Boolean) as string[];
     const errors = results.map(r => r.error).filter(Boolean);
     
-    if (errors.length > 0) {
-      console.error('RPC Errors:', errors);
-    }
-    
     expect(errors.length, `Received ${errors.length} errors from RPC`).toBe(0);
-    expect(invoices.length, `Expected ${totalOrders} invoices, got ${invoices.length}. Results: ${JSON.stringify(results)}`).toBe(totalOrders);
+    expect(invoices.length, `Expected ${totalOrders} invoices, got ${invoices.length}`).toBe(totalOrders);
     
     const uniqueInvoices = new Set(invoices);
-    expect(uniqueInvoices.size).toBe(totalOrders);
+    expect(uniqueInvoices.size, `Duplicates detected in: ${JSON.stringify(invoices)}`).toBe(totalOrders);
     
     // Explicit Database Uniqueness Verification
     // We try to manually insert an order with a duplicate invoice number to ensure the DB blocks it
