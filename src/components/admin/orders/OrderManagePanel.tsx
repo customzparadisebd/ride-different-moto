@@ -118,19 +118,58 @@ export function OrderManagePanel({
           <span className="text-xs text-muted-foreground">current</span>
         </div>
         <div className="mt-3 grid gap-2 sm:grid-cols-2">
-          {ORDER_STATUSES.map((status) => (
-            <Button
-              key={status}
-              type="button"
-              size="touch"
-              variant={status === order.status ? "red" : "steel"}
-              disabled={isPending || status === order.status}
-              onClick={() => onSubmit({ status })}
-            >
-              {statusLabel(status)}
-            </Button>
-          ))}
+          {ORDER_STATUSES.map((status) => {
+            const isCompleted = status === "completed";
+            const isDisabled = isPending || status === order.status || (isCompleted && !isAdmin);
+
+            return (
+              <Button
+                key={status}
+                type="button"
+                size="touch"
+                variant={status === order.status ? "red" : "steel"}
+                disabled={isDisabled}
+                onClick={() => {
+                  if (isCompleted) {
+                    setPendingStatus(status);
+                    setShowCompleteConfirm(true);
+                  } else {
+                    onSubmit({ status });
+                  }
+                }}
+              >
+                {statusLabel(status)}
+                {isCompleted && !isAdmin && " (Admin Only)"}
+              </Button>
+            );
+          })}
         </div>
+
+        <AlertDialog open={showCompleteConfirm} onOpenChange={setShowCompleteConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Mark Order as Completed?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to mark this order as Completed? This will deduct the ordered
+                quantity from inventory. This action is tracked and cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-red-600 hover:bg-red-700"
+                onClick={() => {
+                  if (pendingStatus) {
+                    onSubmit({ status: pendingStatus });
+                  }
+                  setShowCompleteConfirm(false);
+                }}
+              >
+                Confirm Completion
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </Card>
 
       {/* ---- Payment + transaction ---- */}
