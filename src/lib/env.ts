@@ -17,7 +17,7 @@ export function getEnvironment(): Environment {
     if (
       hostname === 'customzparadisebd.com' || 
       hostname === 'www.customzparadisebd.com' ||
-      import.meta.env.VITE_APP_ENV === 'production'
+      import.meta.env['VITE_APP_ENV'] === 'production'
     ) {
       return 'production';
     }

@@ -18,6 +18,7 @@ import { Moon, Sun, Clock, AlertCircle, ShieldCheck } from "lucide-react";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { EnvironmentBanner } from "@/components/admin/EnvironmentBanner";
 import { getEnvironment } from "@/lib/env";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
