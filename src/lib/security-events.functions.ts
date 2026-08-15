@@ -117,8 +117,9 @@ export const getSuspiciousIPs = createServerFn({ method: "POST" })
         .select("ip_address, event_type")
         .limit(1000);
     
+    const eventsData = events ?? [];
     const counts: Record<string, { ip: string, failures: number, limits: number }> = {};
-    events?.forEach(e => {
+    eventsData.forEach(e => {
         if (!e.ip_address) return;
         if (!counts[e.ip_address]) counts[e.ip_address] = { ip: e.ip_address, failures: 0, limits: 0 };
         if (e.event_type === 'login_throttle') counts[e.ip_address].failures++;
