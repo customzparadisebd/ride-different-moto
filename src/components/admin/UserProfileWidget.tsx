@@ -390,12 +390,14 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 max={3}
                 step={0.1}
                 onValueChange={(values) => {
-                  if (values && values.length > 0) {
-                    setZoom(values[0]);
+                  const val = values[0];
+                  if (typeof val === 'number') {
+                    setZoom(val);
                   }
                 }}
                 className="py-4"
               />
+
 
             </div>
 
