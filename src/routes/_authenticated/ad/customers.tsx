@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail } from "@/lib/customers.functions";
+import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail, updateAdminCustomer } from "@/lib/customers.functions";
 import { formatBDT } from "@/lib/format";
 import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
@@ -142,6 +142,10 @@ function AdminCustomers() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2">
+                      <CustomerEditButton 
+                        customer={customer}
+                        canManage={canManage}
+                      />
                       <CustomerAuditTrailButton 
                         customerId={customer.id} 
                         customerName={customer.name}
@@ -320,8 +324,128 @@ function CustomerAuditTrailButton({
   );
 }
 
-function CustomerDeleteButton({ 
+function CustomerEditButton({ 
+  customer, 
+  canManage 
+}: { 
+  customer: any; 
+  canManage: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const updateCustomerFn = useServerFn(updateAdminCustomer);
+  const [isOpen, setIsOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: customer.name,
+    email: customer.email || "",
+    phone: customer.phone,
+    city: customer.city || "",
+    district: customer.district || "",
+    area: customer.area || "",
+    address: customer.address || "",
+  });
 
+  const mutation = useMutation({
+    mutationFn: updateCustomerFn,
+    onSuccess: () => {
+      toast.success("Customer updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["admin-customers"] });
+      setIsOpen(false);
+    },
+    onError: (err: any) => toast.error(err.message || "Could not update customer"),
+  });
+
+  if (!canManage) return null;
+
+  return (
+    <>
+      <Button variant="steel" size="sm" onClick={() => setIsOpen(true)}>
+        Edit
+      </Button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[90vh] w-full max-w-md flex-col rounded-xl border border-border bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-border p-4">
+              <h3 className="font-display text-lg font-bold uppercase tracking-tight">
+                Edit Customer: {customer.name}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                Close
+              </Button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Full Name</label>
+                <Input 
+                  value={formData.name} 
+                  onChange={e => setFormData(d => ({ ...d, name: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Phone</label>
+                <Input 
+                  value={formData.phone} 
+                  onChange={e => setFormData(d => ({ ...d, phone: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Email</label>
+                <Input 
+                  type="email"
+                  value={formData.email} 
+                  onChange={e => setFormData(d => ({ ...d, email: e.target.value }))}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">District</label>
+                  <Input 
+                    value={formData.district} 
+                    onChange={e => setFormData(d => ({ ...d, district: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold uppercase text-muted-foreground">City</label>
+                  <Input 
+                    value={formData.city} 
+                    onChange={e => setFormData(d => ({ ...d, city: e.target.value }))}
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Area</label>
+                <Input 
+                  value={formData.area} 
+                  onChange={e => setFormData(d => ({ ...d, area: e.target.value }))}
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-semibold uppercase text-muted-foreground">Full Address</label>
+                <Input 
+                  value={formData.address} 
+                  onChange={e => setFormData(d => ({ ...d, address: e.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="border-t border-border p-4 flex gap-2">
+              <Button 
+                className="w-full" 
+                disabled={mutation.isPending}
+                onClick={() => mutation.mutate({ data: { id: customer.id, ...formData } as any })}
+              >
+                {mutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function CustomerDeleteButton({ 
   customer, 
   canManage 
 }: { 

@@ -191,6 +191,12 @@ export const AUDIT_ACTIONS = {
   loginApprovalApproved: "auth.login_approval_approved",
   loginApprovalRejected: "auth.login_approval_rejected",
   loginApprovalExpired: "auth.login_approval_expired",
+  customerRecycled: "customer.recycled",
+  customerRestored: "customer.restored",
+  customerPurged: "customer.purged",
+  customerUpdated: "customer.updated",
+  customerFraudMarked: "customer.fraud_marked",
+  customerFraudRemoved: "customer.fraud_removed",
 } as const;
 
 export const staffStatusInput = z.object({
