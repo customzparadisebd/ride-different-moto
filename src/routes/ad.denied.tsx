@@ -20,9 +20,9 @@ function AccessDenied() {
     <section className="mx-auto max-w-md px-4 py-20 text-center">
       <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Access denied</h1>
       <p className="mt-2 text-sm text-muted-foreground">
-        Your account cannot use this area. This happens when access is still{" "}
-        <strong>Pending</strong> approval, has been suspended or revoked, or the session was revoked
-        by a Super Admin. Contact the Super Admin if you believe this is a mistake.
+        Your identity was verified, but your account is currently <strong>Pending</strong> approval.
+        Access is restricted until a Super Admin approves your staff status. If you just finished MFA,
+        please wait for the administrative review to complete.
       </p>
       <div className="mt-6 flex flex-col gap-2">
         <Link to="/ad/log" className="text-sm uppercase tracking-wider text-primary underline">
