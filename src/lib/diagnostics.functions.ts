@@ -6,14 +6,15 @@ import { getEnvironment } from "./env";
 export const getDiagnosticsContext = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
+    // Explicitly import server-only logic inside the handler
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // Stricter RBAC: Only Super Admin, Admin or those with staff.manage can view diagnostics
     assertAccess(actor, PERMISSIONS.staffManage);
 
     const env = getEnvironment();
-    const hostname = process.env['NODE_ENV'] === 'production' ? 'Production/SSR' : 'Development/SSR'; // Placeholder as we can't get browser hostname here easily
 
     await auditFromActor(actor, {
       action: AUDIT_ACTIONS.envDiagnosticsViewed,
