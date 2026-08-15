@@ -1131,7 +1131,7 @@ export type Database = {
           id?: string
           idempotency_key?: string | null
           internal_notes?: string | null
-          invoice_no?: string
+          invoice_no: string
           is_duplicate?: boolean
           is_pinned?: boolean
           notes?: string | null
@@ -1839,7 +1839,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_czp_invoice_id: { Args: never; Returns: string }
       generate_next_invoice_no:
         | { Args: never; Returns: string }
         | { Args: { is_test?: boolean }; Returns: string }
