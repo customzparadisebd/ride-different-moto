@@ -313,7 +313,7 @@ function AuthPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-12 border-white/5 bg-white/5 font-medium transition-all focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-white/20 [box-shadow:0_0_0_1000px_#0a0a0a_inset_!important] [-webkit-text-fill-color:white_!important]"
+                className="h-12 border-white/5 bg-white/5 font-medium transition-all focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-white/20 autofill:!shadow-[0_0_0_1000px_#0a0a0a_inset] autofill:!text-white [-webkit-text-fill-color:white_!important]"
                 placeholder="admin@customzparadise.com"
               />
             </div>
@@ -330,7 +330,7 @@ function AuthPage() {
                 minLength={8}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="h-12 border-white/5 bg-white/5 transition-all focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-white/20 [box-shadow:0_0_0_1000px_#0a0a0a_inset_!important] [-webkit-text-fill-color:white_!important]"
+                className="h-12 border-white/5 bg-white/5 transition-all focus:border-primary/50 focus:ring-primary/20 text-white placeholder:text-white/20 autofill:!shadow-[0_0_0_1000px_#0a0a0a_inset] autofill:!text-white [-webkit-text-fill-color:white_!important]"
                 placeholder="••••••••"
               />
             </div>
