@@ -103,7 +103,7 @@ export function ProductForm({
   isPending,
   submitLabel,
   onSubmit,
-   onCancel,
+  onCancel,
   onPreview,
 }: {
   initial: ProductFormValue;
@@ -130,12 +130,14 @@ export function ProductForm({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!value["name"].trim()) newErrors["name"] = "Product name is required.";
-    else if (value["name"].trim().length < 2) newErrors["name"] = "Product name must be at least 2 characters.";
+    else if (value["name"].trim().length < 2)
+      newErrors["name"] = "Product name must be at least 2 characters.";
 
     if (!value["sku"].trim()) newErrors["sku"] = "SKU is required.";
 
     if (!value["price"].trim()) newErrors["price"] = "Regular price is required.";
-    else if (!(Number(value["price"]) > 0)) newErrors["price"] = "Please enter a valid regular price greater than 0.";
+    else if (!(Number(value["price"]) > 0))
+      newErrors["price"] = "Please enter a valid regular price greater than 0.";
 
     if (value["offerPrice"].trim()) {
       if (!(Number(value["offerPrice"]) > 0)) {
@@ -192,11 +194,7 @@ export function ProductForm({
             onChange={(e) => set("sku", e.target.value)}
           />
         </Field>
-        <Field
-          label="URL slug"
-          required
-          example="Example: pulsar-n160-front-mudguard"
-        >
+        <Field label="URL slug" required example="Example: pulsar-n160-front-mudguard">
           <Input
             className="h-11"
             placeholder="URL-friendly identifier"
@@ -245,10 +243,7 @@ export function ProductForm({
             </Field>
           </div>
         </div>
-        <Field
-          label="Bike compatibility"
-          example="Example: Pulsar N160, Pulsar N250, Dominar 400"
-        >
+        <Field label="Bike compatibility" example="Example: Pulsar N160, Pulsar N250, Dominar 400">
           <Input
             className="h-11"
             placeholder="Comma separated bike models"
@@ -284,11 +279,7 @@ export function ProductForm({
             onChange={(e) => set("offerPrice", e.target.value)}
           />
         </Field>
-        <Field
-          label="Stock quantity"
-          required
-          example="Example: 25"
-        >
+        <Field label="Stock quantity" required example="Example: 25">
           <Input
             className="h-11"
             inputMode="numeric"
@@ -297,11 +288,7 @@ export function ProductForm({
             onChange={(e) => set("stockQty", e.target.value)}
           />
         </Field>
-        <Field
-          label="Custom badge text"
-          optional
-          example="Example: Best Seller, Limited Edition"
-        >
+        <Field label="Custom badge text" optional example="Example: Best Seller, Limited Edition">
           <Input
             className="h-11"
             placeholder="Badge text (e.g. 15% OFF)"
@@ -410,7 +397,7 @@ export function ProductForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" variant="red" size="touch" disabled={isPending}>
           {isPending ? "Saving…" : submitLabel}
-         </Button>
+        </Button>
         <Button
           type="button"
           variant="steel"
@@ -451,8 +438,16 @@ function Field({
       <div className="flex items-center justify-between mb-1.5">
         <Label className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground flex items-center gap-1.5">
           {label}
-          {required && <span className="text-destructive font-black" title="Required">*</span>}
-          {optional && <span className="text-[10px] font-medium lowercase text-muted-foreground/60">(Optional)</span>}
+          {required && (
+            <span className="text-destructive font-black" title="Required">
+              *
+            </span>
+          )}
+          {optional && (
+            <span className="text-[10px] font-medium lowercase text-muted-foreground/60">
+              (Optional)
+            </span>
+          )}
         </Label>
         {example && (
           <span className="text-[10px] italic text-muted-foreground/50 hidden sm:inline truncate max-w-[200px]">

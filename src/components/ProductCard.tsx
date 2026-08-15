@@ -110,9 +110,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           </Link>
         </h3>
         {product.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
-            {product.description}
-          </p>
+          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
         )}
 
         <div className="mt-2 flex flex-wrap items-baseline gap-2">
@@ -155,7 +153,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             className="h-9 w-full min-w-0 sm:h-8"
           >
             <span className="whitespace-nowrap px-2 text-xs font-bold uppercase tracking-wider sm:text-[10px]">
-              {hasColors ? t('common.chooseColor') : t('nav.cart')}
+              {hasColors ? t("common.chooseColor") : t("nav.cart")}
             </span>
           </Button>
           <Button
@@ -166,7 +164,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             className="h-9 w-full min-w-0 sm:h-8"
           >
             <span className="whitespace-nowrap px-2 text-xs font-bold uppercase tracking-wider sm:text-[10px]">
-              {t('common.orderNow')}
+              {t("common.orderNow")}
             </span>
           </Button>
         </div>

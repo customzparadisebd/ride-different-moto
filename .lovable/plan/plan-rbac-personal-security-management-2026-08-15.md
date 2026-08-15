@@ -14,6 +14,7 @@ Implement role-based access control and a personal security page for TOTP/recove
 ### Database & Security
 
 #### [SQL Migration]
+
 - Verify `user_permissions` table exists and has RLS.
 - Ensure `has_role` and `has_permission` security-definer functions are available for RLS policies.
 - Grant `SELECT, INSERT, DELETE` on `user_permissions` to `service_role`.
@@ -21,11 +22,13 @@ Implement role-based access control and a personal security page for TOTP/recove
 ### Admin Features
 
 #### [Staff Management]
+
 - Create `src/components/admin/UserPermissionsDialog.tsx` to allow Admins to toggle individual permissions for a staff member.
 - Update `src/routes/_authenticated/ad/staff.tsx` to include an "Edit Permissions" action.
 - Update `src/lib/admin.functions.ts` with `setStaffPermissions` server function.
 
 #### [Personal Security]
+
 - Enhance `src/routes/_authenticated/ad/security.tsx` to explicitly highlight TOTP management and recovery code regeneration for the logged-in user.
 - Add "Regenerate Recovery Codes" prominently with a confirmation step.
 - Ensure the "Admin Access Information" card is strictly limited to Super Admins.
@@ -33,6 +36,7 @@ Implement role-based access control and a personal security page for TOTP/recove
 ### Refactoring & Polish
 
 #### [Permissions Logic]
+
 - Audit `effectivePermissions` in `src/lib/admin.server.ts` to ensure it correctly merges role defaults with explicit grants.
 - Verify `assertAccess` covers all sensitive operations.
 

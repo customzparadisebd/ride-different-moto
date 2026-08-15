@@ -75,7 +75,7 @@ function AuthPage() {
         handlePostAuth(session.user.id);
       }
     });
-    
+
     supabase.auth.getSession().then(({ data: s }) => {
       if (s.session) handlePostAuth(s.session.user.id);
     });
@@ -96,7 +96,8 @@ function AuthPage() {
           if (result.status === "approved" && !notificationShown) {
             notificationShown = true;
             toast.success("Login Approved!", {
-              description: "Your session has been approved by an administrator. Redirecting to the dashboard...",
+              description:
+                "Your session has been approved by an administrator. Redirecting to the dashboard...",
               duration: 5000,
             });
             clearInterval(interval);
@@ -120,7 +121,7 @@ function AuthPage() {
       // Security: We fetch access state to see if MFA is satisfied before asking for approval
       const { getMyAccess } = await import("@/lib/orders.functions");
       const access = await getMyAccess({});
-      
+
       // If MFA is required but not satisfied, we shouldn't show approval screen yet.
       // The route gate will handle redirection to /ad/mfa if they try to access /ad.
       // But if they are on /ad/log, we should let them finish MFA first.
@@ -186,15 +187,22 @@ function AuthPage() {
       <div className="flex min-h-svh flex-col md:flex-row bg-[#0a0a0a]">
         {/* Left side: Same as login */}
         <div className="relative hidden w-full md:flex md:w-1/2 overflow-hidden bg-black items-center justify-center">
-          <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none"
+          >
             <source src={animationAsset.url} type="video/mp4" />
           </video>
 
           <div className="relative z-10 p-12 text-center">
             <h2 className="font-brush text-4xl font-bold uppercase tracking-wider text-white sm:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              RIDE DIFFERENT<br /><span className="text-primary italic">BE DIFFERENT</span>
+              RIDE DIFFERENT
+              <br />
+              <span className="text-primary italic">BE DIFFERENT</span>
             </h2>
-
           </div>
         </div>
 
@@ -213,21 +221,25 @@ function AuthPage() {
                       Login Request Pending
                     </h1>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      Your identity has been verified via MFA. However, your account access is currently <strong>Pending</strong>. An administrator must approve your login session before you can access the panel.
+                      Your identity has been verified via MFA. However, your account access is
+                      currently <strong>Pending</strong>. An administrator must approve your login
+                      session before you can access the panel.
                     </p>
                     <div className="space-y-3 pt-4 border-t border-white/5 text-left text-xs uppercase tracking-widest font-bold">
-                       <div className="flex justify-between">
-                         <span className="text-muted-foreground/60">Status</span>
-                         <span className="text-yellow-500">Pending</span>
-                       </div>
-                       <div className="flex justify-between">
-                         <span className="text-muted-foreground/60">Request Time</span>
-                         <span className="text-white">{requestTime}</span>
-                       </div>
-                       <div className="flex justify-between">
-                         <span className="text-muted-foreground/60">Request ID</span>
-                         <span className="text-white font-mono text-[10px]">{approvalRequestId.slice(0, 8)}...</span>
-                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground/60">Status</span>
+                        <span className="text-yellow-500">Pending</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground/60">Request Time</span>
+                        <span className="text-white">{requestTime}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground/60">Request ID</span>
+                        <span className="text-white font-mono text-[10px]">
+                          {approvalRequestId.slice(0, 8)}...
+                        </span>
+                      </div>
                     </div>
                   </>
                 ) : approvalStatus === "rejected" ? (
@@ -241,9 +253,9 @@ function AuthPage() {
                     <p className="text-sm text-muted-foreground">
                       Your login request was rejected by an administrator.
                     </p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-4" 
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);
@@ -264,9 +276,9 @@ function AuthPage() {
                     <p className="text-sm text-muted-foreground">
                       Your login request has expired. Please try logging in again.
                     </p>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mt-4" 
+                    <Button
+                      variant="outline"
+                      className="w-full mt-4"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);
@@ -297,7 +309,6 @@ function AuthPage() {
           className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none"
         >
           <source src={animationAsset.url} type="video/mp4" />
-
         </video>
         <div className="relative z-10 p-12 text-center">
           <h2 className="font-brush text-4xl font-bold uppercase tracking-wider text-white sm:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
@@ -305,7 +316,6 @@ function AuthPage() {
             <br />
             <span className="text-primary italic">BE DIFFERENT</span>
           </h2>
-
         </div>
       </div>
 
@@ -326,7 +336,10 @@ function AuthPage() {
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              <Label
+                htmlFor="email"
+                className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+              >
                 Email Address
               </Label>
               <Input
@@ -342,7 +355,10 @@ function AuthPage() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                <Label
+                  htmlFor="password"
+                  className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground"
+                >
                   Password
                 </Label>
               </div>
@@ -357,7 +373,7 @@ function AuthPage() {
                 placeholder="••••••••"
               />
             </div>
-            
+
             <div className="pt-2">
               <Button
                 type="submit"
@@ -383,13 +399,7 @@ function AuthPage() {
 
       {/* Mobile-only background video overlay */}
       <div className="fixed inset-0 -z-10 md:hidden overflow-hidden pointer-events-none">
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="h-full w-full object-cover opacity-20"
-        >
+        <video autoPlay muted loop playsInline className="h-full w-full object-cover opacity-20">
           <source src={animationAsset.url} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/60" />

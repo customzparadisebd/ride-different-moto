@@ -23,7 +23,6 @@ import { GripVertical, Save, Trash2, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,7 +36,9 @@ export const Route = createFileRoute("/_authenticated/ad/featured")({
 });
 
 function SortableItem({ id, product, onRemove, onUpdate }: any) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -62,11 +63,7 @@ function SortableItem({ id, product, onRemove, onUpdate }: any) {
       </button>
 
       {product.image_url ? (
-        <img
-          src={product.image_url}
-          alt=""
-          className="size-12 rounded object-cover bg-muted"
-        />
+        <img src={product.image_url} alt="" className="size-12 rounded object-cover bg-muted" />
       ) : (
         <div className="size-12 rounded bg-muted flex items-center justify-center text-[10px] text-muted-foreground">
           No image
@@ -76,7 +73,10 @@ function SortableItem({ id, product, onRemove, onUpdate }: any) {
       <div className="flex-1 min-w-0">
         <h4 className="font-medium truncate text-sm">{product.name}</h4>
         <div className="flex items-center gap-2 mt-1">
-          <Badge variant={product.is_best_deal ? "destructive" : "secondary"} className="text-[10px] px-1.5 h-4">
+          <Badge
+            variant={product.is_best_deal ? "destructive" : "secondary"}
+            className="text-[10px] px-1.5 h-4"
+          >
             {product.is_best_deal ? "Best Deal" : "Featured"}
           </Badge>
           <span className="text-xs text-muted-foreground">SKU: {product.sku}</span>
@@ -137,7 +137,7 @@ function FeaturedAdminPage() {
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -159,9 +159,7 @@ function FeaturedAdminPage() {
   };
 
   const updateItem = (id: string, updates: any) => {
-    setLocalItems((items) =>
-      items.map((i) => (i.id === id ? { ...i, ...updates } : i))
-    );
+    setLocalItems((items) => items.map((i) => (i.id === id ? { ...i, ...updates } : i)));
     setIsDirty(true);
   };
 
@@ -184,14 +182,21 @@ function FeaturedAdminPage() {
     }
   };
 
-  if (isLoading) return <div className="p-8 text-center text-muted-foreground">Loading featured products...</div>;
+  if (isLoading)
+    return (
+      <div className="p-8 text-center text-muted-foreground">Loading featured products...</div>
+    );
 
   return (
     <div className="flex flex-col gap-6 p-4 md:p-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold uppercase tracking-tight">Featured & Best Deals</h1>
-          <p className="text-muted-foreground mt-1">Manage the products displayed in the featured section of your homepage.</p>
+          <h1 className="text-3xl font-display font-bold uppercase tracking-tight">
+            Featured & Best Deals
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Manage the products displayed in the featured section of your homepage.
+          </p>
         </div>
         <div className="flex items-center gap-3">
           {isDirty && (
@@ -207,7 +212,9 @@ function FeaturedAdminPage() {
           <Card className="border-border/60 shadow-sm">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Homepage Arrangement</CardTitle>
-              <CardDescription>Drag and drop to change the display order on the homepage.</CardDescription>
+              <CardDescription>
+                Drag and drop to change the display order on the homepage.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               {localItems.length === 0 ? (
@@ -222,7 +229,10 @@ function FeaturedAdminPage() {
                   onDragEnd={handleDragEnd}
                   modifiers={[restrictToVerticalAxis]}
                 >
-                  <SortableContext items={localItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+                  <SortableContext
+                    items={localItems.map((i) => i.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
                     {localItems.map((item) => (
                       <SortableItem
                         key={item.id}
@@ -243,7 +253,10 @@ function FeaturedAdminPage() {
           <Card className="border-border/60 shadow-sm sticky top-24">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Add Products</CardTitle>
-              <CardDescription>Only products with "Featured" or "Best Deal" flags can be managed here. Edit products to enable these flags.</CardDescription>
+              <CardDescription>
+                Only products with "Featured" or "Best Deal" flags can be managed here. Edit
+                products to enable these flags.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-muted-foreground mb-4 italic">

@@ -91,19 +91,19 @@ export const checkoutInput = z.object({
 export const checkoutSubmitInput = checkoutInput
   .omit({ items: true, customerEmail: true, paymentMethod: true })
   .extend({
-  paymentMethod: z.literal("cash_on_delivery").default("cash_on_delivery"),
-  items: z
-    .array(
-      z.object({
-        productId: z.string().trim().min(1).max(120),
-        /** Selected colour variation, revalidated and repriced server-side. */
-        colorId: z.string().uuid().optional(),
-        quantity: z.number().int().min(1).max(999),
-      }),
-    )
-    .min(1, "Your cart is empty")
-    .max(50),
-});
+    paymentMethod: z.literal("cash_on_delivery").default("cash_on_delivery"),
+    items: z
+      .array(
+        z.object({
+          productId: z.string().trim().min(1).max(120),
+          /** Selected colour variation, revalidated and repriced server-side. */
+          colorId: z.string().uuid().optional(),
+          quantity: z.number().int().min(1).max(999),
+        }),
+      )
+      .min(1, "Your cart is empty")
+      .max(50),
+  });
 
 export type CheckoutSubmitInput = z.infer<typeof checkoutSubmitInput>;
 

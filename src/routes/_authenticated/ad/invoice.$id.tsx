@@ -16,12 +16,12 @@ import { deliveryZoneLabel, paymentMethodLabel } from "@/lib/orders.shared";
 import logoDark from "@/assets/logo-dark-bg.png.asset.json";
 
 export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
-  head: () => ({ 
+  head: () => ({
     meta: [
-      { title: "Invoice — CZP Ops" }, 
-      { property: "og:title", content: "Invoice — CZP Ops" }, 
-      { name: "description", content: "Customz Paradise BD POS Invoice" }
-    ] 
+      { title: "Invoice — CZP Ops" },
+      { property: "og:title", content: "Invoice — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD POS Invoice" },
+    ],
   }),
   component: InvoicePage,
 });
@@ -62,25 +62,24 @@ function InvoicePage() {
 
       {/* Main Invoice Card Container */}
       <div className="mx-auto max-w-[680px] overflow-hidden rounded-xl border border-neutral-800 bg-black p-6 shadow-2xl print:border-none print:p-0 print:shadow-none">
-        
         {/* 1. Header Layout */}
         <header className="flex flex-col items-center gap-6 border-b border-dashed border-neutral-700 pb-8 text-center sm:flex-row sm:text-left">
           <div className="w-[120px] shrink-0">
-            <img 
-              src={logoDark.url} 
-              alt={site.name} 
+            <img
+              src={logoDark.url}
+              alt={site.name}
               className="h-auto w-full max-w-[120px] object-contain"
             />
           </div>
-          
+
           <div className="flex-1 space-y-1 sm:text-center">
             <h1 className="text-2xl font-bold uppercase tracking-widest">{site.name}</h1>
             <div className="text-sm text-neutral-400 print:text-neutral-600">
               <p>Help Line: {site.phoneDisplay}</p>
-              <p className="lowercase">{site.url.replace(/^https?:\/\//, '')}</p>
+              <p className="lowercase">{site.url.replace(/^https?:\/\//, "")}</p>
             </div>
           </div>
-          
+
           {/* Spacer for centering in desktop layout */}
           <div className="hidden w-[120px] sm:block" aria-hidden="true" />
         </header>
@@ -98,9 +97,15 @@ function InvoicePage() {
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
                 <span className="text-neutral-500">Date:</span>
-                <span>{new Date(order.created_at).toLocaleString("en-GB", { 
-                  day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' 
-                })}</span>
+                <span>
+                  {new Date(order.created_at).toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </span>
               </p>
               <p className="flex justify-between sm:justify-start sm:gap-4">
                 <span className="text-neutral-500">Payment:</span>
@@ -118,7 +123,9 @@ function InvoicePage() {
               <p className="break-words text-neutral-400 print:text-neutral-600">
                 {order.address_line}, {order.city}
               </p>
-              <p className="text-neutral-300 print:text-neutral-700">Phone: {order.customer_phone}</p>
+              <p className="text-neutral-300 print:text-neutral-700">
+                Phone: {order.customer_phone}
+              </p>
             </div>
           </div>
         </div>
@@ -146,8 +153,12 @@ function InvoicePage() {
                     </div>
                   </td>
                   <td className="py-4 px-2 text-center">{item.quantity}</td>
-                  <td className="py-4 px-2 text-right tabular-nums">{formatBDT(Number(item.unit_price))}</td>
-                  <td className="py-4 px-2 text-right tabular-nums font-bold">{formatBDT(Number(item.line_total))}</td>
+                  <td className="py-4 px-2 text-right tabular-nums">
+                    {formatBDT(Number(item.unit_price))}
+                  </td>
+                  <td className="py-4 px-2 text-right tabular-nums font-bold">
+                    {formatBDT(Number(item.line_total))}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -212,4 +223,3 @@ function InvoicePage() {
     </div>
   );
 }
-

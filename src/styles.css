@@ -112,7 +112,8 @@
   --brand-instagram: oklch(0.6 0.21 12);
   --brand-youtube: oklch(0.56 0.24 27);
   --shadow-red-value: 0 10px 30px -12px oklch(0.45 0.22 25 / 0.55);
-  --shadow-card-value: 0 1px 2px oklch(0.16 0.004 264 / 0.06), 0 12px 28px -18px oklch(0.16 0.004 264 / 0.25);
+  --shadow-card-value:
+    0 1px 2px oklch(0.16 0.004 264 / 0.06), 0 12px 28px -18px oklch(0.16 0.004 264 / 0.25);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -224,21 +225,21 @@
 }
 
 @utility shadow-3d-red {
-  box-shadow: 
+  box-shadow:
     0 1px 0 0 oklch(from var(--brand-red) calc(l + 0.2) c h) inset,
     0 8px 24px -10px oklch(from var(--brand-red) l c h / 0.6),
     0 4px 6px -2px oklch(from var(--brand-red) calc(l - 0.2) c h / 0.4);
 }
 
 @utility shadow-3d-onyx {
-  box-shadow: 
+  box-shadow:
     0 1px 0 0 oklch(0.35 0.004 264) inset,
     0 8px 24px -10px oklch(0 0 0 / 0.5),
     0 4px 6px -2px oklch(0 0 0 / 0.8);
 }
 
 @utility shadow-3d-steel {
-  box-shadow: 
+  box-shadow:
     0 1px 0 0 oklch(0.98 0 0) inset,
     0 8px 24px -10px oklch(0 0 0 / 0.2),
     0 4px 6px -2px oklch(0 0 0 / 0.1);

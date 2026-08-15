@@ -17,7 +17,6 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { XCircle } from "lucide-react";
 
-
 import { ManualOrderForm } from "@/components/admin/orders/ManualOrderForm";
 import { OrderActivityDialog } from "@/components/admin/orders/OrderActivityDialog";
 import { OrderCancelDialog } from "@/components/admin/orders/OrderCancelDialog";
@@ -43,12 +42,7 @@ import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { SteadfastBulkDialog } from "@/components/admin/orders/SteadfastBulkDialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -80,7 +74,13 @@ import {
 type SortBy = "created_at" | "total" | "invoice_no";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/")({
-  head: () => ({ meta: [{ title: "Orders — CZP Ops" }, { property: "og:title", content: "Orders — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Orders — CZP Ops" },
+      { property: "og:title", content: "Orders — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   validateSearch: (search: Record<string, unknown>): { status?: OrderStatus } => {
     const status = String(search["status"] ?? "");
     return ORDER_STATUSES.includes(status as OrderStatus) ? { status: status as OrderStatus } : {};
@@ -118,8 +118,9 @@ function AdminOrderList() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [cancelOrder, setCancelOrder] = useState<AdminOrderListRow | null>(null);
   const [noteOrder, setNoteOrder] = useState<AdminOrderListRow | null>(null);
-  const [summaryCustomer, setSummaryCustomer] = useState<{ phone: string; name: string } | null>(null);
-
+  const [summaryCustomer, setSummaryCustomer] = useState<{ phone: string; name: string } | null>(
+    null,
+  );
 
   const sortDir = filters.sortDir === "asc" ? "asc" : "desc";
 
@@ -130,7 +131,10 @@ function AdminOrderList() {
   );
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
-  const countsQuery = useQuery({ queryKey: ["admin-order-tab-counts"], queryFn: () => fetchCounts({}) });
+  const countsQuery = useQuery({
+    queryKey: ["admin-order-tab-counts"],
+    queryFn: () => fetchCounts({}),
+  });
   const staffQuery = useQuery({ queryKey: ["admin-order-staff"], queryFn: () => fetchStaff({}) });
   const ordersQuery = useQuery({
     queryKey: ["admin-orders", activeFilters, tab, page, pageSize, sortBy, sortDir],
@@ -257,9 +261,7 @@ function AdminOrderList() {
               </DropdownMenuItem>
               {selectedRows.length ? (
                 <DropdownMenuItem
-                  onClick={() =>
-                    void exportOrdersXlsx(selectedRows, `${exportName}-selected`)
-                  }
+                  onClick={() => void exportOrdersXlsx(selectedRows, `${exportName}-selected`)}
                 >
                   Excel (.xlsx) — {selectedRows.length} selected
                 </DropdownMenuItem>
@@ -282,10 +284,7 @@ function AdminOrderList() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               {ORDER_STATUSES.map((status) => (
-                <DropdownMenuItem
-                  key={status}
-                  onClick={() => applyFilters({ ...filters, status })}
-                >
+                <DropdownMenuItem key={status} onClick={() => applyFilters({ ...filters, status })}>
                   {statusLabel(status)}
                 </DropdownMenuItem>
               ))}
@@ -358,14 +357,22 @@ function AdminOrderList() {
                 className="h-7 rounded border border-input bg-background px-2 text-[10px] font-bold uppercase"
               >
                 <option value="">Unassign</option>
-                {staffQuery.data?.map((m) => <option key={m.id} value={m.id}>{m.label}</option>)}
+                {staffQuery.data?.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.label}
+                  </option>
+                ))}
               </select>
               <Button
                 variant="secondary"
                 size="sm"
                 className="h-7 px-2 text-[10px] uppercase font-bold border border-border"
                 disabled={assignMutation.isPending}
-                onClick={() => assignMutation.mutate({ data: { orderIds: selected, assignedTo: bulkAssignee || null } })}
+                onClick={() =>
+                  assignMutation.mutate({
+                    data: { orderIds: selected, assignedTo: bulkAssignee || null },
+                  })
+                }
               >
                 Assign User
               </Button>
@@ -374,14 +381,20 @@ function AdminOrderList() {
                 onChange={(e) => setBulkStatus(e.target.value as OrderStatus)}
                 className="h-7 rounded border border-input bg-background px-2 text-[10px] font-bold uppercase"
               >
-                {ORDER_STATUSES.map((s) => <option key={s} value={s}>{statusLabel(s)}</option>)}
+                {ORDER_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {statusLabel(s)}
+                  </option>
+                ))}
               </select>
               <Button
                 variant="red"
                 size="sm"
                 className="h-7 px-2 text-[10px] uppercase font-bold"
                 disabled={bulkMutation.isPending}
-                onClick={() => bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })}
+                onClick={() =>
+                  bulkMutation.mutate({ data: { orderIds: selected, status: bulkStatus } })
+                }
               >
                 Change Status
               </Button>
@@ -400,10 +413,21 @@ function AdminOrderList() {
                 setSteadfastOpen(true);
               }}
             >
-              <img src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg" alt="SteadFast" className="h-3 w-auto" />
+              <img
+                src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg"
+                alt="SteadFast"
+                className="h-3 w-auto"
+              />
             </Button>
           ) : null}
-          <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase font-bold" onClick={() => setSelected([])}>Clear</Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 text-[10px] uppercase font-bold"
+            onClick={() => setSelected([])}
+          >
+            Clear
+          </Button>
         </div>
       ) : null}
 
@@ -421,7 +445,7 @@ function AdminOrderList() {
         order={activityOrder}
         onOpenChange={(open) => (open ? null : setActivityOrder(null))}
       />
- 
+
       <OrderCancelDialog
         order={cancelOrder}
         onOpenChange={(open) => (open ? null : setCancelOrder(null))}
@@ -452,7 +476,6 @@ function AdminOrderList() {
           />
         </DialogContent>
       </Dialog>
-
 
       {/* DESKTOP TABLE */}
       <div className="mt-3 hidden overflow-x-auto rounded border border-border bg-card lg:block">
@@ -514,8 +537,12 @@ function AdminOrderList() {
                   <div className="flex flex-col items-center justify-center gap-4 text-muted-foreground">
                     <XCircle className="h-10 w-10 opacity-20" />
                     <div>
-                      <p className="text-base font-bold uppercase tracking-wider">No matching orders</p>
-                      <p className="text-xs">Adjust your filters or status selection to find what you're looking for.</p>
+                      <p className="text-base font-bold uppercase tracking-wider">
+                        No matching orders
+                      </p>
+                      <p className="text-xs">
+                        Adjust your filters or status selection to find what you're looking for.
+                      </p>
                     </div>
                   </div>
                 </td>
@@ -565,7 +592,11 @@ function AdminOrderList() {
                 <td className="whitespace-nowrap p-2 font-mono text-[11px] leading-tight text-muted-foreground">
                   <div>{new Date(order.created_at).toLocaleDateString("en-GB")}</div>
                   <div className="text-[10px] opacity-70">
-                    {new Date(order.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true })}
+                    {new Date(order.created_at).toLocaleTimeString("en-US", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                      hour12: true,
+                    })}
                   </div>
                 </td>
                 <td className="p-2">
@@ -631,9 +662,7 @@ function AdminOrderList() {
                     checked={selected.includes(order.id)}
                     onCheckedChange={(checked) =>
                       setSelected((current) =>
-                        checked
-                          ? [...current, order.id]
-                          : current.filter((id) => id !== order.id),
+                        checked ? [...current, order.id] : current.filter((id) => id !== order.id),
                       )
                     }
                     aria-label={`Select order ${order.invoice_no}`}

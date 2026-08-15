@@ -1,13 +1,13 @@
 import React, { useState, useRef } from "react";
-import { 
-  Upload, 
-  X, 
-  Loader2, 
-  Image as ImageIcon, 
-  AlertCircle, 
-  RefreshCw, 
+import {
+  Upload,
+  X,
+  Loader2,
+  Image as ImageIcon,
+  AlertCircle,
+  RefreshCw,
   GripVertical,
-  CheckCircle2
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -47,33 +47,41 @@ export function ProductImageUpload({
   const dragOverItem = useRef<number | null>(null);
 
   const processAndUpload = async (uploadId: string, file: File) => {
-    setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "processing", progress: 10 } : u));
+    setUploads((prev) =>
+      prev.map((u) => (u.id === uploadId ? { ...u, status: "processing", progress: 10 } : u)),
+    );
 
     try {
       await createImageBitmap(file);
-      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: 30 } : u));
+      setUploads((prev) => prev.map((u) => (u.id === uploadId ? { ...u, progress: 30 } : u)));
 
-      const fileExt = "webp"; 
+      const fileExt = "webp";
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
-      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u));
+      setUploads((prev) =>
+        prev.map((u) => (u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u)),
+      );
 
-      const { error: uploadError } = await supabase.storage
-        .from("products")
-        .upload(filePath, file);
+      const { error: uploadError } = await supabase.storage.from("products").upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
-      const { data: { publicUrl } } = supabase.storage
-        .from("products")
-        .getPublicUrl(filePath);
+      const {
+        data: { publicUrl },
+      } = supabase.storage.from("products").getPublicUrl(filePath);
 
-      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "completed", progress: 100, url: publicUrl } : u));
-      
+      setUploads((prev) =>
+        prev.map((u) =>
+          u.id === uploadId ? { ...u, status: "completed", progress: 100, url: publicUrl } : u,
+        ),
+      );
+
       return publicUrl;
     } catch (error: any) {
-      setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "error", error: error.message } : u));
+      setUploads((prev) =>
+        prev.map((u) => (u.id === uploadId ? { ...u, status: "error", error: error.message } : u)),
+      );
       throw error;
     }
   };
@@ -82,24 +90,24 @@ export function ProductImageUpload({
     if (!files || files.length === 0) return;
 
     const filesArray = Array.from(files);
-    const newUploads: UploadStatus[] = filesArray.map(file => ({
+    const newUploads: UploadStatus[] = filesArray.map((file) => ({
       file,
       id: Math.random().toString(36).substring(7),
       progress: 0,
-      status: "pending"
+      status: "pending",
     }));
 
     const firstUpload = newUploads[0];
     if (!multiple && firstUpload) {
       setUploads([firstUpload]);
     } else {
-      setUploads(prev => [...prev, ...newUploads]);
+      setUploads((prev) => [...prev, ...newUploads]);
     }
 
     const completedUrls: string[] = [];
-    
+
     for (const upload of newUploads) {
-      if (multiple && (images.length + completedUrls.length) >= maxFiles) {
+      if (multiple && images.length + completedUrls.length >= maxFiles) {
         toast.warning(`Maximum ${maxFiles} images allowed.`);
         break;
       }
@@ -114,11 +122,11 @@ export function ProductImageUpload({
 
     if (completedUrls.length > 0) {
       const nextImages = multiple ? [...images, ...completedUrls] : [completedUrls[0]];
-      const finalValue = multiple ? nextImages : (nextImages[0] || "");
+      const finalValue = multiple ? nextImages : nextImages[0] || "";
       onChange(finalValue as string | string[]);
-      
+
       setTimeout(() => {
-        setUploads(prev => prev.filter(u => u.status !== "completed"));
+        setUploads((prev) => prev.filter((u) => u.status !== "completed"));
       }, 3000);
     }
   };
@@ -128,11 +136,11 @@ export function ProductImageUpload({
       const url = await processAndUpload(upload.id, upload.file);
       if (url) {
         const nextImages = multiple ? [...images, url] : [url];
-        const finalValue = multiple ? nextImages : (nextImages[0] || "");
+        const finalValue = multiple ? nextImages : nextImages[0] || "";
         onChange(finalValue as string | string[]);
-        
+
         setTimeout(() => {
-          setUploads(prev => prev.filter(u => u.status !== "completed"));
+          setUploads((prev) => prev.filter((u) => u.status !== "completed"));
         }, 3000);
       }
     } catch (err) {
@@ -143,7 +151,7 @@ export function ProductImageUpload({
   const removeImage = (index: number) => {
     const next = [...images];
     next.splice(index, 1);
-    const finalValue = multiple ? next : (next[0] || "");
+    const finalValue = multiple ? next : next[0] || "";
     onChange(finalValue as string | string[]);
   };
 
@@ -172,52 +180,71 @@ export function ProductImageUpload({
 
       {uploads.length > 0 && (
         <div className="space-y-2 mb-4">
-          {uploads.map(upload => (
-            <div key={upload.id} className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-muted/30">
+          {uploads.map((upload) => (
+            <div
+              key={upload.id}
+              className="flex flex-col gap-1.5 p-3 rounded-lg border border-border bg-muted/30"
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 truncate">
-                  {upload.status === "processing" ? <RefreshCw className="h-3 w-3 animate-spin text-cyan-500" /> : 
-                   upload.status === "uploading" ? <Loader2 className="h-3 w-3 animate-spin text-cyan-500" /> :
-                   upload.status === "completed" ? <CheckCircle2 className="h-3 w-3 text-green-500" /> :
-                   upload.status === "error" ? <AlertCircle className="h-3 w-3 text-destructive" /> :
-                   <ImageIcon className="h-3 w-3 text-muted-foreground" />}
-                  <span className="text-[10px] font-medium truncate max-w-[150px]">{upload.file.name}</span>
+                  {upload.status === "processing" ? (
+                    <RefreshCw className="h-3 w-3 animate-spin text-cyan-500" />
+                  ) : upload.status === "uploading" ? (
+                    <Loader2 className="h-3 w-3 animate-spin text-cyan-500" />
+                  ) : upload.status === "completed" ? (
+                    <CheckCircle2 className="h-3 w-3 text-green-500" />
+                  ) : upload.status === "error" ? (
+                    <AlertCircle className="h-3 w-3 text-destructive" />
+                  ) : (
+                    <ImageIcon className="h-3 w-3 text-muted-foreground" />
+                  )}
+                  <span className="text-[10px] font-medium truncate max-w-[150px]">
+                    {upload.file.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-[9px] font-bold uppercase text-muted-foreground">{upload.status}</span>
+                  <span className="text-[9px] font-bold uppercase text-muted-foreground">
+                    {upload.status}
+                  </span>
                   {upload.status === "error" && (
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-5 w-5" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-5 w-5"
                       onClick={() => retryUpload(upload)}
                     >
                       <RefreshCw className="h-3 w-3" />
                     </Button>
                   )}
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="h-5 w-5" 
-                    onClick={() => setUploads(prev => prev.filter(u => u.id !== upload.id))}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-5 w-5"
+                    onClick={() => setUploads((prev) => prev.filter((u) => u.id !== upload.id))}
                   >
                     <X className="h-3 w-3" />
                   </Button>
                 </div>
               </div>
               <Progress value={upload.progress} className="h-1 bg-background" />
-              {upload.error && <p className="text-[9px] text-destructive font-medium">{upload.error}</p>}
+              {upload.error && (
+                <p className="text-[9px] text-destructive font-medium">{upload.error}</p>
+              )}
             </div>
           ))}
         </div>
       )}
 
-      <div className={cn(
-        "grid gap-4",
-        multiple ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" : "grid-cols-1 max-w-[240px]"
-      )}>
+      <div
+        className={cn(
+          "grid gap-4",
+          multiple
+            ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+            : "grid-cols-1 max-w-[240px]",
+        )}
+      >
         {images.map((url, index) => (
-          <div 
+          <div
             key={`${url}-${index}`}
             draggable={multiple}
             onDragStart={() => (dragItem.current = index)}
@@ -226,16 +253,16 @@ export function ProductImageUpload({
             onDragOver={(e) => e.preventDefault()}
             className={cn(
               "group relative aspect-square rounded-lg border border-border bg-muted overflow-hidden transition-all hover:border-cyan-500/50 cursor-move",
-              multiple && "active:scale-95 active:rotate-1"
+              multiple && "active:scale-95 active:rotate-1",
             )}
           >
-            <img 
-              src={url} 
-              alt={`Product ${index + 1}`} 
+            <img
+              src={url}
+              alt={`Product ${index + 1}`}
               className="w-full h-full object-cover"
               loading="lazy"
             />
-            
+
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
               <Button
                 type="button"
@@ -246,20 +273,20 @@ export function ProductImageUpload({
               >
                 <X className="h-4 w-4" />
               </Button>
-              
+
               {multiple && (
                 <div className="flex gap-1">
                   <GripVertical className="h-5 w-5 text-white/50" />
                 </div>
               )}
             </div>
-            
+
             {index === 0 && !multiple && (
               <div className="absolute bottom-0 left-0 right-0 bg-cyan-500 text-[9px] font-bold text-black uppercase py-0.5 text-center tracking-tighter">
                 Main Image
               </div>
             )}
-            
+
             {multiple && (
               <div className="absolute top-1 left-1 size-5 rounded-full bg-black/50 backdrop-blur-sm border border-white/10 flex items-center justify-center text-[9px] font-bold text-white">
                 {index + 1}
@@ -269,10 +296,13 @@ export function ProductImageUpload({
         ))}
 
         {(multiple || images.length === 0) && (
-          <label className={cn(
-            "flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 hover:border-cyan-500/50 transition-all",
-            uploads.some(u => u.status !== "completed" && u.status !== "error") && "pointer-events-none opacity-50"
-          )}>
+          <label
+            className={cn(
+              "flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 hover:border-cyan-500/50 transition-all",
+              uploads.some((u) => u.status !== "completed" && u.status !== "error") &&
+                "pointer-events-none opacity-50",
+            )}
+          >
             <input
               type="file"
               className="hidden"

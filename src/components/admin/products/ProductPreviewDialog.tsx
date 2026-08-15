@@ -85,14 +85,14 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
               Visualizing product exactly as customers will see it.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-6 px-4 py-2 rounded-full bg-background border border-border shadow-sm">
             <div className="flex items-center gap-3">
-              <Label 
-                htmlFor="publish-toggle" 
+              <Label
+                htmlFor="publish-toggle"
                 className={cn(
                   "text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer",
-                  !isPreviewActive ? "text-primary" : "text-muted-foreground/40"
+                  !isPreviewActive ? "text-primary" : "text-muted-foreground/40",
                 )}
               >
                 Draft
@@ -103,31 +103,33 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
                 onCheckedChange={setIsPreviewActive}
                 className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-primary"
               />
-              <Label 
-                htmlFor="publish-toggle" 
+              <Label
+                htmlFor="publish-toggle"
                 className={cn(
                   "text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer",
-                  isPreviewActive ? "text-green-500" : "text-muted-foreground/40"
+                  isPreviewActive ? "text-green-500" : "text-muted-foreground/40",
                 )}
               >
                 Public
               </Label>
             </div>
-            
+
             <div className="h-4 w-px bg-border" />
-            
+
             <div className="flex items-center gap-2">
-               <div className={cn(
-                 "size-2 rounded-full animate-pulse",
-                 isPreviewActive ? "bg-green-500" : "bg-primary"
-               )} />
-               <span className="text-[10px] font-black uppercase tracking-tighter text-foreground">
-                 {isPreviewActive ? "Live Preview" : "Draft Preview"}
-               </span>
+              <div
+                className={cn(
+                  "size-2 rounded-full animate-pulse",
+                  isPreviewActive ? "bg-green-500" : "bg-primary",
+                )}
+              />
+              <span className="text-[10px] font-black uppercase tracking-tighter text-foreground">
+                {isPreviewActive ? "Live Preview" : "Draft Preview"}
+              </span>
             </div>
           </div>
         </DialogHeader>
-        
+
         <div className="flex-1 overflow-y-auto bg-background custom-scrollbar">
           {!isPreviewActive && (
             <div className="bg-primary/10 border-b border-primary/20 px-6 py-2 text-center">

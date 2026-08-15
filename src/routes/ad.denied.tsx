@@ -21,8 +21,8 @@ function AccessDenied() {
       <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Access denied</h1>
       <p className="mt-2 text-sm text-muted-foreground">
         Your identity was verified, but your account is currently <strong>Pending</strong> approval.
-        Access is restricted until a Super Admin approves your staff status. If you just finished MFA,
-        please wait for the administrative review to complete.
+        Access is restricted until a Super Admin approves your staff status. If you just finished
+        MFA, please wait for the administrative review to complete.
       </p>
       <div className="mt-6 flex flex-col gap-2">
         <Link to="/ad/log" className="text-sm uppercase tracking-wider text-primary underline">

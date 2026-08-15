@@ -20,9 +20,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Clock, Truck, AlertCircle } from "lucide-react";
 
-
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
-  head: () => ({ meta: [{ title: "Order — CZP Ops" }, { property: "og:title", content: "Order — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Order — CZP Ops" },
+      { property: "og:title", content: "Order — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: AdminOrderDetail,
 });
 
@@ -35,7 +40,6 @@ function AdminOrderDetail() {
   const fetchTracking = useServerFn(getSteadfastTracking);
 
   const query = useQuery({
-
     queryKey: ["admin-order", id],
     queryFn: () => fetchOrder({ data: { orderId: id } }),
   });
@@ -48,7 +52,6 @@ function AdminOrderDetail() {
   });
 
   const mutation = useMutation({
-
     mutationFn: update,
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ["admin-order", id] });
@@ -127,8 +130,8 @@ function AdminOrderDetail() {
         <div className="rounded-xl border border-border bg-card p-4 shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-lg font-bold uppercase">Customer information</h2>
-            <FraudMarkBadge 
-              phoneNumber={order.customer_phone} 
+            <FraudMarkBadge
+              phoneNumber={order.customer_phone}
               customerName={order.customer_name}
               canManage={canManage}
             />
@@ -215,7 +218,9 @@ function AdminOrderDetail() {
         </p>
       ) : null}
 
-      <h2 className="mt-6 font-display text-lg font-bold uppercase">Shipment Timeline (SteadFast)</h2>
+      <h2 className="mt-6 font-display text-lg font-bold uppercase">
+        Shipment Timeline (SteadFast)
+      </h2>
       <div className="mt-2">
         <Card className="border-border bg-card shadow-card">
           <CardHeader className="pb-2">
@@ -226,7 +231,9 @@ function AdminOrderDetail() {
           </CardHeader>
           <CardContent>
             {trackingQuery.isLoading ? (
-              <p className="py-4 text-center text-xs text-muted-foreground">Fetching latest tracking...</p>
+              <p className="py-4 text-center text-xs text-muted-foreground">
+                Fetching latest tracking...
+              </p>
             ) : trackingQuery.data?.events.length || trackingQuery.data?.latest ? (
               <div className="space-y-4">
                 {trackingQuery.data.latest && (
@@ -237,12 +244,19 @@ function AdminOrderDetail() {
                     </div>
                     <div className="flex-1 rounded-lg border border-primary/20 bg-primary/5 p-3">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold uppercase text-primary">Live: {statusLabel(trackingQuery.data.latest.status)}</span>
+                        <span className="text-xs font-bold uppercase text-primary">
+                          Live: {statusLabel(trackingQuery.data.latest.status)}
+                        </span>
                         <span className="text-[10px] text-muted-foreground">
-                          {new Date(trackingQuery.data.latest.time).toLocaleTimeString("en-BD", { hour: "2-digit", minute: "2-digit" })}
+                          {new Date(trackingQuery.data.latest.time).toLocaleTimeString("en-BD", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </div>
-                      <p className="mt-1 text-sm font-medium">{trackingQuery.data.latest.message}</p>
+                      <p className="mt-1 text-sm font-medium">
+                        {trackingQuery.data.latest.message}
+                      </p>
                       <div className="mt-2 rounded bg-muted/50 p-2 font-mono text-[10px] text-muted-foreground">
                         Raw: {JSON.stringify(trackingQuery.data.latest.raw)}
                       </div>
@@ -260,9 +274,14 @@ function AdminOrderDetail() {
                     </div>
                     <div className="flex-1 pb-4">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold uppercase">{statusLabel(event.courier_status)}</span>
+                        <span className="text-xs font-semibold uppercase">
+                          {statusLabel(event.courier_status)}
+                        </span>
                         <span className="text-[10px] text-muted-foreground">
-                          {new Date(event.created_at).toLocaleString("en-GB", { dateStyle: "short", timeStyle: "short" })}
+                          {new Date(event.created_at).toLocaleString("en-GB", {
+                            dateStyle: "short",
+                            timeStyle: "short",
+                          })}
                         </span>
                       </div>
                       <p className="mt-1 text-xs text-muted-foreground">{event.message}</p>
@@ -274,7 +293,9 @@ function AdminOrderDetail() {
               <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
                 <AlertCircle className="mb-2 h-8 w-8 opacity-20" />
                 <p className="text-sm italic">No shipment tracking data available yet.</p>
-                {!order.consignment_id && <p className="text-[10px]">Order not yet booked with courier.</p>}
+                {!order.consignment_id && (
+                  <p className="text-[10px]">Order not yet booked with courier.</p>
+                )}
               </div>
             )}
           </CardContent>
@@ -293,7 +314,6 @@ function AdminOrderDetail() {
           </li>
         ))}
       </ol>
-
     </section>
   );
 }

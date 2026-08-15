@@ -38,8 +38,8 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
       aria-labelledby="bike-models"
     >
       <SectionHeading
-        eyebrow={t('section.models.eyebrow')}
-        title={t('section.models.title')}
+        eyebrow={t("section.models.eyebrow")}
+        title={t("section.models.title")}
         action={
           <div className="hidden gap-2 sm:flex">
             <button

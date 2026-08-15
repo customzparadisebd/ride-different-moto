@@ -1,9 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { StickyNote } from "lucide-react";
 
 interface OrderNoteDialogProps {
@@ -25,7 +20,7 @@ export function OrderNoteDialog({ order, onOpenChange }: OrderNoteDialogProps) {
             </DialogTitle>
           </div>
         </DialogHeader>
-        
+
         <div className="mt-4 space-y-2">
           <div className="rounded-lg bg-blue-500/5 border border-blue-500/20 p-4">
             <p className="text-sm leading-relaxed whitespace-pre-wrap text-foreground font-medium">

@@ -80,7 +80,10 @@ export const updateAdminProfile = createServerFn({ method: "POST" })
 
     if (Object.keys(update).length === 0) return { ok: true };
 
-    const { error } = await supabaseAdmin.from("profiles").update(update as any).eq("id", context.userId);
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update(update as any)
+      .eq("id", context.userId);
     if (error) throw new Error("Could not update profile.");
 
     await auditFromActor(actor, {
@@ -101,12 +104,12 @@ export const recordSignIn = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     const meta = requestMeta();
-    
+
     await supabaseAdmin
       .from("profiles")
-      .update({ 
+      .update({
         last_login_at: new Date().toISOString(),
-        last_login_ip: meta.ip 
+        last_login_ip: meta.ip,
       })
       .eq("id", actor.userId);
     await auditFromActor(actor, {
@@ -642,7 +645,6 @@ export const createStaff = createServerFn({ method: "POST" })
       approved_by: actor.userId,
       approved_at: new Date().toISOString(),
       mfa_required: data.role === "super_admin",
-
     });
 
     if (profileError) {
@@ -675,7 +677,9 @@ export const createStaff = createServerFn({ method: "POST" })
 /** Fetches audit logs for a specific user. */
 export const getStaffActivity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ userId: z.string().uuid(), limit: z.number().optional() }).parse(input))
+  .inputValidator((input: unknown) =>
+    z.object({ userId: z.string().uuid(), limit: z.number().optional() }).parse(input),
+  )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -692,9 +696,6 @@ export const getStaffActivity = createServerFn({ method: "POST" })
     if (error) throw new Error("Could not load activity log.");
     return logs;
   });
-
-
-
 
 // ---------- SESSIONS ----------
 export const listAdminSessions = createServerFn({ method: "POST" })

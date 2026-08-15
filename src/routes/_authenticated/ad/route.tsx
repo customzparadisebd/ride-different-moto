@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/ad")({
       throw redirect({ to: "/ad/denied" });
     }
     if (access.sessionRevoked) throw redirect({ to: "/ad/denied" });
-    
+
     // 1. MFA Verification (Identity Check)
     // Every staff user must use 2FA for account security.
     if (access.mfaRequired && !access.mfaSatisfied) {
@@ -33,15 +33,15 @@ export const Route = createFileRoute("/_authenticated/ad")({
     // 2. Staff Status Check (Permanent Account Approval)
     // Accounts in 'pending', 'suspended', etc., are blocked even if MFA is passed.
     if (!access.isStaff) {
-       // If account is pending, they might need to go to the log page to see status
-       if (access.status === 'pending') throw redirect({ to: "/ad/log" });
-       throw redirect({ to: "/ad/denied" });
+      // If account is pending, they might need to go to the log page to see status
+      if (access.status === "pending") throw redirect({ to: "/ad/log" });
+      throw redirect({ to: "/ad/denied" });
     }
 
     // 3. Login Approval Check (Temporary Session Validation)
     // getMyAccess already handles the redirection trigger via loginApprovalPending
     if (access.loginApprovalPending) {
-       throw redirect({ to: "/ad/log" });
+      throw redirect({ to: "/ad/log" });
     }
     return { access };
   },

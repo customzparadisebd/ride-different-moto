@@ -330,8 +330,7 @@ const isActive = <T extends { active: boolean }>(item: T) => item.active;
 
 export const getHeroSlides = () => heroSlides.filter(isActive).sort(byOrder);
 export const getBikeModels = () => bikeModels.filter(isActive).sort(byOrder);
-export const getBikeModel = (slug: string) =>
-  getBikeModels().find((model) => model.slug === slug);
+export const getBikeModel = (slug: string) => getBikeModels().find((model) => model.slug === slug);
 
 export const getProducts = () => products.filter(isActive).sort(byOrder);
 export const getUniversalProducts = () => getProducts().filter((p) => p.universal);

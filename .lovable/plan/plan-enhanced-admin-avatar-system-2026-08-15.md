@@ -13,12 +13,14 @@ Implement a professional and flexible avatar system exclusively for Admin Panel 
 ## Proposed Changes
 
 ### Database & Backend
+
 - Ensure the `avatars` storage bucket is properly configured for Admin access.
 - Use the existing `updateAdminProfile` server function to handle avatar URL updates.
 
 ### Frontend Components
 
 #### `src/components/admin/UserProfileWidget.tsx`
+
 - **Redesign the Profile Dialog**:
   - Add a "Choose Preset" section with a grid of professional avatar options.
   - Add a "Manual Upload" section with clear technical guidelines:
@@ -29,13 +31,16 @@ Implement a professional and flexible avatar system exclusively for Admin Panel 
   - Add functionality to "Replace" or "Remove" custom avatars.
 
 #### `src/components/admin/AdminSidebar.tsx` & `AdminShell.tsx`
+
 - Ensure the avatar displays correctly in the sidebar and header areas.
 - Maintain responsive sizing across desktop, tablet, and mobile.
 
 #### `src/routes/_authenticated/ad/staff.tsx`
+
 - Update the staff list table to display the enhanced avatars (presets or custom) for each member.
 
 ## Technical Details
+
 - **Optimization**: Client-side resizing and compression before upload to ensure fast panel loading.
 - **Avatars**: Leverage high-quality SVGs or optimized WebP assets for presets.
 - **Privacy**: Admin avatars are strictly restricted to the admin authentication context.
@@ -43,9 +48,11 @@ Implement a professional and flexible avatar system exclusively for Admin Panel 
 ## Verification Plan
 
 ### Automated Tests
+
 - Run `bunx tsgo` to ensure no TypeScript regressions.
 
 ### Manual Verification
+
 1. Open Admin Panel and click on the profile widget.
 2. Select a preset avatar and verify it updates in the sidebar, header, and staff list.
 3. Upload a custom image:

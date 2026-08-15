@@ -17,8 +17,8 @@ import { ProductGallery } from "@/components/product/ProductGallery";
 import { RotateCw } from "lucide-react";
 
 // 360 viewer is large, load lazily
-const Product360Viewer = lazy(() => 
-  import("@/components/product/Product360Viewer").then(m => ({ default: m.Product360Viewer }))
+const Product360Viewer = lazy(() =>
+  import("@/components/product/Product360Viewer").then((m) => ({ default: m.Product360Viewer })),
 );
 
 import { Button } from "@/components/ui/button";
@@ -79,7 +79,7 @@ export const Route = createFileRoute("/products/$slug")({
     const description =
       loaderData.description ??
       `Buy ${loaderData.name} from Customz Paradise BD with nationwide delivery in Bangladesh.`;
-    
+
     return {
       meta: [
         { title },
@@ -137,7 +137,6 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
   const [qty, setQty] = useState(1);
   const [show360, setShow360] = useState(false);
 
-
   const color = useMemo(
     () => product.colors.find((entry) => entry.id === colorId) ?? null,
     [product.colors, colorId],
@@ -147,7 +146,6 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
   const unitPrice = colorPrice(product, color);
   const wasPrice = compareAtPrice(product, color);
   const gallery = product.gallery.length ? product.gallery : [""];
-
 
   const add = (thenCheckout: boolean) => {
     if (!product.inStock) return;
@@ -173,10 +171,10 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
 
       <div className="mt-4 grid gap-6 lg:grid-cols-2 lg:gap-10">
         {/* Gallery Section */}
-        <ProductGallery 
-          images={gallery} 
-          productName={product.name} 
-          activeColorImage={color?.image ?? null} 
+        <ProductGallery
+          images={gallery}
+          productName={product.name}
+          activeColorImage={color?.image ?? null}
         />
 
         {product.has360View && product.product360Images.length > 0 ? (
@@ -202,8 +200,6 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
             />
           </Suspense>
         )}
-
-
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
@@ -260,7 +256,9 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
                 </div>
                 <div>
                   <div className="text-left leading-none">Interactive</div>
-                  <div className="mt-1 text-left text-[10px] opacity-70">Experience 360° Rotation</div>
+                  <div className="mt-1 text-left text-[10px] opacity-70">
+                    Experience 360° Rotation
+                  </div>
                 </div>
               </Button>
             </div>

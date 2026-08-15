@@ -85,21 +85,21 @@ export function SafeImage({
   const canRetry = attempt < MAX_RETRIES;
 
   return (
-    <div 
+    <div
       className={cn("relative overflow-hidden bg-muted", containerClassName)}
-      style={{ 
+      style={{
         aspectRatio: `${width} / ${height}`,
       }}
     >
       {/* 4. Blur-up placeholder effect */}
       {(status === "loading" || status === "error") && blurDataURL && (
-        <div 
+        <div
           className="absolute inset-0 z-0 scale-110 blur-2xl transition-opacity duration-500"
           style={{
             backgroundImage: `url(${blurDataURL})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            opacity: status === "loading" ? 1 : 0
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            opacity: status === "loading" ? 1 : 0,
           }}
         />
       )}
@@ -108,15 +108,18 @@ export function SafeImage({
         <picture className="contents">
           {/* 1 & 2. Responsive delivery and format optimization */}
           {mobileSrc && (
-            <source 
-              media="(max-width: 640px)" 
-              srcSet={`${mobileSrc}?w=640&format=webp&q=80 1x, ${mobileSrc}?w=1280&format=webp&q=60 2x`} 
+            <source
+              media="(max-width: 640px)"
+              srcSet={`${mobileSrc}?w=640&format=webp&q=80 1x, ${mobileSrc}?w=1280&format=webp&q=60 2x`}
               type="image/webp"
             />
           )}
-          
-          <source 
-            srcSet={srcSet || `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=60 2x`}
+
+          <source
+            srcSet={
+              srcSet ||
+              `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=60 2x`
+            }
             type="image/webp"
           />
 

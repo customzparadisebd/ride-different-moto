@@ -65,7 +65,7 @@ const iconLinkClass =
 /** INVOICE — number, quick actions, source badge and print state. */
 export function InvoiceCell({
   order,
-   onActivity,
+  onActivity,
   onTogglePin,
   onShowNote,
   canManage,
@@ -160,12 +160,12 @@ export function AssignmentCell({ order }: { order: AdminOrderListRow }) {
 }
 
 /** CUSTOMER — contact, quick actions, address and repeat-order count. */
-export function CustomerCell({ 
-  order, 
+export function CustomerCell({
+  order,
   onShowSummary,
-  canManage = false 
-}: { 
-  order: AdminOrderListRow; 
+  canManage = false,
+}: {
+  order: AdminOrderListRow;
   onShowSummary?: () => void;
   canManage?: boolean;
 }) {
@@ -176,21 +176,34 @@ export function CustomerCell({
       <div className="flex flex-col gap-1">
         <div className="flex items-center justify-between">
           <p className="font-bold leading-tight">{order.customer_name}</p>
-          <FraudMarkBadge 
-            phoneNumber={order.customer_phone} 
+          <FraudMarkBadge
+            phoneNumber={order.customer_phone}
             customerName={order.customer_name}
             canManage={canManage}
           />
         </div>
         <div className="flex items-center gap-1">
           <span className="font-mono text-primary">{order.customer_phone}</span>
-          <button onClick={() => void copy(order.customer_phone, "Phone")} className="text-muted-foreground hover:text-primary">
+          <button
+            onClick={() => void copy(order.customer_phone, "Phone")}
+            className="text-muted-foreground hover:text-primary"
+          >
             <Copy className="size-3" />
           </button>
-          <a href={`https://wa.me/${waPhone}`} target="_blank" rel="noreferrer" className="text-[#25D366]">
+          <a
+            href={`https://wa.me/${waPhone}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#25D366]"
+          >
             <MessageCircle className="size-3.5" />
           </a>
-          <a href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`} target="_blank" rel="noreferrer" className="text-rose-500">
+          <a
+            href={`https://www.google.com/search?q=${encodeURIComponent(`${order.customer_phone} courier fraud check`)}`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-rose-500"
+          >
             <ShieldAlert className="size-3.5" />
           </a>
         </div>
@@ -221,7 +234,11 @@ export function ProductsCell({ order }: { order: AdminOrderListRow }) {
         <li key={item.id} className="flex items-start gap-1.5">
           <div className="grid size-8 shrink-0 place-items-center overflow-hidden rounded border border-border bg-secondary">
             {item.image_url ? (
-              <img src={item.image_url} alt={item.product_name} className="size-full object-cover" />
+              <img
+                src={item.image_url}
+                alt={item.product_name}
+                className="size-full object-cover"
+              />
             ) : (
               <span className="text-[8px] uppercase text-muted-foreground">No img</span>
             )}
@@ -242,7 +259,9 @@ export function ProductsCell({ order }: { order: AdminOrderListRow }) {
 export function PaymentCell({ order }: { order: AdminOrderListRow }) {
   return (
     <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
-      <p className="font-bold text-muted-foreground uppercase">{paymentMethodLabel(order.payment_method)}</p>
+      <p className="font-bold text-muted-foreground uppercase">
+        {paymentMethodLabel(order.payment_method)}
+      </p>
       <StatusBadge value={order.payment_status} />
       <p className="font-mono text-[10px] opacity-70">TrxID: {order.transaction_id || "—"}</p>
     </div>
@@ -250,17 +269,21 @@ export function PaymentCell({ order }: { order: AdminOrderListRow }) {
 }
 
 /** COURIER — status, courier name, consignment, tracking link and charge. */
-export function CourierCell({ 
-  order, 
-  onCancelShipment 
-}: { 
+export function CourierCell({
+  order,
+  onCancelShipment,
+}: {
   order: AdminOrderListRow;
   onCancelShipment?: () => void;
 }) {
   return (
     <div className="flex flex-col items-center space-y-1 text-[11px] leading-tight">
       <StatusBadge value={order.courier_status} />
-      {order.courier_name ? <p className="font-bold text-muted-foreground uppercase">{order.courier_name}</p> : <p className="text-muted-foreground italic">No Courier</p>}
+      {order.courier_name ? (
+        <p className="font-bold text-muted-foreground uppercase">{order.courier_name}</p>
+      ) : (
+        <p className="text-muted-foreground italic">No Courier</p>
+      )}
       {order.consignment_id ? (
         <div className="flex items-center gap-1">
           <p className="font-mono text-[10px] opacity-70">CN: {order.consignment_id}</p>
@@ -280,7 +303,6 @@ export function CourierCell({
   );
 }
 
-
 /** AMOUNTS — full money breakdown for the order. */
 export function AmountsCell({ order }: { order: AdminOrderListRow }) {
   const due = Math.max(Number(order.total) - Number(order.advance_paid ?? 0), 0);
@@ -291,13 +313,28 @@ export function AmountsCell({ order }: { order: AdminOrderListRow }) {
       <Row label="Tax" value="৳0" />
       <Row label="Shipping" value={`৳${Number(order.shipping)}`} />
       <div className="mt-1 border-t border-dashed border-border pt-1">
-        <Row label="Total" value={`৳${Number(order.total)}`} strong color="text-emerald-600 dark:text-emerald-500" />
+        <Row
+          label="Total"
+          value={`৳${Number(order.total)}`}
+          strong
+          color="text-emerald-600 dark:text-emerald-500"
+        />
       </div>
     </dl>
   );
 }
 
-function Row({ label, value, strong, color }: { label: string; value: string; strong?: boolean; color?: string }) {
+function Row({
+  label,
+  value,
+  strong,
+  color,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  color?: string;
+}) {
   return (
     <div className="flex items-center justify-between gap-2 whitespace-nowrap leading-tight">
       <dt className="text-muted-foreground">{label}:</dt>

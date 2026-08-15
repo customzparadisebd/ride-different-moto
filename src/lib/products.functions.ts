@@ -41,7 +41,6 @@ import {
   productToRow,
 } from "./products.shared";
 
-
 export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => productListInput.parse(input ?? {}))
@@ -418,8 +417,8 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
             badge_text: item.badgeText || null,
             badge_enabled: item.badgeEnabled,
           })
-          .eq("id", item.id)
-      )
+          .eq("id", item.id),
+      ),
     );
 
     const error = results.find((r: any) => r.error);
@@ -472,7 +471,10 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
 
     const row = product360ToRow(data);
     if (data.id) {
-      const { error } = await context.supabase.from("product_360_images").update(row).eq("id", data.id);
+      const { error } = await context.supabase
+        .from("product_360_images")
+        .update(row)
+        .eq("id", data.id);
       if (error) throw new Error("Could not save the 360° image.");
     } else {
       const { error } = await context.supabase.from("product_360_images").insert(row);
@@ -490,11 +492,13 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
 
 export const saveProduct360Sequence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => 
-    z.object({
-      productId: z.string().uuid(),
-      items: z.array(z.object({ imageUrl: z.string().url() }))
-    }).parse(input)
+  .inputValidator((input: unknown) =>
+    z
+      .object({
+        productId: z.string().uuid(),
+        items: z.array(z.object({ imageUrl: z.string().url() })),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -503,11 +507,11 @@ export const saveProduct360Sequence = createServerFn({ method: "POST" })
 
     // Delete existing and re-insert
     await context.supabase.from("product_360_images").delete().eq("product_id", data.productId);
-    
+
     const rows = data.items.map((item, index) => ({
       product_id: data.productId,
       image_url: item.imageUrl,
-      display_order: index
+      display_order: index,
     }));
 
     const { error } = await context.supabase.from("product_360_images").insert(rows);
@@ -570,5 +574,3 @@ export const reorderProduct360Images = createServerFn({ method: "POST" })
     );
     return { ok: true };
   });
-
-

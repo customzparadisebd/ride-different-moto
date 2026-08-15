@@ -5,7 +5,12 @@
 import { z } from "zod";
 
 export const invoiceSettingsInput = z.object({
-  prefix: z.string().trim().min(1).max(20).transform(v => v.toUpperCase()),
+  prefix: z
+    .string()
+    .trim()
+    .min(1)
+    .max(20)
+    .transform((v) => v.toUpperCase()),
   startNumber: z.number().int().min(1).max(999999),
 });
 

@@ -33,19 +33,23 @@ export const getHeroSlides = createServerFn({ method: "GET" })
 
 export const updateHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    id: z.string().uuid(),
-    updates: z.object({
-      title: z.string().optional(),
-      subtitle: z.string().optional().nullable(),
-      image_url: z.string().optional(),
-      mobile_image_url: z.string().optional().nullable(),
-      link_url: z.string().optional().nullable(),
-      link_label: z.string().optional().nullable(),
-      sort_order: z.number().optional(),
-      is_active: z.boolean().optional(),
-    })
-  }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        updates: z.object({
+          title: z.string().optional(),
+          subtitle: z.string().optional().nullable(),
+          image_url: z.string().optional(),
+          mobile_image_url: z.string().optional().nullable(),
+          link_url: z.string().optional().nullable(),
+          link_label: z.string().optional().nullable(),
+          sort_order: z.number().optional(),
+          is_active: z.boolean().optional(),
+        }),
+      })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -62,24 +66,26 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
 
 export const createHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    title: z.string(),
-    subtitle: z.string().optional().nullable(),
-    image_url: z.string(),
-    mobile_image_url: z.string().optional().nullable(),
-    link_url: z.string().optional().nullable(),
-    link_label: z.string().optional().nullable(),
-    sort_order: z.number().default(0),
-    is_active: z.boolean().default(true),
-  }).parse(d))
+  .inputValidator((d) =>
+    z
+      .object({
+        title: z.string(),
+        subtitle: z.string().optional().nullable(),
+        image_url: z.string(),
+        mobile_image_url: z.string().optional().nullable(),
+        link_url: z.string().optional().nullable(),
+        link_label: z.string().optional().nullable(),
+        sort_order: z.number().default(0),
+        is_active: z.boolean().default(true),
+      })
+      .parse(d),
+  )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase
-      .from("hero_slides")
-      .insert(data as any);
+    const { error } = await context.supabase.from("hero_slides").insert(data as any);
 
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -93,13 +99,8 @@ export const deleteHeroSlide = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase
-      .from("hero_slides")
-      .delete()
-      .eq("id", id);
+    const { error } = await context.supabase.from("hero_slides").delete().eq("id", id);
 
     if (error) throw new Error(error.message);
     return { ok: true };
   });
-
-

@@ -29,8 +29,8 @@ export function Header() {
         </div>
 
         {/* CENTER: Main navigation (Perfectly centered to the viewport) */}
-        <nav 
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1.5 lg:flex" 
+        <nav
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1.5 lg:flex"
           aria-label="Main"
         >
           {navLinks.map((link) => (
@@ -52,11 +52,11 @@ export function Header() {
           <button
             onClick={toggleLanguage}
             className="flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary active:scale-95 sm:h-10 sm:px-4 sm:text-xs"
-            aria-label={`Switch to ${language === 'en' ? 'Bangla' : 'English'}`}
+            aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
           >
-            <span className={language === 'bn' ? "text-primary" : "text-foreground/40"}>বাং</span>
+            <span className={language === "bn" ? "text-primary" : "text-foreground/40"}>বাং</span>
             <span className="mx-1.5 h-3 w-px bg-border/50" />
-            <span className={language === 'en' ? "text-primary" : "text-foreground/40"}>ENG</span>
+            <span className={language === "en" ? "text-primary" : "text-foreground/40"}>ENG</span>
           </button>
 
           <Button
@@ -94,7 +94,10 @@ export function Header() {
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <Logo className="h-8 w-auto" />
               </div>
-              <nav className="flex flex-1 flex-col items-center justify-center p-2" aria-label="Mobile">
+              <nav
+                className="flex flex-1 flex-col items-center justify-center p-2"
+                aria-label="Mobile"
+              >
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -109,20 +112,24 @@ export function Header() {
                 ))}
               </nav>
               <div className="p-4 pb-safe space-y-3">
-                <button 
+                <button
                   className="flex h-12 w-full items-center justify-center rounded-xl bg-secondary/50 font-display text-sm font-bold tracking-wider"
                   onClick={() => {
                     toggleLanguage();
                     setMenuOpen(false);
                   }}
                 >
-                  <span className={language === 'bn' ? "text-primary" : "text-foreground/40"}>বাং</span>
+                  <span className={language === "bn" ? "text-primary" : "text-foreground/40"}>
+                    বাং
+                  </span>
                   <span className="mx-3 h-4 w-px bg-border/50" />
-                  <span className={language === 'en' ? "text-primary" : "text-foreground/40"}>ENG</span>
+                  <span className={language === "en" ? "text-primary" : "text-foreground/40"}>
+                    ENG
+                  </span>
                 </button>
                 <Button variant="red" size="touch" className="w-full" asChild>
                   <a href={site.whatsappHref} target="_blank" rel="noopener noreferrer">
-                    {t('common.whatsapp')}
+                    {t("common.whatsapp")}
                   </a>
                 </Button>
               </div>

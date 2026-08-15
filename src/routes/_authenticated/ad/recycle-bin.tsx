@@ -21,7 +21,13 @@ import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.funct
 import { listAdminCustomers, restoreCustomer, purgeCustomer } from "@/lib/customers.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/recycle-bin")({
-  head: () => ({ meta: [{ title: "Recycle Bin — CZP Ops" }, { property: "og:title", content: "Recycle Bin — CZP Ops" }, { name: "description", content: "Customz Paradise BD Admin Panel" }] }),
+  head: () => ({
+    meta: [
+      { title: "Recycle Bin — CZP Ops" },
+      { property: "og:title", content: "Recycle Bin — CZP Ops" },
+      { name: "description", content: "Customz Paradise BD Admin Panel" },
+    ],
+  }),
   component: RecycleBin,
 });
 
@@ -334,7 +340,9 @@ function RecycleBin() {
                   <td className="p-3 text-muted-foreground">{row.phone}</td>
                   <td className="p-3 text-muted-foreground">{row.city || "—"}</td>
                   <td className="p-3 text-right">{row.total_orders || 0}</td>
-                  <td className="p-3 text-right font-semibold">{formatBDT(Number(row.lifetime_value || 0))}</td>
+                  <td className="p-3 text-right font-semibold">
+                    {formatBDT(Number(row.lifetime_value || 0))}
+                  </td>
                   <td className="p-3">
                     <div className="flex justify-end gap-2">
                       <Button

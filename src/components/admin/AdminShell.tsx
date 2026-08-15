@@ -88,16 +88,18 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                       Customer Paradise Admin Panel
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {access.email} ·{" "}
-                      {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
+                      {access.email} · {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
                     </p>
                   </div>
                   <div className="flex -space-x-2 ml-2">
                     <div className="h-8 w-8 rounded-full border-2 border-background bg-muted overflow-hidden shadow-sm">
-                      <img 
-                        src={access.avatarUrl || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || "")}`} 
-                        alt="Profile" 
-                        className="h-full w-full object-cover" 
+                      <img
+                        src={
+                          access.avatarUrl ||
+                          `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || "")}`
+                        }
+                        alt="Profile"
+                        className="h-full w-full object-cover"
                       />
                     </div>
                   </div>
@@ -106,7 +108,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                       "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tighter shadow-sm",
                       env === "production"
                         ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
-                        : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                        : "bg-amber-500/10 text-amber-500 border border-amber-500/20",
                     )}
                   >
                     {env === "production" ? (
@@ -118,25 +120,25 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                   </div>
                 </div>
               </div>
-            <div className="flex items-center gap-3">
-              <div className="hidden items-center gap-2 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium md:flex">
-                <Clock className="h-3.5 w-3.5 text-muted-foreground" />
-                <span className="tabular-nums">{formattedTime} (Dhaka)</span>
+              <div className="flex items-center gap-3">
+                <div className="hidden items-center gap-2 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium md:flex">
+                  <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="tabular-nums">{formattedTime} (Dhaka)</span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+                >
+                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+                <Button variant="steel" size="sm" onClick={handleSignOut}>
+                  Sign out
+                </Button>
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              >
-                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-              <Button variant="steel" size="sm" onClick={handleSignOut}>
-                Sign out
-              </Button>
-            </div>
-          </header>
-          <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+            </header>
+            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
           </SidebarInset>
         </div>
       </div>

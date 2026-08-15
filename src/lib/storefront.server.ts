@@ -61,7 +61,11 @@ function toColor(row: ProductRow): StorefrontColor {
   };
 }
 
-function toProduct(row: ProductRow, colors: StorefrontColor[], product360Images: string[] = []): StorefrontProduct {
+function toProduct(
+  row: ProductRow,
+  colors: StorefrontColor[],
+  product360Images: string[] = [],
+): StorefrontProduct {
   const sortOrder = row["sort_order"] === null ? null : num(row["sort_order"]);
 
   const image = (row["image_url"] as string | null) ?? null;
@@ -95,16 +99,11 @@ function toProduct(row: ProductRow, colors: StorefrontColor[], product360Images:
   };
 }
 
-
 /** All active, non-deleted products with their active colour options. */
 export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   const supabase = publicClient();
   const [products, colors, images] = await Promise.all([
-    supabase
-      .from("products")
-      .select(PRODUCT_FIELDS)
-      .eq("is_active", true)
-      .is("deleted_at", null),
+    supabase.from("products").select(PRODUCT_FIELDS).eq("is_active", true).is("deleted_at", null),
     supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
     supabase.from("product_360_images").select("product_id, image_url").order("display_order"),
   ]);
@@ -134,8 +133,6 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
     ),
   );
 }
-
-
 
 export async function fetchProductBySlug(slug: string): Promise<StorefrontProduct | null> {
   const supabase = publicClient();

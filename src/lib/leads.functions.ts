@@ -8,15 +8,21 @@ import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 const TABLE_LEADS = "leads";
 
 export const submitLead = createServerFn({ method: "POST" })
-  .inputValidator(z.object({
-    name: z.string().min(2),
-    phone: z.string().min(10),
-    email: z.string().email().optional().nullable(),
-    message: z.string().optional().nullable(),
-    source: z.string().default("contact_form"),
-  }))
+  .inputValidator(
+    z.object({
+      name: z.string().min(2),
+      phone: z.string().min(10),
+      email: z.string().email().optional().nullable(),
+      message: z.string().optional().nullable(),
+      source: z.string().default("contact_form"),
+    }),
+  )
   .handler(async ({ data }) => {
-    const { data: inserted, error } = await supabase.from(TABLE_LEADS as any).insert(data as any).select().single();
+    const { data: inserted, error } = await supabase
+      .from(TABLE_LEADS as any)
+      .insert(data as any)
+      .select()
+      .single();
     if (error) throw new Error(error.message);
 
     // Record audit for public lead capture (system actor)
@@ -38,24 +44,26 @@ export const getLeads = createServerFn({ method: "GET" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.customersManage);
-    
+
     const { data, error } = await context.supabase
       .from(TABLE_LEADS as any)
       .select("*")
       .is("deleted_at", null)
       .order("created_at", { ascending: false });
-      
+
     if (error) throw new Error(error.message);
     return data;
   });
 
 export const updateLeadStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.object({
-    id: z.string().uuid(),
-    status: z.enum(["new", "contacted", "closed"]),
-    internalNotes: z.string().optional(),
-  }))
+  .inputValidator(
+    z.object({
+      id: z.string().uuid(),
+      status: z.enum(["new", "contacted", "closed"]),
+      internalNotes: z.string().optional(),
+    }),
+  )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

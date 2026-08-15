@@ -24,8 +24,9 @@ export function FloatingWhatsApp() {
 
   if (!settings || !settings.whatsappFloatingEnabled) return null;
 
-  const position = settings.whatsappFloatingPosition as "bottom-right" | "bottom-left" | "top-right" | "top-left";
-  
+  const position = settings.whatsappFloatingPosition as
+    "bottom-right" | "bottom-left" | "top-right" | "top-left";
+
   const positionClasses = {
     "bottom-right": "bottom-6 right-6",
     "bottom-left": "bottom-6 left-6",
@@ -40,7 +41,7 @@ export function FloatingWhatsApp() {
       className={cn(
         "fixed z-50 transition-all duration-500",
         positionClasses,
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+        isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0",
       )}
     >
       <a
@@ -51,12 +52,12 @@ export function FloatingWhatsApp() {
         aria-label="Contact us on WhatsApp"
       >
         <MessageCircle className="size-6 sm:size-7" />
-        
+
         {/* Tooltip-like label on hover for desktop */}
         <span className="absolute right-full mr-3 hidden whitespace-nowrap rounded-lg bg-black/80 px-3 py-1.5 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100 lg:block">
           Chat with us
         </span>
-        
+
         {/* Ping animation for attention */}
         <span className="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/40" />
       </a>

@@ -50,9 +50,7 @@ export function UserPermissionsDialog({
 
   const handleToggle = (permission: string) => {
     setSelected((prev) =>
-      prev.includes(permission)
-        ? prev.filter((p) => p !== permission)
-        : [...prev, permission]
+      prev.includes(permission) ? prev.filter((p) => p !== permission) : [...prev, permission],
     );
   };
 
@@ -85,7 +83,8 @@ export function UserPermissionsDialog({
             </DialogTitle>
           </div>
           <DialogDescription>
-            Grant specific permissions beyond the role baseline. Sensitive permissions are restricted to Super Admins.
+            Grant specific permissions beyond the role baseline. Sensitive permissions are
+            restricted to Super Admins.
           </DialogDescription>
         </DialogHeader>
 
@@ -94,10 +93,20 @@ export function UserPermissionsDialog({
             {selected.length} Selected
           </span>
           <div className="flex gap-2">
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase" onClick={selectNone}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[10px] uppercase"
+              onClick={selectNone}
+            >
               Clear All
             </Button>
-            <Button variant="ghost" size="sm" className="h-7 text-[10px] uppercase" onClick={selectAll}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[10px] uppercase"
+              onClick={selectAll}
+            >
               Select All
             </Button>
           </div>
@@ -120,9 +129,7 @@ export function UserPermissionsDialog({
                   >
                     {PERMISSION_LABELS[permission as Permission]}
                   </Label>
-                  <p className="text-[10px] font-mono text-muted-foreground">
-                    {permission}
-                  </p>
+                  <p className="text-[10px] font-mono text-muted-foreground">{permission}</p>
                 </div>
               </div>
             ))}

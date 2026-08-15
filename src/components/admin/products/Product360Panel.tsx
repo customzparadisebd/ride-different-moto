@@ -158,12 +158,28 @@ export function Product360Panel({
           <div className="flex items-start gap-3">
             <Info className="size-5 shrink-0 text-blue-400 mt-0.5" />
             <div className="text-sm">
-              <h3 className="font-semibold text-blue-400 uppercase tracking-wider text-xs">Image Guidelines</h3>
+              <h3 className="font-semibold text-blue-400 uppercase tracking-wider text-xs">
+                Image Guidelines
+              </h3>
               <ul className="mt-1 list-disc list-inside text-muted-foreground space-y-1">
-                <li>Recommended: <span className="text-foreground font-medium">24, 36, or 72 images</span> for smooth rotation.</li>
-                <li>Dimensions: <span className="text-foreground font-medium">1000x1000px</span> (square).</li>
-                <li>Format: <span className="text-foreground font-medium">WebP</span> highly recommended for performance.</li>
-                <li>Max File Size: <span className="text-foreground font-medium">&lt; 150KB per image</span> (Total sequence should be &lt; 5MB).</li>
+                <li>
+                  Recommended:{" "}
+                  <span className="text-foreground font-medium">24, 36, or 72 images</span> for
+                  smooth rotation.
+                </li>
+                <li>
+                  Dimensions: <span className="text-foreground font-medium">1000x1000px</span>{" "}
+                  (square).
+                </li>
+                <li>
+                  Format: <span className="text-foreground font-medium">WebP</span> highly
+                  recommended for performance.
+                </li>
+                <li>
+                  Max File Size:{" "}
+                  <span className="text-foreground font-medium">&lt; 150KB per image</span> (Total
+                  sequence should be &lt; 5MB).
+                </li>
               </ul>
             </div>
           </div>
@@ -171,27 +187,29 @@ export function Product360Panel({
 
         <div className="rounded-lg border border-border bg-black/40 p-3">
           <div className="flex items-center justify-between mb-2">
-             <Label className="text-xs text-muted-foreground uppercase tracking-wider">Live Scrubber Preview</Label>
-             <div className="flex items-center gap-2">
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  className="size-7 rounded-full text-white hover:bg-white/10"
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  disabled={rows.length === 0}
-                >
-                  {isPlaying ? <Pause className="size-3" /> : <Play className="size-3" />}
-                </Button>
-                <span className="font-mono text-[10px] text-muted-foreground">
-                  {rows.length > 0 ? `${currentIndex + 1} / ${rows.length}` : "0 / 0"}
-                </span>
-             </div>
+            <Label className="text-xs text-muted-foreground uppercase tracking-wider">
+              Live Scrubber Preview
+            </Label>
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="size-7 rounded-full text-white hover:bg-white/10"
+                onClick={() => setIsPlaying(!isPlaying)}
+                disabled={rows.length === 0}
+              >
+                {isPlaying ? <Pause className="size-3" /> : <Play className="size-3" />}
+              </Button>
+              <span className="font-mono text-[10px] text-muted-foreground">
+                {rows.length > 0 ? `${currentIndex + 1} / ${rows.length}` : "0 / 0"}
+              </span>
+            </div>
           </div>
           <div className="aspect-video w-full max-h-[160px] rounded bg-black overflow-hidden relative mb-3">
             {rows.length > 0 ? (
-              <img 
-                src={rows[currentIndex]?.image_url} 
-                alt="Preview" 
+              <img
+                src={rows[currentIndex]?.image_url}
+                alt="Preview"
                 className="size-full object-contain"
               />
             ) : (
@@ -200,12 +218,12 @@ export function Product360Panel({
               </div>
             )}
           </div>
-          <Slider 
-            value={[currentIndex]} 
-            max={Math.max(0, rows.length - 1)} 
+          <Slider
+            value={[currentIndex]}
+            max={Math.max(0, rows.length - 1)}
             step={1}
             onValueChange={([val]) => {
-              if (typeof val === 'number') {
+              if (typeof val === "number") {
                 setCurrentIndex(val);
                 setIsPlaying(false);
               }
@@ -247,9 +265,9 @@ export function Product360Panel({
                 </td>
                 <td className="py-2">
                   <div className="size-16 rounded border border-border bg-black overflow-hidden">
-                    <img 
-                      src={row.image_url} 
-                      alt={`360 Frame ${index + 1}`} 
+                    <img
+                      src={row.image_url}
+                      alt={`360 Frame ${index + 1}`}
                       className="size-full object-contain"
                       loading="lazy"
                     />
@@ -328,8 +346,8 @@ export function Product360Panel({
       ) : null}
 
       {canManage && (
-        <Bulk360Uploader 
-          productId={productId} 
+        <Bulk360Uploader
+          productId={productId}
           currentCount={rows.length}
           isPending={bulkMutation.isPending}
           onSave={async (items) => {

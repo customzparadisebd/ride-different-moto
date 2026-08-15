@@ -50,7 +50,12 @@ export const placeOrder = createServerFn({ method: "POST" })
       { ...data, items },
       { source: "website", shipping, actorLabel: "customer" },
     );
-    return { orderId: order.orderId, invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
+    return {
+      orderId: order.orderId,
+      invoiceNo: order.invoiceNo,
+      total: order.total,
+      duplicate: order.duplicate,
+    };
   });
 
 /** Admin: does the signed-in account have staff access? Used by the route gate. */
@@ -270,7 +275,9 @@ export const listOrders = createServerFn({ method: "POST" })
     // Resolve created-by / assigned-to labels for the rows on this page only.
     const staffIds = [
       ...new Set(
-        (rows ?? []).flatMap((row) => [row.created_by, row.assigned_to]).filter(Boolean) as string[],
+        (rows ?? [])
+          .flatMap((row) => [row.created_by, row.assigned_to])
+          .filter(Boolean) as string[],
       ),
     ];
     const staffLabels: Record<string, string> = {};

@@ -2,7 +2,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
- 
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,16 +13,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cancelSteadfastShipment } from "@/lib/steadfast.functions";
- 
+
 type OrderCancelDialogProps = {
   order: { id: string; invoice_no: string; consignment_id?: string | null } | null;
   onOpenChange: (open: boolean) => void;
   onFinished: () => void;
 };
- 
+
 export function OrderCancelDialog({ order, onOpenChange, onFinished }: OrderCancelDialogProps) {
   const cancelShipment = useServerFn(cancelSteadfastShipment);
- 
+
   const mutation = useMutation({
     mutationFn: () => cancelShipment({ data: { orderId: order?.id ?? "" } }),
     onSuccess: (res: any) => {
@@ -37,7 +37,6 @@ export function OrderCancelDialog({ order, onOpenChange, onFinished }: OrderCanc
     onError: (error: Error) => toast.error(error.message || "Cancel failed."),
   });
 
- 
   return (
     <Dialog open={!!order} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -55,17 +54,14 @@ export function OrderCancelDialog({ order, onOpenChange, onFinished }: OrderCanc
             Consignment ID: <span className="font-mono text-xs">{order?.consignment_id}</span>
           </DialogDescription>
         </DialogHeader>
- 
+
         <div className="rounded-lg bg-rose-500/5 p-3 text-xs text-rose-600 dark:text-rose-400">
-          This will call the SteadFast API to cancel the booking. Once cancelled, the order's courier status will be reset and you can book it again if needed.
+          This will call the SteadFast API to cancel the booking. Once cancelled, the order's
+          courier status will be reset and you can book it again if needed.
         </div>
- 
+
         <DialogFooter className="mt-6 flex gap-2 sm:justify-end">
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            disabled={mutation.isPending}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>
             Go Back
           </Button>
           <Button

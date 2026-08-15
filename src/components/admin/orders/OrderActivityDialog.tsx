@@ -35,9 +35,7 @@ export function OrderActivityDialog({
       <DialogContent className="max-h-[85vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Activity log</DialogTitle>
-          <DialogDescription>
-            Every recorded action on order {order?.invoice_no}.
-          </DialogDescription>
+          <DialogDescription>Every recorded action on order {order?.invoice_no}.</DialogDescription>
         </DialogHeader>
         {activityQuery.isLoading ? (
           <p className="text-sm text-muted-foreground">Loading activity…</p>

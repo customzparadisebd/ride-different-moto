@@ -8,7 +8,14 @@ import { listPendingApprovals, handleApprovalAction } from "@/lib/login-approval
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const Route = createFileRoute("/_authenticated/ad/login-requests")({
@@ -17,7 +24,7 @@ export const Route = createFileRoute("/_authenticated/ad/login-requests")({
 
 function LoginRequestsPage() {
   const queryClient = useQueryClient();
-  
+
   const { data: requests, isLoading } = useQuery({
     queryKey: ["pending-approvals"],
     queryFn: () => listPendingApprovals({}),
@@ -25,7 +32,7 @@ function LoginRequestsPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: (args: { requestId: string; action: "approve" | "reject" }) => 
+    mutationFn: (args: { requestId: string; action: "approve" | "reject" }) =>
       handleApprovalAction({ data: args }),
     onSuccess: (_, variables) => {
       toast.success(`Request ${variables.action}ed successfully`);
@@ -33,7 +40,7 @@ function LoginRequestsPage() {
     },
     onError: (err: any) => {
       toast.error(err.message || "Action failed");
-    }
+    },
   });
 
   if (isLoading) {
@@ -77,7 +84,10 @@ function LoginRequestsPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {requests?.map((req: any) => (
-              <Card key={req.id} className="overflow-hidden border-white/5 bg-white/5 transition-all hover:border-white/10">
+              <Card
+                key={req.id}
+                className="overflow-hidden border-white/5 bg-white/5 transition-all hover:border-white/10"
+              >
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
@@ -93,7 +103,10 @@ function LoginRequestsPage() {
                         </CardDescription>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="bg-yellow-500/10 text-yellow-500 border-none uppercase text-[10px]">
+                    <Badge
+                      variant="secondary"
+                      className="bg-yellow-500/10 text-yellow-500 border-none uppercase text-[10px]"
+                    >
                       Pending
                     </Badge>
                   </div>
@@ -116,7 +129,9 @@ function LoginRequestsPage() {
                   <div className="space-y-3 pt-4 border-t border-white/5">
                     <div className="flex items-center gap-2 text-[10px] uppercase font-bold text-muted-foreground/80">
                       <Monitor className="h-3 w-3" />
-                      <span>{req.user_agent?.includes("Mobi") ? "Mobile" : "Desktop"} • {req.ip_address}</span>
+                      <span>
+                        {req.user_agent?.includes("Mobi") ? "Mobile" : "Desktop"} • {req.ip_address}
+                      </span>
                     </div>
                     <p className="text-[10px] text-muted-foreground/60 truncate italic">
                       {req.user_agent}
@@ -149,18 +164,18 @@ function LoginRequestsPage() {
           </div>
         )}
       </div>
-      
+
       {requests && requests.length > 0 && (
-         <div className="rounded-lg border border-white/5 bg-black/40 p-4">
-            <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
-              <Shield className="h-3 w-3" />
-              Security Note
-            </h4>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              Staff login approvals expire automatically after 10 minutes. 
-              Always verify the IP address and device information before approving a request.
-            </p>
-         </div>
+        <div className="rounded-lg border border-white/5 bg-black/40 p-4">
+          <h4 className="text-[11px] font-bold uppercase tracking-widest text-primary mb-2 flex items-center gap-2">
+            <Shield className="h-3 w-3" />
+            Security Note
+          </h4>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Staff login approvals expire automatically after 10 minutes. Always verify the IP
+            address and device information before approving a request.
+          </p>
+        </div>
       )}
     </div>
   );

@@ -11,7 +11,11 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 import { adapterFor, loadCourierContext, logCourierApi } from "./couriers.server";
 import { codFee, courierChargeForZone } from "./couriers.shared";
-import { STEADFAST_DEFAULT_BASE_URL, STEADFAST_SLUG, type BulkShipmentRow } from "./steadfast.shared";
+import {
+  STEADFAST_DEFAULT_BASE_URL,
+  STEADFAST_SLUG,
+  type BulkShipmentRow,
+} from "./steadfast.shared";
 
 /** Finds the SteadFast courier row, creating a switched-off one on first use. */
 export async function ensureSteadfastCourier(actorId: string | null): Promise<string> {
@@ -162,9 +166,9 @@ export async function bookOrderWithSteadfast(
       .eq("id", order.id);
 
     try {
-      await supabaseAdmin.rpc("increment_steadfast_count", { 
-        order_id: order.id, 
-        invoice_no: order.invoice_no 
+      await supabaseAdmin.rpc("increment_steadfast_count", {
+        order_id: order.id,
+        invoice_no: order.invoice_no,
       });
     } catch (e) {
       console.error("Failed to increment steadfast count:", e);

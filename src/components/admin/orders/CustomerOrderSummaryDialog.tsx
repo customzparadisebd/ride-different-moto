@@ -1,12 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Link } from "@tanstack/react-router";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { listOrders } from "@/lib/orders.functions";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { formatBDT } from "@/lib/format";
@@ -24,7 +19,7 @@ export function CustomerOrderSummaryDialog({
   onOpenChange,
 }: CustomerOrderSummaryDialogProps) {
   const fetchOrders = useServerFn(listOrders);
-  
+
   const ordersQuery = useQuery({
     queryKey: ["customer-orders", phone],
     queryFn: () =>
@@ -64,15 +59,19 @@ export function CustomerOrderSummaryDialog({
 
         <div className="mt-6 space-y-3">
           {ordersQuery.isLoading ? (
-            <p className="text-center py-8 text-sm text-muted-foreground">Loading order history...</p>
+            <p className="text-center py-8 text-sm text-muted-foreground">
+              Loading order history...
+            </p>
           ) : orders.length === 0 ? (
-            <p className="text-center py-8 text-sm text-muted-foreground">No orders found for this customer.</p>
+            <p className="text-center py-8 text-sm text-muted-foreground">
+              No orders found for this customer.
+            </p>
           ) : (
             orders.map((order) => {
               const itemCount = order.order_items.reduce((sum, item) => sum + item.quantity, 0);
               return (
-                <div 
-                  key={order.id} 
+                <div
+                  key={order.id}
                   className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4 transition-all hover:bg-secondary/50 hover:border-primary/20"
                 >
                   <div className="flex flex-col gap-1">
@@ -94,7 +93,7 @@ export function CustomerOrderSummaryDialog({
                       Items: {itemCount} | Total: {formatBDT(order.total)}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-3">
                     <StatusBadge value={order.status} className="h-6 text-[10px]" />
                     <Link
