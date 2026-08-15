@@ -23,6 +23,7 @@ import { Route as ShopRouteImport } from './routes/shop'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedAdRouteRouteImport } from './routes/_authenticated/ad/route'
 import { Route as AdDeniedRouteImport } from './routes/ad.denied'
+import { Route as AdDiagnosticsRouteImport } from './routes/ad/diagnostics'
 import { Route as AdLogRouteImport } from './routes/ad.log'
 import { Route as AdMfaRouteImport } from './routes/ad.mfa'
 import { Route as AdResetPasswordRouteImport } from './routes/ad.reset-password'
@@ -122,6 +123,11 @@ const AuthenticatedAdRouteRoute = AuthenticatedAdRouteRouteImport.update({
 const AdDeniedRoute = AdDeniedRouteImport.update({
   id: '/ad/denied',
   path: '/ad/denied',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdDiagnosticsRoute = AdDiagnosticsRouteImport.update({
+  id: '/ad/diagnostics',
+  path: '/ad/diagnostics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdLogRoute = AdLogRouteImport.update({
@@ -303,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/terms': typeof TermsRoute
   '/ad': typeof AuthenticatedAdRouteRouteWithChildren
   '/ad/denied': typeof AdDeniedRoute
+  '/ad/diagnostics': typeof AdDiagnosticsRoute
   '/ad/log': typeof AdLogRoute
   '/ad/mfa': typeof AdMfaRoute
   '/ad/reset-password': typeof AdResetPasswordRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/terms': typeof TermsRoute
   '/ad/denied': typeof AdDeniedRoute
+  '/ad/diagnostics': typeof AdDiagnosticsRoute
   '/ad/log': typeof AdLogRoute
   '/ad/mfa': typeof AdMfaRoute
   '/ad/reset-password': typeof AdResetPasswordRoute
@@ -396,6 +404,7 @@ export interface FileRoutesById {
   '/terms': typeof TermsRoute
   '/_authenticated/ad': typeof AuthenticatedAdRouteRouteWithChildren
   '/ad/denied': typeof AdDeniedRoute
+  '/ad/diagnostics': typeof AdDiagnosticsRoute
   '/ad/log': typeof AdLogRoute
   '/ad/mfa': typeof AdMfaRoute
   '/ad/reset-password': typeof AdResetPasswordRoute
@@ -444,6 +453,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/ad'
     | '/ad/denied'
+    | '/ad/diagnostics'
     | '/ad/log'
     | '/ad/mfa'
     | '/ad/reset-password'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/terms'
     | '/ad/denied'
+    | '/ad/diagnostics'
     | '/ad/log'
     | '/ad/mfa'
     | '/ad/reset-password'
@@ -536,6 +547,7 @@ export interface FileRouteTypes {
     | '/terms'
     | '/_authenticated/ad'
     | '/ad/denied'
+    | '/ad/diagnostics'
     | '/ad/log'
     | '/ad/mfa'
     | '/ad/reset-password'
@@ -583,6 +595,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   TermsRoute: typeof TermsRoute
   AdDeniedRoute: typeof AdDeniedRoute
+  AdDiagnosticsRoute: typeof AdDiagnosticsRoute
   AdLogRoute: typeof AdLogRoute
   AdMfaRoute: typeof AdMfaRoute
   AdResetPasswordRoute: typeof AdResetPasswordRoute
@@ -693,6 +706,13 @@ declare module '@tanstack/react-router' {
       path: '/ad/denied'
       fullPath: '/ad/denied'
       preLoaderRoute: typeof AdDeniedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ad/diagnostics': {
+      id: '/ad/diagnostics'
+      path: '/ad/diagnostics'
+      fullPath: '/ad/diagnostics'
+      preLoaderRoute: typeof AdDiagnosticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/ad/log': {
@@ -1003,6 +1023,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   TermsRoute: TermsRoute,
   AdDeniedRoute: AdDeniedRoute,
+  AdDiagnosticsRoute: AdDiagnosticsRoute,
   AdLogRoute: AdLogRoute,
   AdMfaRoute: AdMfaRoute,
   AdResetPasswordRoute: AdResetPasswordRoute,

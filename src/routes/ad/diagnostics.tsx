@@ -12,8 +12,8 @@ function DiagnosticsPage() {
   // We'll get these values in the component to ensure they reflect the browser state
   const env = getEnvironment();
   const hostname = typeof window !== "undefined" ? window.location.hostname : "N/A (SSR)";
-  const viteAppEnv = import.meta.env.VITE_APP_ENV || "Not Set";
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || "Not Set";
+  const viteAppEnv = import.meta.env["VITE_APP_ENV"] || "Not Set";
+  const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] || "Not Set";
 
   const data = [
     {
