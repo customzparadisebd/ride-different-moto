@@ -130,27 +130,10 @@ function DiagnosticsPage() {
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            In the Admin Panel header, I can see a “STAGING” badge next to the admin profile.
+                                            Implement a runtime check that confirms which Supabase project (URL/project ref) the Admin Panel is connected to and display that result in diagnostics for staff.
 
-Please audit the project and explain exactly why this badge is being displayed.
 
-Determine whether the current application/environment is actually running in a staging environment or whether this is only a UI label.
-
-Do NOT change or remove anything yet.
-
-First report:
-
-What triggers the “STAGING” badge.
-
-Which environment variable, configuration, route, or code is responsible for it.
-
-Whether the current Admin Panel is connected to the production or staging Supabase/project.
-
-Whether removing the badge would only change the UI or would affect the actual environment.
-
-Whether the current setup is safe for production use.
-
-Do not make any changes until the audit is complete.</p>
+Add a diagnostics panel that traces the exact condition and config values that trigger the “STAGING” badge in the Admin Panel header.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
