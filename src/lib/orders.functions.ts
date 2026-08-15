@@ -396,7 +396,7 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
       pending: base().eq("status", "pending"),
       cancelled: base().in("status", ["cancelled", "returned"]),
       completed: base().eq("status", "completed"),
-      today: base().gte("created_at", startOfTodayISO()),
+      today: base().gte("created_at", getBDStartOfToday()),
       website: base().eq("order_source", "website"),
       page: base().eq("order_source", "page"),
       new: base().eq("status", "pending").eq("print_count", 0),
