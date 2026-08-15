@@ -232,5 +232,8 @@ export function productToRow(data: ReturnType<typeof productInput.parse>) {
     is_new_arrival: data.isNewArrival,
     is_active: data.isActive,
     has_360_view: data.has360View,
+    video_enabled: data.videoEnabled,
+    video_platform: data.videoPlatform || null,
+    video_url: data.videoUrl || null,
   };
 }
