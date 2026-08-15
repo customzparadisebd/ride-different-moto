@@ -1,16 +1,17 @@
-import { describe, it, expect, vi } from 'vitest';
-import { supabaseAdmin } from '@/integrations/supabase/client.server';
+import { describe, it, expect } from 'vitest';
+import { createClient } from '@supabase/supabase-js';
 
-/**
- * Concurrency Test for Invoice Uniqueness.
- * Bypasses the server function wrapper to test the DB RPC directly
- * in a Vitest environment.
- */
+// Manual client for test environment to bypass start context
+const testSupabase = createClient(
+  process.env.VITE_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 describe('Invoice Concurrency Uniqueness', () => {
   it('should generate unique invoice serials under parallel load', async () => {
     // Execute 10 calls to the database function simultaneously
     const tasks = Array.from({ length: 10 }).map(() => 
-      supabaseAdmin.rpc('generate_next_invoice_no', { is_test: true })
+      testSupabase.rpc('generate_next_invoice_no', { is_test: true })
     );
     
     const results = await Promise.all(tasks);
@@ -32,4 +33,3 @@ describe('Invoice Concurrency Uniqueness', () => {
     }
   });
 });
-
