@@ -31,14 +31,16 @@ function AdminCustomers() {
   const fetchCustomers = useServerFn(listAdminCustomers);
   const access = useServerFn(getMyAccess);
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"all" | "active" | "fraud">("all");
+  const [page, setPage] = useState(1);
   const [openPhone, setOpenPhone] = useState<string | null>(null);
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
   const canManage = accessQuery.data?.permissions.includes("customers.manage") ?? false;
 
   const query = useQuery({
-    queryKey: ["admin-customers", search],
-    queryFn: () => fetchCustomers({ data: { search } }),
+    queryKey: ["admin-customers", search, status, page],
+    queryFn: () => fetchCustomers({ data: { search, status, page } }),
     placeholderData: (previous) => previous,
   });
 
@@ -51,12 +53,36 @@ function AdminCustomers() {
         {query.data?.total ?? 0} customer(s) · grouped by mobile number
       </p>
 
-      <Input
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-        placeholder="Search by name, phone or city"
-        className="mt-4 h-11 max-w-sm"
-      />
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        <Input
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
+          placeholder="Search by name, phone, email, city..."
+          className="h-11 max-w-sm"
+        />
+        
+        <div className="flex rounded-lg border border-border bg-card p-1 shadow-sm">
+          {(["all", "active", "fraud"] as const).map((s) => (
+            <button
+              key={s}
+              onClick={() => {
+                setStatus(s);
+                setPage(1);
+              }}
+              className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors rounded-md ${
+                status === s
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              }`}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[880px] text-sm">
@@ -147,7 +173,64 @@ function AdminCustomers() {
           </tbody>
         </table>
       </div>
+      <Pagination
+        currentPage={page}
+        totalCount={query.data?.total ?? 0}
+        pageSize={query.data?.pageSize ?? 25}
+        onPageChange={setPage}
+      />
     </section>
+  );
+}
+
+function Pagination({
+  currentPage,
+  totalCount,
+  pageSize,
+  onPageChange,
+}: {
+  currentPage: number;
+  totalCount: number;
+  pageSize: number;
+  onPageChange: (page: number) => void;
+}) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  if (totalPages <= 1) return null;
+
+  return (
+    <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+      <div className="text-xs text-muted-foreground">
+        Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)} to{" "}
+        {Math.min(currentPage * pageSize, totalCount)} of {totalCount} customers
+      </div>
+      <div className="flex items-center gap-2">
+        <Button
+          variant="steel"
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => onPageChange(currentPage - 1)}
+        >
+          Previous
+        </Button>
+        <div className="flex items-center gap-1 text-sm font-medium">
+          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            {currentPage}
+          </span>
+          <span className="px-2 text-muted-foreground">of</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-card">
+            {totalPages}
+          </span>
+        </div>
+        <Button
+          variant="steel"
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => onPageChange(currentPage + 1)}
+        >
+          Next
+        </Button>
+      </div>
+    </div>
   );
 }
 
