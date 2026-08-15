@@ -5,7 +5,7 @@ import { PERMISSIONS } from "./admin.shared";
 
 const securityEventFilterInput = z.object({
   search: z.string().optional(),
-  type: z.enum(["rate_limit", "login_throttle", "all"]).optional(),
+  type: z.enum(["rate_limit", "login_throttle", "auth_failure", "csp_violation", "cors_violation", "suspicious_activity", "all"]).optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
   limit: z.number().int().min(1).max(200).optional(),
