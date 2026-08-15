@@ -7,19 +7,22 @@
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowUp, Trash2, Info } from "lucide-react";
-import { useState } from "react";
+import { ArrowDown, ArrowUp, Trash2, Info, Play, Pause } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   deleteProduct360Image,
   listProduct360Images,
   reorderProduct360Images,
   saveProduct360Image,
+  saveProduct360Sequence,
 } from "@/lib/products.functions";
+import { Bulk360Uploader } from "./Bulk360Uploader";
 
 type Product360Row = {
   id: string;
