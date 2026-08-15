@@ -31,6 +31,7 @@ import {
 import { runInvoiceStressTest, runLoadTest } from "@/lib/stress-test.functions";
 import { listSecurityAlerts, listInvoiceCollisions, markNotificationRead } from "@/lib/security-alerts.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
 
 // BD Timezone is UTC+6
 const toBDTime = (date: string | Date) => {
