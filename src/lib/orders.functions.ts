@@ -40,10 +40,6 @@ export const placeOrder = createServerFn({ method: "POST" })
     ]);
 
     // SERVER-SIDE PRICING
-    // Purpose: Reprices every line (including the colour variation) from the
-    //          database and resolves the delivery charge from the admin-managed
-    //          zone, so a tampered cart cannot change what is charged.
-    // Status: COMPLETED
     const [items, shipping] = await Promise.all([
       priceCartLines(data.items),
       checkoutConfig.resolveZoneCharge(data.deliveryZone),
@@ -54,7 +50,7 @@ export const placeOrder = createServerFn({ method: "POST" })
       { ...data, items },
       { source: "website", shipping, actorLabel: "customer" },
     );
-    return { invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
+    return { orderId: order.orderId, invoiceNo: order.invoiceNo, total: order.total, duplicate: order.duplicate };
   });
 
 /** Admin: does the signed-in account have staff access? Used by the route gate. */
