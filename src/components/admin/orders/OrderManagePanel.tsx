@@ -68,12 +68,19 @@ export function OrderManagePanel({
   onSubmit,
   isPending,
   canManage,
+  userRoles = [],
 }: {
   order: OrderForPanel;
   onSubmit: (payload: OrderUpdatePayload) => void;
   isPending: boolean;
   canManage: boolean;
+  userRoles?: string[];
 }) {
+  const [showCompleteConfirm, setShowCompleteConfirm] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<string | null>(null);
+
+  const isAdmin = userRoles.some((r) => r === "admin" || r === "super_admin");
+
   const [payment, setPayment] = useState({
     paymentStatus: order.payment_status,
     paymentMethod: order.payment_method,
