@@ -130,7 +130,7 @@ function ProductDetailPage() {
   return <ProductDetail product={data} />;
 }
 
-function ProductDetail({ product }: { product: StorefrontProduct }) {
+export function ProductDetail({ product }: { product: StorefrontProduct }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [colorId, setColorId] = useState<string | null>(product.colors[0]?.id ?? null);
