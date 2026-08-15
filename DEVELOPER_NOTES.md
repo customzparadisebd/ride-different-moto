@@ -18,6 +18,8 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Smooth Custom Cursor:** Implemented a minimal Cyan Blue (#06B6D4) following ring with smooth interpolation site-wide and in Admin panel (Aug 15, 2026).
 - [x] **Responsive Order Animation:** Updated Order Confirmation animation to be fully responsive (320px to 640px max-width) and set to infinite loop (Aug 15, 2026).
 
+- [x] **Product Form Enhancements:** Added inline validation, placeholders, examples, and image guidelines to Admin Product Form (Aug 15, 2026).
+
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
 - Maintain strict RBAC (Super Admin/Admin/Staff).
