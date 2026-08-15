@@ -99,13 +99,14 @@ function toProduct(row: ProductRow, colors: StorefrontColor[], product360Images:
 /** All active, non-deleted products with their active colour options. */
 export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   const supabase = publicClient();
-  const [products, colors] = await Promise.all([
+  const [products, colors, images] = await Promise.all([
     supabase
       .from("products")
       .select(PRODUCT_FIELDS)
       .eq("is_active", true)
       .is("deleted_at", null),
     supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
+    supabase.from("product_360_images").select("product_id, image_url").order("display_order"),
   ]);
   if (products.error) throw new Error("Could not load the product catalogue.");
 
@@ -117,8 +118,21 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
     byProduct.set(key, list);
   }
 
-  return ((products.data ?? []) as any[])
-    .map((row) => toProduct(row, byProduct.get(String(row["id"])) ?? []));
+  const imagesByProduct = new Map<string, string[]>();
+  for (const row of (images.data ?? []) as ProductRow[]) {
+    const key = String(row["product_id"]);
+    const list = imagesByProduct.get(key) ?? [];
+    list.push(String(row["image_url"]));
+    imagesByProduct.set(key, list);
+  }
+
+  return ((products.data ?? []) as any[]).map((row) =>
+    toProduct(
+      row,
+      byProduct.get(String(row["id"])) ?? [],
+      imagesByProduct.get(String(row["id"])) ?? [],
+    ),
+  );
 }
 
 
@@ -151,7 +165,7 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
   ]);
 
   const colors = ((colorRows.data ?? []) as ProductRow[]).map(toColor);
-  const images = ((imageRows.data ?? []) as ProductRow[]).map(r => String(r.image_url));
+  const images = ((imageRows.data ?? []) as ProductRow[]).map((r) => String(r["image_url"]));
 
   return toProduct(row, colors, images);
 }
