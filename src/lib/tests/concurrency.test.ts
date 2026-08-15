@@ -119,11 +119,13 @@ describe('Invoice Concurrency Uniqueness', () => {
       return numA - numB;
     });
 
-    console.log(`Verifying continuity for ${sorted.length} unique invoices: ${sorted[0]} to ${sorted[sorted.length - 1]}`);
-    for (let i = 0; i < sorted.length - 1; i++) {
-      const currentSerial = parseInt(sorted[i]?.split('-').pop() || '0');
-      const nextSerial = parseInt(sorted[i + 1]?.split('-').pop() || '0');
-      expect(nextSerial, `Gap detected between ${sorted[i]} and ${sorted[i+1]}`).toBe(currentSerial + 1);
+    if (sorted.length > 1) {
+      console.log(`Verifying continuity for ${sorted.length} unique invoices: ${sorted[0]} to ${sorted[sorted.length - 1]}`);
+      for (let i = 0; i < sorted.length - 1; i++) {
+        const currentSerial = parseInt(sorted[i]?.split('-').pop() || '0');
+        const nextSerial = parseInt(sorted[i + 1]?.split('-').pop() || '0');
+        expect(nextSerial, `Gap detected between ${sorted[i]} and ${sorted[i+1]}`).toBe(currentSerial + 1);
+      }
     }
-  });
+  }, 15000); // Increased timeout for parallel DB operations
 });
