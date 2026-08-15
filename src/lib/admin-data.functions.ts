@@ -100,7 +100,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     
     const revenueByDay: Record<string, number> = {};
     ((historyRows.data as any[]) ?? []).forEach(r => {
-      if (r.status === 'cancelled' || r.status === 'returned') return;
+      if (r.status !== 'completed') return;
       const day = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       revenueByDay[day] = (revenueByDay[day] ?? 0) + Number(r.total);
     });
