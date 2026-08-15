@@ -21,6 +21,7 @@ import {
   toProductInput,
 } from "@/components/admin/products/ProductForm";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
+import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -254,6 +255,16 @@ function AdminProducts() {
         />
       ) : null}
 
+      {view360For ? (
+        <Product360Panel
+          key={view360For.id}
+          productId={view360For.id}
+          productName={view360For.name}
+          canManage={canManage}
+          onClose={() => setView360For(null)}
+        />
+      ) : null}
+
       {/* ---- Filters ---- */}
       <div className="mt-4 grid gap-2 sm:grid-cols-3">
         <Input
@@ -438,6 +449,14 @@ function AdminProducts() {
                       </Button>
                       <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
                         Colours
+                      </Button>
+                      <Button
+                        variant="steel"
+                        size="sm"
+                        disabled={!canManage}
+                        onClick={() => setView360For(row)}
+                      >
+                        360 View
                       </Button>
                       <Button
                         variant="steel"

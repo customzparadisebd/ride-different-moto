@@ -77,6 +77,7 @@ export function toProductInput(value: ProductFormValue): ProductInput {
       .map((entry) => entry.trim())
       .filter(Boolean),
     isUniversal: value.isUniversal,
+    has360View: value.has360View,
     description: value.description.trim(),
     details: value.details.trim(),
     // One gallery image URL per line.
