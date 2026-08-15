@@ -21,6 +21,7 @@ import {
   MessageSquare,
   Star,
   Activity,
+  KeyRound,
 } from "lucide-react";
 
 import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
