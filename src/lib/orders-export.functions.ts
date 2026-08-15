@@ -2,7 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
-import { orderFilterInput, type AdminOrderListRow } from "./orders.shared";
+import { orderFilterInput } from "./orders.shared";
+import type { AdminOrderListRow } from "./orders.functions";
 
 /**
  * Admin: Fetches ALL orders matching the filters for XLSX export.
