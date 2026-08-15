@@ -89,6 +89,15 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                       {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
                     </p>
                   </div>
+                  <div className="flex -space-x-2 ml-2">
+                    <div className="h-8 w-8 rounded-full border-2 border-background bg-muted overflow-hidden shadow-sm">
+                      <img 
+                        src={access.avatarUrl || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || "")}`} 
+                        alt="Profile" 
+                        className="h-full w-full object-cover" 
+                      />
+                    </div>
+                  </div>
                   <div
                     className={cn(
                       "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tighter shadow-sm",

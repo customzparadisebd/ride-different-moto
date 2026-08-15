@@ -39,7 +39,8 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Bug Fix:** Resolved a `ZodError` in `listProducts` by lowering the minimum `pageSize` validation from 10 to 1, ensuring compatibility with small-batch fetches or single-item filtered lists (Aug 15, 2026).
 - [x] **Enhanced Image Upload Workflow:** Upgraded `ProductImageUpload` with per-file progress tracking, status indicators (Processing, Uploading, Completed, Error), and retry capability. Added drag-and-drop reordering for gallery images and implemented basic client-side image processing. (Aug 15, 2026).
 - [x] **Admin Live Preview Upgrades:** Added a "Publish/Unpublish" toggle to the `ProductPreviewDialog`, allowing administrators to toggle between "Draft" and "Public" visual states during live preview. (Aug 15, 2026).
-- [x] **Pagination Error Handling:** Implemented user-friendly error messages in the Admin Product listing UI for invalid pagination or filter parameters. (Aug 15, 2026).
+- [x] **Enhanced Admin Avatar System:** Implemented a professional and flexible avatar system for Admin Panel users. Includes preset options (Adventurer, Bottts, etc.) and manual custom uploads with client-side preview, validation (1MB limit), and optimization recommendations (400x400px WebP/JPEG/PNG). (Aug 15, 2026).
+- [x] **Staff List Avatar Integration:** Updated the Admin Staff list to display real-time user avatars (presets or custom) instead of generic icons. (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
