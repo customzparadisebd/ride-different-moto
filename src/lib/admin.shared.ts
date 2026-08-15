@@ -55,6 +55,7 @@ export const PERMISSIONS = {
   contentManage: "content.manage",
   zonesManage: "zones.manage",
   reviewsManage: "reviews.manage",
+  loginApprovalsManage: "login_approvals.manage",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -76,6 +77,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   "content.manage": "Manage website content",
   "zones.manage": "Manage delivery zones",
   "reviews.manage": "Manage customer reviews",
+  "login_approvals.manage": "Manage login approvals",
 };
 
 /** Permissions only a Super Admin may ever hold. Never grantable to Staff. */
@@ -118,6 +120,7 @@ export const ROLE_DEFAULT_PERMISSIONS: Record<Role, Permission[]> = {
     "content.manage",
     "zones.manage",
     "reviews.manage",
+    "login_approvals.manage",
   ],
   manager: [
     "orders.view",
@@ -184,6 +187,10 @@ export const AUDIT_ACTIONS = {
   staffPasswordChanged: "staff.password_changed",
   staffProfileUpdated: "staff.profile_updated",
   invoiceSettingsUpdated: "settings.invoice_updated",
+  loginApprovalCreated: "auth.login_approval_created",
+  loginApprovalApproved: "auth.login_approval_approved",
+  loginApprovalRejected: "auth.login_approval_rejected",
+  loginApprovalExpired: "auth.login_approval_expired",
 } as const;
 
 export const staffStatusInput = z.object({
@@ -214,3 +221,8 @@ export const loginAttemptInput = z.object({
 });
 
 export const backupCodeInput = z.object({ code: z.string().trim().min(4).max(40) });
+
+export const loginApprovalActionInput = z.object({
+  requestId: z.string().uuid(),
+  action: z.enum(["approve", "reject"]),
+});

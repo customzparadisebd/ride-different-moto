@@ -21,6 +21,7 @@ import {
   MessageSquare,
   Star,
   Activity,
+  KeyRound,
 } from "lucide-react";
 
 import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
@@ -87,6 +88,12 @@ const ADMINISTRATION: NavItem[] = [
     label: "Security Stats", 
     icon: Activity, 
     permission: PERMISSIONS.securityManage 
+  },
+  {
+    to: "/ad/login-requests",
+    label: "Login Requests",
+    icon: KeyRound,
+    permission: PERMISSIONS.loginApprovalsManage
   },
 ];
 

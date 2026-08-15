@@ -65,6 +65,7 @@ export type AdminActor = {
   mfaRequired: boolean;
   sessionId: string | null;
   sessionRevoked: boolean;
+  loginApprovalPending?: boolean;
 };
 
 const ROLE_RANK: Role[] = ["super_admin", "admin", "manager", "staff"];
@@ -206,6 +207,7 @@ export async function resolveActor(
     mfaRequired: isSuperAdmin || !!profile.data?.mfa_required,
     sessionId,
     sessionRevoked,
+    loginApprovalPending: status === "pending" && !isOwner,
   };
 }
 

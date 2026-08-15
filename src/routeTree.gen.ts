@@ -39,6 +39,7 @@ import { Route as AuthenticatedAdCustomersRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdFeaturedRouteImport } from './routes/_authenticated/ad/featured'
 import { Route as AuthenticatedAdHeroRouteImport } from './routes/_authenticated/ad/hero'
 import { Route as AuthenticatedAdLeadsRouteImport } from './routes/_authenticated/ad/leads'
+import { Route as AuthenticatedAdLoginRequestsRouteImport } from './routes/_authenticated/ad/login-requests'
 import { Route as AuthenticatedAdProductsRouteImport } from './routes/_authenticated/ad/products'
 import { Route as AuthenticatedAdRecycleBinRouteImport } from './routes/_authenticated/ad/recycle-bin'
 import { Route as AuthenticatedAdReviewsRouteImport } from './routes/_authenticated/ad/reviews'
@@ -203,6 +204,12 @@ const AuthenticatedAdLeadsRoute = AuthenticatedAdLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
+const AuthenticatedAdLoginRequestsRoute =
+  AuthenticatedAdLoginRequestsRouteImport.update({
+    id: '/login-requests',
+    path: '/login-requests',
+    getParentRoute: () => AuthenticatedAdRouteRoute,
+  } as any)
 const AuthenticatedAdProductsRoute = AuthenticatedAdProductsRouteImport.update({
   id: '/products',
   path: '/products',
@@ -304,6 +311,7 @@ export interface FileRoutesByFullPath {
   '/ad/featured': typeof AuthenticatedAdFeaturedRoute
   '/ad/hero': typeof AuthenticatedAdHeroRoute
   '/ad/leads': typeof AuthenticatedAdLeadsRoute
+  '/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
   '/ad/products': typeof AuthenticatedAdProductsRoute
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
@@ -347,6 +355,7 @@ export interface FileRoutesByTo {
   '/ad/featured': typeof AuthenticatedAdFeaturedRoute
   '/ad/hero': typeof AuthenticatedAdHeroRoute
   '/ad/leads': typeof AuthenticatedAdLeadsRoute
+  '/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
   '/ad/products': typeof AuthenticatedAdProductsRoute
   '/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/ad/reviews': typeof AuthenticatedAdReviewsRoute
@@ -393,6 +402,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/featured': typeof AuthenticatedAdFeaturedRoute
   '/_authenticated/ad/hero': typeof AuthenticatedAdHeroRoute
   '/_authenticated/ad/leads': typeof AuthenticatedAdLeadsRoute
+  '/_authenticated/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
   '/_authenticated/ad/products': typeof AuthenticatedAdProductsRoute
   '/_authenticated/ad/recycle-bin': typeof AuthenticatedAdRecycleBinRoute
   '/_authenticated/ad/reviews': typeof AuthenticatedAdReviewsRoute
@@ -439,6 +449,7 @@ export interface FileRouteTypes {
     | '/ad/featured'
     | '/ad/hero'
     | '/ad/leads'
+    | '/ad/login-requests'
     | '/ad/products'
     | '/ad/recycle-bin'
     | '/ad/reviews'
@@ -482,6 +493,7 @@ export interface FileRouteTypes {
     | '/ad/featured'
     | '/ad/hero'
     | '/ad/leads'
+    | '/ad/login-requests'
     | '/ad/products'
     | '/ad/recycle-bin'
     | '/ad/reviews'
@@ -527,6 +539,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/featured'
     | '/_authenticated/ad/hero'
     | '/_authenticated/ad/leads'
+    | '/_authenticated/ad/login-requests'
     | '/_authenticated/ad/products'
     | '/_authenticated/ad/recycle-bin'
     | '/_authenticated/ad/reviews'
@@ -781,6 +794,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdLeadsRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/_authenticated/ad/login-requests': {
+      id: '/_authenticated/ad/login-requests'
+      path: '/login-requests'
+      fullPath: '/ad/login-requests'
+      preLoaderRoute: typeof AuthenticatedAdLoginRequestsRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
+    }
     '/_authenticated/ad/products': {
       id: '/_authenticated/ad/products'
       path: '/products'
@@ -882,6 +902,7 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdFeaturedRoute: typeof AuthenticatedAdFeaturedRoute
   AuthenticatedAdHeroRoute: typeof AuthenticatedAdHeroRoute
   AuthenticatedAdLeadsRoute: typeof AuthenticatedAdLeadsRoute
+  AuthenticatedAdLoginRequestsRoute: typeof AuthenticatedAdLoginRequestsRoute
   AuthenticatedAdProductsRoute: typeof AuthenticatedAdProductsRoute
   AuthenticatedAdRecycleBinRoute: typeof AuthenticatedAdRecycleBinRoute
   AuthenticatedAdReviewsRoute: typeof AuthenticatedAdReviewsRoute
@@ -904,6 +925,7 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdFeaturedRoute: AuthenticatedAdFeaturedRoute,
   AuthenticatedAdHeroRoute: AuthenticatedAdHeroRoute,
   AuthenticatedAdLeadsRoute: AuthenticatedAdLeadsRoute,
+  AuthenticatedAdLoginRequestsRoute: AuthenticatedAdLoginRequestsRoute,
   AuthenticatedAdProductsRoute: AuthenticatedAdProductsRoute,
   AuthenticatedAdRecycleBinRoute: AuthenticatedAdRecycleBinRoute,
   AuthenticatedAdReviewsRoute: AuthenticatedAdReviewsRoute,
