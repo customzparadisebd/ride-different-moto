@@ -1,5 +1,17 @@
 import { useState, useRef } from "react";
-import { Camera, Loader2, Upload, User, Pencil } from "lucide-react";
+import { 
+  Camera, 
+  Loader2, 
+  Upload, 
+  User, 
+  Pencil, 
+  X, 
+  Check, 
+  Info,
+  Image as ImageIcon,
+  ChevronRight,
+  UserCircle
+} from "lucide-react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -13,10 +25,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { updateAdminProfile } from "@/lib/admin.functions";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface UserProfileWidgetProps {
   access: {
@@ -29,24 +43,37 @@ interface UserProfileWidgetProps {
   };
 }
 
+const PRESET_AVATARS = [
+  { id: "adventurer-1", label: "Explorer", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Felix" },
+  { id: "adventurer-2", label: "Visionary", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Aneka" },
+  { id: "adventurer-3", label: "Strategist", url: "https://api.dicebear.com/9.x/adventurer/svg?seed=Toby" },
+  { id: "bottts-1", label: "Tech Lead", url: "https://api.dicebear.com/9.x/bottts/svg?seed=Pixel" },
+  { id: "bottts-2", label: "System Architect", url: "https://api.dicebear.com/9.x/bottts/svg?seed=Data" },
+  { id: "avataaars-1", label: "Professional M", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=George" },
+  { id: "avataaars-2", label: "Professional F", url: "https://api.dicebear.com/9.x/avataaars/svg?seed=Liza" },
+  { id: "miniavs-1", label: "Minimalist 1", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Zen" },
+  { id: "miniavs-2", label: "Minimalist 2", url: "https://api.dicebear.com/9.x/miniavs/svg?seed=Art" },
+  { id: "lorelei-1", label: "Creative", url: "https://api.dicebear.com/9.x/lorelei/svg?seed=Spark" },
+];
+
 export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [selectedGender, setSelectedGender] = useState<string>(access.gender || "male");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
 
   const roleLabel = access.primaryRole ? ROLE_LABELS[access.primaryRole as keyof typeof ROLE_LABELS] : "Staff";
   
-  // Use DiceBear Adventurer for 3D-like illustrated avatars
-  const defaultAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || access.userId)}&flip=${selectedGender === "female"}`;
+  const defaultAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || access.userId)}`;
   const currentAvatar = access.avatarUrl || defaultAvatar;
 
-  const handleUpdateProfile = async (updates: { gender?: string; avatarUrl?: string }) => {
+  const handleUpdateProfile = async (updates: { avatarUrl: string }) => {
     setIsUpdating(true);
     try {
       await updateAdminProfile({ data: updates });
       await queryClient.invalidateQueries({ queryKey: ["admin-context"] });
+      setPreviewUrl(null);
       toast.success("Profile updated successfully");
     } catch (error) {
       console.error("Update error:", error);
@@ -65,15 +92,23 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
       return;
     }
 
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error("File size must be less than 2MB");
+    if (file.size > 1 * 1024 * 1024) {
+      toast.error("File size must be less than 1MB for optimal loading");
       return;
     }
+
+    // Client side preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewUrl(reader.result as string);
+    };
+    reader.readAsDataURL(file);
 
     setIsUpdating(true);
     try {
       const fileExt = file.name.split(".").pop();
-      const filePath = `${access.userId}/${Math.random()}.${fileExt}`;
+      const fileName = `${access.userId}-${Date.now()}.${fileExt}`;
+      const filePath = `${access.userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from("avatars")
@@ -89,6 +124,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
     } catch (error) {
       console.error("Upload error:", error);
       toast.error("Failed to upload image");
+      setPreviewUrl(null);
     } finally {
       setIsUpdating(false);
     }
@@ -98,6 +134,10 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
     handleUpdateProfile({ avatarUrl: "" });
   };
 
+  const handleSelectPreset = (url: string) => {
+    handleUpdateProfile({ avatarUrl: url });
+  };
+
   return (
     <>
       <div 
@@ -105,123 +145,192 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
         onClick={() => setIsDialogOpen(true)}
       >
         <div className="relative shrink-0">
-          <div className="h-10 w-10 rounded-full border-2 border-primary/20 overflow-hidden bg-muted flex items-center justify-center">
-            {currentAvatar ? (
-              <img src={currentAvatar} alt="Avatar" className="h-full w-full object-cover" />
-            ) : (
-              <User className="h-6 w-6 text-muted-foreground" />
-            )}
+          <div className="h-10 w-10 rounded-full border-2 border-primary/20 overflow-hidden bg-muted flex items-center justify-center shadow-inner">
+            <img 
+              src={currentAvatar} 
+              alt="Avatar" 
+              className="h-full w-full object-cover transition-transform group-hover:scale-110" 
+              key={currentAvatar}
+            />
           </div>
-          <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-primary rounded-full border-2 border-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Camera className="h-3 w-3 text-primary-foreground" />
+          <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-primary rounded-full border-2 border-background flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <Pencil className="h-2 w-2 text-primary-foreground" />
           </div>
         </div>
         
         <div className="min-w-0 flex-1 leading-tight group-data-[collapsible=icon]:hidden">
-          <p className="font-bold text-sm truncate text-foreground">
+          <p className="font-bold text-sm truncate text-foreground group-hover:text-primary transition-colors">
             {access.fullName || "User Account"}
           </p>
-          <p className="text-xs text-muted-foreground font-medium">
+          <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest opacity-70">
             {roleLabel}
           </p>
         </div>
+        <ChevronRight className="h-3 w-3 text-muted-foreground/30 group-data-[collapsible=icon]:hidden group-hover:text-primary transition-colors" />
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Profile Settings</DialogTitle>
-            <DialogDescription>
-              Customize your admin profile and avatar.
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden bg-background border-border shadow-2xl">
+          <DialogHeader className="p-6 bg-muted/30 border-b border-border">
+            <DialogTitle className="font-display text-xl font-bold uppercase tracking-wider">
+              Profile Management
+            </DialogTitle>
+            <DialogDescription className="text-xs uppercase tracking-widest font-bold opacity-60">
+              Personalize your Admin Panel identity
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col items-center gap-6 py-4">
-            <div className="relative">
-              <div className="h-32 w-32 rounded-full border-4 border-primary/10 overflow-hidden bg-muted flex items-center justify-center">
-                {currentAvatar ? (
-                  <img src={currentAvatar} alt="Avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <User className="h-16 w-16 text-muted-foreground" />
-                )}
-              </div>
-              <Button
-                variant="steel"
-                size="icon"
-                className="absolute -bottom-1 -right-1 h-8 w-8 rounded-full shadow-lg border-2 border-background"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUpdating}
-              >
-                <Pencil className="h-4 w-4" />
-              </Button>
-
-              {isUpdating && (
-                <div className="absolute inset-0 bg-background/60 flex items-center justify-center rounded-full">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <div className="p-6 space-y-8">
+            {/* Live Preview Area */}
+            <div className="flex flex-col items-center justify-center gap-4">
+              <div className="relative">
+                <div className="size-24 rounded-full border-4 border-primary/10 overflow-hidden bg-muted flex items-center justify-center shadow-xl transition-all duration-500 hover:border-primary/30">
+                  <img 
+                    src={previewUrl || currentAvatar} 
+                    alt="Avatar Preview" 
+                    className="h-full w-full object-cover" 
+                  />
+                  {isUpdating && (
+                    <div className="absolute inset-0 bg-background/60 backdrop-blur-[2px] flex items-center justify-center">
+                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-
-            <div className="grid w-full gap-4">
-              <div className="space-y-3">
-                <Label>Dynamic Avatar Style (Based on Gender)</Label>
-                <RadioGroup 
-                  value={selectedGender} 
-                  onValueChange={(val) => {
-                    setSelectedGender(val);
-                    handleUpdateProfile({ gender: val });
-                  }}
-                  className="flex gap-4"
-                  disabled={isUpdating}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="male" id="male" />
-                    <Label htmlFor="male">Male Style</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="female" id="female" />
-                    <Label htmlFor="female">Female Style</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="flex flex-wrap gap-2 justify-center pt-2">
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  className="hidden" 
-                  accept="image/*"
-                  onChange={handleFileUpload}
-                />
-                <Button 
-                  variant="steel" 
-                  size="sm" 
-                  className="gap-2"
-                  disabled={isUpdating}
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Upload className="h-4 w-4" />
-                  Upload Photo
-                </Button>
-                {access.avatarUrl && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                <div className="absolute -bottom-1 -right-1 flex gap-1">
+                  {access.avatarUrl && (
+                    <Button
+                      variant="destructive"
+                      size="icon"
+                      className="h-7 w-7 rounded-full shadow-lg border-2 border-background"
+                      onClick={handleResetAvatar}
+                      disabled={isUpdating}
+                      title="Remove custom avatar"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="steel"
+                    size="icon"
+                    className="h-7 w-7 rounded-full shadow-lg border-2 border-background"
+                    onClick={() => fileInputRef.current?.click()}
                     disabled={isUpdating}
-                    onClick={handleResetAvatar}
+                    title="Change image"
                   >
-                    Reset to 3D Default
+                    <Camera className="h-3.5 w-3.5" />
                   </Button>
-                )}
+                </div>
+              </div>
+              
+              <div className="text-center">
+                <p className="font-bold text-lg">{access.fullName}</p>
+                <Badge variant="outline" className="text-[10px] uppercase font-black tracking-widest border-primary/20 text-primary">
+                  {roleLabel}
+                </Badge>
               </div>
             </div>
+
+            <Tabs defaultValue="presets" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1">
+                <TabsTrigger value="presets" className="text-[10px] font-bold uppercase tracking-widest">
+                  Presets
+                </TabsTrigger>
+                <TabsTrigger value="upload" className="text-[10px] font-bold uppercase tracking-widest">
+                  Manual Upload
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="presets" className="pt-4 animate-in fade-in slide-in-from-bottom-2">
+                <ScrollArea className="h-56 pr-4">
+                  <div className="grid grid-cols-5 gap-3">
+                    {PRESET_AVATARS.map((avatar) => (
+                      <button
+                        key={avatar.id}
+                        onClick={() => handleSelectPreset(avatar.url)}
+                        disabled={isUpdating}
+                        className={cn(
+                          "group relative aspect-square rounded-lg border-2 overflow-hidden transition-all hover:border-primary/50 hover:scale-105 active:scale-95 bg-muted/20",
+                          access.avatarUrl === avatar.url ? "border-primary bg-primary/10 shadow-lg" : "border-transparent"
+                        )}
+                        title={avatar.label}
+                      >
+                        <img src={avatar.url} alt={avatar.label} className="w-full h-full object-cover" />
+                        {access.avatarUrl === avatar.url && (
+                          <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                            <Check className="h-5 w-5 text-primary" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+
+              <TabsContent value="upload" className="pt-4 space-y-4 animate-in fade-in slide-in-from-bottom-2">
+                <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-muted/30">
+                  <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Upload className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="text-center space-y-1">
+                    <p className="text-xs font-bold uppercase tracking-wide">Click or drag to upload</p>
+                    <p className="text-[10px] text-muted-foreground">Select a custom image from your device</p>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleFileUpload}
+                  />
+                  <Button 
+                    variant="steel" 
+                    size="sm" 
+                    className="mt-2 font-bold uppercase tracking-widest text-[10px]"
+                    disabled={isUpdating}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    Select Image
+                  </Button>
+                </div>
+
+                <div className="rounded-md bg-primary/5 border border-primary/20 p-3 flex gap-3">
+                  <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-black uppercase text-primary tracking-widest">Recommended Specs</p>
+                    <ul className="text-[9px] text-muted-foreground leading-normal font-bold list-disc pl-3">
+                      <li>Dimensions: 400 x 400px (1:1 Ratio)</li>
+                      <li>Formats: WebP, JPEG, PNG</li>
+                      <li>Max Size: 1MB (Optimized for performance)</li>
+                    </ul>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
           </div>
 
-          <DialogFooter>
-            <Button variant="steel" onClick={() => setIsDialogOpen(false)}>Close</Button>
+          <DialogFooter className="p-4 bg-muted/30 border-t border-border gap-2">
+            <Button 
+              variant="steel" 
+              className="text-[10px] font-bold uppercase tracking-widest w-full sm:w-auto"
+              onClick={() => setIsDialogOpen(false)}
+            >
+              Close
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+function Badge({ children, className, variant = "default" }: { children: React.ReactNode, className?: string, variant?: "default" | "outline" }) {
+  return (
+    <span className={cn(
+      "inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset",
+      variant === "outline" ? "ring-border text-foreground" : "bg-primary/10 text-primary ring-primary/20",
+      className
+    )}>
+      {children}
+    </span>
   );
 }

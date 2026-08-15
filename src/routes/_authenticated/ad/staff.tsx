@@ -159,8 +159,14 @@ function StaffPage() {
                 <TableRow key={member.id} className="group transition-colors hover:bg-muted/10">
                   <TableCell className="py-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
-                        <User className="size-5" />
+                      <div className="flex size-10 items-center justify-center rounded-full bg-muted border border-border overflow-hidden shadow-sm">
+                        {member.avatar_url ? (
+                          <img src={member.avatar_url} alt={member.full_name} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex size-full items-center justify-center bg-primary/10 text-primary">
+                            <User className="size-5" />
+                          </div>
+                        )}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-foreground flex items-center gap-2">

@@ -32,6 +32,9 @@ export type AdminAccess = {
   permissions: Permission[];
   isSuperAdmin: boolean;
   mfaSatisfied: boolean;
+  fullName: string | null;
+  avatarUrl: string | null;
+  gender: string | null;
 };
 
 export function AdminShell({ access, children }: { access: AdminAccess; children: ReactNode }) {
@@ -88,6 +91,15 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                       {access.email} ·{" "}
                       {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
                     </p>
+                  </div>
+                  <div className="flex -space-x-2 ml-2">
+                    <div className="h-8 w-8 rounded-full border-2 border-background bg-muted overflow-hidden shadow-sm">
+                      <img 
+                        src={access.avatarUrl || `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || "")}`} 
+                        alt="Profile" 
+                        className="h-full w-full object-cover" 
+                      />
+                    </div>
                   </div>
                   <div
                     className={cn(
