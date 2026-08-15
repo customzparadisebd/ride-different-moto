@@ -234,18 +234,18 @@ function RootComponent() {
 
   // Source Protection: Discourage casual inspection
   useEffect(() => {
-    if (typeof window !== 'undefined' && import.meta.env.PROD) {
-      const handleContextMenu = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
-        e.preventDefault();
-      };
-      
-      document.addEventListener('contextmenu', handleContextMenu);
-      return () => {
-        document.removeEventListener('contextmenu', handleContextMenu);
-      };
-    }
+    if (typeof window === 'undefined' || !import.meta.env.PROD) return;
+
+    const handleContextMenu = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+      e.preventDefault();
+    };
+    
+    document.addEventListener('contextmenu', handleContextMenu);
+    return () => {
+      document.removeEventListener('contextmenu', handleContextMenu);
+    };
   }, []);
 
   return (
