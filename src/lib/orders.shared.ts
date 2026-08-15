@@ -34,7 +34,7 @@ export const COURIER_STATUSES = [
   "out_for_delivery",
   "delivered",
   "returned",
-  "cancelled", "returned",
+  "cancelled",
   "failed",
 ] as const;
 
