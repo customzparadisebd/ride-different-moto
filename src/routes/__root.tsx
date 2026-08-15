@@ -24,6 +24,7 @@ import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/i18n";
 import { logNotFound } from "@/lib/analytics.functions";
 import errorGif from "@/assets/404-error.gif.asset.json";
+import { SmoothCursor } from "@/components/SmoothCursor";
 
 function NotFoundComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -245,6 +246,7 @@ function RootComponent() {
           {isPrivateArea ? null : <FloatingWhatsApp />}
           <NetworkBanner />
           <Toaster />
+          <SmoothCursor />
           </CartProvider>
         </LanguageProvider>
       </ThemeProvider>
