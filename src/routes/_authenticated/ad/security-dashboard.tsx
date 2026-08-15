@@ -130,6 +130,20 @@ function SecurityDashboardPage() {
           queryClient.invalidateQueries({ queryKey: ["suspicious-ips"] });
         },
       )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "admin_notifications" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["security-alerts"] });
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "invoice_collisions" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["invoice-collisions"] });
+        },
+      )
       .subscribe();
 
     return () => {
