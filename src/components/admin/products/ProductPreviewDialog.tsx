@@ -52,6 +52,7 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
     offerPrice: value.offerPrice ? Number(value.offerPrice) : null,
     stockQty: Number(value.stockQty),
     inStock: Number(value.stockQty) > 0,
+    outOfStockManual: value.outOfStockToggle,
     universal: value.isUniversal,
     bikeCompatibility: value.bikeCompatibility
       .split(",")
