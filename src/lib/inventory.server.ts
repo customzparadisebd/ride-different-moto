@@ -86,6 +86,22 @@ export async function processReturnOrDamage(params: {
 
   if (error) throw new Error(`Could not record ${params.type}.`);
 
+  // If it's a return, we add back to stock
+  if (params.type === "return") {
+    const { data: product } = await supabaseAdmin
+      .from("products")
+      .select("stock_qty")
+      .eq("id", params.productId)
+      .single();
+
+    if (product) {
+      await supabaseAdmin
+        .from("products")
+        .update({ stock_qty: product.stock_qty + params.quantity })
+        .eq("id", params.productId);
+    }
+  }
+
   await logOrderEvent(params.orderId, {
     eventType: params.type === "return" ? "order_returned" : "order_damaged",
     message: `${params.type === "return" ? "Returned" : "Marked as Damaged"}: ${params.quantity} units. Reason: ${params.reason}`,
