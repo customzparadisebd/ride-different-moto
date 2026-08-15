@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 
 import { PolicyArticle } from "@/components/PolicyPage";
 import { getPolicy } from "@/data/catalog";
+import { site } from "@/data/site";
 
 const policy = getPolicy("privacy-policy");
 
@@ -13,9 +14,9 @@ export const Route = createFileRoute("/privacy-policy")({
       { property: "og:title", content: `${policy?.title ?? "Policy"} — Customz Paradise BD` },
       { property: "og:description", content: policy?.summary ?? "Customz Paradise BD policy." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/privacy-policy" },
+      { property: "og:url", content: `${site.url}/privacy-policy` },
     ],
-    links: [{ rel: "canonical", href: "/privacy-policy" }],
+    links: [{ rel: "canonical", href: `${site.url}/privacy-policy` }],
   }),
   component: Page,
 });

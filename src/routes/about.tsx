@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AboutSection } from "@/components/home/AboutSection";
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
 import { TrustSection } from "@/components/home/TrustSection";
+import { site } from "@/data/site";
 
 const title = "About Us — Customz Paradise BD";
 const description =
@@ -16,9 +17,9 @@ export const Route = createFileRoute("/about")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: `${site.url}/about` },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: `${site.url}/about` }],
   }),
   component: AboutPage,
 });
