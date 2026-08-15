@@ -65,9 +65,29 @@ export const Route = createFileRoute("/products/$slug")({
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
       },
+      ...(product.videoEnabled && product.videoUrl
+        ? {
+            video: {
+              "@type": "VideoObject",
+              name: `${product.name} Video`,
+              description: `Product demonstration for ${product.name}`,
+              thumbnailUrl: product.image || product.gallery[0],
+              contentUrl: product.videoUrl,
+              embedUrl: product.videoUrl,
+              uploadDate: new Date().toISOString(),
+            },
+          }
+        : {}),
     };
 
-    return { name: product.name, description: product.description, jsonLd };
+    return {
+      name: product.name,
+      description: product.description,
+      jsonLd,
+      videoEnabled: product.videoEnabled,
+      videoUrl: product.videoUrl,
+      image: product.image || product.gallery[0],
+    };
   },
 
   head: ({ loaderData, params }) => {
