@@ -7,19 +7,22 @@
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowDown, ArrowUp, Trash2, Info } from "lucide-react";
-import { useState } from "react";
+import { ArrowDown, ArrowUp, Trash2, Info, Play, Pause } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import {
   deleteProduct360Image,
   listProduct360Images,
   reorderProduct360Images,
   saveProduct360Image,
+  saveProduct360Sequence,
 } from "@/lib/products.functions";
+import { Bulk360Uploader } from "./Bulk360Uploader";
 
 type Product360Row = {
   id: string;
@@ -52,13 +55,30 @@ export function Product360Panel({
   const save = useServerFn(saveProduct360Image);
   const remove = useServerFn(deleteProduct360Image);
   const reorder = useServerFn(reorderProduct360Images);
+  const saveBulk = useServerFn(saveProduct360Sequence);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const playInterval = useRef<number | null>(null);
 
   const imagesQuery = useQuery({
     queryKey: ["admin-product-360", productId],
     queryFn: () => fetch360({ data: { productId } }),
   });
   const rows = (imagesQuery.data?.rows ?? []) as unknown as Product360Row[];
+
+  useEffect(() => {
+    if (isPlaying && rows.length > 0) {
+      playInterval.current = window.setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % rows.length);
+      }, 100);
+    } else if (playInterval.current) {
+      clearInterval(playInterval.current);
+    }
+    return () => {
+      if (playInterval.current) clearInterval(playInterval.current);
+    };
+  }, [isPlaying, rows.length]);
 
   const refresh = () =>
     void queryClient.invalidateQueries({ queryKey: ["admin-product-360", productId] });
@@ -82,6 +102,14 @@ export function Product360Panel({
     onError,
   });
   const reorderMutation = useMutation({ mutationFn: reorder, onSuccess: refresh, onError });
+  const bulkMutation = useMutation({
+    mutationFn: saveBulk,
+    onSuccess: () => {
+      toast.success("Bulk sequence saved");
+      refresh();
+    },
+    onError,
+  });
 
   const submit = (event: React.FormEvent) => {
     event.preventDefault();
@@ -125,18 +153,65 @@ export function Product360Panel({
         </Button>
       </div>
 
-      <div className="mt-4 rounded-lg bg-blue-500/5 p-3 border border-blue-500/20">
-        <div className="flex items-start gap-3">
-          <Info className="size-5 shrink-0 text-blue-400 mt-0.5" />
-          <div className="text-sm">
-            <h3 className="font-semibold text-blue-400 uppercase tracking-wider text-xs">Image Guidelines</h3>
-            <ul className="mt-1 list-disc list-inside text-muted-foreground space-y-1">
-              <li>Recommended: <span className="text-foreground font-medium">24, 36, or 72 images</span> for smooth rotation.</li>
-              <li>Dimensions: <span className="text-foreground font-medium">1000x1000px</span> (square).</li>
-              <li>Format: <span className="text-foreground font-medium">WebP</span> highly recommended for performance.</li>
-              <li>Max File Size: <span className="text-foreground font-medium">&lt; 150KB per image</span> (Total sequence should be &lt; 5MB).</li>
-            </ul>
+      <div className="mt-4 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-lg bg-blue-500/5 p-3 border border-blue-500/20">
+          <div className="flex items-start gap-3">
+            <Info className="size-5 shrink-0 text-blue-400 mt-0.5" />
+            <div className="text-sm">
+              <h3 className="font-semibold text-blue-400 uppercase tracking-wider text-xs">Image Guidelines</h3>
+              <ul className="mt-1 list-disc list-inside text-muted-foreground space-y-1">
+                <li>Recommended: <span className="text-foreground font-medium">24, 36, or 72 images</span> for smooth rotation.</li>
+                <li>Dimensions: <span className="text-foreground font-medium">1000x1000px</span> (square).</li>
+                <li>Format: <span className="text-foreground font-medium">WebP</span> highly recommended for performance.</li>
+                <li>Max File Size: <span className="text-foreground font-medium">&lt; 150KB per image</span> (Total sequence should be &lt; 5MB).</li>
+              </ul>
+            </div>
           </div>
+        </div>
+
+        <div className="rounded-lg border border-border bg-black/40 p-3">
+          <div className="flex items-center justify-between mb-2">
+             <Label className="text-xs text-muted-foreground uppercase tracking-wider">Live Scrubber Preview</Label>
+             <div className="flex items-center gap-2">
+                <Button 
+                  size="icon" 
+                  variant="ghost" 
+                  className="size-7 rounded-full text-white hover:bg-white/10"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  disabled={rows.length === 0}
+                >
+                  {isPlaying ? <Pause className="size-3" /> : <Play className="size-3" />}
+                </Button>
+                <span className="font-mono text-[10px] text-muted-foreground">
+                  {rows.length > 0 ? `${currentIndex + 1} / ${rows.length}` : "0 / 0"}
+                </span>
+             </div>
+          </div>
+          <div className="aspect-video w-full max-h-[160px] rounded bg-black overflow-hidden relative mb-3">
+            {rows.length > 0 ? (
+              <img 
+                src={rows[currentIndex]?.image_url} 
+                alt="Preview" 
+                className="size-full object-contain"
+              />
+            ) : (
+              <div className="size-full flex items-center justify-center text-muted-foreground/20 text-[10px] uppercase font-bold tracking-widest">
+                No images
+              </div>
+            )}
+          </div>
+          <Slider 
+            value={[currentIndex]} 
+            max={Math.max(0, rows.length - 1)} 
+            step={1}
+            onValueChange={([val]) => {
+              if (typeof val === 'number') {
+                setCurrentIndex(val);
+                setIsPlaying(false);
+              }
+            }}
+            disabled={rows.length === 0}
+          />
         </div>
       </div>
 
@@ -251,6 +326,17 @@ export function Product360Panel({
           </div>
         </form>
       ) : null}
+
+      {canManage && (
+        <Bulk360Uploader 
+          productId={productId} 
+          currentCount={rows.length}
+          isPending={bulkMutation.isPending}
+          onSave={async (items) => {
+            await bulkMutation.mutateAsync({ data: { productId, items } as any });
+          }}
+        />
+      )}
     </div>
   );
 }
