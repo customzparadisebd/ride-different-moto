@@ -1,0 +1,3 @@
+-- DATA EXPORT (SKELETON)
+-- Manually run 'supabase--read_query' for each table to fill this with actual INSERTs
+-- Order: Brands -> Categories -> Products -> Orders
