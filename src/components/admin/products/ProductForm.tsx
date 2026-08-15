@@ -201,7 +201,7 @@ export function ProductForm({
         <Field
           label="Category"
           required
-          error={errors["category"]}
+          error={errors["category"] || undefined}
           example="Select the primary category"
         >
           <select
