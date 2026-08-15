@@ -365,7 +365,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
             </div>
           </DialogHeader>
 
-          <div className="relative h-80 bg-neutral-900">
+          <div className="relative h-80 bg-neutral-900" aria-label="Avatar crop area. Use arrow keys to move the image.">
             {cropImage && (
               <Cropper
                 image={cropImage}
@@ -377,14 +377,27 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 onZoomChange={setZoom}
                 cropShape="round"
                 showGrid={false}
+                keyboardStep={10}
               />
             )}
           </div>
 
           <div className="p-6 space-y-4">
             <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Zoom Level</Label>
+              <div className="flex justify-between items-center">
+                <Label 
+                  htmlFor="zoom-slider"
+                  className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground"
+                >
+                  Zoom Level
+                </Label>
+                <span className="text-[10px] font-mono font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded">
+                  {zoom.toFixed(1)}x
+                </span>
+              </div>
               <Slider
+                id="zoom-slider"
+                aria-label="Adjust zoom level"
                 value={[zoom]}
                 min={1}
                 max={3}
@@ -395,10 +408,8 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                     setZoom(val);
                   }
                 }}
-                className="py-4"
+                className="py-4 cursor-pointer"
               />
-
-
             </div>
 
             <div className="rounded-md bg-muted/50 p-3 border border-border flex gap-3">
