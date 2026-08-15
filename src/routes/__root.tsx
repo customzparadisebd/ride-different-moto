@@ -246,6 +246,7 @@ function RootComponent() {
         document.removeEventListener('contextmenu', handleContextMenu);
       };
     }
+    return undefined;
   }, []);
 
   return (
