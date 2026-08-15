@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { listAdminCustomers, softDeleteCustomer } from "@/lib/customers.functions";
+import { listAdminCustomers, softDeleteCustomer, getCustomerAuditTrail } from "@/lib/customers.functions";
 import { formatBDT } from "@/lib/format";
 import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
@@ -142,6 +142,11 @@ function AdminCustomers() {
                   </td>
                   <td className="p-3 text-right">
                     <div className="flex justify-end gap-2">
+                      <CustomerAuditTrailButton 
+                        customerId={customer.id} 
+                        customerName={customer.name}
+                        canView={canManage} 
+                      />
                       <Button
                         variant="steel"
                         size="sm"
@@ -234,7 +239,89 @@ function Pagination({
   );
 }
 
+function CustomerAuditTrailButton({ 
+  customerId, 
+  customerName,
+  canView 
+}: { 
+  customerId: string; 
+  customerName: string;
+  canView: boolean;
+}) {
+  const fetchAudit = useServerFn(getCustomerAuditTrail);
+  const [isOpen, setIsOpen] = useState(false);
+  
+  const query = useQuery({
+    queryKey: ["admin-customer-audit", customerId],
+    queryFn: () => fetchAudit({ data: { customerId } }),
+    enabled: isOpen,
+  });
+
+  if (!canView) return null;
+
+  return (
+    <>
+      <Button variant="steel" size="sm" onClick={() => setIsOpen(true)}>
+        Audit Trail
+      </Button>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="flex max-h-[80vh] w-full max-w-2xl flex-col rounded-xl border border-border bg-card shadow-xl">
+            <div className="flex items-center justify-between border-b border-border p-4">
+              <h3 className="font-display text-lg font-bold uppercase tracking-tight">
+                Audit Trail: {customerName}
+              </h3>
+              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)}>
+                Close
+              </Button>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-4">
+              {query.isLoading ? (
+                <p className="text-center text-sm text-muted-foreground">Loading audit logs...</p>
+              ) : !query.data?.length ? (
+                <p className="text-center text-sm text-muted-foreground">No audit logs found for this customer.</p>
+              ) : (
+                <div className="space-y-4">
+                  {query.data.map((log: any) => (
+                    <div key={log.id} className="rounded-lg border border-border bg-secondary/30 p-3 text-sm">
+                      <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2 mb-2">
+                        <span className="font-bold text-primary">{log.action.replace("customer.", "").toUpperCase()}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(log.created_at).toLocaleString("en-GB")}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <p className="text-muted-foreground">Actor</p>
+                          <p>{log.actor_email} ({log.actor_role})</p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground">IP Address</p>
+                          <p>{log.ip_address || "—"}</p>
+                        </div>
+                      </div>
+                      {log.metadata?.reason && (
+                        <div className="mt-2 rounded bg-red-500/10 p-2 text-xs text-red-400 border border-red-500/20">
+                          <p className="font-semibold uppercase text-[10px] opacity-70">Delete Reason</p>
+                          <p>{log.metadata.reason}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 function CustomerDeleteButton({ 
+
   customer, 
   canManage 
 }: { 
