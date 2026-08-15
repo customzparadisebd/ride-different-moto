@@ -105,13 +105,19 @@ const ADMINISTRATION: NavItem[] = [
     icon: Activity,
     permission: PERMISSIONS.securityManage,
   },
-  {
-    to: "/ad/login-requests",
-    label: "Login Requests",
-    icon: KeyRound,
-    permission: PERMISSIONS.loginApprovalsManage,
-  },
-];
+    {
+      to: "/ad/login-requests",
+      label: "Login Requests",
+      icon: KeyRound,
+      permission: PERMISSIONS.loginApprovalsManage,
+    },
+    {
+      to: "/ad/diagnostics",
+      label: "System Diagnostics",
+      icon: Activity,
+      permission: PERMISSIONS.staffManage,
+    },
+  ];
 
 export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
   const pathname = useRouterState({ select: (state) => state.location.pathname });
