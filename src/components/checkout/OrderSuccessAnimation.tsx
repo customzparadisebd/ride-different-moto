@@ -6,11 +6,12 @@ import orderSuccessVideo from "@/assets/order-confirmation-anim.mp4.asset.json";
  */
 export function OrderSuccessAnimation({ className = "" }: { className?: string }) {
   return (
-    <div className={`mx-auto flex justify-center ${className}`}>
-      <div className="relative aspect-square w-full max-w-[280px] overflow-hidden rounded-xl">
+    <div className={`mx-auto flex justify-center w-full ${className}`}>
+      <div className="relative w-full max-w-[320px] sm:max-w-[480px] lg:max-w-[640px] aspect-video overflow-hidden rounded-xl">
         <video
           autoPlay
           muted
+          loop
           playsInline
           className="h-full w-full object-contain"
           onContextMenu={(e) => e.preventDefault()}
