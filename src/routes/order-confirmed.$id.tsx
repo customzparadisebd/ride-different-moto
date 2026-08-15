@@ -135,7 +135,7 @@ function OrderConfirmedPage() {
       <div className="czp-reveal mt-8 rounded-lg border border-border bg-secondary/60 p-4 text-center" style={{ animationDelay: "1.35s" }}>
         <p className="text-xs text-muted-foreground">Having any problem with your order? Need help tracking?</p>
         <a
-          href={`https://wa.me/${site.phone.replace(/\D/g, '')}?text=Hi! I need help with my order ${order.invoice_no} on Customz Paradise BD.`}
+          href={`https://wa.me/${site.whatsappNumber}?text=Hi! I need help with my order ${order.invoice_no} on Customz Paradise BD.`}
           target="_blank"
           rel="noopener noreferrer"
           className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-[#25D366] px-5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
