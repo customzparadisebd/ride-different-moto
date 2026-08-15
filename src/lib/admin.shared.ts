@@ -221,3 +221,8 @@ export const loginAttemptInput = z.object({
 });
 
 export const backupCodeInput = z.object({ code: z.string().trim().min(4).max(40) });
+
+export const loginApprovalActionInput = z.object({
+  requestId: z.string().uuid(),
+  action: z.enum(["approve", "reject"]),
+});

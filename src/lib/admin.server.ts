@@ -207,6 +207,7 @@ export async function resolveActor(
     mfaRequired: isSuperAdmin || !!profile.data?.mfa_required,
     sessionId,
     sessionRevoked,
+    loginApprovalPending: status === "pending" && !isOwner,
   };
 }
 
