@@ -34,7 +34,7 @@ describe('Invoice Concurrency Uniqueness', () => {
     const duplicatePayload = {
       invoice_no: testInvoice,
       customer_name: 'Test Duplicate',
-      phone: '01000000000',
+      customer_phone: '01000000000',
       total_amount: 0,
       status: 'pending'
     };
