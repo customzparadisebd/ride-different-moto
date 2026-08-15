@@ -35,14 +35,11 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
 
   const mockProduct: StorefrontProduct = {
     id: productId || "preview",
-    name: value.name || "Product Name Preview",
-    sku: value.sku || "PREVIEW-SKU",
     slug: value.slug || "preview-slug",
-    category: value.category,
+    name: value.name || "Product Name Preview",
     description: value.description || null,
     details: value.details || null,
-    price: Number(value.price) || 0,
-    offerPrice: value.offerPrice ? Number(value.offerPrice) : null,
+    category: value.category,
     image: value.imageUrl || null,
     gallery: [
       value.imageUrl,
@@ -51,18 +48,19 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
         .map((s) => s.trim())
         .filter(Boolean),
     ].filter(Boolean),
+    price: Number(value.price) || 0,
+    offerPrice: value.offerPrice ? Number(value.offerPrice) : null,
+    stockQty: Number(value.stockQty),
+    inStock: Number(value.stockQty) > 0,
+    universal: value.isUniversal,
     bikeCompatibility: value.bikeCompatibility
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean),
-    universal: value.isUniversal,
-    inStock: Number(value.stockQty) > 0,
-    stockQty: Number(value.stockQty),
     bestDeal: value.isBestDeal,
     featured: value.isFeatured,
     newArrival: value.isNewArrival,
     badgeText: value.badgeText || null,
-    // Note: StorefrontProduct doesn't have badgeEnabled, but uses badgeText presence
     colors: (colorsQuery.data?.rows ?? []).map((c: any) => ({
       id: c.id,
       name: c.name,
