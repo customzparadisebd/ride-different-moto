@@ -121,7 +121,7 @@ export async function createOrder(
        });
        throw new Error(`DUPLICATE INVOICE DETECTED. Please refresh and try again.`);
     }
-    throw new Error(`Could not save the order: ${inserted.error.message} (${inserted.error.code})`);
+    throw new Error("Could not save the order. Please try again.");
   }
 
   const order = inserted.data;
