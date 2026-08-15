@@ -57,6 +57,9 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [lockSeconds, setLockSeconds] = useState(0);
+  const [approvalRequestId, setApprovalRequestId] = useState<string | null>(null);
+  const [approvalStatus, setApprovalStatus] = useState<string>("pending");
+  const [requestTime, setRequestTime] = useState<string>("");
   const locked = lockSeconds > 0;
 
   useEffect(() => {
@@ -67,13 +70,62 @@ function AuthPage() {
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) void navigate({ to: "/ad", replace: true });
+      // If signed in, check if we need approval or if we're already good
+      if (event === "SIGNED_IN" && session) {
+        handlePostAuth(session.user.id);
+      }
     });
-    void supabase.auth.getSession().then(({ data: s }) => {
-      if (s.session) void navigate({ to: "/ad", replace: true });
+    
+    supabase.auth.getSession().then(({ data: s }) => {
+      if (s.session) handlePostAuth(s.session.user.id);
     });
+
     return () => data.subscription.unsubscribe();
   }, [navigate]);
+
+  // Handle polling for approval
+  useEffect(() => {
+    if (!approvalRequestId || approvalStatus !== "pending") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const result = await getLoginApprovalStatus({ data: approvalRequestId });
+        if (result.status !== "pending") {
+          setApprovalStatus(result.status);
+          if (result.status === "approved") {
+            clearInterval(interval);
+            void navigate({ to: "/ad", replace: true });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to check approval status", err);
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [approvalRequestId, approvalStatus, navigate]);
+
+  const handlePostAuth = async (userId: string) => {
+    setBusy(true);
+    try {
+      const approval = await createLoginApproval({});
+      if (approval.status === "approved") {
+        void navigate({ to: "/ad", replace: true });
+      } else {
+        setApprovalRequestId(approval.requestId || null);
+        setApprovalStatus("pending");
+        setRequestTime(format(new Date(), "hh:mm:ss a"));
+        // We stay on this page to show the waiting screen
+      }
+    } catch (err) {
+      console.error("Approval check failed", err);
+      // If it fails, sign out to be safe
+      await supabase.auth.signOut();
+      toast.error("Security check failed. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -97,19 +149,120 @@ function AuthPage() {
       } catch {
         /* audit is best-effort */
       }
-    } catch (error) {
-      void error;
+    } catch (error: any) {
       try {
         const state = await reportLoginFailure({ data: { email } });
         if (state.locked) setLockSeconds(state.retryInSeconds);
       } catch {
         /* ignore throttle bookkeeping failures */
       }
-      toast.error("Those sign-in details are not valid.");
+      toast.error(error.message || "Those sign-in details are not valid.");
     } finally {
       setBusy(false);
     }
   };
+
+  if (approvalRequestId) {
+    return (
+      <div className="flex min-h-svh flex-col md:flex-row bg-[#0a0a0a]">
+        {/* Left side: Same as login */}
+        <div className="relative hidden w-full md:flex md:w-1/2 overflow-hidden bg-black items-center justify-center">
+          <video autoPlay muted loop playsInline className="absolute inset-0 h-full w-full object-cover opacity-60 pointer-events-none">
+            <source src={animationAsset.url} type="video/mp4" />
+          </video>
+          <div className="relative z-10 p-12 text-center">
+            <h2 className="font-display text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
+              RIDE DIFFERENT.<br /><span className="text-primary">BE DIFFERENT.</span>
+            </h2>
+          </div>
+        </div>
+
+        {/* Right side: Waiting Screen */}
+        <div className="flex w-full flex-col items-center justify-center px-6 py-12 md:w-1/2 md:px-12 bg-gradient-onyx">
+          <div className="w-full max-w-sm space-y-8 text-center">
+            <div className="flex flex-col items-center">
+              <Logo priority className="h-16" />
+              <div className="mt-8 p-6 rounded-2xl border border-white/5 bg-white/5 space-y-6">
+                {approvalStatus === "pending" ? (
+                  <>
+                    <div className="flex justify-center">
+                      <div className="h-12 w-12 rounded-full border-t-2 border-primary animate-spin" />
+                    </div>
+                    <h1 className="font-display text-2xl font-bold uppercase tracking-widest text-white">
+                      Login Request Pending
+                    </h1>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Your login request has been sent to an administrator. Please wait for approval.
+                    </p>
+                    <div className="space-y-3 pt-4 border-t border-white/5 text-left text-xs uppercase tracking-widest font-bold">
+                       <div className="flex justify-between">
+                         <span className="text-muted-foreground/60">Status</span>
+                         <span className="text-yellow-500">Pending</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-muted-foreground/60">Request Time</span>
+                         <span className="text-white">{requestTime}</span>
+                       </div>
+                       <div className="flex justify-between">
+                         <span className="text-muted-foreground/60">Request ID</span>
+                         <span className="text-white font-mono text-[10px]">{approvalRequestId.slice(0, 8)}...</span>
+                       </div>
+                    </div>
+                  </>
+                ) : approvalStatus === "rejected" ? (
+                  <>
+                    <div className="h-16 w-16 mx-auto rounded-full bg-red-500/20 flex items-center justify-center">
+                      <span className="text-red-500 text-3xl">✕</span>
+                    </div>
+                    <h1 className="font-display text-2xl font-bold uppercase tracking-widest text-red-500">
+                      Request Rejected
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Your login request was rejected by an administrator.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4" 
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        setApprovalRequestId(null);
+                        setApprovalStatus("pending");
+                      }}
+                    >
+                      Back to Login
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="h-16 w-16 mx-auto rounded-full bg-orange-500/20 flex items-center justify-center">
+                      <span className="text-orange-500 text-3xl">!</span>
+                    </div>
+                    <h1 className="font-display text-2xl font-bold uppercase tracking-widest text-orange-500">
+                      Request Expired
+                    </h1>
+                    <p className="text-sm text-muted-foreground">
+                      Your login request has expired. Please try logging in again.
+                    </p>
+                    <Button 
+                      variant="outline" 
+                      className="w-full mt-4" 
+                      onClick={async () => {
+                        await supabase.auth.signOut();
+                        setApprovalRequestId(null);
+                        setApprovalStatus("pending");
+                      }}
+                    >
+                      Back to Login
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-svh flex-col md:flex-row bg-[#0a0a0a]">
