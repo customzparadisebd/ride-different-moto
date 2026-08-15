@@ -112,7 +112,7 @@ export function Header() {
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="flex w-[75vw] max-w-[300px] flex-col p-0 sm:max-w-[300px] border-l border-border/40">
+            <SheetContent side="right" className="flex w-[75vw] max-w-[300px] flex-col overflow-hidden p-0 sm:max-w-[300px] border-l border-border/40">
               <div className="flex items-center justify-between border-b border-border p-4 pr-12">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <Logo className="h-7 w-auto" />
