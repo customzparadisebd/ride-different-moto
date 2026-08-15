@@ -183,6 +183,17 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
   }
+
+  /* Global Autofill Fix for Dark Themes */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: white !important;
+    -webkit-box-shadow: 0 0 0 1000px #0a0a0a inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+    caret-color: white;
+  }
 }
 
 @utility bg-gradient-red {
