@@ -60,6 +60,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       .update({
         prefix: data.prefix,
         start_number: data.startNumber,
+        current_number: data.currentNumber,
         updated_at: new Date().toISOString(),
         updated_by: actor.userId,
       })
