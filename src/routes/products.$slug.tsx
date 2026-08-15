@@ -61,7 +61,7 @@ export const Route = createFileRoute("/products/$slug")({
         url: `${site.url}/products/${product.slug}`,
         priceCurrency: "BDT",
         price: product.offerPrice || product.price,
-        availability: product.inStock
+        availability: product.inStock && !product.outOfStockManual
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
       },

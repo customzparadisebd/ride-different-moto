@@ -29,6 +29,7 @@ export type StorefrontProduct = {
   offerPrice: number | null;
   stockQty: number;
   inStock: boolean;
+  outOfStockManual: boolean;
   universal: boolean;
   bikeCompatibility: string[];
   bestDeal: boolean;
