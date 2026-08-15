@@ -284,6 +284,26 @@ export const listOrders = createServerFn({ method: "POST" })
       case "same_phone":
         query = query.in("customer_phone", repeatPhones.length ? repeatPhones : ["__none__"]);
         break;
+      case "yesterday": {
+        const { from, to } = getBDTimeRange(-1);
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
+      case "last_7_days": {
+        const { from } = getBDTimeRange(-7);
+        query = query.gte("created_at", from);
+        break;
+      }
+      case "this_month": {
+        const { from, to } = getBDMonthRange();
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
+      case "today_shift": {
+        const { from, to } = getBDTodayShiftRange();
+        query = query.gte("created_at", from).lte("created_at", to);
+        break;
+      }
       default:
         break;
     }
@@ -304,6 +324,27 @@ export const listOrders = createServerFn({ method: "POST" })
         data.assignedTo === "none"
           ? query.is("assigned_to", null)
           : query.eq("assigned_to", data.assignedTo);
+
+    if (data.paymentMethod) query = query.eq("payment_method", data.paymentMethod);
+    if (data.productCategory) {
+      // Joining with order_items to filter by product category
+      query = query.filter("order_items.product_category", "eq", data.productCategory);
+    }
+    if (data.productId) {
+      query = query.filter("order_items.product_id", "eq", data.productId);
+    }
+    if (data.steadfastStatus) {
+      // Joint query with courier_shipments
+      const sfStatus = data.steadfastStatus;
+      if (sfStatus === "not_submitted") {
+        query = query.not("courier_shipments.courier_name", "eq", "steadfast");
+      } else {
+        query = query
+          .eq("courier_shipments.courier_name", "steadfast")
+          .eq("courier_shipments.success", sfStatus === "successful");
+      }
+    }
+
     if (data.pinned) query = query.eq("is_pinned", data.pinned === "pinned");
     // Free-text search across name, phone and invoice number.
     if (data.search) {
@@ -312,6 +353,7 @@ export const listOrders = createServerFn({ method: "POST" })
         `customer_name.ilike.${term},customer_phone.ilike.${term},invoice_no.ilike.${term}`,
       );
     }
+
 
     const from = (data.page - 1) * data.pageSize;
     const {
