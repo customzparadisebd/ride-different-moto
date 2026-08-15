@@ -211,7 +211,15 @@ function CheckoutPage() {
                 ))}
               </select>
               {errors["deliveryZone"] && (
-                <p className="mt-1 text-xs text-destructive">{errors["deliveryZone"]}</p>
+                <p 
+                  className="mt-2 flex items-center gap-1.5 rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs font-medium text-destructive animate-in fade-in slide-in-from-top-1" 
+                  role="alert"
+                >
+                  <svg className="size-3.5 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                  </svg>
+                  {errors["deliveryZone"]}
+                </p>
               )}
             </div>
 
