@@ -61,7 +61,7 @@ export const createLoginApproval = createServerFn({ method: "POST" })
 
 export const getLoginApprovalStatus = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((id: unknown) => z.string().uuid().parse(id))
+  .validator((id: unknown) => z.string().uuid().parse(id))
   .handler(async ({ data: requestId, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
@@ -106,7 +106,7 @@ export const listPendingApprovals = createServerFn({ method: "GET" })
 
 export const handleApprovalAction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => loginApprovalActionInput.parse(input))
+  .validator((input: unknown) => loginApprovalActionInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

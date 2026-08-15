@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
 export const getHeroSlides = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
+  .validator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const query = supabaseAdmin.from("hero_slides").select("*");
@@ -33,7 +33,7 @@ export const getHeroSlides = createServerFn({ method: "GET" })
 
 export const updateHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         id: z.string().uuid(),
@@ -66,7 +66,7 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
 
 export const createHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) =>
+  .validator((d) =>
     z
       .object({
         title: z.string(),
@@ -93,7 +93,7 @@ export const createHeroSlide = createServerFn({ method: "POST" })
 
 export const deleteHeroSlide = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.string().uuid().parse(d))
+  .validator((d) => z.string().uuid().parse(d))
   .handler(async ({ data: id, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

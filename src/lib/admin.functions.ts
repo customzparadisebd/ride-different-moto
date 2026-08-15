@@ -59,7 +59,7 @@ export const getAdminContext = createServerFn({ method: "POST" })
 /** Updates the caller's profile (name, gender, avatar). */
 export const updateAdminProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         fullName: z.string().min(2).optional(),
@@ -171,14 +171,14 @@ export const recordPasswordReset = createServerFn({ method: "POST" })
   });
 
 export const checkLoginAllowed = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => loginAttemptInput.parse(input))
+  .validator((input: unknown) => loginAttemptInput.parse(input))
   .handler(async ({ data }) => {
     const { loginLockState } = await import("./admin.server");
     return loginLockState(data.email);
   });
 
 export const reportLoginFailure = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => loginAttemptInput.parse(input))
+  .validator((input: unknown) => loginAttemptInput.parse(input))
   .handler(async ({ data }) => {
     const { recordLoginAttempt, loginLockState, writeAudit } = await import("./admin.server");
     await recordLoginAttempt(data.email, false);
@@ -192,7 +192,7 @@ export const reportLoginFailure = createServerFn({ method: "POST" })
   });
 
 export const reportLoginSuccess = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) => loginAttemptInput.parse(input))
+  .validator((input: unknown) => loginAttemptInput.parse(input))
   .handler(async ({ data }) => {
     const { recordLoginAttempt } = await import("./admin.server");
     await recordLoginAttempt(data.email, true);
@@ -263,7 +263,7 @@ export const getMfaOverview = createServerFn({ method: "POST" })
  */
 export const recoverWithBackupCode = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => backupCodeInput.parse(input))
+  .validator((input: unknown) => backupCodeInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor, consumeBackupCode } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -288,7 +288,7 @@ export const recoverWithBackupCode = createServerFn({ method: "POST" })
 // ---------- AUDIT LOG ----------
 export const listAuditLog = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => auditQueryInput.parse(input ?? {}))
+  .validator((input: unknown) => auditQueryInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -345,7 +345,7 @@ export const listStaff = createServerFn({ method: "POST" })
 
 export const setStaffStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => staffStatusInput.parse(input))
+  .validator((input: unknown) => staffStatusInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -402,7 +402,7 @@ export const setStaffStatus = createServerFn({ method: "POST" })
 
 export const setStaffRole = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => staffRoleInput.parse(input))
+  .validator((input: unknown) => staffRoleInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -443,7 +443,7 @@ export const setStaffRole = createServerFn({ method: "POST" })
 
 export const setStaffPermissions = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => staffPermissionsInput.parse(input))
+  .validator((input: unknown) => staffPermissionsInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -486,7 +486,7 @@ export const setStaffPermissions = createServerFn({ method: "POST" })
 /** Deletes a staff account (Super Admin/Admin only). */
 export const deleteStaff = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
+  .validator((input: unknown) => z.object({ userId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -518,7 +518,7 @@ export const deleteStaff = createServerFn({ method: "POST" })
 /** Updates a staff member's password (Super Admin/Admin only). */
 export const setStaffPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ userId: z.string().uuid(), password: z.string().min(8) }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -553,7 +553,7 @@ export const setStaffPassword = createServerFn({ method: "POST" })
 /** Updates a staff member's name (Super Admin/Admin only, or self). */
 export const setStaffName = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ userId: z.string().uuid(), fullName: z.string().min(2) }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -596,7 +596,7 @@ export const setStaffName = createServerFn({ method: "POST" })
 /** Creates a new staff member account (Super Admin/Admin only). */
 export const createStaff = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         email: z.string().email(),
@@ -677,7 +677,7 @@ export const createStaff = createServerFn({ method: "POST" })
 /** Fetches audit logs for a specific user. */
 export const getStaffActivity = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({ userId: z.string().uuid(), limit: z.number().optional() }).parse(input),
   )
   .handler(async ({ data, context }) => {
@@ -733,7 +733,7 @@ export const listAdminSessions = createServerFn({ method: "POST" })
 
 export const revokeAdminSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => revokeSessionInput.parse(input))
+  .validator((input: unknown) => revokeSessionInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

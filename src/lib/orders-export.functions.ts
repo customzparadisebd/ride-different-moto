@@ -12,7 +12,7 @@ import type { AdminOrderListRow } from "./orders.functions";
  */
 export const getOrdersForExport = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderFilterInput.parse(input ?? {}))
+  .validator((input: unknown) => orderFilterInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(

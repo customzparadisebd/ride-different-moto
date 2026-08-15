@@ -16,7 +16,7 @@ export const listStorefrontProducts = createServerFn({ method: "GET" }).handler(
 });
 
 export const getStorefrontProduct = createServerFn({ method: "GET" })
-  .inputValidator((input: unknown) => productSlugInput.parse(input))
+  .validator((input: unknown) => productSlugInput.parse(input))
   .handler(async ({ data }) => {
     const { fetchProductBySlug } = await import("./storefront.server");
     return fetchProductBySlug(data.slug);

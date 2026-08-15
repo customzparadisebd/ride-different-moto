@@ -23,7 +23,7 @@ const securityEventFilterInput = z.object({
 
 export const listSecurityEvents = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => securityEventFilterInput.parse(input ?? {}))
+  .validator((input: unknown) => securityEventFilterInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

@@ -43,7 +43,7 @@ import {
 
 export const listProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productListInput.parse(input ?? {}))
+  .validator((input: unknown) => productListInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -76,7 +76,7 @@ export const listProducts = createServerFn({ method: "POST" })
 
 export const createProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productInput.parse(input))
+  .validator((input: unknown) => productInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -107,7 +107,7 @@ export const createProduct = createServerFn({ method: "POST" })
 
 export const updateProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productUpdateInput.parse(input))
+  .validator((input: unknown) => productUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -146,7 +146,7 @@ export const updateProduct = createServerFn({ method: "POST" })
 
 export const setProductStock = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productStockInput.parse(input))
+  .validator((input: unknown) => productStockInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -178,7 +178,7 @@ export const setProductStock = createServerFn({ method: "POST" })
 
 export const toggleProductFlag = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productToggleInput.parse(input))
+  .validator((input: unknown) => productToggleInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -203,7 +203,7 @@ export const toggleProductFlag = createServerFn({ method: "POST" })
 /** RECYCLE BIN: soft delete only. The row and its audit trail stay. */
 export const softDeleteProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productDeleteInput.parse(input))
+  .validator((input: unknown) => productDeleteInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -240,7 +240,7 @@ export const softDeleteProduct = createServerFn({ method: "POST" })
 
 export const restoreProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productRestoreInput.parse(input))
+  .validator((input: unknown) => productRestoreInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -263,7 +263,7 @@ export const restoreProduct = createServerFn({ method: "POST" })
 /** PERMANENT DELETE: Super Admin only, needs the exact product name typed. */
 export const purgeProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productPurgeInput.parse(input))
+  .validator((input: unknown) => productPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -306,7 +306,7 @@ export const purgeProduct = createServerFn({ method: "POST" })
 // ============================================================
 export const listProductColors = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productColorListInput.parse(input))
+  .validator((input: unknown) => productColorListInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -325,7 +325,7 @@ export const listProductColors = createServerFn({ method: "POST" })
 
 export const saveProductColor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productColorInput.parse(input))
+  .validator((input: unknown) => productColorInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -352,7 +352,7 @@ export const saveProductColor = createServerFn({ method: "POST" })
 
 export const deleteProductColor = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productColorDeleteInput.parse(input))
+  .validator((input: unknown) => productColorDeleteInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -380,7 +380,7 @@ export const deleteProductColor = createServerFn({ method: "POST" })
 
 export const reorderProductColors = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => productColorReorderInput.parse(input))
+  .validator((input: unknown) => productColorReorderInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -402,7 +402,7 @@ export const reorderProductColors = createServerFn({ method: "POST" })
 
 export const updateFeaturedProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => featuredProductsUpdateInput.parse(input))
+  .validator((input: unknown) => featuredProductsUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -441,7 +441,7 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
 // ============================================================
 export const listProduct360Images = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => product360ListInput.parse(input))
+  .validator((input: unknown) => product360ListInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(
@@ -460,7 +460,7 @@ export const listProduct360Images = createServerFn({ method: "POST" })
 
 export const saveProduct360Image = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => product360ImageInput.parse(input))
+  .validator((input: unknown) => product360ImageInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -492,7 +492,7 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
 
 export const saveProduct360Sequence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         productId: z.string().uuid(),
@@ -528,7 +528,7 @@ export const saveProduct360Sequence = createServerFn({ method: "POST" })
 
 export const deleteProduct360Image = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => product360DeleteInput.parse(input))
+  .validator((input: unknown) => product360DeleteInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -555,7 +555,7 @@ export const deleteProduct360Image = createServerFn({ method: "POST" })
 
 export const reorderProduct360Images = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => product360ReorderInput.parse(input))
+  .validator((input: unknown) => product360ReorderInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(

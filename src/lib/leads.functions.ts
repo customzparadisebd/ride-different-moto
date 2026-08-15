@@ -8,7 +8,7 @@ import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 const TABLE_LEADS = "leads";
 
 export const submitLead = createServerFn({ method: "POST" })
-  .inputValidator(
+  .validator(
     z.object({
       name: z.string().min(2),
       phone: z.string().min(10),
@@ -57,7 +57,7 @@ export const getLeads = createServerFn({ method: "GET" })
 
 export const updateLeadStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     z.object({
       id: z.string().uuid(),
       status: z.enum(["new", "contacted", "closed"]),

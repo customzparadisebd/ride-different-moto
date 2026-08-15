@@ -8,7 +8,7 @@ import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 const TABLE_REVIEWS = "reviews";
 
 export const getReviews = createServerFn({ method: "GET" })
-  .inputValidator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
+  .validator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
     const query = supabase.from(TABLE_REVIEWS as any).select("*");
     if (!admin) query.eq("is_active", true);
@@ -19,7 +19,7 @@ export const getReviews = createServerFn({ method: "GET" })
 
 export const updateReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     z.object({
       id: z.string().uuid(),
       updates: z.object({
@@ -63,7 +63,7 @@ export const updateReview = createServerFn({ method: "POST" })
 
 export const createReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(
+  .validator(
     z.object({
       customer_name: z.string(),
       rating: z.number().min(1).max(5),
@@ -97,7 +97,7 @@ export const createReview = createServerFn({ method: "POST" })
 
 export const deleteReview = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator(z.string().uuid())
+  .validator(z.string().uuid())
   .handler(async ({ data: id, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);

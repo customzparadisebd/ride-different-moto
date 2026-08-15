@@ -8,7 +8,7 @@ import { z } from "zod";
  */
 export const secureAuditLog = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z
       .object({
         action: z.string(),
