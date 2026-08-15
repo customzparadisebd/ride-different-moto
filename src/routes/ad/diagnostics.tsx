@@ -125,7 +125,59 @@ function DiagnosticsPage() {
         ))}
       </div>
 
-      <Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldCheck className="h-5 w-5 text-emerald-500" />
+              Runtime Connectivity Audit
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 text-sm">
+            <div className="space-y-2">
+              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Supabase Connection</p>
+              <div className="rounded border bg-muted/30 p-3 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Project Ref (Client):</span>
+                  <span className="font-mono font-bold text-primary">
+                    {supabaseUrl.split('.')[0].split('//')[1] || "Unknown"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Project Ref (Server):</span>
+                  <span className="font-mono font-bold text-primary">
+                    {serverInfo?.supabaseConfig?.projectRef || "N/A"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Target URL:</span>
+                  <span className="font-mono">{maskValue(supabaseUrl, "url")}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Environment Handshake</p>
+              <div className="rounded border bg-muted/30 p-3 space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Server Resolved:</span>
+                  <span className={cn(
+                    "font-bold uppercase",
+                    serverInfo?.serverEnv?.resolvedEnv === 'production' ? "text-emerald-500" : "text-amber-500"
+                  )}>
+                    {serverInfo?.serverEnv?.resolvedEnv || "Unknown"}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-border/50 pt-2">
+                  <span className="text-muted-foreground">Node Runtime:</span>
+                  <span className="font-mono">{serverInfo?.serverEnv?.nodeEnv || "N/A"}</span>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
         <CardHeader>
           <CardTitle>Environment Detection Logic</CardTitle>
         </CardHeader>
