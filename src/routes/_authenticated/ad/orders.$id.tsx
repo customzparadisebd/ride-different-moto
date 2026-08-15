@@ -194,6 +194,7 @@ function AdminOrderDetail() {
           onSubmit={submitUpdate}
           isPending={mutation.isPending}
           canManage={canManage}
+          userRoles={accessQuery.data?.roles ?? []}
         />
       </div>
 
