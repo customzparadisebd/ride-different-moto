@@ -25,10 +25,10 @@ describe('Invoice Concurrency Uniqueness', () => {
     const errors = results.map(r => r.error).filter(Boolean);
     
     expect(errors.length).toBe(0);
-    expect(invoices.length).toBe(10);
+    expect(invoices.length).toBe(totalOrders);
     
     const uniqueInvoices = new Set(invoices);
-    expect(uniqueInvoices.size).toBe(10);
+    expect(uniqueInvoices.size).toBe(totalOrders);
     
     // Sequence Continuity Verification
     const sorted = [...invoices].sort();
