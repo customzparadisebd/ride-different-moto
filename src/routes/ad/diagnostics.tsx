@@ -131,7 +131,7 @@ function DiagnosticsPage() {
           <div className="rounded-lg bg-muted p-4 font-mono text-xs">
             <p className="font-bold text-primary mb-2">// Detection logic from src/lib/env.ts</p>
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''</p>
-            <p>Implement rate limiting and bot protection for /ad/diagnostics to reduce scraping and abuse attempts.</p>
+            <p>Ensure all sensitive values are fully redacted in diagnostics responses, even when debug mode is enabled, and add tests to prevent regressions.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
