@@ -148,12 +148,66 @@ export type AdminOrderListRow = AdminOrderRow & {
 const LIST_COLUMNS =
   "id, invoice_no, customer_name, customer_phone, city, address_line, delivery_zone, subtotal, discount, shipping, advance_paid, total, cod_amount, status, payment_status, payment_method, transaction_id, courier_status, courier_name, courier_tracking_id, consignment_id, tracking_url, shipment_at, order_source, created_at, created_by, assigned_to, is_pinned, is_duplicate, printed_at, print_count, notes, order_items(id, product_name, variant, image_url, unit_price, quantity, line_total)";
 
-/** Start of the current day as an ISO timestamp (used by the "Today" tab). */
-const startOfTodayISO = () => {
-  const date = new Date();
-  date.setHours(0, 0, 0, 0);
-  return date.toISOString();
+/** Start of the current day as an ISO timestamp in Bangladesh Time (UTC+6). */
+const getBDStartOfToday = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+  bdNow.setUTCHours(0, 0, 0, 0);
+  return new Date(bdNow.getTime() - 6 * 60 * 60 * 1000).toISOString();
 };
+
+const getBDTimeRange = (daysOffset: number = 0) => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCDate(start.getUTCDate() + daysOffset);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date(start.getTime());
+  end.setUTCHours(23, 59, 59, 999);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
+const getBDTodayShiftRange = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCHours(8, 0, 0, 0);
+
+  const end = new Date(bdNow.getTime());
+  end.setUTCHours(20, 0, 0, 0);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
+const getBDMonthRange = () => {
+  const now = new Date();
+  const bdNow = new Date(now.getTime() + 6 * 60 * 60 * 1000);
+
+  const start = new Date(bdNow.getTime());
+  start.setUTCDate(1);
+  start.setUTCHours(0, 0, 0, 0);
+
+  const end = new Date(bdNow.getTime());
+  end.setUTCMonth(end.getUTCMonth() + 1);
+  end.setUTCDate(0);
+  end.setUTCHours(23, 59, 59, 999);
+
+  return {
+    from: new Date(start.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+    to: new Date(end.getTime() - 6 * 60 * 60 * 1000).toISOString(),
+  };
+};
+
 
 const sel = (columns: string): string => columns;
 
