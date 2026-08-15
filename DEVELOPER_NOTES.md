@@ -35,7 +35,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Personal Security Management:** Enhanced the personal security page for administrators to manage their own MFA settings and securely regenerate backup recovery codes with a verified confirmation flow (Aug 15, 2026).
 - [x] **Harmonized MFA & Staff Approval Flow:** Reordered the security gate to strictly sequence Login → MFA → Staff Approval Status Check → Admin Access. Ensured accounts in "Pending" status are blocked even with successful MFA, while maintaining existing 10-minute session validation (Aug 15, 2026).
 - [x] **Security E2E Testing & UI Feedback:** Implemented automated Playwright tests to verify the Login → MFA → Approval flow. Enhanced the "Pending" status screens to provide clearer, identity-verified feedback to staff awaiting administrative approval (Aug 15, 2026).
-
+- [x] **Product Image Upload System:** Implemented a direct manual image upload system in the Admin Panel using Supabase Storage. Added the `ProductImageUpload` component to the Product Create/Edit form, supporting single main images and bulk gallery uploads with drag-and-drop, interactive previews, reordering, and dimension/size validation (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
