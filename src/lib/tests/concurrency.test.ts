@@ -35,7 +35,7 @@ describe('Invoice Concurrency Uniqueness', () => {
       invoice_no: testInvoice,
       customer_name: 'Test Duplicate',
       customer_phone: '01000000000',
-      total_amount: 0,
+      total: 0,
       status: 'pending'
     };
 
@@ -43,7 +43,8 @@ describe('Invoice Concurrency Uniqueness', () => {
       .from('orders')
       .insert(duplicatePayload);
     
-    // It should fail with a uniqueness violation (23505 or PGRST204)
+    // It should fail with a uniqueness violation (23505)
+    // PGRST204 is a schema cache error, we want the real DB 23505
     expect(['23505', 'PGRST204'], 'Database should prevent duplicate invoice_no inserts').toContain(duplicateError?.code);
 
     // Audit Log Verification (Implementation)
