@@ -344,16 +344,21 @@ function Field({
   error?: string | undefined;
 }) {
   return (
-    <div>
-      <Label htmlFor={id}>{label}</Label>
-      <Input
-        id={id}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className="mt-1.5 h-11 text-base sm:text-sm"
-        {...rest}
-      />
-      {error && <p className="mt-1 text-xs text-destructive">{error}</p>}
+    <div className={className}>
+      <Label htmlFor={id} className="text-xs uppercase tracking-wider text-muted-foreground">
+        {label}
+      </Label>
+      <div className="mt-1.5">
+        <Input
+          id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          className="h-11 text-base sm:text-sm"
+          error={error}
+          required={rest.required}
+          {...rest}
+        />
+      </div>
     </div>
   );
 }
