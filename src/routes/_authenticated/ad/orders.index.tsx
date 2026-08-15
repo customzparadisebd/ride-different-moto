@@ -12,7 +12,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { FileSpreadsheet, Plus } from "lucide-react";
+import { FileSpreadsheet, Plus, Download } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { XCircle } from "lucide-react";
@@ -51,6 +51,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { formatBDT } from "@/lib/format";
 import { exportOrdersCsv, exportOrdersXlsx, printOrders } from "@/lib/orders-export";
+import { getOrdersForExport } from "@/lib/orders-export.functions";
 import {
   assignOrders,
   bulkUpdateOrderStatus,
@@ -100,6 +101,7 @@ function AdminOrderList() {
   const markPrinted = useServerFn(markOrdersPrinted);
   const pinOrder = useServerFn(setOrderPinned);
   const createOrderFn = useServerFn(createManualOrder);
+  const fetchForExport = useServerFn(getOrdersForExport);
 
   const [filters, setFilters] = useState<OrderFilters>({
     ...EMPTY_ORDER_FILTERS,
@@ -252,22 +254,41 @@ function AdminOrderList() {
             <DropdownMenuTrigger asChild>
               <Button variant="steel" size="touch" disabled={!rows.length}>
                 <FileSpreadsheet />
-                Export Excel
+                Export
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => void exportOrdersXlsx(rows, exportName)}>
-                Excel (.xlsx)
+              <DropdownMenuItem
+                onClick={async () => {
+                  try {
+                    toast.info("Preparing Excel export...");
+                    const exportData = await fetchForExport({
+                      data: { ...activeFilters, tab, sortDir } as never,
+                    });
+                    if (exportData && exportData.length > 0) {
+                      await exportOrdersXlsx(exportData, `czp-orders-filtered-${new Date().toISOString().split("T")[0]}`);
+                      toast.success(`Exported ${exportData.length} order(s)`);
+                    } else {
+                      toast.error("No orders found to export.");
+                    }
+                  } catch (err) {
+                    toast.error("Failed to generate export.");
+                  }
+                }}
+              >
+                <Download className="mr-2 size-4" />
+                Filtered Excel (.xlsx)
               </DropdownMenuItem>
               {selectedRows.length ? (
                 <DropdownMenuItem
-                  onClick={() => void exportOrdersXlsx(selectedRows, `${exportName}-selected`)}
+                  onClick={() => void exportOrdersXlsx(selectedRows, `czp-orders-selected`)}
                 >
-                  Excel (.xlsx) — {selectedRows.length} selected
+                  <Download className="mr-2 size-4" />
+                  Selected Excel (.xlsx) — {selectedRows.length}
                 </DropdownMenuItem>
               ) : null}
               <DropdownMenuItem onClick={() => exportOrdersCsv(rows, exportName)}>
-                CSV
+                CSV (Current Page)
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => printOrders(rows, "Orders (PDF)")}>
                 PDF (save from print)
