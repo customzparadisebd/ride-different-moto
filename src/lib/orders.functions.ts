@@ -734,6 +734,12 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // RULE 3: Only Admin/Super Admin can mark as Completed.
+    if (data.status === "completed" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only an Admin or Super Admin can mark an order as Completed.");
+    }
+    
     assertAccess(actor, PERMISSIONS.ordersManage);
 
     const before = await context.supabase
