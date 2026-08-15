@@ -112,10 +112,10 @@ export function ProductForm({
 
   const set = <K extends keyof ProductFormValue>(key: K, next: ProductFormValue[K]) => {
     setValue((current) => ({ ...current, [key]: next }));
-    if (errors[key]) {
+    if (errors[key as string]) {
       setErrors((prev) => {
         const nextErrors = { ...prev };
-        delete nextErrors[key];
+        delete nextErrors[key as string];
         return nextErrors;
       });
     }
