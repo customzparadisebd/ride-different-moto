@@ -16,12 +16,15 @@ import { toast } from "sonner";
 
 import {
   emptyProductForm,
-  ProductForm,
+   ProductForm,
   type ProductFormValue,
   toProductInput,
 } from "@/components/admin/products/ProductForm";
+import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { Product360Panel } from "@/components/admin/products/Product360Panel";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { X } from "lucide-react";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,7 +116,9 @@ function AdminProducts() {
   const [stockFilter, setStockFilter] = useState<(typeof STOCK_FILTERS)[number]>("all");
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<ProductRow | null>(null);
-  const [creating, setCreating] = useState(false);
+   const [creating, setCreating] = useState(false);
+  const [previewing, setPreviewing] = useState<ProductFormValue | null>(null);
+  const [previewingId, setPreviewingId] = useState<string | null>(null);
   // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
   const [colorsFor, setColorsFor] = useState<ProductRow | null>(null);
   // PRODUCT 360 MANAGEMENT
@@ -214,8 +219,12 @@ function AdminProducts() {
             <ProductForm
               initial={emptyProductForm}
               isPending={createMutation.isPending}
-              submitLabel="Create product"
+               submitLabel="Create product"
               onCancel={() => setCreating(false)}
+              onPreview={(v) => {
+                setPreviewing(v);
+                setPreviewingId(null);
+              }}
               onSubmit={(value) => createMutation.mutate({ data: toProductInput(value) as never })}
             />
           </div>
@@ -230,8 +239,12 @@ function AdminProducts() {
               key={editing.id}
               initial={toFormValue(editing)}
               isPending={updateMutation.isPending}
-              submitLabel="Save changes"
+               submitLabel="Save changes"
               onCancel={() => setEditing(null)}
+              onPreview={(v) => {
+                setPreviewing(v);
+                setPreviewingId(editing.id);
+              }}
               onSubmit={(value) =>
                 updateMutation.mutate({
                   data: { id: editing.id, ...toProductInput(value) } as never,

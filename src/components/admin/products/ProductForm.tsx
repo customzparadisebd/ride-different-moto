@@ -102,13 +102,15 @@ export function ProductForm({
   isPending,
   submitLabel,
   onSubmit,
-  onCancel,
+   onCancel,
+  onPreview,
 }: {
   initial: ProductFormValue;
   isPending: boolean;
   submitLabel: string;
   onSubmit: (value: ProductFormValue) => void;
   onCancel: () => void;
+  onPreview: (value: ProductFormValue) => void;
 }) {
   const [value, setValue] = useState<ProductFormValue>(initial);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -389,6 +391,14 @@ export function ProductForm({
       <div className="flex flex-wrap gap-2">
         <Button type="submit" variant="red" size="touch" disabled={isPending}>
           {isPending ? "Saving…" : submitLabel}
+         </Button>
+        <Button
+          type="button"
+          variant="steel"
+          size="touch"
+          onClick={() => validate() && onPreview(value)}
+        >
+          Preview
         </Button>
         <Button type="button" variant="steel" size="touch" onClick={onCancel}>
           Cancel
