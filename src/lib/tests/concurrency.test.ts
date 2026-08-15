@@ -31,11 +31,20 @@ describe('Invoice Concurrency Uniqueness', () => {
     expect(uniqueInvoices.size).toBe(totalOrders);
     
     // Sequence Continuity Verification
-    const sorted = [...invoices].sort();
+    const sorted = [...invoices].sort((a, b) => {
+      const numA = parseInt(a.split('-').pop() || '0');
+      const numB = parseInt(b.split('-').pop() || '0');
+      return numA - numB;
+    });
+
+    console.log(`Verifying continuity for ${sorted.length} invoices: ${sorted[0]} to ${sorted[sorted.length - 1]}`);
+
     for (let i = 0; i < sorted.length - 1; i++) {
-      const current = parseInt(sorted[i]?.split('-').pop() || '0');
-      const next = parseInt(sorted[i+1]?.split('-').pop() || '0');
-      expect(next).toBe(current + 1);
+      const currentSerial = parseInt(sorted[i]?.split('-').pop() || '0');
+      const nextSerial = parseInt(sorted[i + 1]?.split('-').pop() || '0');
+      
+      // Explicit assertion: The difference between sequential serials must be exactly 1
+      expect(nextSerial, `Gap detected between ${sorted[i]} and ${sorted[i+1]}`).toBe(currentSerial + 1);
     }
   });
 });
