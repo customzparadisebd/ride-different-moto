@@ -330,6 +330,8 @@ function AdminOrderList() {
         value={filters}
         onChange={applyFilters}
         onReset={() => applyFilters(EMPTY_ORDER_FILTERS)}
+        onTabChange={applyTab}
+        activeTab={tab}
         isLoading={ordersQuery.isFetching}
         staff={staffQuery.data ?? []}
         couriers={courierOptions}
