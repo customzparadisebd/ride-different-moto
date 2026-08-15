@@ -112,8 +112,12 @@ export function OrderFilterBar({
           { value: "all", label: "All" },
           { value: "confirmed", label: "Confirmed" },
           { value: "pending", label: "Pending" },
+          { value: "processing", label: "Processing" },
+          { value: "shipped", label: "Shipped" },
+          { value: "delivered", label: "Delivered" },
           { value: "completed", label: "Completed" },
           { value: "cancelled", label: "Cancelled" },
+          { value: "returned", label: "Returned" },
           { value: "new", label: "New" },
           { value: "duplicate", label: "Duplicate" },
         ].map((tab) => (
