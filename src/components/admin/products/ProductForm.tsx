@@ -219,7 +219,7 @@ export function ProductForm({
         <Field
           label="Main Image URL"
           required
-          error={errors["imageUrl"]}
+          error={errors["imageUrl"] || undefined}
           example="Example: https://.../image.webp"
           guideline="Recommended: 1000x1000px WebP, <200KB. Optimized for fast mobile loading."
         >
