@@ -91,28 +91,34 @@ export async function createOrder(
       status: options.status ?? "pending",
       created_by: options.actor ?? null,
     })
-    .select("id, invoice_no, total");
+    .select("id, invoice_no, total")
+    .single();
 
   if (inserted.error) {
+    // Unique violation on the submit key = a racing duplicate; return the winner.
+    if (inserted.error.code === "23505" && inserted.error.message.includes("idempotency_key")) {
+      const winner = await supabaseAdmin
+        .from("orders")
+        .select("id, invoice_no, total")
+        .eq("idempotency_key", input.idempotencyKey)
+        .single();
+      if (winner.data) {
+        return {
+          orderId: winner.data.id,
+          invoiceNo: winner.data.invoice_no,
+          total: Number(winner.data.total),
+          duplicate: true,
+        };
+      }
+    }
+
     // Check for duplicate invoice_no error (23505)
-    if (inserted.error.code === "23505") {
+    if (inserted.error.code === "23505" && inserted.error.message.includes("invoice_no")) {
        // Log collision
-       const collisionLog = await supabaseAdmin.from("invoice_collisions").insert({
+       await supabaseAdmin.from("invoice_collisions").insert({
          invoice_no: "AUTO-GENERATED-COLLISION",
          attempted_order_payload: { ...raw, source: options.source } as any
        });
-       
-       // Handle the retry logic: The DB function generate_next_invoice_no already loops,
-       // but if we hit a 23505 here, it means two orders got the same ID despite the lock
-       // (rare, but possible if manual inserts happen).
-       // We'll let the frontend handle the "Duplicate detected" alert.
-       
-       const duplicateCheck = await supabaseAdmin
-        .from("orders")
-        .select("id, invoice_no, total, customer_name, customer_phone")
-        .eq("invoice_no", "SOME_GUESS_OR_READ") // This is hard without knowing what the trigger tried
-        .maybeSingle();
-
        throw new Error(`DUPLICATE INVOICE DETECTED. Please refresh and try again.`);
     }
     // Unique violation on the submit key = a racing duplicate; return the winner.
