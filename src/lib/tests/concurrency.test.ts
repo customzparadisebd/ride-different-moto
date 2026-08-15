@@ -33,8 +33,8 @@ describe('Invoice Concurrency Uniqueness', () => {
     expect(invoices.length, `Expected ${totalOrders} invoices, got ${invoices.length}`).toBe(totalOrders);
     
     const uniqueInvoices = new Set(invoices);
-    expect(uniqueInvoices.size, `Duplicates detected in: ${JSON.stringify(invoices)}`).toBe(totalOrders);
-    
+    const hasDuplicates = uniqueInvoices.size < totalOrders;
+
     // Explicit Database Uniqueness Verification
     // We try to manually insert an order with a duplicate invoice number to ensure the DB blocks it
     const testInvoice = invoices[0];
@@ -69,34 +69,60 @@ describe('Invoice Concurrency Uniqueness', () => {
     expect(['23505', 'PGRST204'], 'Database should prevent duplicate invoice_no inserts').toContain(duplicateError?.code);
 
     // Audit Log Verification (Implementation)
-    // We record the attempt and the resulting error to the audit system
-    if (duplicateError) {
+    // We record duplicate attempts and resulting errors to the audit system
+    // 1. If we caught a duplicate via the manual insert above (expected)
+    // 2. If the concurrency run itself produced duplicates (unexpected, indicates lock failure)
+    if (duplicateError || hasDuplicates) {
       const { data: existing } = await testSupabase
         .from('orders')
         .select('id')
         .eq('invoice_no', testInvoice)
         .maybeSingle();
 
-      await Promise.all([
-        // 1. Log to specialized invoice_collisions table for dashboard alerts
-        testSupabase.from('invoice_collisions').insert({
-          invoice_no: testInvoice,
-          existing_order_id: existing?.id,
-          attempted_order_payload: duplicatePayload,
-        }),
-        // 2. Log to general security_events for forensics
-        testSupabase.from('security_events').insert({
-          event_type: 'invoice_collision_attempt',
-          metadata: {
+      const auditEntries = [];
+      
+      // Log the intentional manual collision
+      if (duplicateError) {
+        auditEntries.push(
+          testSupabase.from('invoice_collisions').insert({
             invoice_no: testInvoice,
-            error_code: duplicateError.code,
-            error_message: duplicateError.message,
-            is_test: true
-          }
-        })
-      ]);
-      console.log(`Recorded duplicate-invoice attempt for ${testInvoice} to audit logs.`);
+            existing_order_id: existing?.id,
+            attempted_order_payload: duplicatePayload,
+          }),
+          testSupabase.from('security_events').insert({
+            event_type: 'invoice_collision_attempt',
+            metadata: {
+              invoice_no: testInvoice,
+              error_code: duplicateError.code,
+              error_message: duplicateError.message,
+              source: 'manual_verification',
+              is_test: true
+            }
+          })
+        );
+      }
+
+      // Log if the RPC itself failed to provide unique numbers (Concurrency Failure)
+      if (hasDuplicates) {
+        auditEntries.push(
+          testSupabase.from('security_events').insert({
+            event_type: 'invoice_concurrency_failure',
+            metadata: {
+              total_orders: totalOrders,
+              unique_count: uniqueInvoices.size,
+              duplicates: invoices.filter((item, index) => invoices.indexOf(item) !== index),
+              is_test: true
+            }
+          })
+        );
+      }
+
+      await Promise.all(auditEntries);
+      console.log(`Recorded audit logs for duplicate-invoice verification.`);
     }
+
+    // Assert uniqueness after logging if failure occurred
+    expect(uniqueInvoices.size, `Duplicates detected in: ${JSON.stringify(invoices)}`).toBe(totalOrders);
 
     // Sequence Continuity Verification
     const sorted = [...invoices].sort((a, b) => {
