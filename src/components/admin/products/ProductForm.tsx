@@ -18,6 +18,7 @@ import {
   slugify,
   type ProductInput,
 } from "@/lib/products.shared";
+import { ProductImageUpload } from "./ProductImageUpload";
 
 export type ProductFormValue = {
   name: string;
