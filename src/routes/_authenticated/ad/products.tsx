@@ -111,6 +111,7 @@ function toFormValue(row: ProductRow): ProductFormValue {
     videoEnabled: row.video_enabled ?? false,
     videoPlatform: row.video_platform ?? "youtube",
     videoUrl: row.video_url ?? "",
+    outOfStockToggle: row.out_of_stock_toggle ?? false,
   };
 }
 
