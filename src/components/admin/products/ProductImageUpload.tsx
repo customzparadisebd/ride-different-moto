@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { 
   Upload, 
   X, 
@@ -7,8 +7,6 @@ import {
   AlertCircle, 
   RefreshCw, 
   GripVertical,
-  ChevronLeft,
-  ChevronRight,
   CheckCircle2
 } from "lucide-react";
 import { toast } from "sonner";
@@ -35,9 +33,6 @@ interface UploadStatus {
   url?: string;
 }
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-const RECOMMENDED_SIZE = 500 * 1024; // 500KB
-
 export function ProductImageUpload({
   value,
   onChange,
@@ -56,29 +51,21 @@ export function ProductImageUpload({
 
     try {
       // 1. Client-side processing (Optimization)
-      // Note: Full server-side optimization requires a dedicated endpoint.
-      // We'll perform basic client-side validation and "simulation" of optimization 
-      // since heavy processing like Sharp isn't available in browser.
-      const bitmap = await createImageBitmap(file);
+      await createImageBitmap(file);
       setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: 30 } : u));
 
       // 2. Upload to Supabase Storage
-      const fileExt = "webp"; // We aim for webp
+      const fileExt = "webp"; 
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
       setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u));
 
-      // In a real production app, we would call an edge function here to transform the image.
-      // For now, we upload the original and assume the recommended guideline was followed.
+      // Standard Supabase JS client doesn't support progress events in the version used
+      // So we use a basic upload call
       const { error: uploadError } = await supabase.storage
         .from("products")
-        .upload(filePath, file, {
-          onUploadProgress: (progress) => {
-            const percent = 50 + (progress.loaded / progress.total) * 40;
-            setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: percent } : u));
-          }
-        });
+        .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
@@ -124,15 +111,14 @@ export function ProductImageUpload({
         const url = await processAndUpload(upload.id, upload.file);
         completedUrls.push(url);
       } catch (err) {
-        // Error handled in processAndUpload
+        // Error already updated in state
       }
     }
 
     if (completedUrls.length > 0) {
       const nextImages = multiple ? [...images, ...completedUrls] : [completedUrls[0]];
-      onChange(multiple ? nextImages : (nextImages[0] ?? ""));
+      onChange(multiple ? nextImages : (nextImages[0] || ""));
       
-      // Clear completed uploads from status list after a delay
       setTimeout(() => {
         setUploads(prev => prev.filter(u => u.status !== "completed"));
       }, 3000);
@@ -143,7 +129,7 @@ export function ProductImageUpload({
     try {
       const url = await processAndUpload(upload.id, upload.file);
       const nextImages = multiple ? [...images, url] : [url];
-      onChange(multiple ? nextImages : (nextImages[0] ?? ""));
+      onChange(multiple ? nextImages : (nextImages[0] || ""));
       
       setTimeout(() => {
         setUploads(prev => prev.filter(u => u.status !== "completed"));
@@ -156,7 +142,7 @@ export function ProductImageUpload({
   const removeImage = (index: number) => {
     const next = [...images];
     next.splice(index, 1);
-    onChange(multiple ? next : (next[0] ?? ""));
+    onChange(multiple ? next : (next[0] || ""));
   };
 
   const handleSort = () => {
@@ -179,7 +165,6 @@ export function ProductImageUpload({
         </div>
       )}
 
-      {/* Uploading Status Items */}
       {uploads.length > 0 && (
         <div className="space-y-2 mb-4">
           {uploads.map(upload => (
@@ -215,16 +200,13 @@ export function ProductImageUpload({
                   </Button>
                 </div>
               </div>
-              <Progress value={upload.progress} className="h-1 bg-background" indicatorClassName={cn(
-                upload.status === "error" ? "bg-destructive" : upload.status === "completed" ? "bg-green-500" : "bg-cyan-500"
-              )} />
+              <Progress value={upload.progress} className="h-1 bg-background" />
               {upload.error && <p className="text-[9px] text-destructive font-medium">{upload.error}</p>}
             </div>
           ))}
         </div>
       )}
 
-      {/* Image Grid */}
       <div className={cn(
         "grid gap-4",
         multiple ? "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5" : "grid-cols-1 max-w-[240px]"

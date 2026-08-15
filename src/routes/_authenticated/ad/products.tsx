@@ -132,10 +132,18 @@ function AdminProducts() {
 
   const listQuery = useQuery({
     queryKey: ["admin-products", search, category, stockFilter, page],
-    queryFn: () =>
-      fetchProducts({
-        data: { search, category, stock: stockFilter, page, pageSize: 25 } as never,
-      }),
+    queryFn: async () => {
+      try {
+        return await fetchProducts({
+          data: { search, category, stock: stockFilter, page, pageSize: 25 } as never,
+        });
+      } catch (err: any) {
+        toast.error("Invalid pagination or filter parameters", {
+          description: err.message || "Please check your search filters."
+        });
+        throw err;
+      }
+    },
     placeholderData: (previous) => previous,
   });
 
