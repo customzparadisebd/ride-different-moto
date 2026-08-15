@@ -24,7 +24,13 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
 
     if (data.search) {
       const term = `%${data.search}%`;
-      query = query.or(`name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term}`);
+      query = query.or(`name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term},district.ilike.${term},area.ilike.${term}`);
+    }
+
+    if (data.status === "fraud") {
+      query = query.eq("is_fraud", true);
+    } else if (data.status === "active") {
+      query = query.gt("total_orders", 0);
     }
 
     const from = (data.page - 1) * data.pageSize;
