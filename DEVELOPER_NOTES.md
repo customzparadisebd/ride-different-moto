@@ -25,7 +25,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **Bulk Customer Actions:** Implemented checkbox selection and bulk soft-deletion (Recycle Bin) for customer records, restricted to Admin/Super Admin roles (Aug 15, 2026).
 - [x] **SteadFast Success Counter:** Integrated a dedicated "SteadFast Success" metric on the Admin Dashboard to track confirmed API bookings, including a details popup showing the last successful submission timestamp and order reference (Aug 15, 2026).
 - [x] **Audit Trail UI Enhancements:** Added real-time search and pagination to the Admin Customer Audit Trail modal for improved performance on mobile and large datasets (Aug 15, 2026).
-
+- [x] **Environment Indicator & Safety Banner:** Implemented automatic environment detection (Staging vs. Production) with a high-visibility warning banner in the Admin Panel to prevent accidental destructive actions in non-live environments (Aug 15, 2026).
 - [x] **Migration Readiness:** Authored `MIGRATION_GUIDE.md` and `ENV_TEMPLATE.md`. Generated a lossless SQL replay package in `supabase/exports/` including schema, data, and sequence synchronization (Aug 15, 2026).
 - [x] **Bug Fix:** Resolved 500 error in `getHeroSlides` by moving `supabaseAdmin` import inside the handler to prevent SSR environment variable resolution issues.
 

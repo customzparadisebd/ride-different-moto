@@ -13,9 +13,12 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
-import { Moon, Sun, Clock } from "lucide-react";
+import { Moon, Sun, Clock, AlertCircle, ShieldCheck } from "lucide-react";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
+import { EnvironmentBanner } from "@/components/admin/EnvironmentBanner";
+import { getEnvironment } from "@/lib/env";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +39,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   const queryClient = useQueryClient();
   const { theme, toggleTheme } = useTheme();
   const [time, setTime] = useState(new Date());
+  const env = getEnvironment();
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -67,22 +71,41 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-svh w-full bg-background">
-        <AdminSidebar access={access} permissions={access.permissions} />
-        <SidebarInset className="flex flex-col min-h-svh overflow-visible">
-          <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <div>
-                <p className="font-display text-sm font-bold uppercase tracking-wide">
-                  Customer Paradise Admin Panel
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {access.email} ·{" "}
-                  {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
-                </p>
+      <div className="flex min-h-svh w-full flex-col bg-background">
+        <EnvironmentBanner />
+        <div className="flex flex-1 overflow-hidden">
+          <AdminSidebar access={access} permissions={access.permissions} />
+          <SidebarInset className="flex min-h-svh flex-col overflow-visible">
+            <header className="sticky top-0 z-10 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3">
+              <div className="flex items-center gap-2">
+                <SidebarTrigger />
+                <div className="flex items-center gap-3">
+                  <div>
+                    <p className="font-display text-sm font-bold uppercase tracking-wide">
+                      Customer Paradise Admin Panel
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {access.email} ·{" "}
+                      {access.mfaSatisfied ? "2FA verified" : "2FA not used"}
+                    </p>
+                  </div>
+                  <div
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-tighter shadow-sm",
+                      env === "production"
+                        ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
+                        : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                    )}
+                  >
+                    {env === "production" ? (
+                      <ShieldCheck className="h-3 w-3" />
+                    ) : (
+                      <AlertCircle className="h-3 w-3" />
+                    )}
+                    {env}
+                  </div>
+                </div>
               </div>
-            </div>
             <div className="flex items-center gap-3">
               <div className="hidden items-center gap-2 rounded-md bg-secondary px-3 py-1.5 text-xs font-medium md:flex">
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
@@ -102,7 +125,8 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
             </div>
           </header>
           <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
-        </SidebarInset>
+          </SidebarInset>
+        </div>
       </div>
     </SidebarProvider>
   );
