@@ -1377,6 +1377,9 @@ export type Database = {
           stock_qty: number
           supplier_id: string | null
           updated_at: string
+          video_enabled: boolean | null
+          video_platform: string | null
+          video_url: string | null
           weight: number | null
         }
         Insert: {
@@ -1419,6 +1422,9 @@ export type Database = {
           stock_qty?: number
           supplier_id?: string | null
           updated_at?: string
+          video_enabled?: boolean | null
+          video_platform?: string | null
+          video_url?: string | null
           weight?: number | null
         }
         Update: {
@@ -1461,6 +1467,9 @@ export type Database = {
           stock_qty?: number
           supplier_id?: string | null
           updated_at?: string
+          video_enabled?: boolean | null
+          video_platform?: string | null
+          video_url?: string | null
           weight?: number | null
         }
         Relationships: [

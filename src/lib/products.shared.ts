@@ -53,6 +53,9 @@ export const productInput = z.object({
   isNewArrival: z.boolean().default(false),
   isActive: z.boolean().default(true),
   has360View: z.boolean().default(false),
+  videoEnabled: z.boolean().default(false),
+  videoPlatform: z.enum(["youtube", "facebook", "instagram", "tiktok"]).optional().nullable(),
+  videoUrl: blankable(600),
 });
 export type ProductInput = z.input<typeof productInput>;
 
@@ -196,7 +199,7 @@ export const categoryLabel = (value: string) =>
 
 /** Column list + row mappers live here so the server-function module stays a thin wrapper. */
 export const PRODUCT_COLUMNS =
-  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, details, images, badge_enabled, badge_text, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, has_360_view, deleted_at, deleted_by, delete_reason, created_at, updated_at";
+  "id, name, sku, slug, image_url, category, bike_compatibility, is_universal, description, details, images, badge_enabled, badge_text, price, offer_price, stock_qty, is_best_deal, is_featured, is_new_arrival, is_active, has_360_view, video_enabled, video_platform, video_url, deleted_at, deleted_by, delete_reason, created_at, updated_at";
 
 export const PRODUCT_TOGGLE_COLUMNS = {
   isActive: "is_active",
@@ -229,5 +232,8 @@ export function productToRow(data: ReturnType<typeof productInput.parse>) {
     is_new_arrival: data.isNewArrival,
     is_active: data.isActive,
     has_360_view: data.has360View,
+    video_enabled: data.videoEnabled,
+    video_platform: data.videoPlatform || null,
+    video_url: data.videoUrl || null,
   };
 }

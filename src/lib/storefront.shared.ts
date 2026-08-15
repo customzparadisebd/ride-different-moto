@@ -38,6 +38,9 @@ export type StorefrontProduct = {
   colors: StorefrontColor[];
   has360View: boolean;
   product360Images: string[];
+  videoEnabled: boolean;
+  videoPlatform: "youtube" | "facebook" | "instagram" | "tiktok" | null;
+  videoUrl: string | null;
   sortOrder: number | null;
 };
 

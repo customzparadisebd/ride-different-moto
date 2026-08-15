@@ -80,6 +80,9 @@ type ProductRow = {
   is_new_arrival: boolean;
   is_active: boolean;
   has_360_view: boolean;
+  video_enabled: boolean;
+  video_platform: string | null;
+  video_url: string | null;
 };
 
 function toFormValue(row: ProductRow): ProductFormValue {
@@ -104,6 +107,9 @@ function toFormValue(row: ProductRow): ProductFormValue {
     isFeatured: row.is_featured,
     isNewArrival: row.is_new_arrival,
     isActive: row.is_active,
+    videoEnabled: row.video_enabled ?? false,
+    videoPlatform: row.video_platform ?? "youtube",
+    videoUrl: row.video_url ?? "",
   };
 }
 

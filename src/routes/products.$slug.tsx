@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { SafeImage } from "@/components/SafeImage";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { RotateCw } from "lucide-react";
+import { ProductVideo } from "@/components/product/ProductVideo";
 
 // 360 viewer is large, load lazily
 const Product360Viewer = lazy(() =>
@@ -354,11 +355,27 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
               <h2 className="font-display text-lg font-bold uppercase tracking-wide">
                 Product Details
               </h2>
-              <p className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
+              <div className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
                 {product.details}
-              </p>
+              </div>
+
+              {product.videoEnabled && product.videoUrl && (
+                <ProductVideo 
+                  platform={product.videoPlatform as any}
+                  url={product.videoUrl}
+                  productName={product.name}
+                />
+              )}
             </section>
-          ) : null}
+          ) : (
+            product.videoEnabled && product.videoUrl && (
+              <ProductVideo 
+                platform={product.videoPlatform as any}
+                url={product.videoUrl}
+                productName={product.name}
+              />
+            )
+          )}
 
           {product.bikeCompatibility.length || product.universal ? (
             <section className="mt-4 rounded-xl border border-border bg-card p-4">
