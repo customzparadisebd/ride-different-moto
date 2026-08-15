@@ -57,13 +57,11 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image Container */}
-      <div
-        className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-border bg-card"
-        onClick={() => setIsFullscreen(true)}
-      >
+      <div className="group relative cursor-zoom-in overflow-hidden rounded-2xl border border-border bg-card">
         <button
           type="button"
-          className="h-full w-full"
+          className="h-full w-full cursor-zoom-in focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          onClick={() => setIsFullscreen(true)}
           aria-label={`View ${productName} in fullscreen`}
         >
           <SafeImage
@@ -87,15 +85,17 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
         {displayImages.length > 1 && !activeColorImage && (
           <>
             <button
+              type="button"
               onClick={handlePrev}
-              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary group-hover:opacity-100"
               aria-label="Previous image"
             >
               <ChevronLeft className="size-6" />
             </button>
             <button
+              type="button"
               onClick={handleNext}
-              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus-visible:opacity-100 group-hover:opacity-100"
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-0 backdrop-blur-sm transition-opacity hover:bg-black/60 focus:outline-none focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary group-hover:opacity-100"
               aria-label="Next image"
             >
               <ChevronRight className="size-6" />
@@ -207,8 +207,8 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
             {/* Thumbnail Navigation in Fullscreen */}
             <div
               className="absolute bottom-10 left-1/2 flex -translate-x-1/2 gap-2 overflow-x-auto px-4 py-2 scrollbar-none"
-              onClick={(e) => e.stopPropagation()}
               role="tablist"
+              aria-label="Zoomed product images"
             >
               {displayImages.map((image, index) => (
                 <button
@@ -216,6 +216,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
                   type="button"
                   role="tab"
                   aria-selected={index === activeIndex}
+                  aria-label={`${productName} zoomed thumbnail ${index + 1}`}
                   onClick={() => setActiveIndex(index)}
                   className={cn(
                     "size-16 shrink-0 rounded-md border-2 overflow-hidden transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
