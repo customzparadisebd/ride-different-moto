@@ -534,6 +534,9 @@ export type Database = {
           alt_phone: string | null
           area: string | null
           created_at: string
+          delete_reason: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           district: string | null
           email: string | null
           id: string
@@ -553,6 +556,9 @@ export type Database = {
           alt_phone?: string | null
           area?: string | null
           created_at?: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           district?: string | null
           email?: string | null
           id?: string
@@ -572,6 +578,9 @@ export type Database = {
           alt_phone?: string | null
           area?: string | null
           created_at?: string
+          delete_reason?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           district?: string | null
           email?: string | null
           id?: string
