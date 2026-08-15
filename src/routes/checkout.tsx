@@ -87,10 +87,9 @@ function CheckoutPage() {
   const mutation = useMutation({
     mutationFn: submitOrder,
     onSuccess: (result) => {
-      setPlaced({ invoiceNo: result.invoiceNo, total: result.total });
       clear();
       setIdempotencyKey(newIdempotencyKey());
-      router.invalidate();
+      router.navigate({ to: "/order-confirmed/$id", params: { id: result.orderId } });
     },
     onError: (error: Error) => toast.error(error.message || "Could not place your order."),
   });
