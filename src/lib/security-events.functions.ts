@@ -60,10 +60,10 @@ export const getSecurityStats = createServerFn({ method: "POST" })
     const now = new Date();
     const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
 
-    const [events, loginAttempts] = await Promise.all([
+    const [eventsResult, loginAttemptsResult] = await Promise.all([
       context.supabase
         .from("security_events")
-        .select("event_type, created_at")
+        .select("event_type, created_at, ip_address")
         .gte("created_at", twentyFourHoursAgo),
       context.supabase
         .from("login_attempts")
@@ -71,11 +71,14 @@ export const getSecurityStats = createServerFn({ method: "POST" })
         .gte("created_at", twentyFourHoursAgo)
     ]);
 
+    const eventsData = eventsResult.data ?? [];
+    const loginAttemptsData = loginAttemptsResult.data ?? [];
+
     const stats = {
-      authFailures: loginAttempts.data?.filter(a => !a.success).length ?? 0,
-      rateLimits: events.data?.filter(e => e.event_type === "rate_limit").length ?? 0,
-      suspiciousIPs: new Set(events.data?.map(e => e.ip_address)).size,
-      totalEvents: events.data?.length ?? 0,
+      authFailures: loginAttemptsData.filter(a => !a.success).length,
+      rateLimits: eventsData.filter(e => e.event_type === "rate_limit").length,
+      suspiciousIPs: new Set(eventsData.map(e => e.ip_address).filter(Boolean)).size,
+      totalEvents: eventsData.length,
       timeline: [] as { time: string; count: number }[]
     };
 
@@ -87,8 +90,9 @@ export const getSecurityStats = createServerFn({ method: "POST" })
       hourlyData[key] = 0;
     }
 
-    events.data?.forEach(e => {
-      const d = new Date(e.created_at!);
+    eventsData.forEach(e => {
+      if (!e.created_at) return;
+      const d = new Date(e.created_at);
       const key = d.getHours().toString().padStart(2, '0') + ':00';
       if (hourlyData[key] !== undefined) hourlyData[key]++;
     });
@@ -107,26 +111,21 @@ export const getSuspiciousIPs = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.securityManage);
 
-    const { data, error } = await context.supabase.rpc('get_suspicious_ips');
+    // Instead of RPC which might not exist, we fetch recent events and aggregate
+    const { data: events } = await context.supabase
+        .from("security_events")
+        .select("ip_address, event_type")
+        .limit(1000);
     
-    if (error) {
-        // Fallback if RPC doesn't exist yet
-        const { data: events } = await context.supabase
-            .from("security_events")
-            .select("ip_address, event_type")
-            .limit(1000);
-        
-        const counts: Record<string, { ip: string, failures: number, limits: number }> = {};
-        events?.forEach(e => {
-            if (!counts[e.ip_address!]) counts[e.ip_address!] = { ip: e.ip_address!, failures: 0, limits: 0 };
-            if (e.event_type === 'login_throttle') counts[e.ip_address!].failures++;
-            if (e.event_type === 'rate_limit') counts[e.ip_address!].limits++;
-        });
+    const counts: Record<string, { ip: string, failures: number, limits: number }> = {};
+    events?.forEach(e => {
+        if (!e.ip_address) return;
+        if (!counts[e.ip_address]) counts[e.ip_address] = { ip: e.ip_address, failures: 0, limits: 0 };
+        if (e.event_type === 'login_throttle') counts[e.ip_address].failures++;
+        if (e.event_type === 'rate_limit') counts[e.ip_address].limits++;
+    });
 
-        return Object.values(counts)
-            .sort((a, b) => (b.failures + b.limits) - (a.failures + a.limits))
-            .slice(0, 10);
-    }
-
-    return data;
+    return Object.values(counts)
+        .sort((a, b) => (b.failures + b.limits) - (a.failures + a.limits))
+        .slice(0, 10);
   });
