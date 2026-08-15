@@ -60,7 +60,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .is("deleted_at", null),
       context.supabase
         .from("steadfast_stats" as any)
-        .select("successful_submissions_count")
+        .select("successful_submissions_count, last_success_at, last_order_id, last_invoice_no")
         .maybeSingle(),
     ]);
 
@@ -139,6 +139,9 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       },
       revenueHistory,
       steadfastSuccessCount: (steadfastStats.data as any)?.successful_submissions_count ?? 0,
+      steadfastLastSuccessAt: (steadfastStats.data as any)?.last_success_at ?? null,
+      steadfastLastInvoiceNo: (steadfastStats.data as any)?.last_invoice_no ?? null,
+      steadfastLastOrderId: (steadfastStats.data as any)?.last_order_id ?? null,
     };
   });
 

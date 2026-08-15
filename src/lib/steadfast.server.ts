@@ -162,7 +162,10 @@ export async function bookOrderWithSteadfast(
       .eq("id", order.id);
 
     try {
-      await supabaseAdmin.rpc("increment_steadfast_count" as any);
+      await supabaseAdmin.rpc("increment_steadfast_count", { 
+        order_id: order.id, 
+        invoice_no: order.invoice_no 
+      });
     } catch (e) {
       console.error("Failed to increment steadfast count:", e);
     }
