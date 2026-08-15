@@ -70,10 +70,10 @@ function CheckoutPage() {
   const whatsappMessage =
     config.data?.whatsappMessage ?? "Having any problem with your order? Contact us on WhatsApp.";
 
-  // Preselect the first active zone once the admin-managed list arrives.
+  // No default preselection — forces the user to pick their zone to see the charge.
   useEffect(() => {
-    if (!form.deliveryZone && zones[0]) {
-      setForm((current) => ({ ...current, deliveryZone: zones[0]!.slug }));
+    if (!form.deliveryZone) {
+      // Intentionally left empty to allow "Select delivery zone" placeholder to show.
     }
   }, [zones, form.deliveryZone]);
 
@@ -201,8 +201,8 @@ function CheckoutPage() {
                 onChange={(event) => update("deliveryZone")(event.target.value)}
                 className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-base sm:text-sm"
               >
-                <option value="">
-                  {config.isLoading ? "Loading zones…" : "Select a delivery zone"}
+                <option value="" disabled>
+                  {config.isLoading ? "Loading zones…" : "Select delivery zone"}
                 </option>
                 {zones.map((zone) => (
                   <option key={zone.id} value={zone.slug}>
