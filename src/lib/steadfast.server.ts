@@ -161,6 +161,12 @@ export async function bookOrderWithSteadfast(
       })
       .eq("id", order.id);
 
+    try {
+      await supabaseAdmin.rpc("increment_steadfast_count" as any);
+    } catch (e) {
+      console.error("Failed to increment steadfast count:", e);
+    }
+
     await supabaseAdmin.from("order_events").insert({
       order_id: order.id,
       event_type: "courier.shipment_created",

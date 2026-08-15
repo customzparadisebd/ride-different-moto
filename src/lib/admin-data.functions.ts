@@ -1,15 +1,5 @@
-// ============================================================
-// ADMIN DASHBOARD + CUSTOMER DATA
-// Purpose: Aggregated reads for the admin dashboard and the
-//          customers screen. Customers are derived from orders
-//          (grouped by phone number) — there is no separate table.
-// Status: COMPLETED
-// Security: Both endpoints require the signed-in account to hold
-//          the matching permission, resolved server-side.
-// ============================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
@@ -48,7 +38,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
 
     const historyStart = startOfDayISO(13); // Last 14 days
 
-    const [orders, recent, inventory, statusCountsRaw] = await Promise.all([
+    const [orders, recent, inventory, statusCountsRaw, steadfastStats] = await Promise.all([
       context.supabase
         .from("orders")
         .select("created_at, total, status")
@@ -68,9 +58,13 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .from("orders")
         .select("status")
         .is("deleted_at", null),
+      context.supabase
+        .from("steadfast_stats" as any)
+        .select("successful_submissions_count")
+        .maybeSingle(),
     ]);
 
-    const orderRows = orders.data ?? [];
+    const orderRows = (orders.data as any[]) ?? [];
     const todayRows = orderRows.filter(r => r.created_at >= todayISO);
     
     // Revenue logic: typically excludes cancelled/returned in BDT context unless asked otherwise.
@@ -79,14 +73,15 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       .filter(r => r.status !== 'cancelled' && r.status !== 'returned')
       .reduce((sum, r) => sum + Number(r.total), 0);
 
-    const productRows = inventory.data ?? [];
+    const productRows = (inventory.data as any[]) ?? [];
     const activeProducts = productRows.filter(p => p.is_active);
     const totalStock = productRows.reduce((sum, p) => sum + (p.stock_qty || 0), 0);
     const lowStock = productRows.filter(p => p.stock_qty > 0 && p.stock_qty <= (p.low_stock_threshold || 5));
     const outOfStock = productRows.filter(p => (p.stock_qty || 0) <= 0);
 
     const statusCounts: Record<string, number> = {};
-    (statusCountsRaw.data ?? []).forEach(r => {
+    const countsArr = Array.isArray(statusCountsRaw.data) ? statusCountsRaw.data : [];
+    countsArr.forEach((r: any) => {
       statusCounts[r.status] = (statusCounts[r.status] ?? 0) + 1;
     });
 
@@ -95,7 +90,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       .from("orders")
       .select("customer_phone")
       .is("deleted_at", null);
-    const uniqueCustomers = new Set((customerData ?? []).map(c => c.customer_phone)).size;
+    const uniqueCustomers = new Set(((customerData as any[]) ?? []).map(c => c.customer_phone)).size;
 
     // Revenue History (last 14 days)
     const historyRows = await context.supabase
@@ -105,7 +100,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       .is("deleted_at", null);
     
     const revenueByDay: Record<string, number> = {};
-    (historyRows.data ?? []).forEach(r => {
+    ((historyRows.data as any[]) ?? []).forEach(r => {
       if (r.status === 'cancelled' || r.status === 'returned') return;
       const day = new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       revenueByDay[day] = (revenueByDay[day] ?? 0) + Number(r.total);
@@ -127,13 +122,13 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         orders: orderRows.length,
         revenue: getRevenue(orderRows)
       },
-      totalOrders: (statusCountsRaw.data ?? []).length,
+      totalOrders: ((statusCountsRaw.data as any[]) ?? []).length,
       pendingOrders: statusCounts['pending'] || 0,
       completedOrders: (statusCounts['delivered'] || 0) + (statusCounts['completed'] || 0),
       cancelledOrders: (statusCounts['cancelled'] || 0) + (statusCounts['returned'] || 0),
       uniqueCustomers,
       statusCounts,
-      recent: recent.data ?? [],
+      recent: (recent.data as any[]) ?? [],
       inventory: {
         totalProducts: activeProducts.length,
         totalStock,
@@ -142,7 +137,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         lowStockItems: lowStock.slice(0, 5),
         outOfStockItems: outOfStock.slice(0, 5)
       },
-      revenueHistory
+      revenueHistory,
+      steadfastSuccessCount: (steadfastStats.data as any)?.successful_submissions_count ?? 0,
     };
   });
 

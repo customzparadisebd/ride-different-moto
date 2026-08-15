@@ -33,6 +33,7 @@ function AdminCustomers() {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | "active" | "fraud">("all");
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openPhone, setOpenPhone] = useState<string | null>(null);
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
@@ -82,12 +83,39 @@ function AdminCustomers() {
             </button>
           ))}
         </div>
+        
+        {selectedIds.length > 0 && (
+          <div className="flex items-center gap-3 animate-in fade-in slide-in-from-left-2">
+            <span className="text-xs font-bold text-primary uppercase bg-primary/10 px-2 py-1 rounded">
+              {selectedIds.length} Selected
+            </span>
+            <CustomerBulkDeleteButton 
+              ids={selectedIds} 
+              onSuccess={() => setSelectedIds([])}
+              canManage={canManage}
+            />
+          </div>
+        )}
       </div>
 
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[880px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
+              <th className="p-3 w-10">
+                <input 
+                  type="checkbox" 
+                  className="accent-primary"
+                  checked={customers.length > 0 && selectedIds.length === customers.length}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedIds(customers.map(c => c.id));
+                    } else {
+                      setSelectedIds([]);
+                    }
+                  }}
+                />
+              </th>
               <th className="p-3">Customer</th>
               <th className="p-3">City / Zone</th>
               <th className="p-3 text-right">Orders</th>
@@ -114,7 +142,21 @@ function AdminCustomers() {
             )}
             {customers.map((customer) => (
               <>
-                <tr key={customer.phone} className="border-b border-border">
+                <tr key={customer.phone} className={`border-b border-border transition-colors ${selectedIds.includes(customer.id) ? 'bg-primary/5' : ''}`}>
+                  <td className="p-3">
+                    <input 
+                      type="checkbox" 
+                      className="accent-primary"
+                      checked={selectedIds.includes(customer.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedIds(prev => [...prev, customer.id]);
+                        } else {
+                          setSelectedIds(prev => prev.filter(id => id !== customer.id));
+                        }
+                      }}
+                    />
+                  </td>
                   <td className="p-3">
                     <div className="flex items-center justify-between gap-4">
                       <span className="font-bold">{customer.name}</span>
@@ -172,7 +214,7 @@ function AdminCustomers() {
                     key={`${customer.phone}-orders`}
                     className="border-b border-border bg-secondary/40"
                   >
-                    <td colSpan={7} className="p-3">
+                    <td colSpan={8} className="p-3">
                       <CustomerOrders phone={customer.phone} />
                     </td>
                   </tr>
@@ -254,11 +296,14 @@ function CustomerAuditTrailButton({
 }) {
   const fetchAudit = useServerFn(getCustomerAuditTrail);
   const [isOpen, setIsOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
   
   const query = useQuery({
-    queryKey: ["admin-customer-audit", customerId],
-    queryFn: () => fetchAudit({ data: { customerId } }),
+    queryKey: ["admin-customer-audit", customerId, page, search],
+    queryFn: () => fetchAudit({ data: { customerId, page, search } }),
     enabled: isOpen,
+    placeholderData: (prev) => prev,
   });
 
   if (!canView) return null;
@@ -281,14 +326,26 @@ function CustomerAuditTrailButton({
               </Button>
             </div>
             
+            <div className="p-4 border-b border-border bg-secondary/20">
+              <Input 
+                placeholder="Search audit actions..." 
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="h-9 text-xs"
+              />
+            </div>
+            
             <div className="flex-1 overflow-y-auto p-4">
               {query.isLoading ? (
                 <p className="text-center text-sm text-muted-foreground">Loading audit logs...</p>
-              ) : !query.data?.length ? (
+              ) : !query.data?.logs.length ? (
                 <p className="text-center text-sm text-muted-foreground">No audit logs found for this customer.</p>
               ) : (
                 <div className="space-y-4">
-                  {query.data.map((log: any) => (
+                  {query.data.logs.map((log: any) => (
                     <div key={log.id} className="rounded-lg border border-border bg-secondary/30 p-3 text-sm">
                       <div className="flex items-center justify-between gap-2 border-b border-border/50 pb-2 mb-2">
                         <span className="font-bold text-primary">{log.action.replace("customer.", "").toUpperCase()}</span>
@@ -317,10 +374,77 @@ function CustomerAuditTrailButton({
                 </div>
               )}
             </div>
+
+            {query.data && query.data.total > query.data.pageSize && (
+              <div className="border-t border-border p-3 bg-secondary/10 flex items-center justify-between">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  disabled={page === 1}
+                  onClick={() => setPage(p => p - 1)}
+                  className="text-xs h-7"
+                >
+                  Prev
+                </Button>
+                <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                  Page {page} of {Math.ceil(query.data.total / query.data.pageSize)}
+                </span>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  disabled={page >= Math.ceil(query.data.total / query.data.pageSize)}
+                  onClick={() => setPage(p => p + 1)}
+                  className="text-xs h-7"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
     </>
+  );
+}
+
+function CustomerBulkDeleteButton({ 
+  ids, 
+  onSuccess,
+  canManage 
+}: { 
+  ids: string[]; 
+  onSuccess: () => void;
+  canManage: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const deleteCustomerFn = useServerFn(softDeleteCustomer);
+  
+  const mutation = useMutation({
+    mutationFn: deleteCustomerFn,
+    onSuccess: (res: any) => {
+      toast.success(`Moved ${res.count} customers to Recycle Bin`);
+      queryClient.invalidateQueries({ queryKey: ["admin-customers"] });
+      onSuccess();
+    },
+    onError: (err: any) => toast.error(err.message || "Could not delete customers"),
+  });
+
+  if (!canManage) return null;
+
+  return (
+    <Button
+      variant="destructive"
+      size="sm"
+      className="h-8 text-[10px] font-bold uppercase tracking-wider"
+      disabled={mutation.isPending}
+      onClick={() => {
+        const reason = window.prompt(`Reason for bulk deleting ${ids.length} customers (optional):`, "");
+        if (reason === null) return;
+        mutation.mutate({ data: { ids, reason } as any });
+      }}
+    >
+      Bulk Delete
+    </Button>
   );
 }
 

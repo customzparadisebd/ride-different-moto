@@ -49,19 +49,22 @@ export const softDeleteCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => customerDeleteInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // Only Admin and Super Admin can delete
     const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
     if (!isPrivileged) throw new Error("Only Admin and Super Admin can delete customer records.");
 
-    const before = await context.supabase
+    const ids = data.ids || (data.id ? [data.id] : []);
+    if (ids.length === 0) throw new Error("No customer IDs provided.");
+
+    const { data: beforeItems } = await context.supabase
       .from("customers")
-      .select("*")
-      .eq("id", data.id)
-      .maybeSingle();
-    if (!before.data) throw new Error("Customer not found.");
+      .select("id, name")
+      .in("id", ids);
+
+    if (!beforeItems || beforeItems.length === 0) throw new Error("No customers found.");
 
     const { error } = await context.supabase
       .from("customers")
@@ -70,25 +73,27 @@ export const softDeleteCustomer = createServerFn({ method: "POST" })
         deleted_by: context.userId,
         delete_reason: data.reason || null,
       } as any)
-      .eq("id", data.id);
-    if (error) throw new Error("Could not move customer to Recycle Bin.");
+      .in("id", ids);
+    if (error) throw new Error("Could not move customer(s) to Recycle Bin.");
 
-    await auditFromActor(actor, {
-      action: "customer.recycled",
-      targetType: "customer",
-      targetId: data.id,
-      targetLabel: before.data.name,
-      oldValue: before.data,
-      metadata: { reason: data.reason || null },
-    });
-    return { ok: true };
+    for (const item of beforeItems) {
+      await auditFromActor(actor, {
+        action: "customer.recycled",
+        targetType: "customer",
+        targetId: item.id,
+        targetLabel: item.name,
+        metadata: { reason: data.reason || null },
+      });
+    }
+
+    return { ok: true, count: beforeItems.length };
   });
 
 export const restoreCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => customerRestoreInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // Only Admin and Super Admin can restore
@@ -158,25 +163,43 @@ export const purgeCustomer = createServerFn({ method: "POST" })
 
 export const getCustomerAuditTrail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ customerId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) => z.object({ 
+    customerId: z.string().uuid(),
+    page: z.number().int().min(1).optional().default(1),
+    pageSize: z.number().int().min(1).max(100).optional().default(10),
+    search: z.string().optional(),
+  }).parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
+    const { resolveActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // Only Admin and Super Admin can view specific audit trails for customers
     const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
     if (!isPrivileged) throw new Error("Only Admin and Super Admin can view customer audit trails.");
 
-    const { data: logs, error } = await context.supabase
+    let query = context.supabase
       .from("admin_audit_log")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("target_type", "customer")
-      .eq("target_id", data.customerId)
-      .order("created_at", { ascending: false });
+      .eq("target_id", data.customerId);
+
+    if (data.search) {
+      query = query.ilike("action", `%${data.search}%`);
+    }
+
+    const from = (data.page - 1) * data.pageSize;
+    const { data: logs, count, error } = await query
+      .order("created_at", { ascending: false })
+      .range(from, from + data.pageSize - 1);
 
     if (error) throw new Error("Could not load customer audit trail.");
 
-    return logs ?? [];
+    return { 
+      logs: logs ?? [], 
+      total: count ?? 0, 
+      page: data.page, 
+      pageSize: data.pageSize 
+    };
   });
 
 export const updateAdminCustomer = createServerFn({ method: "POST" })
