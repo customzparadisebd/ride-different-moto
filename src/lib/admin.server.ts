@@ -428,6 +428,6 @@ export async function assertStaffRpc(
   supabase: SupabaseClient<Database>,
   userId: string,
 ): Promise<void> {
-  const { data, error } = await supabase.rpc("is_staff", { _user_id: userId });
-  if (error || !data) throw new AccessError("not_staff", "You are not authorised to do that.");
+  const actor = await resolveActor(userId, null);
+  assertAccess(actor);
 }
