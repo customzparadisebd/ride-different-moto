@@ -61,7 +61,7 @@ export const Route = createFileRoute("/products/$slug")({
         url: `${site.url}/products/${product.slug}`,
         priceCurrency: "BDT",
         price: product.offerPrice || product.price,
-        availability: product.inStock
+        availability: product.inStock && !product.outOfStockManual
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
       },
@@ -188,8 +188,9 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
   const wasPrice = compareAtPrice(product, color);
   const gallery = product.gallery.length ? product.gallery : [""];
 
+  const isActuallyInStock = product.inStock && !product.outOfStockManual;
   const add = (thenCheckout: boolean) => {
-    if (!product.inStock) return;
+    if (!isActuallyInStock) return;
     addItem({ product, color, qty });
     if (thenCheckout) {
       void navigate({ to: "/checkout" });
@@ -271,12 +272,12 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
           </div>
 
           <p className="mt-2 text-sm">
-            {product.inStock ? (
+            {isActuallyInStock ? (
               <span className="font-semibold text-primary">In stock</span>
             ) : (
               <span className="font-semibold text-muted-foreground">Out of stock</span>
             )}
-            {product.inStock && product.stockQty <= 5 ? (
+            {isActuallyInStock && product.stockQty <= 5 ? (
               <span className="text-muted-foreground"> — only {product.stockQty} left</span>
             ) : null}
           </p>
@@ -375,7 +376,7 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
             <Button
               variant="steel"
               size="touch"
-              disabled={!product.inStock}
+              disabled={!isActuallyInStock}
               onClick={() => add(false)}
             >
               Add to Cart
@@ -383,7 +384,7 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
             <Button
               variant="red"
               size="touch"
-              disabled={!product.inStock}
+              disabled={!isActuallyInStock}
               onClick={() => add(true)}
             >
               Buy Now

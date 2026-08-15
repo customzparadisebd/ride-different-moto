@@ -18,7 +18,7 @@ import { getSteadfastTracking } from "@/lib/steadfast.functions";
 import { deliveryZoneLabel, paymentMethodLabel, statusLabel } from "@/lib/orders.shared";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Clock, Truck, AlertCircle } from "lucide-react";
+import { Clock, Truck, AlertCircle, Pin } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/ad/orders/$id")({
   head: () => ({
@@ -115,6 +115,12 @@ function AdminOrderDetail() {
         <h1 className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-4xl font-black tracking-tighter text-primary ring-2 ring-primary/20">
           {order.invoice_no}
         </h1>
+        {order.is_pinned && (
+          <div className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 ring-1 ring-primary/40">
+            <Pin className="size-3 text-primary fill-primary" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Pinned</span>
+          </div>
+        )}
         <StatusBadge value={order.status} />
         <StatusBadge value={order.payment_status} />
         <StatusBadge value={order.courier_status} />
@@ -194,6 +200,7 @@ function AdminOrderDetail() {
           onSubmit={submitUpdate}
           isPending={mutation.isPending}
           canManage={canManage}
+          userRoles={accessQuery.data?.roles ?? []}
         />
       </div>
 

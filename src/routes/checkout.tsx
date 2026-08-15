@@ -10,6 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { OrderSuccessAnimation } from "@/components/checkout/OrderSuccessAnimation";
+import { AlertCircle } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -83,6 +84,18 @@ function CheckoutPage() {
 
   const selectedZone = zones.find((zone) => zone.slug === form.deliveryZone);
   const shipping = lines.length ? (selectedZone?.charge ?? 0) : 0;
+  
+  // Validation for stock availability in checkout summary
+  const outOfStockItems = useMemo(() => {
+    return lines.filter(line => {
+      // If we had the outOfStockManual flag here, we'd check it.
+      // For now, since it's resolved server-side, we'll rely on the server validation
+      // but we can at least check against stockQty if it's available in the cart line.
+      const qty = (line as any).stockQty;
+      return typeof qty === 'number' && qty < line.qty;
+    });
+  }, [lines]);
+
   const total = useMemo(() => subtotal + shipping, [subtotal, shipping]);
 
   const mutation = useMutation({
@@ -295,12 +308,25 @@ function CheckoutPage() {
                 <dd className="font-display text-lg font-bold text-primary">{formatBDT(total)}</dd>
               </div>
             </dl>
+
+            {outOfStockItems.length > 0 && (
+              <div className="mt-4 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive animate-in fade-in zoom-in-95">
+                <div className="flex items-center gap-2 font-bold uppercase tracking-wider">
+                  <AlertCircle className="size-3.5" />
+                  Stock Alert
+                </div>
+                <p className="mt-1 opacity-90">
+                  Some items in your cart have insufficient stock. Please reduce quantities.
+                </p>
+              </div>
+            )}
+
             <Button
               type="submit"
               variant="red"
               size="touch"
               className="mt-4 w-full"
-              disabled={mutation.isPending}
+              disabled={mutation.isPending || outOfStockItems.length > 0}
             >
               {mutation.isPending ? "Placing order…" : "Place Order"}
             </Button>

@@ -104,16 +104,13 @@ export function InvoiceCell({
         <IconAction label="Activity log" onClick={onActivity}>
           <History />
         </IconAction>
+        <IconAction label="Toggle Pin" onClick={onTogglePin}>
+          <Pin className={order.is_pinned ? "fill-primary text-primary" : ""} />
+        </IconAction>
         {onShowNote && (
-          <button
-            type="button"
-            title="View customer note"
-            aria-label="View customer note"
-            onClick={onShowNote}
-            className="grid size-7 place-items-center rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-500 transition-colors hover:bg-blue-500/20 hover:border-blue-500/40 [&_svg]:size-3.5"
-          >
-            <StickyNote />
-          </button>
+          <IconAction label="View Note" onClick={onShowNote}>
+            <StickyNote className="fill-blue-500/20 text-blue-500" />
+          </IconAction>
         )}
       </div>
       <div className="flex items-center gap-1.5 pt-1">
@@ -124,7 +121,7 @@ export function InvoiceCell({
         >
           {order.invoice_no}
         </Link>
-        {order.is_pinned ? <Pin className="size-3 shrink-0 text-primary" /> : null}
+        
       </div>
       <div className="flex flex-wrap items-center gap-1">
         <span

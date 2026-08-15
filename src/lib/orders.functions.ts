@@ -652,22 +652,41 @@ export const bulkUpdateOrderStatus = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersManage);
 
+    // COMPLETED status is restricted to Admin/Super Admin
+    if (data.status === "completed") {
+      const isAdmin = actor.roles.includes("super_admin") || actor.roles.includes("admin");
+      if (!isAdmin) {
+        throw new Error("Only Admin or Super Admin can mark orders as COMPLETED.");
+      }
+    }
+
     const { error } = await context.supabase
       .from("orders")
       .update({ status: data.status })
       .in("id", data.orderIds);
     if (error) throw new Error("Could not update the selected orders.");
 
+    const { deductInventoryForOrder } = await import("./inventory.server");
+
     await Promise.all(
-      data.orderIds.map((orderId: string) =>
-        logOrderEvent(orderId, {
+      data.orderIds.map(async (orderId: string) => {
+        await logOrderEvent(orderId, {
           eventType: "order_updated",
           message: `Status changed to ${data.status} (bulk update)`,
           actor: context.userId,
           actorLabel: "admin",
           metadata: { status: data.status, bulk: true },
-        }),
-      ),
+        });
+
+        // Trigger stock deduction if bulk changing to COMPLETED
+        if (data.status === "completed") {
+          try {
+            await deductInventoryForOrder(orderId, context.userId, "admin");
+          } catch (e) {
+            console.error(`Bulk stock deduction failed for ${orderId}:`, e);
+          }
+        }
+      }),
     );
 
     await auditFromActor(actor, {
@@ -734,6 +753,12 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     const { logOrderEvent } = await import("./orders.server");
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // RULE 3: Only Admin/Super Admin can mark as Completed.
+    if (data.status === "completed" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only an Admin or Super Admin can mark an order as Completed.");
+    }
+    
     assertAccess(actor, PERMISSIONS.ordersManage);
 
     const before = await context.supabase
@@ -809,6 +834,46 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
         Object.keys(patch).map((key) => [key, currentValues[key] ?? null]),
       ),
       newValue: Object.keys(patch).length ? patch : { note: data.note ?? null },
+    });
+
+    // RULE 2: Deduct stock ONLY when order becomes COMPLETED.
+    if (data.status === "completed") {
+      const { deductInventoryForOrder } = await import("./inventory.server");
+      await deductInventoryForOrder(data.orderId, context.userId, actor.email ?? "admin");
+    }
+
+    return { ok: true };
+  });
+
+/**
+ * Endpoint to record a product return or damage.
+ */
+export const recordReturnOrDamage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: { 
+    orderId: string; 
+    productId: string; 
+    quantity: number; 
+    type: "return" | "damage"; 
+    reason: string; 
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { processReturnOrDamage } = await import("./inventory.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    await processReturnOrDamage({
+      ...data,
+      actorId: context.userId,
+      actorLabel: actor.email ?? "admin",
+    });
+
+    await auditFromActor(actor, {
+      action: data.type === "return" ? AUDIT_ACTIONS.orderReturned : AUDIT_ACTIONS.orderDamaged,
+      targetType: "order",
+      targetId: data.orderId,
+      newValue: { productId: data.productId, quantity: data.quantity, type: data.type, reason: data.reason },
     });
 
     return { ok: true };

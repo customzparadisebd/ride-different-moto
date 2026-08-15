@@ -47,6 +47,7 @@ export type ProductFormValue = {
   videoEnabled: boolean;
   videoPlatform: string;
   videoUrl: string;
+  outOfStockToggle: boolean;
 };
 
 export const emptyProductForm: ProductFormValue = {
@@ -73,6 +74,7 @@ export const emptyProductForm: ProductFormValue = {
   videoEnabled: false,
   videoPlatform: "youtube",
   videoUrl: "",
+  outOfStockToggle: false,
 };
 
 export function toProductInput(value: ProductFormValue): ProductInput {
@@ -107,6 +109,7 @@ export function toProductInput(value: ProductFormValue): ProductInput {
     videoEnabled: value.videoEnabled,
     videoPlatform: value.videoPlatform as any,
     videoUrl: value.videoUrl.trim(),
+    outOfStockToggle: value.outOfStockToggle,
   };
 }
 
@@ -390,6 +393,11 @@ export function ProductForm({
           label="Show custom badge"
           checked={value.badgeEnabled}
           onChange={(v) => set("badgeEnabled", v)}
+        />
+        <Check
+          label="Manual Stock Out"
+          checked={value.outOfStockToggle}
+          onChange={(v) => set("outOfStockToggle", v)}
         />
       </div>
 

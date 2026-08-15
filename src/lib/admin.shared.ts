@@ -198,6 +198,9 @@ export const AUDIT_ACTIONS = {
   customerUpdated: "customer.updated",
   customerFraudMarked: "customer.fraud_marked",
   customerFraudRemoved: "customer.fraud_removed",
+  orderStockDeducted: "order.stock_deducted",
+  orderReturned: "order.returned",
+  orderDamaged: "order.damaged",
   envDiagnosticsViewed: "system.env_diagnostics_viewed",
 } as const;
 

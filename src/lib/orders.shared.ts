@@ -10,6 +10,7 @@ export const ORDER_STATUSES = [
   "delivered",
   "cancelled",
   "returned",
+  "completed",
 ] as const;
 
 export const PAYMENT_STATUSES = ["unpaid", "partial", "paid", "refunded"] as const;
@@ -182,7 +183,7 @@ export const orderFilterInput = z.object({
       "new",
       "duplicate",
       "hold",
-      "cancelled",
+      "cancelled", "returned",
       "same_phone",
       // Quick filter tabs
       "yesterday",
@@ -219,6 +220,7 @@ export const ORDER_TABS = [
   { value: "duplicate", label: "Duplicate Orders" },
   { value: "hold", label: "Hold" },
   { value: "cancelled", label: "Cancelled" },
+  { value: "returned", label: "Returned" },
   { value: "same_phone", label: "Same Phone" },
 ] as const;
 

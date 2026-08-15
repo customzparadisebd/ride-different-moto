@@ -15,7 +15,7 @@ import type { Database } from "@/integrations/supabase/types";
 import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./storefront.shared";
 
 const PRODUCT_FIELDS =
-  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, video_enabled, video_platform, video_url, deleted_at, sort_order";
+  "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, video_enabled, video_platform, video_url, deleted_at, sort_order, out_of_stock_toggle";
 
 const COLOR_FIELDS = "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
@@ -84,6 +84,7 @@ function toProduct(
     offerPrice: offer,
     stockQty,
     inStock: stockQty > 0,
+    outOfStockManual: Boolean(row["out_of_stock_toggle"]),
     universal: Boolean(row["is_universal"]),
     bikeCompatibility: Array.isArray(row["bike_compatibility"])
       ? (row["bike_compatibility"] as string[])
