@@ -104,7 +104,7 @@ function Index() {
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — {t("section.home.h1")}
+        {site.name} — Premium Motorcycle Modification Parts & Stickers in Bangladesh
       </h1>
 
       <SectionBoundary label="hero">
