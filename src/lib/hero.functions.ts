@@ -108,7 +108,9 @@ export const deleteHeroSlide = createServerFn({ method: "POST" })
 
 export const restoreOldHeroSlides = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
+  .validator((d) => z.any().parse(d))
   .handler(async ({ context }) => {
+
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
