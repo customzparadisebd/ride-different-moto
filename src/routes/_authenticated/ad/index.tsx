@@ -125,14 +125,28 @@ function AdminDashboard() {
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
         <div
+          role={access.isSuperAdmin || access.primaryRole === "admin" ? "button" : undefined}
+          tabIndex={access.isSuperAdmin || access.primaryRole === "admin" ? 0 : undefined}
+          aria-label={
+            access.isSuperAdmin || access.primaryRole === "admin"
+              ? "View SteadFast integration details"
+              : undefined
+          }
           onClick={() => {
             if (access.isSuperAdmin || access.primaryRole === "admin") {
               setShowSteadfastInfo(true);
             }
           }}
+          onKeyDown={(e) => {
+            if (!(access.isSuperAdmin || access.primaryRole === "admin")) return;
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setShowSteadfastInfo(true);
+            }
+          }}
           className={
             access.isSuperAdmin || access.primaryRole === "admin"
-              ? "cursor-pointer group"
+              ? "cursor-pointer group rounded-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               : "cursor-default group"
           }
         >
