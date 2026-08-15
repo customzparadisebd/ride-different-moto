@@ -148,7 +148,7 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
           <img
             src={czpLogoAsset.url}
             alt="CZP Logo"
-            className="h-10 w-auto shrink-0 object-contain md:h-12 lg:h-14"
+            className="h-10 w-auto shrink-0 object-contain md:h-16 lg:h-20"
           />
           <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
             <p className="font-display text-sm font-bold uppercase tracking-tight text-primary">
