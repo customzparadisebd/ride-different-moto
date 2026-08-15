@@ -22,8 +22,12 @@ describe('Invoice Concurrency Uniqueness', () => {
     const invoices = results.map(r => r.data).filter(Boolean) as string[];
     const errors = results.map(r => r.error).filter(Boolean);
     
-    expect(errors.length).toBe(0);
-    expect(invoices.length).toBe(totalOrders);
+    if (errors.length > 0) {
+      console.error('RPC Errors:', errors);
+    }
+    
+    expect(errors.length, `Received ${errors.length} errors from RPC`).toBe(0);
+    expect(invoices.length, `Expected ${totalOrders} invoices, got ${invoices.length}. Results: ${JSON.stringify(results)}`).toBe(totalOrders);
     
     const uniqueInvoices = new Set(invoices);
     expect(uniqueInvoices.size).toBe(totalOrders);
