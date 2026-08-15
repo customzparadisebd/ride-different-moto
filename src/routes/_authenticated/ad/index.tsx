@@ -107,13 +107,15 @@ function AdminDashboard() {
           icon={<ShoppingCart className="h-4 w-4 text-sky-500" />}
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
-        <StatCard 
-          title="CUSTOMERS" 
-          value={data.uniqueCustomers}
-          subtitle="Total unique" 
-          icon={<Users className="h-4 w-4 text-fuchsia-500" />}
-          gradient="bg-linear-to-br from-fuchsia-50 to-white dark:from-fuchsia-950/20 dark:to-background"
-        />
+        <Link to="/ad/orders" search={{ courier: 'SteadFast' }}>
+          <StatCard 
+            title="STEADFAST SUCCESS" 
+            value={data.steadfastSuccessCount}
+            subtitle="Successfully booked" 
+            icon={<TrendingUp className="h-4 w-4 text-brand-red" />}
+            gradient="bg-linear-to-br from-brand-red/5 to-white dark:from-brand-red/10 dark:to-background"
+          />
+        </Link>
       </div>
 
       {/* Secondary Stats Grid */}

@@ -158,7 +158,12 @@ export const purgeCustomer = createServerFn({ method: "POST" })
 
 export const getCustomerAuditTrail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => z.object({ customerId: z.string().uuid() }).parse(input))
+  .inputValidator((input: unknown) => z.object({ 
+    customerId: z.string().uuid(),
+    page: z.number().int().min(1).optional().default(1),
+    pageSize: z.number().int().min(1).max(100).optional().default(10),
+    search: z.string().optional(),
+  }).parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -169,7 +174,7 @@ export const getCustomerAuditTrail = createServerFn({ method: "POST" })
 
     const { data: logs, error } = await context.supabase
       .from("admin_audit_log")
-      .select("*")
+      .select("*", { count: "exact" })
       .eq("target_type", "customer")
       .eq("target_id", data.customerId)
       .order("created_at", { ascending: false });

@@ -48,7 +48,7 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
 
     const historyStart = startOfDayISO(13); // Last 14 days
 
-    const [orders, recent, inventory, statusCountsRaw] = await Promise.all([
+    const [orders, recent, inventory, statusCountsRaw, steadfastStats] = await Promise.all([
       context.supabase
         .from("orders")
         .select("created_at, total, status")
@@ -65,9 +65,9 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .select("id, stock_qty, low_stock_threshold, is_active")
         .is("deleted_at", null),
       context.supabase
-        .from("orders")
-        .select("status")
-        .is("deleted_at", null),
+        .from("steadfast_stats")
+        .select("successful_submissions_count")
+        .maybeSingle(),
     ]);
 
     const orderRows = orders.data ?? [];
@@ -142,7 +142,8 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         lowStockItems: lowStock.slice(0, 5),
         outOfStockItems: outOfStock.slice(0, 5)
       },
-      revenueHistory
+      revenueHistory,
+      steadfastSuccessCount: steadfastStats.data?.successful_submissions_count ?? 0,
     };
   });
 
