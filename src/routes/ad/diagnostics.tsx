@@ -1,4 +1,3 @@
-import { AdminShell } from "@/components/admin/AdminShell";
 import { getEnvironment } from "@/lib/env";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ShieldCheck, AlertTriangle, Globe, Settings, Database } from "lucide-react";
@@ -9,11 +8,25 @@ export const Route = createFileRoute("/ad/diagnostics")({
 });
 
 function DiagnosticsPage() {
-  // We'll get these values in the component to ensure they reflect the browser state
   const env = getEnvironment();
   const hostname = typeof window !== "undefined" ? window.location.hostname : "N/A (SSR)";
   const viteAppEnv = import.meta.env["VITE_APP_ENV"] || "Not Set";
   const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] || "Not Set";
+
+  const maskValue = (val: string, type: "url" | "token") => {
+    if (val === "Not Set") return val;
+    if (type === "url") {
+      try {
+        const url = new URL(val);
+        // Only show the project ref part of the subdomain
+        const projectRef = url.hostname.split(".")[0];
+        return `${url.protocol}//${projectRef}.supabase.co (Redacted)`;
+      } catch {
+        return val.substring(0, 10) + "... (Redacted)";
+      }
+    }
+    return val.substring(0, 4) + "****" + val.substring(val.length - 4);
+  };
 
   const data = [
     {
@@ -29,10 +42,10 @@ function DiagnosticsPage() {
       description: "Explicit environment override variable.",
     },
     {
-      label: "Supabase URL",
-      value: supabaseUrl,
+      label: "Supabase Project",
+      value: maskValue(supabaseUrl, "url"),
       icon: Database,
-      description: "The backend project this admin panel is currently communicating with.",
+      description: "The backend project (redacted for security).",
     },
     {
       label: "Detected Environment",
