@@ -29,6 +29,7 @@ import {
   listSecurityEvents,
 } from "@/lib/security-events.functions";
 import { runInvoiceStressTest, runLoadTest } from "@/lib/stress-test.functions";
+import { listSecurityAlerts, listInvoiceCollisions, markNotificationRead } from "@/lib/security-alerts.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 // BD Timezone is UTC+6
@@ -70,9 +71,25 @@ function SecurityDashboardPage() {
     queryFn: () => listSecurityEvents({ data: { limit: 10 } }),
   });
 
+  const { data: securityAlerts, refetch: refetchAlerts } = useSuspenseQuery({
+    queryKey: ["security-alerts"],
+    queryFn: () => listSecurityAlerts(),
+  });
+
+  const { data: collisions, refetch: refetchCollisions } = useSuspenseQuery({
+    queryKey: ["invoice-collisions"],
+    queryFn: () => listInvoiceCollisions(),
+  });
+
   const refreshAll = async () => {
     setIsRefreshing(true);
-    await Promise.all([refetchStats(), refetchSuspicious(), refetchEvents()]);
+    await Promise.all([
+      refetchStats(), 
+      refetchSuspicious(), 
+      refetchEvents(),
+      refetchAlerts(),
+      refetchCollisions()
+    ]);
     setIsRefreshing(false);
   };
 
@@ -329,6 +346,86 @@ function SecurityDashboardPage() {
                     >
                       Flagged
                     </Badge>
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Security Alerts & Invoice Collisions */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card className="bg-black/40 border-white/5 border-l-4 border-l-red-600">
+          <CardHeader>
+            <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-red-600" />
+              Security Alerts
+            </CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Critical system alerts and collision incidents
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {securityAlerts.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No active security alerts.</p>
+              ) : (
+                securityAlerts.map((alert: any) => (
+                  <div 
+                    key={alert.id} 
+                    className={cn(
+                      "p-3 rounded-lg border transition-all",
+                      alert.is_read ? "bg-white/5 border-white/5 opacity-60" : "bg-red-950/20 border-red-900/30"
+                    )}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <p className="text-xs font-black text-white uppercase tracking-tight">{alert.title}</p>
+                      <span className="text-[9px] font-bold text-muted-foreground uppercase">{format(new Date(alert.created_at), "HH:mm:ss")}</span>
+                    </div>
+                    <p className="text-[11px] text-white/70 leading-relaxed mb-2">{alert.message}</p>
+                    {!alert.is_read && (
+                      <button 
+                        onClick={() => markNotificationRead(alert.id)}
+                        className="text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-400"
+                      >
+                        Acknowledge
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-black/40 border-white/5 border-l-4 border-l-amber-500">
+          <CardHeader>
+            <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <Activity className="h-4 w-4 text-amber-500" />
+              Invoice Collision Forensic Log
+            </CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Detailed tracking of blocked duplicate invoice attempts
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {collisions.length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-8">No collisions detected.</p>
+              ) : (
+                collisions.map((c: any) => (
+                  <div key={c.id} className="p-3 rounded-lg bg-white/5 border border-white/5">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <p className="text-[11px] font-black text-amber-500 uppercase tracking-tighter">Collision: {c.invoice_no}</p>
+                        <p className="text-[9px] text-muted-foreground font-bold">{format(new Date(c.detected_at), "PPP p")}</p>
+                      </div>
+                      <Badge variant="outline" className="text-[8px] border-amber-500/30 text-amber-500">Forensic Block</Badge>
+                    </div>
+                    <div className="mt-2 text-[9px] font-mono text-white/50 bg-black/40 p-2 rounded max-h-20 overflow-auto">
+                      {JSON.stringify(c.attempted_order_payload, null, 2)}
+                    </div>
                   </div>
                 ))
               )}
