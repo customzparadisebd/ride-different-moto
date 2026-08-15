@@ -76,13 +76,18 @@ function InvoicePage() {
     <div className="mx-auto min-h-screen bg-neutral-900 p-4 font-mono text-white print:bg-white print:p-0 print:text-black sm:p-8">
       {/* Action Bar */}
       <div className="mx-auto mb-6 flex max-w-[680px] items-center justify-between gap-3 print:hidden">
-        <Link
-          to="/ad/orders/$id"
-          params={{ id }}
-          className="text-xs uppercase tracking-wider text-neutral-400 hover:text-white underline transition-colors"
-        >
-          ← Back to order
-        </Link>
+        <div className="flex flex-col">
+          <Link
+            to="/ad/orders/$id"
+            params={{ id }}
+            className="text-xs uppercase tracking-wider text-neutral-400 hover:text-white underline transition-colors"
+          >
+            ← Back to order
+          </Link>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-primary mt-1">
+            Invoice Preview
+          </span>
+        </div>
         <Button variant="red" size="sm" onClick={handlePrint}>
           Print / Save PDF
         </Button>
