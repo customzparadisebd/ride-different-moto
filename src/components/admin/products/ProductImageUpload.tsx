@@ -64,8 +64,9 @@ export function ProductImageUpload({
     const newUrls: string[] = [...images];
 
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
+      const filesArray = Array.from(files);
+      for (let i = 0; i < filesArray.length; i++) {
+        const file = filesArray[i];
         
         if (!multiple && i > 0) break;
         if (multiple && newUrls.length >= maxFiles) {
@@ -73,9 +74,9 @@ export function ProductImageUpload({
           break;
         }
 
-        const error = await validateImage(file);
-        if (error) {
-          toast.error(error);
+        const errorMsg = await validateImage(file);
+        if (errorMsg) {
+          toast.error(errorMsg);
           continue;
         }
 
@@ -87,7 +88,7 @@ export function ProductImageUpload({
         const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
         const filePath = `products/${fileName}`;
 
-        const { data, error: uploadError } = await supabase.storage
+        const { data: _data, error: uploadError } = await supabase.storage
           .from("products")
           .upload(filePath, file);
 
@@ -105,7 +106,7 @@ export function ProductImageUpload({
         }
       }
 
-      onChange(multiple ? newUrls : newUrls[0] || "");
+      onChange(multiple ? newUrls : (newUrls[0] ?? ""));
       toast.success(multiple ? "Images uploaded successfully" : "Image uploaded successfully");
     } catch (error: any) {
       console.error("Upload error:", error);
