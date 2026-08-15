@@ -70,6 +70,9 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
     })),
     has360View: value.has360View,
     product360Images: (images360Query.data?.rows ?? []).map((img: any) => img.image_url),
+    videoEnabled: value.videoEnabled,
+    videoPlatform: value.videoPlatform as any,
+    videoUrl: value.videoUrl,
     sortOrder: null,
   };
 
