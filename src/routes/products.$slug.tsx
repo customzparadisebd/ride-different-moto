@@ -108,8 +108,28 @@ export const Route = createFileRoute("/products/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `/products/${params.slug}` },
-        { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:url", content: `${site.url}/products/${params.slug}` },
+        { property: "og:image", content: loaderData.image },
+        ...(loaderData.videoEnabled && loaderData.videoUrl
+          ? [
+              { property: "og:video", content: loaderData.videoUrl },
+              { property: "og:video:secure_url", content: loaderData.videoUrl },
+              { property: "og:video:type", content: "text/html" },
+              { property: "og:video:width", content: "1280" },
+              { property: "og:video:height", content: "720" },
+            ]
+          : []),
+        { name: "twitter:card", content: loaderData.videoEnabled ? "player" : "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: loaderData.image },
+        ...(loaderData.videoEnabled && loaderData.videoUrl
+          ? [
+              { name: "twitter:player", content: loaderData.videoUrl },
+              { name: "twitter:player:width", content: "1280" },
+              { name: "twitter:player:height", content: "720" },
+            ]
+          : []),
       ],
       links: [{ rel: "canonical", href: `/products/${params.slug}` }],
       scripts: [
