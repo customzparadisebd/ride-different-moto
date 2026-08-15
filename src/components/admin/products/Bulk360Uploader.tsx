@@ -136,8 +136,10 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
                       max={previewImages.length - 1} 
                       step={1}
                       onValueChange={([val]) => {
-                        setCurrentIndex(val);
-                        setIsPlaying(false);
+                        if (typeof val === 'number') {
+                          setCurrentIndex(val);
+                          setIsPlaying(false);
+                        }
                       }}
                       className="flex-1"
                     />
