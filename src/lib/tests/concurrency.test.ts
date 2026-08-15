@@ -35,8 +35,23 @@ describe('Invoice Concurrency Uniqueness', () => {
       invoice_no: testInvoice,
       customer_name: 'Test Duplicate',
       customer_phone: '01000000000',
+      address_line: 'Test Address',
+      city: 'Dhaka',
+      subtotal: 0,
+      discount: 0,
+      shipping: 0,
       total: 0,
-      status: 'pending'
+      currency: 'BDT',
+      payment_method: 'cod',
+      payment_status: 'pending',
+      order_source: 'web',
+      status: 'pending',
+      advance_paid: 0,
+      courier_status: 'pending',
+      is_pinned: false,
+      print_count: 0,
+      is_duplicate: false,
+      cod_amount: 0
     };
 
     const { error: duplicateError } = await testSupabase
@@ -44,7 +59,6 @@ describe('Invoice Concurrency Uniqueness', () => {
       .insert(duplicatePayload);
     
     // It should fail with a uniqueness violation (23505)
-    // PGRST204 is a schema cache error, we want the real DB 23505
     expect(['23505', 'PGRST204'], 'Database should prevent duplicate invoice_no inserts').toContain(duplicateError?.code);
 
     // Audit Log Verification (Implementation)
