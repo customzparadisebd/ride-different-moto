@@ -65,6 +65,7 @@ export type AdminActor = {
   mfaRequired: boolean;
   sessionId: string | null;
   sessionRevoked: boolean;
+  loginApprovalPending?: boolean;
 };
 
 const ROLE_RANK: Role[] = ["super_admin", "admin", "manager", "staff"];
