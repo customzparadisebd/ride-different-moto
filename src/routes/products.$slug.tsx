@@ -96,10 +96,10 @@ export const Route = createFileRoute("/products/$slug")({
         meta: [{ title: `Product — ${site.name}` }, { name: "robots", content: "noindex" }],
       };
     }
-    const title = `${loaderData.name} — ${site.name}`;
+    const title = `${loaderData.name} — Motorcycle Modification Parts Bangladesh — ${site.name}`;
     const description =
       loaderData.description ??
-      `Buy ${loaderData.name} from Customz Paradise BD with nationwide delivery in Bangladesh.`;
+      `Get the best price for ${loaderData.name} in Bangladesh. High-quality motorcycle modification accessory from Customz Paradise BD with nationwide delivery.`;
 
     return {
       meta: [

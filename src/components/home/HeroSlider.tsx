@@ -96,11 +96,11 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                 <SafeImage
                   src={slide.image}
                   mobileSrc={slide.mobileImage}
-                  alt={slide.alt}
+                  alt={slide.alt || `${slide.bikeName} modification showcase`}
                   width={1920}
                   height={822}
                   priority={index === 0}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1920px"
+                  sizes="100vw"
                   containerClassName={cn(
                     "w-full bg-onyx",
                     slide.isFullBanner

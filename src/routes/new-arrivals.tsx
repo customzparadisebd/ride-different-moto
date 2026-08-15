@@ -5,9 +5,9 @@ import { ProductGrid } from "@/components/ProductCard";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
-const title = "New Arrivals — Customz Paradise BD";
+const title = "New Motorcycle Modification Parts & Accessories BD — Customz Paradise BD";
 const description =
-  "The latest motorcycle modification parts and accessories added at Customz Paradise BD.";
+  "Discover the latest premium motorcycle modification parts and accessories in Bangladesh. Stay ahead with new visual upgrades and custom kits.";
 
 export const Route = createFileRoute("/new-arrivals")({
   head: () => ({

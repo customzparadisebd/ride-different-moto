@@ -5,9 +5,9 @@ import { StoreComingSoon } from "@/components/home/StoreComingSoon";
 import { TrustSection } from "@/components/home/TrustSection";
 import { site } from "@/data/site";
 
-const title = "About Us — Customz Paradise BD";
+const title = "About Customz Paradise BD — Motorcycle Modification Experts in Bangladesh";
 const description =
-  "Customz Paradise BD is a premium motorcycle modification accessories brand serving riders in Bangladesh, with its main branch in India.";
+  "Learn about Customz Paradise BD, the leading premium motorcycle modification brand in Bangladesh. Quality parts, unique builds, and rider-focused service.";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
