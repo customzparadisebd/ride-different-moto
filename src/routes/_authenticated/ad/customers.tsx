@@ -114,15 +114,21 @@ function AdminCustomers() {
                     {new Date(customer.lastOrderAt).toLocaleDateString("en-GB")}
                   </td>
                   <td className="p-3 text-right">
-                    <Button
-                      variant="steel"
-                      size="sm"
-                      onClick={() =>
-                        setOpenPhone(openPhone === customer.phone ? null : customer.phone)
-                      }
-                    >
-                      {openPhone === customer.phone ? "Hide orders" : "View orders"}
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="steel"
+                        size="sm"
+                        onClick={() =>
+                          setOpenPhone(openPhone === customer.phone ? null : customer.phone)
+                        }
+                      >
+                        {openPhone === customer.phone ? "Hide orders" : "View orders"}
+                      </Button>
+                      <CustomerDeleteButton 
+                        customer={customer} 
+                        canManage={canManage} 
+                      />
+                    </div>
                   </td>
                 </tr>
                 {openPhone === customer.phone ? (
@@ -141,6 +147,43 @@ function AdminCustomers() {
         </table>
       </div>
     </section>
+  );
+}
+
+function CustomerDeleteButton({ 
+  customer, 
+  canManage 
+}: { 
+  customer: any; 
+  canManage: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const deleteCustomer = useServerFn(await import("@/lib/customers.functions").then(m => m.softDeleteCustomer));
+  
+  const mutation = useMutation({
+    mutationFn: deleteCustomer,
+    onSuccess: () => {
+      toast.success("Customer moved to Recycle Bin");
+      queryClient.invalidateQueries({ queryKey: ["admin-customers"] });
+    },
+    onError: (err: any) => toast.error(err.message || "Could not delete customer"),
+  });
+
+  if (!canManage) return null;
+
+  return (
+    <Button
+      variant="destructive"
+      size="sm"
+      disabled={mutation.isPending}
+      onClick={() => {
+        const reason = window.prompt("Reason for deletion (optional):", "");
+        if (reason === null) return;
+        mutation.mutate({ data: { id: customer.id, reason } as any });
+      }}
+    >
+      Delete
+    </Button>
   );
 }
 
