@@ -39,11 +39,11 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
     sku: value.sku || "PREVIEW-SKU",
     slug: value.slug || "preview-slug",
     category: value.category,
-    description: value.description,
-    details: value.details,
+    description: value.description || null,
+    details: value.details || null,
     price: Number(value.price) || 0,
     offerPrice: value.offerPrice ? Number(value.offerPrice) : null,
-    imageUrl: value.imageUrl,
+    image: value.imageUrl || null,
     gallery: [
       value.imageUrl,
       ...value.images
@@ -61,23 +61,18 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
     bestDeal: value.isBestDeal,
     featured: value.isFeatured,
     newArrival: value.isNewArrival,
-    badgeEnabled: value.badgeEnabled,
-    badgeText: value.badgeText,
-    isActive: isPreviewActive,
-    has360View: value.has360View,
+    badgeText: value.badgeText || null,
+    // Note: StorefrontProduct doesn't have badgeEnabled, but uses badgeText presence
     colors: (colorsQuery.data?.rows ?? []).map((c: any) => ({
       id: c.id,
       name: c.name,
       swatch: c.swatch,
       priceDelta: Number(c.price_delta),
       image: c.image_url,
-      isActive: c.is_active,
     })),
-    product360Images: (images360Query.data?.rows ?? []).map((img: any) => ({
-      id: img.id,
-      imageUrl: img.image_url,
-      displayOrder: img.display_order,
-    })),
+    has360View: value.has360View,
+    product360Images: (images360Query.data?.rows ?? []).map((img: any) => img.image_url),
+    sortOrder: null,
   };
 
   return (
@@ -128,7 +123,7 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
                  "size-2 rounded-full animate-pulse",
                  isPreviewActive ? "bg-green-500" : "bg-primary"
                )} />
-               <span className="text-[10px] font-black uppercase tracking-tighter">
+               <span className="text-[10px] font-black uppercase tracking-tighter text-foreground">
                  {isPreviewActive ? "Live Preview" : "Draft Preview"}
                </span>
             </div>
