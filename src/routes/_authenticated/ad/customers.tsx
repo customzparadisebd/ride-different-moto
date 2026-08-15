@@ -7,15 +7,16 @@
 // Security: Derived server-side from orders the signed-in account
 //          is already permitted to read.
 // ============================================================
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/admin/orders/StatusBadge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { listCustomers } from "@/lib/admin-data.functions";
+import { listAdminCustomers, softDeleteCustomer } from "@/lib/customers.functions";
 import { formatBDT } from "@/lib/format";
 import { listOrders, getMyAccess } from "@/lib/orders.functions";
 import { deliveryZoneLabel } from "@/lib/orders.shared";
@@ -27,7 +28,7 @@ export const Route = createFileRoute("/_authenticated/ad/customers")({
 });
 
 function AdminCustomers() {
-  const fetchCustomers = useServerFn(listCustomers);
+  const fetchCustomers = useServerFn(listAdminCustomers);
   const access = useServerFn(getMyAccess);
   const [search, setSearch] = useState("");
   const [openPhone, setOpenPhone] = useState<string | null>(null);
@@ -41,13 +42,13 @@ function AdminCustomers() {
     placeholderData: (previous) => previous,
   });
 
-  const customers = query.data?.customers ?? [];
+  const customers = query.data?.rows ?? [];
 
   return (
     <section className="mx-auto max-w-6xl">
       <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Customers</h1>
       <p className="text-xs text-muted-foreground">
-        {query.data?.totalCustomers ?? 0} customer(s) · grouped by mobile number
+        {query.data?.total ?? 0} customer(s) · grouped by mobile number
       </p>
 
       <Input
@@ -105,24 +106,30 @@ function AdminCustomers() {
                     </span>
                   </td>
                   <td className="p-3 text-muted-foreground">
-                    {customer.city} · {deliveryZoneLabel(customer.zone)}
+                    {customer.district || "—"} · {customer.area || "—"}
                   </td>
-                  <td className="p-3 text-right font-semibold">{customer.orders}</td>
-                  <td className="p-3 text-right text-muted-foreground">{customer.cancelled}</td>
-                  <td className="p-3 text-right font-semibold">{formatBDT(customer.spent)}</td>
+                  <td className="p-3 text-right font-semibold">{customer.total_orders || 0}</td>
+                  <td className="p-3 text-right text-muted-foreground">—</td>
+                  <td className="p-3 text-right font-semibold">{formatBDT(Number(customer.lifetime_value || 0))}</td>
                   <td className="p-3 whitespace-nowrap text-muted-foreground">
-                    {new Date(customer.lastOrderAt).toLocaleDateString("en-GB")}
+                    {new Date(customer.updated_at).toLocaleDateString("en-GB")}
                   </td>
                   <td className="p-3 text-right">
-                    <Button
-                      variant="steel"
-                      size="sm"
-                      onClick={() =>
-                        setOpenPhone(openPhone === customer.phone ? null : customer.phone)
-                      }
-                    >
-                      {openPhone === customer.phone ? "Hide orders" : "View orders"}
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="steel"
+                        size="sm"
+                        onClick={() =>
+                          setOpenPhone(openPhone === customer.phone ? null : customer.phone)
+                        }
+                      >
+                        {openPhone === customer.phone ? "Hide orders" : "View orders"}
+                      </Button>
+                      <CustomerDeleteButton 
+                        customer={customer} 
+                        canManage={canManage} 
+                      />
+                    </div>
                   </td>
                 </tr>
                 {openPhone === customer.phone ? (
@@ -141,6 +148,43 @@ function AdminCustomers() {
         </table>
       </div>
     </section>
+  );
+}
+
+function CustomerDeleteButton({ 
+  customer, 
+  canManage 
+}: { 
+  customer: any; 
+  canManage: boolean;
+}) {
+  const queryClient = useQueryClient();
+  const deleteCustomerFn = useServerFn(softDeleteCustomer);
+  
+  const mutation = useMutation({
+    mutationFn: deleteCustomerFn,
+    onSuccess: () => {
+      toast.success("Customer moved to Recycle Bin");
+      queryClient.invalidateQueries({ queryKey: ["admin-customers"] });
+    },
+    onError: (err: any) => toast.error(err.message || "Could not delete customer"),
+  });
+
+  if (!canManage) return null;
+
+  return (
+    <Button
+      variant="destructive"
+      size="sm"
+      disabled={mutation.isPending}
+      onClick={() => {
+        const reason = window.prompt("Reason for deletion (optional):", "");
+        if (reason === null) return;
+        mutation.mutate({ data: { id: customer.id, reason } as any });
+      }}
+    >
+      Delete
+    </Button>
   );
 }
 
