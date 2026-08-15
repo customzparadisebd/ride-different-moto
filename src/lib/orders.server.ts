@@ -121,22 +121,6 @@ export async function createOrder(
        });
        throw new Error(`DUPLICATE INVOICE DETECTED. Please refresh and try again.`);
     }
-    // Unique violation on the submit key = a racing duplicate; return the winner.
-    if (inserted.error.code === "23505") {
-      const winner = await supabaseAdmin
-        .from("orders")
-        .select("id, invoice_no, total")
-        .eq("idempotency_key", input.idempotencyKey)
-        .single();
-      if (winner.data) {
-        return {
-          orderId: winner.data.id,
-          invoiceNo: winner.data.invoice_no,
-          total: Number(winner.data.total),
-          duplicate: true,
-        };
-      }
-    }
     throw new Error("Could not save the order. Please try again.");
   }
 
