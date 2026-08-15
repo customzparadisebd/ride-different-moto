@@ -59,8 +59,14 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
   };
 
   const handleSubmit = async () => {
-    if (validationErrors.length > 0) return toast.error("Please fix validation errors first.");
-    if (previewImages.length === 0) return toast.error("Paste some image URLs first.");
+    if (validationErrors.length > 0) {
+      toast.error("Please fix validation errors first.");
+      return;
+    }
+    if (previewImages.length === 0) {
+      toast.error("Paste some image URLs first.");
+      return;
+    }
     
     await onSave(previewImages.map(imageUrl => ({ imageUrl })));
     setUrls("");
