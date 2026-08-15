@@ -86,15 +86,24 @@ function AuthPage() {
   // Handle polling for approval
   useEffect(() => {
     if (!approvalRequestId || approvalStatus !== "pending") return;
+    let notificationShown = false;
 
     const interval = setInterval(async () => {
       try {
         const result = await getLoginApprovalStatus({ data: approvalRequestId });
         if (result.status !== "pending") {
           setApprovalStatus(result.status);
-          if (result.status === "approved") {
+          if (result.status === "approved" && !notificationShown) {
+            notificationShown = true;
+            toast.success("Login Approved!", {
+              description: "Your session has been approved by an administrator. Redirecting to the dashboard...",
+              duration: 5000,
+            });
             clearInterval(interval);
-            void navigate({ to: "/ad", replace: true });
+            // Small delay to allow the user to read the success message
+            setTimeout(() => {
+              void navigate({ to: "/ad", replace: true });
+            }, 1500);
           }
         }
       } catch (err) {
