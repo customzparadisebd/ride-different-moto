@@ -9,8 +9,14 @@ const testSupabase = createClient(
 
 describe('Invoice Concurrency Uniqueness', () => {
   it('should generate unique invoice serials under parallel load', async () => {
-    // Execute 10 calls to the database function simultaneously
-    const tasks = Array.from({ length: 10 }).map(() => 
+    // Load counts from environment variables with safe defaults
+    const concurrency = parseInt(process.env['TEST_INVOICE_CONCURRENCY'] || '10');
+    const totalOrders = parseInt(process.env['TEST_INVOICE_TOTAL'] || concurrency.toString());
+    
+    console.log(`Running concurrency test: ${concurrency} parallel tasks for ${totalOrders} total invoices`);
+
+    // Execute calls to the database function
+    const tasks = Array.from({ length: totalOrders }).map(() => 
       testSupabase.rpc('generate_next_invoice_no', { is_test: true })
     );
     
