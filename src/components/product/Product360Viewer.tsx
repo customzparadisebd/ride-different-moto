@@ -38,11 +38,13 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
     
     const loadPriority = async () => {
       const priorityPromises = Array.from(priorityIndices).map(idx => {
+        const src = images[idx];
+        if (!src) return Promise.resolve();
         return new Promise((resolve) => {
           const img = new Image();
           img.onload = resolve;
           img.onerror = resolve;
-          img.src = images[idx];
+          img.src = src;
         });
       });
       await Promise.all(priorityPromises);
