@@ -29,13 +29,15 @@ export const getDiagnosticsContext = createServerFn({ method: "POST" })
       // Log bot/abuse attempt
       await supabaseAdmin.from("security_events").insert({
         event_type: "api_throttle",
-        actor_id: actor.userId,
+        actor_email: actor.email,
         ip_address: meta.ip,
+        route: "/ad/diagnostics",
         metadata: {
           action: AUDIT_ACTIONS.envDiagnosticsViewed,
           threshold: 10,
           period: "1h",
-        },
+          actor_id: actor.userId,
+        } as any,
       });
       throw new Error("Rate limit exceeded. Please try again later.");
     }
