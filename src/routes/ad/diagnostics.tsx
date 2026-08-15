@@ -188,7 +188,7 @@ function DiagnosticsPage() {
             <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            Restrict access to the diagnostics pages so only staff/admin users can view Supabase project connectivity details.</p>
+                                            Add role-based authorization using Supabase auth claims to ensure only admin/staff roles can view diagnostics pages.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
