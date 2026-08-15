@@ -120,6 +120,7 @@ function AdminOrderDetail() {
             <Clock className="size-4" />
           </div>
         )}
+        {order.is_pinned && <div className="rounded-full bg-primary/20 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary ring-1 ring-primary/40">Pinned</div>}
         <StatusBadge value={order.status} />
         <StatusBadge value={order.payment_status} />
         <StatusBadge value={order.courier_status} />
