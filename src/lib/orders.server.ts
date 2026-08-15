@@ -38,6 +38,32 @@ export async function createOrder(
 ): Promise<CreatedOrder> {
   const input = checkoutInput.parse(raw);
 
+  // STOCK VALIDATION
+  const productIds = input.items
+    .map((item) => item.productId)
+    .filter((id): id is string => Boolean(id));
+  if (productIds.length > 0) {
+    const products = await supabaseAdmin
+      .from("products")
+      .select("id, name, stock_qty, out_of_stock_toggle")
+      .in("id", productIds);
+
+    if (products.data) {
+      for (const item of input.items) {
+        const product = products.data.find((p) => p.id === item.productId);
+        if (!product) continue;
+        if (product.out_of_stock_toggle) {
+          throw new Error(`Product "${product.name}" is currently unavailable.`);
+        }
+        if (product.stock_qty < item.quantity) {
+          throw new Error(
+            `Insufficient stock for "${product.name}". Only ${product.stock_qty} available.`,
+          );
+        }
+      }
+    }
+  }
+
   // Duplicate protection: the same submit key never creates a second order.
   const existing = await supabaseAdmin
     .from("orders")
