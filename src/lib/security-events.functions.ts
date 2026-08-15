@@ -77,7 +77,7 @@ export const getSecurityStats = createServerFn({ method: "POST" })
     const stats = {
       authFailures: loginAttemptsData.filter(a => !a.success).length,
       rateLimits: eventsData.filter(e => e.event_type === "rate_limit").length,
-      suspiciousIPs: new Set(eventsData.map(e => e.ip_address).filter(Boolean)).size,
+      suspiciousIPs: new Set(eventsData.map(e => e.ip_address).filter((ip): ip is string => !!ip)).size,
       totalEvents: eventsData.length,
       timeline: [] as { time: string; count: number }[]
     };
@@ -120,7 +120,7 @@ export const getSuspiciousIPs = createServerFn({ method: "POST" })
     const eventsData = events ?? [];
     const counts: Record<string, { ip: string, failures: number, limits: number }> = {};
     eventsData.forEach(e => {
-        if (!e.ip_address) return;
+        if (!e.ip_address || !e.event_type) return;
         if (!counts[e.ip_address]) counts[e.ip_address] = { ip: e.ip_address, failures: 0, limits: 0 };
         if (e.event_type === 'login_throttle') counts[e.ip_address].failures++;
         if (e.event_type === 'rate_limit') counts[e.ip_address].limits++;
