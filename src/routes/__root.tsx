@@ -253,18 +253,18 @@ function RootComponent() {
       <ThemeProvider>
         <LanguageProvider>
           <CartProvider>
-          <div className="flex min-h-svh flex-col overflow-x-hidden">
-            {isPrivateArea ? null : <Header />}
-            <main className={`flex-1 ${isPrivateArea ? '' : 'pt-14 sm:pt-16'}`}>
-              <Outlet />
-            </main>
-            {isPrivateArea ? null : <Footer />}
-          </div>
-          {isPrivateArea ? null : <FloatingWhatsApp />}
-          <NetworkBanner />
-          <Toaster position="top-center" richColors />
-          <SmoothCursor />
-          <ScrollRestoration />
+            <div className="flex min-h-svh flex-col overflow-x-hidden">
+              {isPrivateArea ? null : <Header />}
+              <main className={`flex-1 ${isPrivateArea ? '' : 'pt-14 sm:pt-16'}`}>
+                <Outlet />
+              </main>
+              {isPrivateArea ? null : <Footer />}
+            </div>
+            {isPrivateArea ? null : <FloatingWhatsApp />}
+            <NetworkBanner />
+            <Toaster position="top-center" richColors />
+            <SmoothCursor />
+            <ScrollRestoration />
           </CartProvider>
         </LanguageProvider>
       </ThemeProvider>

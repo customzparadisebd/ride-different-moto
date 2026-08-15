@@ -25,6 +25,7 @@ export default defineConfig({
               if (id.includes('@tanstack')) return 'vendor-tanstack';
               return 'vendor';
             }
+            return undefined;
           }
         },
       },
