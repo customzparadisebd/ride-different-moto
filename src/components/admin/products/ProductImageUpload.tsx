@@ -50,19 +50,15 @@ export function ProductImageUpload({
     setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "processing", progress: 10 } : u));
 
     try {
-      // 1. Client-side processing (Optimization)
       await createImageBitmap(file);
       setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, progress: 30 } : u));
 
-      // 2. Upload to Supabase Storage
       const fileExt = "webp"; 
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
       const filePath = `products/${fileName}`;
 
       setUploads(prev => prev.map(u => u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u));
 
-      // Standard Supabase JS client doesn't support progress events in the version used
-      // So we use a basic upload call
       const { error: uploadError } = await supabase.storage
         .from("products")
         .upload(filePath, file);
@@ -109,15 +105,16 @@ export function ProductImageUpload({
 
       try {
         const url = await processAndUpload(upload.id, upload.file);
-        completedUrls.push(url);
+        if (url) completedUrls.push(url);
       } catch (err) {
-        // Error already updated in state
+        // Handled in state
       }
     }
 
     if (completedUrls.length > 0) {
       const nextImages = multiple ? [...images, ...completedUrls] : [completedUrls[0]];
-      onChange(multiple ? nextImages : (nextImages[0] || ""));
+      const finalValue = multiple ? nextImages : (nextImages[0] || "");
+      onChange(finalValue as string | string[]);
       
       setTimeout(() => {
         setUploads(prev => prev.filter(u => u.status !== "completed"));
@@ -128,12 +125,15 @@ export function ProductImageUpload({
   const retryUpload = async (upload: UploadStatus) => {
     try {
       const url = await processAndUpload(upload.id, upload.file);
-      const nextImages = multiple ? [...images, url] : [url];
-      onChange(multiple ? nextImages : (nextImages[0] || ""));
-      
-      setTimeout(() => {
-        setUploads(prev => prev.filter(u => u.status !== "completed"));
-      }, 3000);
+      if (url) {
+        const nextImages = multiple ? [...images, url] : [url];
+        const finalValue = multiple ? nextImages : (nextImages[0] || "");
+        onChange(finalValue as string | string[]);
+        
+        setTimeout(() => {
+          setUploads(prev => prev.filter(u => u.status !== "completed"));
+        }, 3000);
+      }
     } catch (err) {
       // Handled
     }
@@ -142,17 +142,21 @@ export function ProductImageUpload({
   const removeImage = (index: number) => {
     const next = [...images];
     next.splice(index, 1);
-    onChange(multiple ? next : (next[0] || ""));
+    const finalValue = multiple ? next : (next[0] || "");
+    onChange(finalValue as string | string[]);
   };
 
   const handleSort = () => {
     if (dragItem.current === null || dragOverItem.current === null) return;
     const next = [...images];
-    const draggedItemContent = next.splice(dragItem.current, 1)[0];
-    next.splice(dragOverItem.current, 0, draggedItemContent);
-    dragItem.current = null;
-    dragOverItem.current = null;
-    onChange(next);
+    const item = next[dragItem.current];
+    if (item) {
+      const draggedItemContent = next.splice(dragItem.current, 1)[0]!;
+      next.splice(dragOverItem.current, 0, draggedItemContent);
+      dragItem.current = null;
+      dragOverItem.current = null;
+      onChange(next);
+    }
   };
 
   return (
