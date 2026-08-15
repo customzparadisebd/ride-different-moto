@@ -77,6 +77,7 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
   "content.manage": "Manage website content",
   "zones.manage": "Manage delivery zones",
   "reviews.manage": "Manage customer reviews",
+  "login_approvals.manage": "Manage login approvals",
 };
 
 /** Permissions only a Super Admin may ever hold. Never grantable to Staff. */
