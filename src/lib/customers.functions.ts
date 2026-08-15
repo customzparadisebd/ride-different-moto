@@ -24,7 +24,24 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
 
     if (data.search) {
       const term = `%${data.search}%`;
-      query = query.or(`name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term}`);
+      query = query.or(`name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term},district.ilike.${term},area.ilike.${term}`);
+    }
+
+    if (data.status === "fraud") {
+      // Assuming a customer is considered 'fraud' if they have a fraud mark
+      // We can use a subquery or join if needed, but for now let's assume 
+      // there's a way to identify them. If we have customer_fraud_marks table, 
+      // we might need to filter based on that.
+      // Let's check if there's a 'is_fraud' column or similar.
+      // If not, we'll need to join or filter by phone in customer_fraud_marks.
+      const { data: fraudPhones } = await context.supabase.from("customer_fraud_marks").select("phone");
+      if (fraudPhones && fraudPhones.length > 0) {
+        query = query.in("phone", fraudPhones.map(f => f.phone));
+      } else if (data.status === "fraud") {
+        return { rows: [], total: 0, page: data.page, pageSize: data.pageSize };
+      }
+    } else if (data.status === "active") {
+      query = query.gt("total_orders", 0);
     }
 
     const from = (data.page - 1) * data.pageSize;
