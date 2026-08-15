@@ -127,8 +127,30 @@ function DiagnosticsPage() {
         <CardContent className="space-y-4">
           <div className="rounded-lg bg-muted p-4 font-mono text-xs">
             <p className="font-bold text-primary mb-2">// Detection logic from src/lib/env.ts</p>
-            <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''</p>
-            <p>Ensure all sensitive values are fully redacted in diagnostics responses, even when debug mode is enabled, and add tests to prevent regressions.</p>
+            <p>'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                        
+                                            
+                                            In the Admin Panel header, I can see a “STAGING” badge next to the admin profile.
+
+Please audit the project and explain exactly why this badge is being displayed.
+
+Determine whether the current application/environment is actually running in a staging environment or whether this is only a UI label.
+
+Do NOT change or remove anything yet.
+
+First report:
+
+What triggers the “STAGING” badge.
+
+Which environment variable, configuration, route, or code is responsible for it.
+
+Whether the current Admin Panel is connected to the production or staging Supabase/project.
+
+Whether removing the badge would only change the UI or would affect the actual environment.
+
+Whether the current setup is safe for production use.
+
+Do not make any changes until the audit is complete.</p>
             <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
             <p className="ml-4 text-emerald-500">return "production";</p>
             <p>{"}"} else {"{"}</p>
