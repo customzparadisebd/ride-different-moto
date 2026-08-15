@@ -57,6 +57,7 @@ export const Route = createFileRoute("/_authenticated/ad/")({
  */
 function AdminDashboard() {
   const fetchMetrics = useServerFn(getDashboardMetrics);
+  const { data: admin } = useQuery({ queryKey: ["admin-context"], enabled: false });
   const [showSteadfastInfo, setShowSteadfastInfo] = useState(false);
   const query = useQuery({ 
     queryKey: ["admin-dashboard"], 
@@ -120,8 +121,12 @@ function AdminDashboard() {
           gradient="bg-linear-to-br from-sky-50 to-white dark:from-sky-950/20 dark:to-background"
         />
         <div 
-          onClick={() => setShowSteadfastInfo(true)} 
-          className="cursor-pointer group"
+          onClick={() => {
+            if (admin?.isSuperAdmin || admin?.primaryRole === "admin") {
+              setShowSteadfastInfo(true);
+            }
+          }} 
+          className={admin?.isSuperAdmin || admin?.primaryRole === "admin" ? "cursor-pointer group" : "cursor-default group"}
         >
           <StatCard 
             title="STEADFAST SUCCESS" 
