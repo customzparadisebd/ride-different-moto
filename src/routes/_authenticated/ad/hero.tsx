@@ -166,11 +166,22 @@ function AdminHeroSlides() {
             Manage the banners displayed on the homepage. Recommended aspect ratio: 21:9 (Desktop).
           </p>
         </div>
-        {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2">
-            <Plus className="h-4 w-4" /> Add Slide
+        <div className="flex gap-2">
+          <Button
+            onClick={() => restoreMutation.mutate()}
+            variant="outline"
+            size="sm"
+            disabled={restoreMutation.isPending}
+          >
+            {restoreMutation.isPending ? "Restoring..." : "Restore Old Slides"}
           </Button>
-        )}
+          {!isAdding && (
+            <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2">
+              <Plus className="h-4 w-4" /> Add Slide
+            </Button>
+          )}
+        </div>
+
       </div>
 
       {isAdding && (
