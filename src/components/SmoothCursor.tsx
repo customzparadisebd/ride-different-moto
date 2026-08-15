@@ -28,15 +28,7 @@ export function SmoothCursor() {
   useEffect(() => {
     setMounted(true);
     
-    // Check if device supports pointer (mouse/stylus/trackpad)
-    // We only show the effect if there's a pointer device or movement
-    const handlePointerMove = (e: PointerEvent) => {
-      // Update target coordinates
-      mouseRef.set({ x: e.clientX, y: e.clientY });
-    };
-
-    // We use a setter to avoid direct mutation in the closure if preferred, 
-    // but ref mutation is fine for high-frequency events.
+    // Track pointer/mouse movement
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };

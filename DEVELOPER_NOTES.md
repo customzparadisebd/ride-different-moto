@@ -15,7 +15,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] Hardened Security Headers (CSP, HSTS, XSS Protection).
 - [x] Created Admin Security Events page for monitoring throttling activity.
 - [x] Hardened backend authorization logic and database grants based on security scan (Aug 2026).
-
+- [x] **Smooth Custom Cursor:** Implemented a minimal Cyan Blue (#06B6D4) following ring with smooth interpolation site-wide and in Admin panel (Aug 15, 2026).
 
 ## Documentation Strategy
 - Use JSDoc for complex server functions and components.
