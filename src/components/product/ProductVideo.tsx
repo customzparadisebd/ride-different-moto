@@ -29,8 +29,10 @@ export function ProductVideo({ platform, url, productName }: ProductVideoProps) 
 
   return (
     <div className="mt-8">
-      <div 
-        className="group relative cursor-pointer overflow-hidden rounded-2xl border border-border bg-card transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5"
+      <button
+        type="button"
+        aria-label={`Watch product video for ${productName}`}
+        className="group relative block w-full cursor-pointer overflow-hidden rounded-2xl border border-border bg-card text-left transition-all hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
         onClick={() => setIsOpen(true)}
       >
         <div className="flex items-center gap-6 p-6">
@@ -57,7 +59,7 @@ export function ProductVideo({ platform, url, productName }: ProductVideoProps) 
 
         {/* Glossy overlay effect */}
         <div className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-      </div>
+      </button>
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="max-w-5xl overflow-hidden p-0 bg-black border-none shadow-2xl">
@@ -65,9 +67,11 @@ export function ProductVideo({ platform, url, productName }: ProductVideoProps) 
             <DialogTitle>Product Video: {productName}</DialogTitle>
           </VisuallyHidden>
           
-          <button 
+          <button
+            type="button"
+            aria-label="Close video"
             onClick={() => setIsOpen(false)}
-            className="absolute right-4 top-4 z-50 rounded-full bg-black/60 p-2 text-white/70 hover:bg-black hover:text-white transition-all shadow-lg backdrop-blur-sm"
+            className="absolute right-4 top-4 z-50 rounded-full bg-black/60 p-2 text-white/70 hover:bg-black hover:text-white transition-all shadow-lg backdrop-blur-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <X className="size-6" />
           </button>
