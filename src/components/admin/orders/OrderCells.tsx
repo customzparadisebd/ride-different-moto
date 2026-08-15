@@ -121,7 +121,7 @@ export function InvoiceCell({
         >
           {order.invoice_no}
         </Link>
-        {order.is_pinned ? <Pin className="size-3 shrink-0 text-primary" /> : null}
+        
       </div>
       <div className="flex flex-wrap items-center gap-1">
         <span
