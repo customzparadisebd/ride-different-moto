@@ -109,6 +109,7 @@ export function toProductInput(value: ProductFormValue): ProductInput {
     videoEnabled: value.videoEnabled,
     videoPlatform: value.videoPlatform as any,
     videoUrl: value.videoUrl.trim(),
+    outOfStockToggle: value.outOfStockToggle,
   };
 }
 
