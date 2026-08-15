@@ -81,6 +81,12 @@ const ADMINISTRATION: NavItem[] = [
     icon: ShieldCheck, 
     permission: PERMISSIONS.securityManage 
   },
+  { 
+    to: "/ad/security-dashboard", 
+    label: "Security Stats", 
+    icon: Activity, 
+    permission: PERMISSIONS.securityManage 
+  },
 ];
 
 
