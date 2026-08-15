@@ -73,6 +73,8 @@ export function OrderFilterBar({
   value,
   onChange,
   onReset,
+  onTabChange,
+  activeTab,
   isLoading,
   staff = [],
   couriers = [],
@@ -80,6 +82,8 @@ export function OrderFilterBar({
   value: OrderFilters;
   onChange: (next: OrderFilters) => void;
   onReset: () => void;
+  onTabChange?: (tab: any) => void;
+  activeTab?: string;
   isLoading?: boolean;
   staff?: { id: string; label: string }[];
   couriers?: string[];
@@ -88,53 +92,99 @@ export function OrderFilterBar({
   const set = (field: keyof OrderFilters) => (next: string) =>
     onChange({ ...value, [field]: next });
 
+  const QUICK_FILTERS = [
+    { value: "today", label: "Today" },
+    { value: "yesterday", label: "Yesterday" },
+    { value: "last_7_days", label: "Last 7 Days" },
+    { value: "this_month", label: "This Month" },
+    { value: "today_shift", label: "Today 8AM - 8PM" },
+  ];
+
+
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-card p-2 shadow-sm">
-      {/* SEARCH AREA */}
-      <div className="relative flex-1 min-w-[240px]">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={value.search}
-          onChange={(e) => set("search")(e.target.value)}
-          placeholder="Ex: name, number, invoice"
-          className="h-9 pl-9 text-sm"
-          aria-label="Search orders"
-        />
-      </div>
-
-      <div className="flex items-center gap-2">
-        <Select
-          value={value.sortDir}
-          onChange={set("sortDir")}
-          placeholder="Sort"
-          allowEmpty={false}
-          className="h-9 w-[120px]"
-        >
-          <option value="desc">Latest first</option>
-          <option value="asc">Oldest first</option>
-        </Select>
-
+    <div className="mt-3 flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
+      {/* QUICK FILTERS */}
+      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+          Quick Filters:
+        </span>
+        {QUICK_FILTERS.map((q) => (
+          <Button
+            key={q.value}
+            variant={activeTab === q.value ? "red" : "steel"}
+            size="sm"
+            className="h-7 px-2.5 text-[10px] font-bold uppercase"
+            onClick={() => onTabChange?.(q.value)}
+          >
+            {q.label}
+          </Button>
+        ))}
         <Button
-          type="button"
-          variant="secondary"
+          variant="steel"
           size="sm"
-          className="h-9 border border-border"
-          onClick={() => setOpen((current) => !current)}
+          className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
+          onClick={onReset}
         >
-          <SlidersHorizontal className="mr-2 size-3.5" />
-          Filter Orders
+          Clear All
         </Button>
       </div>
+
+      <div className="flex flex-wrap items-center gap-2">
+        {/* SEARCH AREA */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={value.search}
+            onChange={(e) => set("search")(e.target.value)}
+            placeholder="Ex: name, number, invoice"
+            className="h-9 pl-9 text-sm"
+            aria-label="Search orders"
+          />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select
+            value={value.sortDir}
+            onChange={set("sortDir")}
+            placeholder="Sort"
+            allowEmpty={false}
+            className="h-9 w-[120px]"
+          >
+            <option value="desc">Latest first</option>
+            <option value="asc">Oldest first</option>
+          </Select>
+
+          <Button
+            type="button"
+            variant={open ? "red" : "secondary"}
+            size="sm"
+            className="h-9 border border-border"
+            onClick={() => setOpen((current) => !current)}
+          >
+            <SlidersHorizontal className="mr-2 size-3.5" />
+            {open ? "Hide Advanced" : "Advanced Filters"}
+          </Button>
+        </div>
+      </div>
+
 
       {/* ADVANCED FILTERS */}
       {open ? (
         <div className="mt-3 grid gap-3 border-t border-border pt-3 sm:grid-cols-2 lg:grid-cols-4">
-          <Field label="Order ID / Invoice">
+          <Field label="Invoice No">
             <Input
               value={value.invoiceNo}
               onChange={(e) => set("invoiceNo")(e.target.value)}
-              placeholder="CZP-2601-0001"
-              className="h-11"
+              placeholder="Ex: CZP-2601-0001"
+              className="h-9"
+            />
+          </Field>
+          <Field label="Order ID">
+            <Input
+              value={value.orderId}
+              onChange={(e) => set("orderId")(e.target.value)}
+              placeholder="UUID"
+              className="h-9"
             />
           </Field>
           <Field label="Customer name">
