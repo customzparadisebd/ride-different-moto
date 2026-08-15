@@ -817,6 +817,46 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
       newValue: Object.keys(patch).length ? patch : { note: data.note ?? null },
     });
 
+    // RULE 2: Deduct stock ONLY when order becomes COMPLETED.
+    if (data.status === "completed") {
+      const { deductInventoryForOrder } = await import("./inventory.server");
+      await deductInventoryForOrder(data.orderId, context.userId, actor.email ?? "admin");
+    }
+
+    return { ok: true };
+  });
+
+/**
+ * Endpoint to record a product return or damage.
+ */
+export const recordReturnOrDamage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: { 
+    orderId: string; 
+    productId: string; 
+    quantity: number; 
+    type: "return" | "damage"; 
+    reason: string; 
+  }) => input)
+  .handler(async ({ data, context }) => {
+    const { processReturnOrDamage } = await import("./inventory.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    await processReturnOrDamage({
+      ...data,
+      actorId: context.userId,
+      actorLabel: actor.email ?? "admin",
+    });
+
+    await auditFromActor(actor, {
+      action: data.type === "return" ? AUDIT_ACTIONS.orderReturned : AUDIT_ACTIONS.orderDamaged,
+      targetType: "order",
+      targetId: data.orderId,
+      newValue: { productId: data.productId, quantity: data.quantity, type: data.type, reason: data.reason },
+    });
+
     return { ok: true };
   });
 
