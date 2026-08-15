@@ -405,7 +405,7 @@ function Field({
   className?: string;
   required?: boolean;
   optional?: boolean;
-  error?: string | null;
+  error?: string | null | undefined;
   example?: string;
   guideline?: string;
 }) {
