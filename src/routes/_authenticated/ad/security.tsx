@@ -155,10 +155,11 @@ function SecurityPage() {
       {/* ---- Super Admin only: documented access instructions ---- */}
       {access.isSuperAdmin && accessInfo.data ? (
         <section className="rounded-lg border border-primary/40 bg-card p-4">
-          <h2 className="font-display text-lg font-bold uppercase tracking-wide">
+          <h2 className="font-display text-lg font-bold uppercase tracking-wide flex items-center gap-2">
+            <Shield className="h-5 w-5 text-primary" />
             Admin access information
           </h2>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground border-l-2 border-primary/50 pl-2 py-0.5">
             Visible to Super Admin only. Never share or publish this section.
           </p>
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
@@ -303,25 +304,37 @@ function SecurityPage() {
               size="sm"
               className="mt-2"
               disabled={busy}
-              onClick={() => void newCodes()}
+              onClick={() => {
+                if (window.confirm("This will invalidate all previous recovery codes. Are you sure?")) {
+                  void newCodes();
+                }
+              }}
             >
-              Generate new recovery codes
+              Regenerate all recovery codes
             </Button>
           </div>
         ) : null}
 
         {codes ? (
-          <div className="mt-4 rounded-md border border-primary/50 bg-secondary p-3">
-            <p className="text-sm font-semibold">
-              Save these recovery codes now — they are shown only once.
+          <div className="mt-6 rounded-lg border-2 border-primary/30 bg-primary/5 p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-center gap-2 mb-3">
+              <Shield className="h-5 w-5 text-primary" />
+              <p className="text-sm font-bold uppercase tracking-wider text-primary">
+                Save these recovery codes now
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground mb-4">
+              They are shown only once and will never be retrievable again. Store them in a secure offline vault.
             </p>
-            <div className="mt-2 grid grid-cols-2 gap-2 font-mono text-sm sm:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 font-mono text-sm sm:grid-cols-4">
               {codes.map((code) => (
-                <span key={code}>{code}</span>
+                <div key={code} className="bg-background border border-border px-3 py-1.5 rounded text-center font-bold tracking-widest shadow-sm">
+                  {code}
+                </div>
               ))}
             </div>
-            <Button variant="ghost" size="sm" className="mt-2" onClick={() => setCodes(null)}>
-              I have saved them
+            <Button variant="red" size="sm" className="mt-6 w-full uppercase font-bold tracking-widest" onClick={() => setCodes(null)}>
+              I have safely saved all codes
             </Button>
           </div>
         ) : null}
