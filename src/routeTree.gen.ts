@@ -30,6 +30,7 @@ import { Route as BikeModelsIndexRouteImport } from './routes/bike-models.index'
 import { Route as BikeModelsSlugRouteImport } from './routes/bike-models.$slug'
 import { Route as CzpOps9f2cIndexRouteImport } from './routes/czp-ops-9f2c.index'
 import { Route as CzpOps9f2cSplatRouteImport } from './routes/czp-ops-9f2c.$'
+import { Route as OrderConfirmedIdRouteImport } from './routes/order-confirmed.$id'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
 import { Route as AuthenticatedAdIndexRouteImport } from './routes/_authenticated/ad/index'
 import { Route as AuthenticatedAdAuditLogRouteImport } from './routes/_authenticated/ad/audit-log'
@@ -154,6 +155,11 @@ const CzpOps9f2cIndexRoute = CzpOps9f2cIndexRouteImport.update({
 const CzpOps9f2cSplatRoute = CzpOps9f2cSplatRouteImport.update({
   id: '/czp-ops-9f2c/$',
   path: '/czp-ops-9f2c/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrderConfirmedIdRoute = OrderConfirmedIdRouteImport.update({
+  id: '/order-confirmed/$id',
+  path: '/order-confirmed/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
@@ -288,6 +294,7 @@ export interface FileRoutesByFullPath {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
@@ -330,6 +337,7 @@ export interface FileRoutesByTo {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c': typeof CzpOps9f2cIndexRoute
@@ -375,6 +383,7 @@ export interface FileRoutesById {
   '/ad/reset-password': typeof AdResetPasswordRoute
   '/bike-models/$slug': typeof BikeModelsSlugRoute
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
+  '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
@@ -420,6 +429,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/order-confirmed/$id'
     | '/products/$slug'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
@@ -462,6 +472,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/order-confirmed/$id'
     | '/products/$slug'
     | '/bike-models'
     | '/czp-ops-9f2c'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/ad/reset-password'
     | '/bike-models/$slug'
     | '/czp-ops-9f2c/$'
+    | '/order-confirmed/$id'
     | '/products/$slug'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
@@ -550,6 +562,7 @@ export interface RootRouteChildren {
   AdResetPasswordRoute: typeof AdResetPasswordRoute
   BikeModelsSlugRoute: typeof BikeModelsSlugRoute
   CzpOps9f2cSplatRoute: typeof CzpOps9f2cSplatRoute
+  OrderConfirmedIdRoute: typeof OrderConfirmedIdRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
@@ -703,6 +716,13 @@ declare module '@tanstack/react-router' {
       path: '/czp-ops-9f2c/$'
       fullPath: '/czp-ops-9f2c/$'
       preLoaderRoute: typeof CzpOps9f2cSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/order-confirmed/$id': {
+      id: '/order-confirmed/$id'
+      path: '/order-confirmed/$id'
+      fullPath: '/order-confirmed/$id'
+      preLoaderRoute: typeof OrderConfirmedIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/$slug': {
@@ -932,6 +952,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdResetPasswordRoute: AdResetPasswordRoute,
   BikeModelsSlugRoute: BikeModelsSlugRoute,
   CzpOps9f2cSplatRoute: CzpOps9f2cSplatRoute,
+  OrderConfirmedIdRoute: OrderConfirmedIdRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
