@@ -28,7 +28,7 @@ import {
   getSuspiciousIPs,
   listSecurityEvents,
 } from "@/lib/security-events.functions";
-import { runInvoiceStressTest } from "@/lib/stress-test.functions";
+import { runInvoiceStressTest, runLoadTest } from "@/lib/stress-test.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 // BD Timezone is UTC+6
@@ -52,6 +52,8 @@ function SecurityDashboardPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [stressResult, setStressResult] = useState<any>(null);
   const [isStressing, setIsStressing] = useState(false);
+  const [loadResult, setLoadResult] = useState<any>(null);
+  const [isLoadTesting, setIsLoadTesting] = useState(false);
 
   const { data: stats, refetch: refetchStats } = useSuspenseQuery({
     queryKey: ["security-stats"],
@@ -83,6 +85,18 @@ function SecurityDashboardPage() {
       setStressResult({ success: false, errors: ["Request failed"] });
     } finally {
       setIsStressing(false);
+    }
+  };
+
+  const executeLoadTest = async () => {
+    setIsLoadTesting(true);
+    try {
+      const result = await runLoadTest();
+      setLoadResult(result);
+    } catch (err) {
+      setLoadResult({ success: false, errors: ["Load test failed"] });
+    } finally {
+      setIsLoadTesting(false);
     }
   };
 
@@ -430,6 +444,67 @@ function SecurityDashboardPage() {
                 Launches 10 parallel database requests to the atomic sequence generator to verify
                 row-level locking and uniqueness.
               </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Load Testing Card */}
+      <Card className="bg-black/40 border-white/5 border-l-4 border-l-blue-500">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
+              <Activity className="h-4 w-4 text-blue-500" />
+              Storefront Load Test
+            </CardTitle>
+            <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
+              Simulate peak traffic by triggering multiple parallel read requests
+            </CardDescription>
+          </div>
+          <button
+            onClick={executeLoadTest}
+            disabled={isLoadTesting}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-md text-[10px] font-black uppercase tracking-widest transition-all disabled:opacity-50 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]"
+          >
+            {isLoadTesting ? (
+              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Activity className="h-3.5 w-3.5" />
+            )}
+            {isLoadTesting ? "Testing..." : "Run Load Test"}
+          </button>
+        </CardHeader>
+        <CardContent>
+          {loadResult && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Requests
+                  </p>
+                  <p className="text-xl font-black text-white">{loadResult.requests}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Total Time
+                  </p>
+                  <p className="text-xl font-black text-white">{loadResult.durationMs}ms</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Avg/Req
+                  </p>
+                  <p className="text-xl font-black text-white">{Math.round(loadResult.avgRequestMs)}ms</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                    Status
+                  </p>
+                  <p className={`text-xl font-black ${loadResult.success ? "text-green-500" : "text-red-500"}`}>
+                    {loadResult.success ? "PASS" : "FAIL"}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </CardContent>
