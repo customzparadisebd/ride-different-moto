@@ -244,7 +244,7 @@ export function ProductForm({
         <Field
           label="Regular price (৳)"
           required
-          error={errors["price"]}
+          error={errors["price"] || undefined}
           example="Example: 1200"
         >
           <Input
