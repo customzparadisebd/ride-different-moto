@@ -148,7 +148,7 @@ function MfaPage() {
         {mode === "recovery"
           ? "Enter one of your saved recovery codes."
           : mode === "enrol"
-            ? "Your role requires an authenticator app. Scan the code, then enter the 6-digit code."
+            ? "Your account requires an authenticator app for security. Scan the code, then enter the 6-digit code."
             : "Enter the 6-digit code from your authenticator app."}
       </p>
 
