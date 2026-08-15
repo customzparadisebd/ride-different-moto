@@ -219,7 +219,8 @@ export const ORDER_TABS = [
   { value: "new", label: "New Order" },
   { value: "duplicate", label: "Duplicate Orders" },
   { value: "hold", label: "Hold" },
-  { value: "cancelled", "returned", label: "Cancelled" },
+  { value: "cancelled", label: "Cancelled" },
+  { value: "returned", label: "Returned" },
   { value: "same_phone", label: "Same Phone" },
 ] as const;
 
