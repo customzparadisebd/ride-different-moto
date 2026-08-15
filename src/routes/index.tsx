@@ -20,19 +20,25 @@ import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
 
-const title = "Customz Paradise BD — Ride Different. Be Different.";
+const title = "Customz Paradise BD — Premium Motorcycle Modification Parts in Bangladesh";
+const description = "Shop high-quality motorcycle modification parts, stickers, and accessories at Customz Paradise BD. Nationwide delivery across Bangladesh. Ride Different. Be Different.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title },
-      { name: "description", content: site.description },
+      { name: "description", content: description },
       { property: "og:title", content: title },
-      { property: "og:description", content: site.description },
+      { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: site.url },
+      { property: "og:image", content: `${site.url}/logo-main.png` },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: description },
+      { name: "twitter:image", content: `${site.url}/logo-main.png` },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: site.url }],
     scripts: [
       {
         type: "application/ld+json",
@@ -98,7 +104,7 @@ function Index() {
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — {t("section.home.h1")}
+        {site.name} — Premium Motorcycle Modification Parts & Stickers in Bangladesh
       </h1>
 
       <SectionBoundary label="hero">

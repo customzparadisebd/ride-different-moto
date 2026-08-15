@@ -2,6 +2,7 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 
 import { PolicyArticle } from "@/components/PolicyPage";
 import { getPolicy } from "@/data/catalog";
+import { site } from "@/data/site";
 
 const policy = getPolicy("returns");
 
@@ -13,9 +14,9 @@ export const Route = createFileRoute("/returns")({
       { property: "og:title", content: `${policy?.title ?? "Policy"} — Customz Paradise BD` },
       { property: "og:description", content: policy?.summary ?? "Customz Paradise BD policy." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/returns" },
+      { property: "og:url", content: `${site.url}/returns` },
     ],
-    links: [{ rel: "canonical", href: "/returns" }],
+    links: [{ rel: "canonical", href: `${site.url}/returns` }],
   }),
   component: Page,
 });

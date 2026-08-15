@@ -4,10 +4,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ProductBrowser } from "@/components/ProductBrowser";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { site } from "@/data/site";
 
-const title = "Shop Modification Parts — Customz Paradise BD";
+const title = "Shop Motorcycle Modification Parts & Accessories — Customz Paradise BD";
 const description =
-  "Browse premium motorcycle modification parts and accessories with BDT pricing and nationwide delivery in Bangladesh.";
+  "Browse premium motorcycle modification parts, visual upgrades, and performance accessories with BDT pricing and nationwide delivery across Bangladesh.";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -17,9 +18,10 @@ export const Route = createFileRoute("/shop")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/shop" },
+      { property: "og:url", content: `${site.url}/shop` },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/shop" }],
+    links: [{ rel: "canonical", href: `${site.url}/shop` }],
   }),
   loader: ({ context }) => {
     void context.queryClient.ensureQueryData(storefrontProductsQuery());

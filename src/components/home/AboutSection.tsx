@@ -20,7 +20,7 @@ export function AboutSection() {
           <SectionHeading eyebrow={t("section.about.eyebrow")} title={t("section.about.title")} />
           <div className="mt-6 space-y-4 text-base leading-relaxed text-muted-foreground sm:mt-8 sm:space-y-6 sm:text-lg">
             <p>
-              <span className="font-bold text-foreground">{site.name}</span> {t("section.about.p1")}
+              <span className="font-bold text-foreground">{site.name}</span> is Bangladesh's leading brand for premium motorcycle modification parts and accessories. We specialize in high-quality visual upgrades, stickers, and custom parts designed to make your ride stand out.
             </p>
             <p>{t("section.about.p2")}</p>
             <div className="pt-2 sm:pt-4">

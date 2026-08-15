@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { site } from "@/data/site";
 
 const title = "New Arrivals — Customz Paradise BD";
 const description =
@@ -16,9 +17,9 @@ export const Route = createFileRoute("/new-arrivals")({
       { property: "og:title", content: title },
       { property: "og:description", content: description },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/new-arrivals" },
+      { property: "og:url", content: `${site.url}/new-arrivals` },
     ],
-    links: [{ rel: "canonical", href: "/new-arrivals" }],
+    links: [{ rel: "canonical", href: `${site.url}/new-arrivals` }],
   }),
   loader: ({ context }) => {
     void context.queryClient.ensureQueryData(storefrontProductsQuery());

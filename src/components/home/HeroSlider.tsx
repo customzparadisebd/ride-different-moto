@@ -66,7 +66,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
   return (
     <section
-      aria-label="Featured motorcycle builds"
+      aria-label="Premium Motorcycle Parts Showcase"
       className="relative bg-onyx"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
