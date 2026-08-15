@@ -104,7 +104,7 @@ function Index() {
   return (
     <>
       <h1 className="sr-only">
-        {site.name} — Premium Motorcycle Modification Parts & Stickers in Bangladesh
+        Customz Paradise BD — Premium Motorcycle Modification Parts, Stickers & Accessories in Bangladesh
       </h1>
 
       <SectionBoundary label="hero">

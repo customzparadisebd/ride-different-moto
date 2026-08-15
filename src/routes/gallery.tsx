@@ -4,9 +4,9 @@ import { SafeImage } from "@/components/SafeImage";
 import { getBikeModels, getHeroSlides } from "@/data/catalog";
 import { site } from "@/data/site";
 
-const title = "Gallery — Customz Paradise BD";
+const title = "Modified Motorcycle Builds Gallery Bangladesh — Customz Paradise BD";
 const description =
-  "Modified motorcycle builds and modification setups by Customz Paradise BD in Bangladesh.";
+  "Explore our gallery of modified motorcycle builds, custom visual setups, and premium parts installations in Bangladesh. Ride Different. Be Different.";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({

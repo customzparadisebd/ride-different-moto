@@ -118,7 +118,7 @@ export function SafeImage({
           <source
             srcSet={
               srcSet ||
-              `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=60 2x`
+              `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=70 2x`
             }
             type="image/webp"
           />

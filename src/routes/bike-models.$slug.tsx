@@ -23,8 +23,8 @@ export const Route = createFileRoute("/bike-models/$slug")({
         ],
       };
     }
-    const title = `${loaderData.model.name} Modification Parts — Customz Paradise BD`;
-    const description = `Premium modification parts and accessories for the ${loaderData.model.name}, with BDT pricing and delivery across Bangladesh.`;
+    const title = `${loaderData.model.name} Modification Parts & Accessories Bangladesh — Customz Paradise BD`;
+    const description = `Shop premium modification parts, custom visual upgrades, and stickers for ${loaderData.model.name} in Bangladesh. Nationwide delivery available.`;
     return {
       meta: [
         { title },

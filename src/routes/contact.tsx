@@ -5,9 +5,9 @@ import { SocialSection } from "@/components/home/SocialSection";
 import { Button } from "@/components/ui/button";
 import { site } from "@/data/site";
 
-const title = "Contact Us — Customz Paradise BD";
+const title = "Contact Customz Paradise BD — Modification Support Bangladesh";
 const description =
-  "Reach Customz Paradise BD on WhatsApp, phone or email for motorcycle modification parts in Bangladesh.";
+  "Get expert advice for your motorcycle build. Contact Customz Paradise BD on WhatsApp or visit our office for modification parts in Bangladesh.";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
