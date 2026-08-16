@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/ad/settings/invoice")({
 
 function AdminInvoiceSettings() {
   const { access } = Route.useRouteContext();
-  const canManage = access.permissions.includes("orders.manage") ?? false;
+  const canManage = access.permissions.includes("orders.manage") || access.primaryRole === "admin" || access.primaryRole === "super_admin";
 
   return (
     <div className="flex flex-col gap-8">
