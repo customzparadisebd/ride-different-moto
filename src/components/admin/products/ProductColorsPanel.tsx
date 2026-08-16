@@ -290,7 +290,7 @@ export function ProductColorsPanel({
               <input
                 type="color"
                 aria-label="Pick colour"
-                className="h-11 w-14 rounded-md border border-input bg-background"
+                className="h-11 w-14 rounded-md border border-input bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 value={draft.swatch}
                 onChange={(event) => setDraft({ ...draft, swatch: event.target.value })}
               />
