@@ -25,6 +25,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   });
 
   const [draft, setDraft] = useState<InvoiceSettings>(DEFAULT_INVOICE_SETTINGS);
+  const [manualStart, setManualStart] = useState("");
 
   useEffect(() => {
     if (current) {
@@ -36,6 +37,35 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       });
     }
   }, [current]);
+
+  const handleResetTo01 = () => {
+    if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
+      mutation.mutate({
+        data: {
+          ...draft,
+          nextNumber: 1,
+        } as never,
+      });
+    }
+  };
+
+  const handleSetStartingNumber = () => {
+    const num = parseInt(manualStart);
+    if (isNaN(num) || num < 1) {
+      toast.error("Please enter a valid starting number.");
+      return;
+    }
+
+    if (confirm(`Set starting number to ${num}? The next order will be ${draft.prefix}-${num.toString().padStart(2, '0')}.`)) {
+      mutation.mutate({
+        data: {
+          ...draft,
+          nextNumber: num,
+        } as never,
+      });
+      setManualStart("");
+    }
+  };
 
   const mutation = useMutation({
     mutationFn: save,
@@ -61,19 +91,73 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
         </div>
       </div>
 
-      <form
-        className="mt-4 space-y-4"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (draft.nextNumber !== undefined && draft.nextNumber !== current?.nextNumber) {
-            if (!confirm(`Are you sure you want to change the NEXT invoice serial to ${draft.prefix}-${draft.nextNumber}? This affects future orders.`)) {
-              return;
-            }
-          }
-          mutation.mutate({ data: draft as never });
-        }}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
+      <div className="mt-6 space-y-6">
+        {/* Current Info */}
+        <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-primary/5 p-4">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+            Current Invoice Number
+          </span>
+          <p className="font-mono text-2xl font-bold">
+            {current?.prefix}-{current?.currentNumber.toString().padStart(2, "0")}
+          </p>
+          <p className="text-[10px] text-muted-foreground italic">
+            Last order was assigned serial {current?.currentNumber}.
+          </p>
+        </div>
+
+        {/* Manual Sequence Control */}
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label
+              htmlFor="manualStart"
+              className="text-xs font-bold uppercase tracking-wide"
+            >
+              Starting Invoice Number
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                id="manualStart"
+                type="number"
+                placeholder="01"
+                className="h-10 font-bold"
+                value={manualStart}
+                disabled={!canManage || mutation.isPending}
+                onChange={(e) => setManualStart(e.target.value)}
+                min={1}
+              />
+              <Button
+                type="button"
+                variant="red"
+                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
+                disabled={!canManage || mutation.isPending || !manualStart}
+                onClick={() => handleSetStartingNumber()}
+              >
+                Set Starting Number
+              </Button>
+            </div>
+            <p className="text-[10px] text-muted-foreground">
+              Example: Entering 500 will make the next order CZP-500.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-10 border-red-500/50 text-red-500 hover:bg-red-500/10 uppercase font-bold text-[11px] tracking-wider"
+              disabled={!canManage || mutation.isPending}
+              onClick={() => handleResetTo01()}
+            >
+              Reset to 01
+            </Button>
+            <p className="mt-2 text-center text-[10px] text-muted-foreground">
+              Resets the sequence so the next order starts from CZP-01.
+            </p>
+          </div>
+        </div>
+
+        {/* Prefix Setting (Secondary) */}
+        <div className="pt-4 border-t border-border/50">
           <div className="space-y-1.5">
             <Label
               htmlFor="prefix"
@@ -81,112 +165,31 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
             >
               Invoice Prefix
             </Label>
-            <Input
-              id="prefix"
-              placeholder="e.g. CZP"
-              className="h-10 font-bold uppercase"
-              value={draft.prefix}
-              disabled={!canManage || mutation.isPending}
-              onChange={(e) => setDraft((c) => ({ ...c, prefix: e.target.value.toUpperCase() }))}
-              maxLength={10}
-            />
-            <p className="text-[10px] text-muted-foreground">Example: {draft.prefix}-01</p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="startNumber"
-              className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-            >
-              Starting Invoice Number
-            </Label>
-            <Input
-              id="startNumber"
-              type="number"
-              placeholder="e.g. 1"
-              className="h-10 font-bold"
-              value={draft.startNumber}
-              disabled={!canManage || mutation.isPending}
-              onChange={(e) =>
-                setDraft((c) => ({ ...c, startNumber: parseInt(e.target.value) || 1 }))
-              }
-              min={1}
-            />
-            <p className="text-[10px] text-muted-foreground">
-              The sequence will follow this if current is lower.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="nextNumber"
-              className="text-[10px] font-bold uppercase tracking-wider text-primary"
-            >
-              Set Next Invoice Serial
-            </Label>
-            <Input
-              id="nextNumber"
-              type="number"
-              placeholder="e.g. 100"
-              className="h-10 font-bold border-primary/50"
-              value={draft.nextNumber ?? ""}
-              disabled={!canManage || mutation.isPending}
-              onChange={(e) =>
-                setDraft((c) => ({ ...c, nextNumber: parseInt(e.target.value) || 1 }))
-              }
-              min={1}
-            />
-            <p className="text-[10px] text-muted-foreground">
-              Manually override the NEXT number to be generated.
-            </p>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label
-              htmlFor="currentNumber"
-              className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-            >
-              Last Used Serial
-            </Label>
-            <div className="h-10 px-3 flex items-center rounded-md border border-input bg-neutral-900 font-mono text-sm">
-              {current?.currentNumber ?? 0}
-            </div>
-            <p className="text-[10px] text-muted-foreground">
-              Informational only. Use "Next Serial" to jump sequence.
-            </p>
-          </div>
-
-          <div className="space-y-1.5 sm:col-span-2">
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-                Next Invoice Preview
-              </span>
-              <p className="font-mono text-lg font-bold">
-                {draft.prefix}-{Math.max(draft.startNumber, draft.nextNumber ?? (draft.currentNumber + 1))
-                  .toString()
-                  .padStart(2, "0")}
-              </p>
+            <div className="flex gap-2">
+              <Input
+                id="prefix"
+                placeholder="e.g. CZP"
+                className="h-10 font-bold uppercase"
+                value={draft.prefix}
+                disabled={!canManage || mutation.isPending}
+                onChange={(e) => setDraft((c) => ({ ...c, prefix: e.target.value.toUpperCase() }))}
+                maxLength={10}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
+                disabled={!canManage || mutation.isPending || draft.prefix === current?.prefix}
+                onClick={() => {
+                  mutation.mutate({ data: { ...draft, nextNumber: undefined } as never });
+                }}
+              >
+                Update Prefix
+              </Button>
             </div>
           </div>
         </div>
-
-        {canManage && (
-          <div className="flex items-center justify-between pt-2">
-            <div className="text-[10px] text-muted-foreground italic">
-              Current count: {current?.currentNumber ?? 0}
-            </div>
-            <Button
-              type="submit"
-              variant="red"
-              size="sm"
-              className="h-9 px-4 uppercase font-bold text-[11px] tracking-wider"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? "Saving..." : "Save Changes"}
-            </Button>
-          </div>
-        )}
-      </form>
+      </div>
     </div>
   );
 }
