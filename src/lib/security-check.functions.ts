@@ -11,7 +11,7 @@ export const verifyDatabaseSecurity = createServerFn({ method: "POST" })
     assertAccess(actor, PERMISSIONS.apiManage);
 
     const results = [];
-    const tables = ["orders", "products", "profiles", "courier_credentials", "admin_audit_log"];
+    const tables = ["orders", "products", "profiles", "courier_credentials", "admin_audit_log", "staff_login_approvals", "security_events", "order_stock_deductions"];
 
     // 1. Verify Service Role bypass (Internal use)
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
