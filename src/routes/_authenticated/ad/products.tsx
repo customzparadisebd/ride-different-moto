@@ -409,7 +409,7 @@ function AdminProducts() {
 
       {/* ---- Table ---- */}
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
-        <table className="w-full min-w-[980px] text-sm">
+        <table className="w-full text-sm table-fixed">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
               <th className="p-3 w-10">
@@ -425,14 +425,14 @@ function AdminProducts() {
                   )}
                 </button>
               </th>
-              <th className="p-3">Product</th>
-              <th className="p-3">SKU</th>
-              <th className="p-3">Category</th>
-              <th className="p-3 text-right">Price</th>
-              <th className="p-3 text-right">Offer</th>
-              <th className="p-3">Stock</th>
-              <th className="p-3">Flags</th>
-              <th className="p-3 text-right">Actions</th>
+              <th className="p-3 w-48 sm:w-64">Product</th>
+              <th className="p-3 w-28 hidden lg:table-cell">SKU</th>
+              <th className="p-3 w-32 hidden md:table-cell">Category</th>
+              <th className="p-3 w-24 text-right">Price</th>
+              <th className="p-3 w-24 text-right hidden xl:table-cell">Offer</th>
+              <th className="p-3 w-36">Stock</th>
+              <th className="p-3 w-28 hidden sm:table-cell">Flags</th>
+              <th className="p-3 text-right w-44">Actions</th>
             </tr>
           </thead>
           <tbody>
