@@ -497,8 +497,8 @@ function AdminProducts() {
                   <td className="p-3 text-muted-foreground hidden lg:table-cell">
                     <div className="truncate" title={row.sku}>{row.sku}</div>
                   </td>
-                  <td className="p-3 text-muted-foreground truncate hidden md:table-cell">
-                    {categoryLabel(row.category)}
+                  <td className="p-3 text-muted-foreground hidden md:table-cell">
+                    <div className="truncate">{categoryLabel(row.category)}</div>
                   </td>
                   <td className="p-3 text-right font-medium">
                     {formatBDT(Number(row.price))}
