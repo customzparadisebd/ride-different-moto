@@ -214,10 +214,9 @@ export function ManualOrderForm({
                 variant="steel"
                 size="sm"
                 onClick={() => {
-                  toast.info("AI extraction is in preparation mode. No requests are made yet.");
-                  // Placeholder: Future integration will call a server function
-                  // that uses AIProviderFactory to extract data and then:
-                  // setForm(prev => ({ ...prev, customerName: extracted.name, ... }));
+                  toast.info("AI extraction is in preparation mode. No requests are made yet.", {
+                    description: "Configure your API key in Settings > AI Settings to enable this in the future."
+                  });
                 }}
                 disabled={!aiInput.trim() || isAiProcessing}
               >
