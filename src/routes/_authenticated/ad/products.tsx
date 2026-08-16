@@ -425,14 +425,14 @@ function AdminProducts() {
                   )}
                 </button>
               </th>
-              <th className="p-3 w-48 sm:w-64">Product</th>
-              <th className="p-3 w-28 hidden lg:table-cell">SKU</th>
-              <th className="p-3 w-32 hidden md:table-cell">Category</th>
-              <th className="p-3 w-24 text-right">Price</th>
-              <th className="p-3 w-24 text-right hidden xl:table-cell">Offer</th>
-              <th className="p-3 w-36">Stock</th>
-              <th className="p-3 w-28 hidden sm:table-cell">Flags</th>
-              <th className="p-3 text-right w-44">Actions</th>
+              <th className="p-3 w-[200px] sm:w-[250px]">Product</th>
+              <th className="p-3 w-[100px] hidden lg:table-cell">SKU</th>
+              <th className="p-3 w-[120px] hidden md:table-cell">Category</th>
+              <th className="p-3 w-[100px] text-right">Price</th>
+              <th className="p-3 w-[100px] text-right hidden xl:table-cell">Offer</th>
+              <th className="p-3 w-[140px]">Stock</th>
+              <th className="p-3 w-[100px] hidden sm:table-cell">Flags</th>
+              <th className="p-3 text-right w-[180px]">Actions</th>
             </tr>
           </thead>
           <tbody>
