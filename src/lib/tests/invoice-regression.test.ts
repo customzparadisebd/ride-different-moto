@@ -10,7 +10,7 @@ const testSupabase = createClient(
 describe('Invoice Sequence Regression Tests', () => {
   
   beforeAll(async () => {
-    // Ensure default settings row exists
+    // Ensure default settings row exists and reset to standard state
     await testSupabase.from('invoice_settings').upsert({
       id: 'default',
       prefix: 'CZP',
@@ -19,13 +19,14 @@ describe('Invoice Sequence Regression Tests', () => {
     });
   });
 
-  it('should maintain atomic increments under parallel load', async () => {
+  it('should maintain atomic increments under parallel load (PROD mode)', async () => {
     const concurrency = 5;
-    console.log(`Testing atomic increments with ${concurrency} parallel requests...`);
+    console.log(`Testing atomic increments with ${concurrency} parallel requests (is_test: false)...`);
     
-    // Trigger parallel invoice generations
+    // Trigger parallel invoice generations in PROD mode (is_test: false)
+    // We use the real sequence to verify the actual business logic
     const tasks = Array.from({ length: concurrency }).map(() => 
-      testSupabase.rpc('generate_next_invoice_no', { is_test: true })
+      testSupabase.rpc('generate_next_invoice_no', { is_test: false })
     );
     
     const results = await Promise.all(tasks);
@@ -37,7 +38,7 @@ describe('Invoice Sequence Regression Tests', () => {
     const unique = new Set(invoices);
     expect(unique.size).toBe(concurrency);
     
-    // Verify sequentiality
+    // Verify sequentiality (e.g. CZP-01, CZP-02)
     const serials = invoices.map(inv => parseInt(inv.split('-').pop() || '0')).sort((a, b) => a - b);
     for (let i = 0; i < serials.length - 1; i++) {
       expect(serials[i + 1]).toBe(serials[i] + 1);
@@ -54,11 +55,11 @@ describe('Invoice Sequence Regression Tests', () => {
     }).eq('id', 'default');
     
     // Generate next
-    const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: true });
+    const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
     expect(nextInv).toBe(`CZP-${startAt}`);
     
     // Generate following
-    const { data: followInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: true });
+    const { data: followInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
     expect(followInv).toBe(`CZP-${startAt + 1}`);
   });
 
@@ -69,8 +70,8 @@ describe('Invoice Sequence Regression Tests', () => {
       current_number: 0
     }).eq('id', 'default');
     
-    const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: true });
-    expect(nextInv).toBe('CZP-1'); // DB currently omits leading zero in CZP-1, UI handles formatting if needed or prefix handles it
+    const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
+    expect(nextInv).toBe('CZP-01'); // LPAD(..., 2, '0') returns 01
   });
 
   it('should NEVER change invoice numbers of existing orders', async () => {
@@ -80,10 +81,27 @@ describe('Invoice Sequence Regression Tests', () => {
       invoice_no: testInvoiceNo,
       customer_name: 'Regression Test',
       customer_phone: '01000000000',
-      total: 100,
-      status: 'pending'
+      address_line: 'Test Address',
+      city: 'Dhaka',
+      subtotal: 100,
+      discount: 0,
+      shipping: 60,
+      total: 160,
+      currency: 'BDT',
+      payment_method: 'cod',
+      payment_status: 'unpaid',
+      order_source: 'website',
+      status: 'pending',
+      courier_status: 'pending',
+      is_pinned: false,
+      print_count: 0,
+      is_duplicate: false,
+      cod_amount: 0
     }).select().single();
     
+    if (insertError) {
+      console.error('Insert Error:', insertError);
+    }
     expect(insertError).toBeNull();
     if (!order) throw new Error("Order was not created");
     expect(order.invoice_no).toBe(testInvoiceNo);
