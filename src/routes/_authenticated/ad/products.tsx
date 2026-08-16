@@ -494,8 +494,8 @@ function AdminProducts() {
                       </div>
                     </div>
                   </td>
-                  <td className="p-3 text-muted-foreground truncate hidden lg:table-cell" title={row.sku}>
-                    {row.sku}
+                  <td className="p-3 text-muted-foreground hidden lg:table-cell">
+                    <div className="truncate" title={row.sku}>{row.sku}</div>
                   </td>
                   <td className="p-3 text-muted-foreground truncate hidden md:table-cell">
                     {categoryLabel(row.category)}
