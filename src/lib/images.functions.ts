@@ -24,7 +24,7 @@ export const regenerateMissingVariants = createServerFn({ method: "POST" })
     
     // 1. Identify if the image is a Supabase storage URL
     // Example: https://[project].supabase.co/storage/v1/object/public/products/uploads/image.webp
-    const isSupabaseStorage = src.includes(".supabase.co/storage/v1/object/public/");
+    const isSupabaseStorage = src.includes(".supabase.co/storage/v1/object/public/") || src.includes(".lovableproject.com/");
     
     if (!isSupabaseStorage) {
       return { success: false, message: "External image - regeneration not supported" };
@@ -34,7 +34,7 @@ export const regenerateMissingVariants = createServerFn({ method: "POST" })
       // 2. Construct the optimization path
       // We check if a variant already exists in a cache bucket to avoid redundant work
       const urlParts = new URL(src);
-      const pathParts = urlParts.pathname.split("/public/")[1];
+      const pathParts = src.includes("/public/") ? urlParts.pathname.split("/public/")[1] : urlParts.pathname;
       const cachePath = `variants/${format}/${width}/${pathParts}`;
 
       const { data: existing, error: checkError } = await supabase.storage
