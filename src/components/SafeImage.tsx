@@ -16,6 +16,8 @@ type SafeImageProps = {
   srcSet?: string;
   /** Optional blurred placeholder data URL */
   blurDataURL?: string;
+  /** Whether to use a fixed aspect ratio container to prevent CLS */
+  fixedAspectRatio?: boolean;
 };
 
 const MAX_RETRIES = 3;
@@ -37,6 +39,7 @@ export function SafeImage({
   sizes = "100vw",
   srcSet,
   blurDataURL,
+  fixedAspectRatio = true,
 }: SafeImageProps) {
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
@@ -90,7 +93,7 @@ export function SafeImage({
     <div
       className={cn("relative overflow-hidden bg-muted", containerClassName)}
       style={{
-        aspectRatio: aspectRatio || (width && height ? `${width} / ${height}` : undefined),
+        aspectRatio: fixedAspectRatio ? (aspectRatio || (width && height ? `${width} / ${height}` : "1/1")) : undefined,
       }}
     >
       {/* 4. Blur-up placeholder effect */}
