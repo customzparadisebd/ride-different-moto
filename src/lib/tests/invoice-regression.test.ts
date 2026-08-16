@@ -41,7 +41,10 @@ describe('Invoice Sequence Regression Tests', () => {
     // Verify sequentiality (e.g. CZP-01, CZP-02)
     const serials = invoices.map(inv => parseInt(inv.split('-').pop() || '0')).sort((a, b) => a - b);
     for (let i = 0; i < serials.length - 1; i++) {
-      expect(serials[i + 1]).toBe(serials[i] + 1);
+      const current = serials[i];
+      const next = serials[i + 1];
+      if (current === undefined || next === undefined) continue;
+      expect(next).toBe(current + 1);
     }
   });
 
