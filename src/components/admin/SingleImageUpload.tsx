@@ -41,26 +41,43 @@ export function SingleImageUpload({
     if (!file) return;
 
     setUploading(true);
-    setProgress(10);
+    setProgress(5);
 
     try {
-      const fileExt = "webp";
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      // 1. Optimize and convert to WebP client-side
+      setProgress(15);
+      const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1920, // Higher res for banners/bike models
+        useWebWorker: true,
+        fileType: "image/webp",
+      };
+
+      const compressedFile = await imageCompression(file, options);
+      setProgress(40);
+
+      // 2. Upload to storage
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.webp`;
       const filePath = `${pathPrefix}/${fileName}`;
 
-      setProgress(30);
-      const { error: uploadError } = await supabase.storage.from(bucket).upload(filePath, file);
+      setProgress(60);
+      const { error: uploadError } = await supabase.storage
+        .from(bucket)
+        .upload(filePath, compressedFile, {
+          contentType: "image/webp",
+          upsert: false,
+        });
 
       if (uploadError) throw uploadError;
 
-      setProgress(80);
+      setProgress(90);
       const {
         data: { publicUrl },
       } = supabase.storage.from(bucket).getPublicUrl(filePath);
 
       setProgress(100);
       onChange(publicUrl);
-      toast.success("Image uploaded successfully");
+      toast.success("Optimized image uploaded successfully");
     } catch (err: any) {
       toast.error(err.message || "Upload failed");
     } finally {
@@ -122,11 +139,14 @@ export function SingleImageUpload({
 
         {uploading && <Progress value={progress} className="h-1 bg-background" />}
 
-        {guideline && (
-          <p className="text-[9px] text-muted-foreground leading-tight">
-            {guideline}
+        <div className="rounded-md bg-muted/30 border border-border/50 p-2.5">
+          <p className="text-[9px] text-cyan-500 font-bold uppercase tracking-tight mb-1">
+            Auto-Optimization Active
           </p>
-        )}
+          <p className="text-[9px] text-muted-foreground leading-tight">
+            Images are automatically converted to optimized WebP and prepared for multi-size AVIF delivery. {guideline}
+          </p>
+        </div>
       </div>
     </div>
   );
