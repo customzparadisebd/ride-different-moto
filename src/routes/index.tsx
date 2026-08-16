@@ -42,21 +42,75 @@ export const Route = createFileRoute("/")({
     scripts: [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Store",
-          name: site.name,
-          slogan: site.tagline,
-          telephone: site.phoneDisplay,
-          email: site.email,
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: "Uttara, Dhaka",
-            postalCode: "1230",
-            addressCountry: "BD",
+        children: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": site.name,
+            "url": site.url,
+            "logo": `${site.url}/logo-main.png`,
+            "sameAs": site.socials.map((social) => social.href),
+            "contactPoint": {
+              "@type": "ContactPoint",
+              "telephone": site.phoneDisplay,
+              "contactType": "customer service",
+              "areaServed": "BD",
+              "availableLanguage": ["en", "bn"]
+            }
           },
-          sameAs: site.socials.map((social) => social.href),
-        }),
+          {
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "name": site.name,
+            "image": `${site.url}/logo-main.png`,
+            "@id": site.url,
+            "url": site.url,
+            "telephone": site.phoneDisplay,
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Sector 10",
+              "addressLocality": "Uttara",
+              "addressRegion": "Dhaka",
+              "postalCode": "1230",
+              "addressCountry": "BD"
+            },
+            "geo": {
+              "@type": "GeoCoordinates",
+              "latitude": 23.8759,
+              "longitude": 90.3795
+            },
+            "openingHoursSpecification": {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday"
+              ],
+              "opens": "09:00",
+              "closes": "21:00"
+            }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Store",
+            "name": site.name,
+            "url": site.url,
+            "telephone": site.phoneDisplay,
+            "email": site.email,
+            "slogan": site.tagline,
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Uttara, Dhaka",
+              "postalCode": "1230",
+              "addressCountry": "BD"
+            },
+            "sameAs": site.socials.map((social) => social.href)
+          }
+        ]),
       },
     ],
   }),

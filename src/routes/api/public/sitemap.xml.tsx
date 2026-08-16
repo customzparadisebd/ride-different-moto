@@ -19,6 +19,12 @@ export const Route = createFileRoute("/api/public/sitemap/xml")({
         const urls = [
           { loc: site.url, priority: "1.0", lastmod: lastMod },
           { loc: `${site.url}/shop`, priority: "0.8", lastmod: lastMod },
+          // Category pages
+          ...["graphics", "lighting", "seat", "exhaust", "handlebar", "body-kit", "accessories", "other"].map(cat => ({
+            loc: `${site.url}/shop?category=${cat}`,
+            priority: "0.6",
+            lastmod: lastMod,
+          })),
           ...(products || []).map((p) => ({
             loc: `${site.url}/products/${p.slug}`,
             priority: "0.7",

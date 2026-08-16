@@ -716,18 +716,47 @@ function AdminProducts() {
                   Images
                 </Button>
                 <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
-                   <div className="w-64 overflow-hidden rounded-xl border border-border bg-card shadow-2xl p-4 space-y-4">
+                   <div className="w-80 overflow-hidden rounded-xl border border-border bg-card shadow-2xl p-4 space-y-4">
                       <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bulk Image Update</p>
-                      <ProductImageUpload
-                        label="Replace Main Images"
-                        multiple={false}
-                        value=""
-                        onChange={(url: string | string[]) => {
-                          if (window.confirm(`Apply this main image to ${selectedIds.length} products?`)) {
-                             bulkImagesMutation.mutate({ data: { ids: selectedIds, imageUrl: url as string } });
-                          }
-                        }}
-                      />
+                      
+                      <div className="space-y-4">
+                        <ProductImageUpload
+                          label="Replace Main Images"
+                          multiple={false}
+                          value=""
+                          onChange={(url: string | string[]) => {
+                            if (window.confirm(`Replace main image for ${selectedIds.length} products?`)) {
+                               bulkImagesMutation.mutate({ data: { ids: selectedIds, imageUrl: url as string } });
+                            }
+                          }}
+                        />
+                        
+                        <div className="h-px bg-border" />
+                        
+                        <ProductImageUpload
+                          label="Replace Gallery Images"
+                          multiple={true}
+                          value={[]}
+                          onChange={(urls: string | string[]) => {
+                            if (Array.isArray(urls) && window.confirm(`Replace entire gallery for ${selectedIds.length} products?`)) {
+                               bulkImagesMutation.mutate({ data: { ids: selectedIds, replaceGallery: urls } });
+                            }
+                          }}
+                        />
+
+                        <div className="h-px bg-border" />
+                        
+                        <ProductImageUpload
+                          label="Append to Gallery"
+                          multiple={true}
+                          value={[]}
+                          onChange={(urls: string | string[]) => {
+                            if (Array.isArray(urls) && window.confirm(`Append ${urls.length} images to gallery for ${selectedIds.length} products?`)) {
+                               bulkImagesMutation.mutate({ data: { ids: selectedIds, appendGallery: urls } });
+                            }
+                          }}
+                        />
+                      </div>
                    </div>
                 </div>
               </div>
