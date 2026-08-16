@@ -45,7 +45,7 @@ export function AISettingsPanel() {
   });
 
   const testMutation = useMutation({
-    mutationFn: () => testConnFn({}),
+    mutationFn: (data: AISettings) => testConnFn({ data }),
     onSuccess: (res) => {
       if (res.success) toast.success(res.message);
       else toast.error(res.message);
@@ -137,8 +137,8 @@ export function AISettingsPanel() {
               variant="outline"
               size="sm"
               className="flex-1 sm:flex-initial"
-              onClick={() => testMutation.mutate()}
-              disabled={testMutation.isPending || !draft.enabled}
+              onClick={() => testMutation.mutate(draft)}
+              disabled={testMutation.isPending}
             >
               {testMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

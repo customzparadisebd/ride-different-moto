@@ -16,7 +16,7 @@ export type AISettings = z.infer<typeof aiSettingsSchema>;
 export const DEFAULT_AI_SETTINGS: AISettings = {
   enabled: false,
   provider: "gemini",
-  modelName: "",
+  modelName: "gemini-1.5-flash",
   apiKey: "",
   credentials: {},
 };
