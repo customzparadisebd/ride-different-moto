@@ -126,10 +126,7 @@ export function Footer() {
         </div>
 
         <p className="mt-10 border-t border-white/10 pt-6 text-xs opacity-60">
-          © {new Date().getFullYear()} {site.name}. {t("footer.rights")} Developed by{" "}
-          <a href="#" className="hover:text-primary transition-colors">
-            Rafi Gazi (Rabbee) Apps
-          </a>
+          © {new Date().getFullYear()} {site.name}. {t("footer.rights")}
         </p>
       </div>
     </footer>
