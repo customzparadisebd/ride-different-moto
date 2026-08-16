@@ -546,12 +546,13 @@ function AdminProducts() {
                       </span>
                     </div>
                   </td>
-                  <td className="p-3">
+                  <td className="p-3 hidden sm:table-cell">
                     <div className="flex flex-wrap gap-1">
                       <FlagChip
-                        label="Deal"
+                        label="D"
                         on={row.is_best_deal}
                         disabled={!canManage}
+                        title="Best Deal"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isBestDeal", value: !row.is_best_deal },
@@ -559,9 +560,10 @@ function AdminProducts() {
                         }
                       />
                       <FlagChip
-                        label="Featured"
+                        label="F"
                         on={row.is_featured}
                         disabled={!canManage}
+                        title="Featured"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isFeatured", value: !row.is_featured },
@@ -569,9 +571,10 @@ function AdminProducts() {
                         }
                       />
                       <FlagChip
-                        label="New"
+                        label="N"
                         on={row.is_new_arrival}
                         disabled={!canManage}
+                        title="New Arrival"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isNewArrival", value: !row.is_new_arrival },
