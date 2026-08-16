@@ -6,8 +6,8 @@ export type AIProviderType = (typeof AI_PROVIDERS)[number];
 export const aiSettingsSchema = z.object({
   enabled: z.boolean().default(false),
   provider: z.enum(AI_PROVIDERS).default("gemini"),
-  modelName: z.string().trim().max(100).optional().or(z.literal("")),
-  apiKey: z.string().trim().max(500).optional().or(z.literal("")),
+  modelName: z.string().trim().min(1, "Model name is required").max(100),
+  apiKey: z.string().trim().min(1, "API Key is required").max(500),
   credentials: z.record(z.any()).default({}),
 });
 
