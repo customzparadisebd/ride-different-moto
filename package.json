@@ -13,7 +13,7 @@
     "test": "vitest run src/lib/tests/concurrency.test.ts",
     "test:watch": "vitest",
     "format": "prettier --write .",
-    "test:a11y": "playwright test tests/accessibility/audit.spec.ts",
+    "test:a11y": "npx playwright test tests/accessibility/audit.spec.ts",
     "perf:check": "lhci autoplay --collect.staticDistDir=dist --collect.url=http://localhost:8080"
   },
   "dependencies": {
