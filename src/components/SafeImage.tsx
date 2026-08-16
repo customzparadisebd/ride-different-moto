@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { regenerateMissingVariants } from "@/lib/images.functions";
+import { useServerFn } from "@tanstack/react-start";
 
 type SafeImageProps = {
   src: string;
@@ -46,6 +48,8 @@ export function SafeImage({
   const [attempt, setAttempt] = useState(0);
   const [status, setStatus] = useState<"loading" | "loaded" | "error">("loading");
   const imgRef = useRef<HTMLImageElement>(null);
+  const triggerRegeneration = useServerFn(regenerateMissingVariants);
+  const regenerationTracker = useRef<Set<string>>(new Set());
 
   // Images that finish before hydration never fire React's onLoad, so sync
   // from the DOM node and attach native listeners as a fallback.
@@ -76,10 +80,28 @@ export function SafeImage({
   const retry = useCallback(() => {
     setAttempt((current) => {
       if (current >= MAX_RETRIES) return current;
+      
+      // If we are retrying, check if the error was a 404/failure for a specific variant
+      // and trigger a regeneration request in the background
+      if (src.includes(".supabase.co/storage/v1/object/public/")) {
+        const formats: ("avif" | "webp")[] = ["avif", "webp"];
+        const widths = [400, 640, 800, 1200, 1920];
+        
+        formats.forEach(format => {
+          widths.forEach(w => {
+            const key = `${src}-${format}-${w}`;
+            if (!regenerationTracker.current.has(key)) {
+              regenerationTracker.current.add(key);
+              triggerRegeneration({ data: { src, format, width: w } }).catch(() => {});
+            }
+          });
+        });
+      }
+
       setStatus("loading");
       return current + 1;
     });
-  }, []);
+  }, [src, triggerRegeneration]);
 
   // Recover automatically once the browser reports the network is back.
   useEffect(() => {
