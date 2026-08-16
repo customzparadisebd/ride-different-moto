@@ -147,7 +147,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               }}
               className={cn(
                 "h-1.5 rounded-full transition-all",
-                selected === index ? "w-8 bg-primary" : "w-4 bg-white/40 hover:bg-white/70",
+                selected === index ? "w-8 bg-primary" : "w-4 bg-white/40 hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black",
               )}
             />
           ))}
@@ -158,7 +158,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             type="button"
             onClick={scrollPrev}
             aria-label="Previous slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <ChevronLeft className="size-5" aria-hidden="true" />
           </button>
@@ -166,7 +166,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
             type="button"
             onClick={scrollNext}
             aria-label="Next slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary"
+            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
           >
             <ChevronRight className="size-5" aria-hidden="true" />
           </button>
