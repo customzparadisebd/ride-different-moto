@@ -90,7 +90,7 @@ const ADMINISTRATION: NavItem[] = [
     to: "/ad/settings/invoice",
     label: "Invoice settings",
     icon: ScrollText,
-    permission: PERMISSIONS.productsManage,
+    permission: PERMISSIONS.ordersView,
   },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
   {
