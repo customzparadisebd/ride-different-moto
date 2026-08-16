@@ -140,12 +140,20 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);
+  const fetchBikeModels = useServerFn(getStorefrontBikeModels);
+
   const heroSlidesQuery = useQuery({
     queryKey: ["hero-slides"],
     queryFn: () => fetchHeroSlides({ data: {} }),
     placeholderData: (prev) => prev,
   });
-  const bikeModels = getBikeModels();
+
+  const bikeModelsQuery = useQuery({
+    queryKey: ["bike-models"],
+    queryFn: () => fetchBikeModels(),
+  });
+
+  const bikeModels = bikeModelsQuery.data || [];
   // ALL PRODUCTS SECTION
   // Purpose: Displays all active products dynamically from the database.
   // Status: COMPLETED
