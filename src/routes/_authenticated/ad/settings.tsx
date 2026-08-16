@@ -278,7 +278,7 @@ function AdminSettings() {
             <p className="mt-1 text-xs text-muted-foreground">Manage prefix, sequence and labeling rules.</p>
           </div>
           <Button variant="outline" size="sm" asChild>
-            <Link to="/ad/settings/invoice">Manage Invoices</Link>
+            <Link to="/ad/settings/invoice" className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 rounded-full px-4 text-xs">Manage Invoices</Link>
           </Button>
         </div>
       </div>
