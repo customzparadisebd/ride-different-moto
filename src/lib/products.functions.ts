@@ -620,7 +620,9 @@ export const bulkUpdateProductImages = createServerFn({ method: "POST" })
     const updates = data.ids.map(async (id) => {
       const update: any = {};
       if (data.imageUrl) update.image_url = data.imageUrl;
-      if (data.appendGallery && data.appendGallery.length > 0) {
+      if (data.replaceGallery) {
+        update.images = data.replaceGallery;
+      } else if (data.appendGallery && data.appendGallery.length > 0) {
         const { data: existing } = await context.supabase
           .from("products")
           .select("images")
