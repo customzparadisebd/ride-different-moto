@@ -408,7 +408,7 @@ function AdminProducts() {
       </div>
 
       {/* ---- Table ---- */}
-      <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
+      <div className="mt-4 flex-1 overflow-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[980px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
