@@ -40,7 +40,7 @@ export const regenerateMissingVariants = createServerFn({ method: "POST" })
       const { data: existing, error: checkError } = await supabase.storage
         .from(IMAGE_OPTIMIZATION_BUCKET)
         .list(cachePath.split("/").slice(0, -1).join("/"), {
-          search: cachePath.split("/").pop(),
+          search: cachePath.split("/").pop() || "",
         });
 
       if (existing && existing.length > 0) {
