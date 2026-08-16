@@ -23,6 +23,7 @@ import { Logo } from "@/components/Logo";
 import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
 import animationAsset from "@/assets/login-animation.mp4.asset.json";
+import logo3dAsset from "@/assets/czp-logo-3d.png.asset.json";
 import {
   checkLoginAllowed,
   recordSignIn,
