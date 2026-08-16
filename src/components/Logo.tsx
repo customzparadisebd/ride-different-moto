@@ -27,7 +27,7 @@ export function Logo({ on = "auto", className, priority = false }: LogoProps) {
       height={168}
       loading={priority ? "eager" : "lazy"}
       decoding={priority ? "sync" : "async"}
-      className={cn("h-9 w-auto object-contain", className)}
+      className={cn("h-8 w-auto object-contain sm:h-9 md:h-10", className)}
     />
   );
 }
