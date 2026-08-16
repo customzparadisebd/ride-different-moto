@@ -5,13 +5,13 @@ export const Route = createFileRoute("/api/public/robots/txt")({
   server: {
     handlers: {
       GET: async () => {
-        const robots = `User-agent: *
+        const robots = \`User-agent: *
 Allow: /
 Disallow: /ad/
 Disallow: /czp-ops-9f2c/
 Disallow: /api/
 
-Sitemap: ${site.url}/api/public/sitemap/xml`;
+Sitemap: \${site.url}/api/public/sitemap/xml\`;
 
         return new Response(robots, {
           headers: {
