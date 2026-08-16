@@ -8,7 +8,7 @@ const testSupabase = createClient(
 );
 
 describe('Invoice Sequence Regression Tests', () => {
-  const TEST_PREFIX = 'REG-T';
+  const TEST_PREFIX = 'REG-SEQ';
   
   beforeAll(async () => {
     // Ensure default settings row exists and reset to a controlled test state
@@ -50,7 +50,7 @@ describe('Invoice Sequence Regression Tests', () => {
   });
 
   it('should respect manual start_number override', async () => {
-    const startAt = 800; // Use high number to avoid overlap
+    const startAt = 1500; // Large number outside LPAD(2) range
     
     // Set starting number
     await testSupabase.from('invoice_settings').update({
