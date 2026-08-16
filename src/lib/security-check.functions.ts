@@ -16,7 +16,7 @@ export const verifyDatabaseSecurity = createServerFn({ method: "POST" })
     // 1. Verify Service Role bypass (Internal use)
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     for (const table of tables) {
-      const { error } = await supabaseAdmin.from(table).select("id").limit(1);
+      const { error } = await supabaseAdmin.from(table as never).select("id" as never).limit(1);
       results.push({
         table,
         role: "service_role",
@@ -33,7 +33,7 @@ export const verifyDatabaseSecurity = createServerFn({ method: "POST" })
     const anonClient = createClient(supabaseUrl, anonKey);
 
     for (const table of tables) {
-      const { error } = await anonClient.from(table).select("id").limit(1);
+      const { error } = await anonClient.from(table as never).select("id" as never).limit(1);
       const isProductTable = table === "products";
       const expectedBlocked = !isProductTable;
       
