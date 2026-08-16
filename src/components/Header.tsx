@@ -43,7 +43,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="relative mx-auto flex h-14 max-w-7xl items-center px-3 sm:h-16 sm:px-6">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:h-20 sm:px-6 md:px-8">
         {/* LEFT: Logo */}
         <div className="flex flex-1 items-center justify-start">
           <Link to="/" className="min-w-0" aria-label={`${site.name} home`}>
