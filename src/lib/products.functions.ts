@@ -638,3 +638,45 @@ export const bulkRecycleProducts = createServerFn({ method: "POST" })
 
     return { ok: true };
   });
+
+export const bulkUpdateProductImages = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => {
+     const { bulkProductImageInput } = require("./products.shared");
+     return bulkProductImageInput.parse(input);
+  })
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const updates = data.ids.map(async (id) => {
+       const update: any = {};
+       if (data.imageUrl) update.image_url = data.imageUrl;
+       
+       if (data.appendGallery && data.appendGallery.length > 0) {
+          const { data: existing } = await context.supabase
+            .from("products")
+            .select("images")
+            .eq("id", id)
+            .single();
+          const current = Array.isArray(existing?.images) ? existing.images : [];
+          update.images = Array.from(new Set([...current, ...data.appendGallery]));
+       }
+
+       if (Object.keys(update).length > 0) {
+          return context.supabase.from("products").update(update).eq("id", id);
+       }
+    });
+
+    await Promise.all(updates);
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product",
+      targetLabel: "Bulk Image Update",
+      metadata: { ids: data.ids, imageUrl: data.imageUrl, appendGallery: data.appendGallery },
+    });
+
+    return { ok: true };
+  });
