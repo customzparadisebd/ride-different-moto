@@ -272,7 +272,7 @@ export function ManualOrderForm({
             />
           </Field>
           <Field label="Delivery zone">
-            <SelectInput value={form.deliveryZone} onChange={set("deliveryZone")}>
+            <SelectInput value={form.deliveryZone} onChange={set("deliveryZone")} id="manual-delivery-zone">
               {DELIVERY_ZONES.map((zone) => (
                 <option key={zone.value} value={zone.value}>
                   {zone.label}
