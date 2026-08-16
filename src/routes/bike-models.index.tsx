@@ -1,7 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { SafeImage } from "@/components/SafeImage";
-import { getBikeModels } from "@/data/catalog";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { site } from "@/data/site";
 
 const title = "Bike Models — Customz Paradise BD";
