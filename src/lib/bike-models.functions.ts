@@ -19,7 +19,7 @@ export const getStorefrontBikeModels = createServerFn({ method: "GET" })
       label: model.label || "Modification Parts",
       image: model.image_url || "/placeholder-bike.jpg",
       alt: model.alt_text || model.name,
-      order: model.sort_order,
-      active: model.is_active
+      order: model.sort_order ?? 0,
+      active: model.is_active ?? true
     }));
   });
