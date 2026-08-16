@@ -56,7 +56,7 @@ function AdminHeroSlides() {
 
   const { data: bikeModels = [], isLoading: modelsLoading } = useQuery({
     queryKey: ["bike-models-admin"],
-    queryFn: () => fetchBikeModels({ data: {} }),
+    queryFn: () => fetchBikeModels(),
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
