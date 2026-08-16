@@ -8,8 +8,8 @@ import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
 export const Route = createFileRoute("/bike-models/$slug")({
-  loader: ({ params, context }) => {
-    const model = getBikeModel(params.slug);
+  loader: async ({ params, context }) => {
+    const model = await getStorefrontBikeModel({ data: { slug: params.slug } });
     if (!model) throw notFound();
     void context.queryClient.ensureQueryData(storefrontProductsQuery());
     return { model };
