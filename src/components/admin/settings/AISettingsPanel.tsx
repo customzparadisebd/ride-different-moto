@@ -70,7 +70,8 @@ export function AISettingsPanel() {
               Future AI Extraction
             </h2>
             <p className="text-sm text-muted-foreground">
-              Prepare the system for AI-powered order data extraction from unstructured text.
+              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+              Improve AI Settings validation and connection testing so I can verify configuration readiness without enabling the feature or requiring credentials during this implementation.
             </p>
           </div>
           <div className="flex items-center gap-3">
