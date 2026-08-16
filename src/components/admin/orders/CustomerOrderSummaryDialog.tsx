@@ -72,7 +72,7 @@ export function CustomerOrderSummaryDialog({
               return (
                 <div
                   key={order.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4 transition-all hover:bg-secondary/50 hover:border-primary/20"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-border bg-secondary/30 p-4 transition-all hover:bg-secondary/50 hover:border-primary/20 focus-within:ring-2 focus-within:ring-primary"
                 >
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">

@@ -261,7 +261,7 @@ function AuthPage() {
                     </p>
                     <Button
                       variant="outline"
-                      className="w-full mt-4"
+                      className="w-full mt-4 focus-visible:ring-offset-2"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);
@@ -284,7 +284,7 @@ function AuthPage() {
                     </p>
                     <Button
                       variant="outline"
-                      className="w-full mt-4"
+                      className="w-full mt-4 focus-visible:ring-offset-2"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);

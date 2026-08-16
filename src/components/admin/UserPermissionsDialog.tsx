@@ -115,7 +115,7 @@ export function UserPermissionsDialog({
         <ScrollArea className="flex-1 pr-4 -mr-4 my-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
             {ASSIGNABLE_PERMISSIONS.map((permission) => (
-              <div key={permission} className="flex items-start space-x-3 group">
+              <div key={permission} className="flex items-start space-x-3 group focus-within:ring-2 focus-within:ring-primary rounded-sm p-1">
                 <Checkbox
                   id={`perm-${permission}`}
                   checked={selected.includes(permission)}

@@ -114,7 +114,7 @@ export function SingleImageUpload({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "flex flex-col items-center justify-center aspect-video sm:aspect-[21/9] w-full max-w-md rounded-lg border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-all",
+              "flex flex-col items-center justify-center aspect-video sm:aspect-[21/9] w-full max-w-md rounded-lg border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               uploading && "pointer-events-none opacity-50"
             )}
           >
