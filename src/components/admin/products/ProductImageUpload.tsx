@@ -347,8 +347,8 @@ export function ProductImageUpload({
           <AlertCircle className="h-3.5 w-3.5 text-cyan-500 mt-0.5" />
           <div className="space-y-1">
             <p className="text-[10px] leading-tight text-cyan-500 font-medium">
-              <span className="font-bold uppercase mr-1 opacity-70">Recommended:</span>
-              {guideline}
+              <span className="font-bold uppercase mr-1 opacity-70 text-[9px]">Auto-Optimization:</span>
+              Images are automatically converted to optimized WebP and prepared for AVIF delivery.
             </p>
             <p className="text-[9px] text-muted-foreground leading-tight">
               Allowed: WebP, JPEG, PNG. Max 2MB per file. Drag images to reorder.
