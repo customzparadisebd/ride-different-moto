@@ -263,7 +263,7 @@ function AdminProducts() {
   };
 
   return (
-    <section className="mx-auto flex h-[calc(100vh-10rem)] max-w-6xl flex-col">
+    <section className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Products</h1>
@@ -408,7 +408,7 @@ function AdminProducts() {
       </div>
 
       {/* ---- Table ---- */}
-      <div className="mt-4 flex-1 overflow-auto rounded-xl border border-border bg-card shadow-card">
+      <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
         <table className="w-full min-w-[980px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
