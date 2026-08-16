@@ -836,7 +836,8 @@ function FlagChip({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className={`rounded-full border px-2 py-0.5 text-xs font-semibold uppercase transition ${
+      title={title}
+      className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase transition ${
         on
           ? "border-primary bg-primary/15 text-primary"
           : "border-border text-muted-foreground hover:text-foreground"
