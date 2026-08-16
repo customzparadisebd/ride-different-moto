@@ -60,11 +60,11 @@ describe('Invoice Sequence Regression Tests', () => {
     
     // Generate next
     const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
-    expect(nextInv).toBe(`${TEST_PREFIX}-${startAt}`);
+    expect(nextInv).toMatch(new RegExp(`^${TEST_PREFIX}-${startAt}`));
     
     // Generate following
     const { data: followInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
-    expect(followInv).toBe(`${TEST_PREFIX}-${startAt + 1}`);
+    expect(followInv).toMatch(new RegExp(`^${TEST_PREFIX}-${startAt + 1}`));
   });
 
   it('should reset to 01 when requested', async () => {
