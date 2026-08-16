@@ -574,3 +574,67 @@ export const reorderProduct360Images = createServerFn({ method: "POST" })
     );
     return { ok: true };
   });
+
+export const bulkUpdateProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) =>
+    import("./products.shared").then((m) => m.bulkProductUpdateInput.parse(input))
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const update: any = {};
+    if (data.category) update.category = data.category;
+    if (typeof data.isActive === "boolean") update.is_active = data.isActive;
+    if (typeof data.isBestDeal === "boolean") update.is_best_deal = data.isBestDeal;
+    if (typeof data.isFeatured === "boolean") update.is_featured = data.isFeatured;
+    if (typeof data.isNewArrival === "boolean") update.is_new_arrival = data.isNewArrival;
+
+    if (Object.keys(update).length === 0) return { ok: true };
+
+    const { error } = await context.supabase.from("products").update(update).in("id", data.ids);
+    if (error) throw new Error("Could not update products.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product",
+      targetLabel: `Bulk update (${data.ids.length} items)`,
+      newValue: { ...update, ids: data.ids },
+    });
+
+    return { ok: true };
+  });
+
+export const bulkRecycleProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) =>
+    import("./products.shared").then((m) => m.bulkProductRecycleInput.parse(input))
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { error } = await context.supabase
+      .from("products")
+      .update({
+        deleted_at: new Date().toISOString(),
+        deleted_by: context.userId,
+        delete_reason: data.reason || null,
+        is_active: false,
+      })
+      .in("id", data.ids);
+
+    if (error) throw new Error("Could not recycle products.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productRecycled,
+      targetType: "product",
+      targetLabel: `Bulk recycle (${data.ids.length} items)`,
+      metadata: { ids: data.ids, reason: data.reason },
+    });
+
+    return { ok: true };
+  });
