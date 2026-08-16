@@ -56,9 +56,9 @@ export const restoreHeroSlides = async () => {
 
   for (const slide of slides) {
     const bikeModel = bikeModels?.find(m => m.slug === slide.link_url);
-    const slideWithModel = {
+    const slideWithModel: HeroSlideInsert = {
       ...slide,
-      bike_model_id: bikeModel?.id
+      bike_model_id: bikeModel?.id ?? null
     };
 
     const { data: existing } = await supabaseAdmin
