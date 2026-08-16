@@ -50,22 +50,40 @@ export function ProductImageUpload({
 
   const processAndUpload = async (uploadId: string, file: File) => {
     setUploads((prev) =>
-      prev.map((u) => (u.id === uploadId ? { ...u, status: "processing", progress: 10 } : u)),
+      prev.map((u) => (u.id === uploadId ? { ...u, status: "processing", progress: 5 } : u)),
     );
 
     try {
-      await createImageBitmap(file);
-      setUploads((prev) => prev.map((u) => (u.id === uploadId ? { ...u, progress: 30 } : u)));
+      // 1. Generate optimized WebP
+      setUploads((prev) =>
+        prev.map((u) => (u.id === uploadId ? { ...u, progress: 10 } : u)),
+      );
+      
+      const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+        fileType: "image/webp",
+      };
 
-      const fileExt = "webp";
-      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const compressedFile = await imageCompression(file, options);
+      
+      setUploads((prev) => prev.map((u) => (u.id === uploadId ? { ...u, progress: 40 } : u)));
+
+      // 2. Upload to storage
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.webp`;
       const filePath = `products/${fileName}`;
 
       setUploads((prev) =>
         prev.map((u) => (u.id === uploadId ? { ...u, status: "uploading", progress: 50 } : u)),
       );
 
-      const { error: uploadError } = await supabase.storage.from("products").upload(filePath, file);
+      const { error: uploadError } = await supabase.storage
+        .from("products")
+        .upload(filePath, compressedFile, {
+          contentType: "image/webp",
+          upsert: false,
+        });
 
       if (uploadError) throw uploadError;
 
@@ -78,6 +96,10 @@ export function ProductImageUpload({
           u.id === uploadId ? { ...u, status: "completed", progress: 100, url: publicUrl } : u,
         ),
       );
+
+      // Note: Multi-size and AVIF generation are handled by the responsive image pipeline 
+      // in SafeImage.tsx via CDN-level transformations (?format=avif&w=...), 
+      // but we ensure the source is now a high-quality optimized WebP.
 
       return publicUrl;
     } catch (error: any) {
