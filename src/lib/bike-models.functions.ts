@@ -27,8 +27,6 @@ export const getStorefrontBikeModel = createServerFn({ method: "GET" })
     };
   });
 
-import { z } from "zod";
-
 export const getStorefrontBikeModels = createServerFn({ method: "GET" })
   .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
