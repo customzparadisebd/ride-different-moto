@@ -5,6 +5,12 @@ import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSetting
 import { getMyAccess } from "@/lib/orders.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings/invoice")({
+  beforeLoad: ({ context }) => {
+    const access = context.access;
+    if (access.primaryRole !== "super_admin" && access.primaryRole !== "admin") {
+      throw redirect({ to: "/ad", replace: true });
+    }
+  },
   head: () => ({
     meta: [
       { title: "Invoice Settings — CZP Ops" },
