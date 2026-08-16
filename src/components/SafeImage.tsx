@@ -83,7 +83,7 @@ export function SafeImage({
       
       // If we are retrying, check if the error was a 404/failure for a specific variant
       // and trigger a regeneration request in the background
-      if (src.includes(".supabase.co/storage/v1/object/public/") || src.includes(".lovableproject.com/")) {
+      if (src.includes(".supabase.co/storage/v1/object/public/") || src.includes(".lovableproject.com/") || src.startsWith("/")) {
         const formats: ("avif" | "webp")[] = ["avif", "webp"];
         const widths = [400, 640, 800, 1200, 1920];
         

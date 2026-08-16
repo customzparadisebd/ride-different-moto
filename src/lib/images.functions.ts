@@ -24,9 +24,13 @@ export const regenerateMissingVariants = createServerFn({ method: "POST" })
     
     // 1. Identify if the image is a Supabase storage URL
     // Example: https://[project].supabase.co/storage/v1/object/public/products/uploads/image.webp
-    const isSupabaseStorage = src.includes(".supabase.co/storage/v1/object/public/") || src.includes(".lovableproject.com/");
+    const isSupabaseStorage = 
+      src.includes(".supabase.co/storage/v1/object/public/") || 
+      src.includes(".lovableproject.com/") ||
+      src.startsWith("/"); // Local path for public assets
     
     if (!isSupabaseStorage) {
+      console.log(`[ImagePipeline] Skipping non-storage URL: ${src}`);
       return { success: false, message: "External image - regeneration not supported" };
     }
 
