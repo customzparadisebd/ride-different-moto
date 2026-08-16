@@ -19,7 +19,7 @@ export const restoreHeroSlides = async () => {
       title: "Pulsar N160",
       subtitle: "Modification Setup",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-pulsar-n160.jpg",
-      link_url: "pulsar-n160",
+      link_url: "bajaj-pulsar-n160-parts-bd",
       sort_order: 1,
       is_active: true
     },
@@ -27,7 +27,7 @@ export const restoreHeroSlides = async () => {
       title: "Pulsar N250",
       subtitle: "Full Modification Guide",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-pulsar-n160.jpg",
-      link_url: "pulsar-n250",
+      link_url: "pulsar-n250-parts-bangladesh",
       sort_order: 2,
       is_active: true
     },
@@ -35,7 +35,7 @@ export const restoreHeroSlides = async () => {
       title: "Yamaha R15 V4",
       subtitle: "Silver & Carbon Build",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-r15-v4.jpg",
-      link_url: "r15-v4",
+      link_url: "yamaha-r15-v4-modification-parts",
       sort_order: 3,
       is_active: true
     },
@@ -43,7 +43,7 @@ export const restoreHeroSlides = async () => {
       title: "Duke 250",
       subtitle: "Blacked Out Build",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-duke-250.jpg",
-      link_url: "duke-250",
+      link_url: "ktm-duke-250-accessories-bd",
       sort_order: 4,
       is_active: true
     }
