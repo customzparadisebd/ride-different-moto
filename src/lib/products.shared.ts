@@ -258,4 +258,5 @@ export const bulkProductImageInput = z.object({
   ids: z.array(z.string().uuid()).min(1).max(100),
   imageUrl: z.string().trim().min(1).max(600).optional(),
   appendGallery: z.array(z.string().trim().min(1).max(600)).optional(),
+  replaceGallery: z.array(z.string().trim().min(1).max(600)).optional(),
 });
