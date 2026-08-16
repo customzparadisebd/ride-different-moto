@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import imageCompression from "browser-image-compression";
 import {
   Upload,
   X,
