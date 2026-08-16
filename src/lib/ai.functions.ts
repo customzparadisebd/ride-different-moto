@@ -29,7 +29,10 @@ export const getAISettings = createServerFn({ method: "GET" })
 
 export const saveAISettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => aiSettingsSchema.parse(input))
+  .validator((input: unknown) => {
+    const { aiSettingsSchema } = require("./ai.shared");
+    return aiSettingsSchema.parse(input);
+  })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -70,11 +73,29 @@ export const saveAISettings = createServerFn({ method: "POST" })
 
 export const testAIConnection = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
+  .validator((input: unknown) => {
+    // We allow testing without requiring the master toggle to be ON in the database
+    // but the input must be valid for the provider
+    const { aiSettingsSchema } = require("./ai.shared");
+    return aiSettingsSchema.parse(input);
+  })
+  .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.apiManage);
 
-    // MOCK: In a real implementation, this would call the actual provider
-    return { success: true, message: "Connection parameters are valid. AI feature is ready for activation." };
+    // Basic syntax validation based on provider
+    if (data.provider === 'gemini' && !data.apiKey.startsWith('AIza')) {
+      return { success: false, message: "Invalid Gemini API Key format. Should start with 'AIza'." };
+    }
+    
+    if (data.provider === 'openai' && !data.apiKey.startsWith('sk-')) {
+      return { success: false, message: "Invalid OpenAI API Key format. Should start with 'sk-'." };
+    }
+
+    // MOCK: In a real activation, this would perform a lightweight model list call
+    return { 
+      success: true, 
+      message: `Configuration for ${data.provider} (${data.modelName}) is valid. The system is ready to connect once enabled.` 
+    };
   });

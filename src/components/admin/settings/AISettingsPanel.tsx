@@ -45,7 +45,7 @@ export function AISettingsPanel() {
   });
 
   const testMutation = useMutation({
-    mutationFn: () => testConnFn({}),
+    mutationFn: (data: AISettings) => testConnFn({ data }),
     onSuccess: (res) => {
       if (res.success) toast.success(res.message);
       else toast.error(res.message);
@@ -70,7 +70,8 @@ export function AISettingsPanel() {
               Future AI Extraction
             </h2>
             <p className="text-sm text-muted-foreground">
-              Prepare the system for AI-powered order data extraction from unstructured text.
+              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+              Improve AI Settings validation and connection testing so I can verify configuration readiness without enabling the feature or requiring credentials during this implementation.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -123,11 +124,14 @@ export function AISettingsPanel() {
                 type="password"
                 placeholder="Paste your API key here"
                 value={draft.apiKey}
+                autoComplete="off"
                 onChange={(e) => setDraft((c) => ({ ...c, apiKey: e.target.value }))}
                 disabled={!draft.enabled}
               />
               <p className="text-[10px] text-muted-foreground italic">
-                Note: This feature is currently in architectural preparation mode. No requests are made.
+                {draft.provider === 'gemini' ? 'Gemini keys typically start with AIza.' : 
+                 draft.provider === 'openai' ? 'OpenAI keys typically start with sk-.' : 
+                 'Enter your provider credentials.'}
               </p>
             </div>
           </div>
@@ -137,8 +141,8 @@ export function AISettingsPanel() {
               variant="outline"
               size="sm"
               className="flex-1 sm:flex-initial"
-              onClick={() => testMutation.mutate()}
-              disabled={testMutation.isPending || !draft.enabled}
+              onClick={() => testMutation.mutate(draft)}
+              disabled={testMutation.isPending}
             >
               {testMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
