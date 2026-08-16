@@ -137,6 +137,39 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_settings: {
+        Row: {
+          api_key: string | null
+          credentials: Json
+          enabled: boolean
+          id: string
+          model_name: string | null
+          provider: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          api_key?: string | null
+          credentials?: Json
+          enabled?: boolean
+          id?: string
+          model_name?: string | null
+          provider?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          api_key?: string | null
+          credentials?: Json
+          enabled?: boolean
+          id?: string
+          model_name?: string | null
+          provider?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       bike_models: {
         Row: {
           alt_text: string | null
