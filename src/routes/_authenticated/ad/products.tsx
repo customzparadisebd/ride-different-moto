@@ -24,6 +24,8 @@ import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Image as ImageIcon } from "lucide-react";
+import { ProductImageUpload } from "@/components/admin/products/ProductImageUpload";
 import { X, CheckSquare, Square, Trash2, Tag, Eye, EyeOff, LayoutPanelLeft } from "lucide-react";
 import {
   bulkUpdateProducts,

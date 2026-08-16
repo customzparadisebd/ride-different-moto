@@ -14,7 +14,7 @@ export const Route = createFileRoute("/ad/diagnostics")({
 });
 
 function AdminDiagnostics() {
-  const verify = useServerFn(verifyDatabaseSecurity);
+  const verify = useServerFn(verifyDatabaseSecurity) as any;
   const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
