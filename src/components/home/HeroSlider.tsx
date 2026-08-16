@@ -100,6 +100,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                   width={1920}
                   height={1080}
                   priority={index === 0}
+                  fetchPriority={index === 0 ? "high" : "auto"}
                   sizes="100vw"
                   containerClassName={cn(
                     "w-full bg-onyx",

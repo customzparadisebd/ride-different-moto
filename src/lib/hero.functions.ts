@@ -174,3 +174,57 @@ export const updateBikeModel = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const reorderHeroSlides = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) =>
+    z
+      .object({
+        ids: z.array(z.string().uuid()),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { error } = await Promise.all(
+      data.ids.map((id, index) =>
+        context.supabase
+          .from("hero_slides")
+          .update({ sort_order: index } as any)
+          .eq("id", id),
+      ),
+    ).then((results) => {
+      const err = results.find((r) => r.error);
+      return err ? err : { error: null };
+    });
+
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const updateBikeModelImage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        imageUrl: z.string().url(),
+      })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { error } = await context.supabase
+      .from("bike_models")
+      .update({ image_url: data.imageUrl } as any)
+      .eq("id", data.id);
+
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
