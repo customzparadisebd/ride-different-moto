@@ -263,7 +263,7 @@ function AdminProducts() {
   };
 
   return (
-    <section className="mx-auto max-w-7xl">
+    <section className="mx-auto max-w-6xl">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Products</h1>
@@ -409,7 +409,7 @@ function AdminProducts() {
 
       {/* ---- Table ---- */}
       <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
-        <table className="w-full text-sm table-fixed">
+        <table className="w-full min-w-[980px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
               <th className="p-3 w-10">
@@ -425,27 +425,27 @@ function AdminProducts() {
                   )}
                 </button>
               </th>
-              <th className="p-3 w-[200px] sm:w-[250px]">Product</th>
-              <th className="p-3 w-[100px] hidden lg:table-cell">SKU</th>
-              <th className="p-3 w-[120px] hidden md:table-cell">Category</th>
-              <th className="p-3 w-[100px] text-right">Price</th>
-              <th className="p-3 w-[100px] text-right hidden xl:table-cell">Offer</th>
-              <th className="p-3 w-[140px]">Stock</th>
-              <th className="p-3 w-[100px] hidden sm:table-cell">Flags</th>
-              <th className="p-3 text-right w-[180px]">Actions</th>
+              <th className="p-3">Product</th>
+              <th className="p-3">SKU</th>
+              <th className="p-3">Category</th>
+              <th className="p-3 text-right">Price</th>
+              <th className="p-3 text-right">Offer</th>
+              <th className="p-3">Stock</th>
+              <th className="p-3">Flags</th>
+              <th className="p-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {listQuery.isLoading && (
               <tr>
-                <td colSpan={9} className="p-6 text-center text-muted-foreground">
+                <td colSpan={8} className="p-6 text-center text-muted-foreground">
                   Loading products…
                 </td>
               </tr>
             )}
             {!listQuery.isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={9} className="p-6 text-center text-muted-foreground">
+                <td colSpan={8} className="p-6 text-center text-muted-foreground">
                   No products yet. Use “Add product” to create your first one.
                 </td>
               </tr>
@@ -486,31 +486,18 @@ function AdminProducts() {
                         ) : null}
                       </div>
                       <div>
-                        <span className="font-semibold block truncate" title={row.name}>{row.name}</span>
-                        <span className="block text-[10px] text-muted-foreground truncate">
+                        <span className="font-semibold">{row.name}</span>
+                        <span className="block text-xs text-muted-foreground">
                           {row.is_active ? "Active" : "Inactive"}
-                          {row.is_universal ? " · Universal" : ""}
+                          {row.is_universal ? " · Universal fit" : ""}
                         </span>
                       </div>
                     </div>
                   </td>
-                  <td className="p-3 text-muted-foreground hidden lg:table-cell">
-                    <div className="truncate" title={row.sku}>{row.sku}</div>
-                  </td>
-                  <td className="p-3 text-muted-foreground hidden md:table-cell">
-                    <div className="truncate">{categoryLabel(row.category)}</div>
-                  </td>
-                  <td className="p-3 text-right font-medium">
-                    {formatBDT(Number(row.price))}
-                    <div className="xl:hidden">
-                       {row.offer_price !== null && (
-                         <span className="text-[10px] font-bold text-primary block">
-                           {formatBDT(Number(row.offer_price))}
-                         </span>
-                       )}
-                    </div>
-                  </td>
-                  <td className="p-3 text-right hidden xl:table-cell">
+                  <td className="p-3 text-muted-foreground">{row.sku}</td>
+                  <td className="p-3 text-muted-foreground">{categoryLabel(row.category)}</td>
+                  <td className="p-3 text-right">{formatBDT(Number(row.price))}</td>
+                  <td className="p-3 text-right">
                     {row.offer_price === null ? (
                       <span className="text-muted-foreground">—</span>
                     ) : (
@@ -520,9 +507,9 @@ function AdminProducts() {
                     )}
                   </td>
                   <td className="p-3">
-                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+                    <div className="flex items-center gap-2">
                       <Input
-                        className="h-8 w-16 text-xs sm:h-9 sm:w-20 sm:text-sm"
+                        className="h-9 w-20"
                         defaultValue={String(row.stock_qty)}
                         inputMode="numeric"
                         disabled={!canManage}
@@ -534,7 +521,7 @@ function AdminProducts() {
                         }}
                       />
                       <span
-                        className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:text-xs ${
+                        className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
                           status.key === "in_stock"
                             ? "bg-primary/15 text-primary"
                             : status.key === "low_stock"
@@ -546,13 +533,12 @@ function AdminProducts() {
                       </span>
                     </div>
                   </td>
-                  <td className="p-3 hidden sm:table-cell">
+                  <td className="p-3">
                     <div className="flex flex-wrap gap-1">
                       <FlagChip
-                        label="D"
+                        label="Deal"
                         on={row.is_best_deal}
                         disabled={!canManage}
-                        title="Best Deal"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isBestDeal", value: !row.is_best_deal },
@@ -560,10 +546,9 @@ function AdminProducts() {
                         }
                       />
                       <FlagChip
-                        label="F"
+                        label="Featured"
                         on={row.is_featured}
                         disabled={!canManage}
-                        title="Featured"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isFeatured", value: !row.is_featured },
@@ -571,10 +556,9 @@ function AdminProducts() {
                         }
                       />
                       <FlagChip
-                        label="N"
+                        label="New"
                         on={row.is_new_arrival}
                         disabled={!canManage}
-                        title="New Arrival"
                         onClick={() =>
                           flagMutation.mutate({
                             data: { id: row.id, field: "isNewArrival", value: !row.is_new_arrival },
@@ -584,10 +568,10 @@ function AdminProducts() {
                     </div>
                   </td>
                   <td className="p-3">
-                    <div className="flex flex-wrap justify-end gap-1">
+                    <div className="flex justify-end gap-2">
                       <Button
                         variant="steel"
-                        className="h-7 px-2 text-[10px]"
+                        size="sm"
                         disabled={!canManage}
                         onClick={() => {
                           setCreating(false);
@@ -596,20 +580,20 @@ function AdminProducts() {
                       >
                         Edit
                       </Button>
-                      <Button variant="steel" className="h-7 px-2 text-[10px]" onClick={() => setColorsFor(row)}>
-                        Colors
+                      <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
+                        Colours
                       </Button>
                       <Button
                         variant="steel"
-                        className="h-7 px-2 text-[10px]"
+                        size="sm"
                         disabled={!canManage}
                         onClick={() => setView360For(row)}
                       >
-                        360
+                        360 View
                       </Button>
                       <Button
                         variant="steel"
-                        className="h-7 px-2 text-[10px]"
+                        size="sm"
                         disabled={!canManage}
                         onClick={() =>
                           flagMutation.mutate({
@@ -617,11 +601,11 @@ function AdminProducts() {
                           })
                         }
                       >
-                        {row.is_active ? "OFF" : "ON"}
+                        {row.is_active ? "Deactivate" : "Activate"}
                       </Button>
                       <Button
                         variant="destructive"
-                        className="h-7 px-2 text-[10px]"
+                        size="sm"
                         disabled={!canManage}
                         onClick={() => {
                           const reason = window.prompt(
@@ -822,13 +806,11 @@ function FlagChip({
   label,
   on,
   disabled,
-  title,
   onClick,
 }: {
   label: string;
   on: boolean;
   disabled: boolean;
-  title?: string;
   onClick: () => void;
 }) {
   return (
@@ -836,8 +818,7 @@ function FlagChip({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      title={title}
-      className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase transition ${
+      className={`rounded-full border px-2 py-0.5 text-xs font-semibold uppercase transition ${
         on
           ? "border-primary bg-primary/15 text-primary"
           : "border-border text-muted-foreground hover:text-foreground"
