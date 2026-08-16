@@ -11,6 +11,7 @@ type SafeImageProps = {
   className?: string;
   containerClassName?: string;
   priority?: boolean;
+  fetchPriority?: "high" | "low" | "auto";
   sizes?: string;
   /** Optional custom srcSet, otherwise generated automatically */
   srcSet?: string;
@@ -139,7 +140,7 @@ export function SafeImage({
             // 3. Native Lazy Loading
             loading={priority ? "eager" : "lazy"}
             decoding={priority ? "sync" : "async"}
-            fetchPriority={priority ? "high" : "auto"}
+            fetchPriority={fetchPriority || (priority ? "high" : "auto")}
             draggable={false}
             onLoad={() => setStatus("loaded")}
             onError={() => setStatus("error")}
