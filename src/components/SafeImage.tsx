@@ -5,8 +5,9 @@ type SafeImageProps = {
   src: string;
   mobileSrc?: string | null | undefined;
   alt: string;
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  aspectRatio?: string;
   className?: string;
   containerClassName?: string;
   priority?: boolean;
@@ -29,6 +30,7 @@ export function SafeImage({
   alt,
   width,
   height,
+  aspectRatio,
   className,
   containerClassName,
   priority = false,
@@ -88,7 +90,7 @@ export function SafeImage({
     <div
       className={cn("relative overflow-hidden bg-muted", containerClassName)}
       style={{
-        aspectRatio: `${width} / ${height}`,
+        aspectRatio: aspectRatio || (width && height ? `${width} / ${height}` : undefined),
       }}
     >
       {/* 4. Blur-up placeholder effect */}
@@ -118,7 +120,7 @@ export function SafeImage({
           <source
             srcSet={
               srcSet ||
-              `${src}?w=${width}&format=webp&q=80 1x, ${src}?w=${width * 2}&format=webp&q=70 2x`
+              `${src}?w=${width || 800}&format=webp&q=80 1x, ${src}?w=${(width || 800) * 2}&format=webp&q=70 2x`
             }
             type="image/webp"
           />

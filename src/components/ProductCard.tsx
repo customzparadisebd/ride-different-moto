@@ -66,7 +66,8 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           width={800}
           height={800}
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-          containerClassName="aspect-square w-full"
+          containerClassName="aspect-square w-full bg-secondary/5"
+          className="transition-transform duration-700 hover:scale-105"
         />
         <div className="absolute left-2 top-2 flex flex-col items-start gap-1">
           {discount !== null && (

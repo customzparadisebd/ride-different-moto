@@ -89,8 +89,8 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
                   width={800}
                   height={600}
                   sizes="(max-width: 640px) 70vw, 25vw"
-                  containerClassName="aspect-4/3 w-full"
-                  className="transition-transform duration-500 group-hover:scale-105"
+                  containerClassName="aspect-[3/2] w-full"
+                  className="transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="border-t border-border p-3">
                   <p className="truncate font-display text-base font-bold uppercase tracking-wide">
