@@ -37,6 +37,7 @@ export function SafeImage({
   className,
   containerClassName,
   priority = false,
+  fetchPriority,
   sizes = "100vw",
   srcSet,
   blurDataURL,
