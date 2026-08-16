@@ -109,7 +109,7 @@ export function Header() {
 
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
+              <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-6" aria-label="Open menu">
                 <Menu />
               </Button>
             </SheetTrigger>
