@@ -19,6 +19,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { listProducts } from "@/lib/products.functions";
 import { formatBDT } from "@/lib/format";
+import { getAISettings } from "@/lib/ai.functions";
+import { type ExtractedOrderData } from "@/lib/ai.shared";
+import { Sparkles } from "lucide-react";
 import {
   DELIVERY_ZONES,
   ORDER_STATUSES,
@@ -63,10 +66,21 @@ export function ManualOrderForm({
   onClose?: () => void;
 }) {
   const fetchProducts = useServerFn(listProducts);
+  const fetchAISettings = useServerFn(getAISettings);
+
   const productsQuery = useQuery({
     queryKey: ["admin-catalog-search"],
     queryFn: () => fetchProducts({ data: { pageSize: 100, activeOnly: true } }),
   });
+
+  const aiSettingsQuery = useQuery({
+    queryKey: ["admin-ai-settings-compact"],
+    queryFn: () => fetchAISettings({}),
+  });
+
+  const aiEnabled = aiSettingsQuery.data?.enabled ?? false;
+  const [aiInput, setAiInput] = useState("");
+  const [isAiProcessing, setIsAiProcessing] = useState(false);
 
   const catalog = productsQuery.data?.rows ?? [];
 
@@ -180,6 +194,43 @@ export function ManualOrderForm({
 
   return (
     <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
+      {/* ---- AI Organizer (Visible only when enabled) ---- */}
+      {aiEnabled && (
+        <fieldset className="rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
+          <legend className="flex items-center gap-2 px-1 font-display text-sm font-bold uppercase text-primary">
+            <Sparkles className="h-4 w-4" />
+            Organize with AI
+          </legend>
+          <div className="space-y-3">
+            <Textarea
+              placeholder="Paste messy customer info here (e.g. name, phone, address, product, quantity...)"
+              value={aiInput}
+              onChange={(e) => setAiInput(e.target.value)}
+              className="min-h-[100px] border-primary/20 bg-background/50 focus:border-primary"
+            />
+            <div className="flex justify-end">
+              <Button
+                type="button"
+                variant="steel"
+                size="sm"
+                onClick={() => {
+                  toast.info("AI extraction is in preparation mode. No requests are made yet.");
+                  // Placeholder for future logic
+                }}
+                disabled={!aiInput.trim() || isAiProcessing}
+              >
+                {isAiProcessing ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="mr-2 h-4 w-4" />
+                )}
+                Extract Info
+              </Button>
+            </div>
+          </div>
+        </fieldset>
+      )}
+
       {/* ---- Customer ---- */}
       <fieldset className="rounded-xl border border-border bg-card p-4 shadow-card">
         <legend className="px-1 font-display text-sm font-bold uppercase">Customer</legend>

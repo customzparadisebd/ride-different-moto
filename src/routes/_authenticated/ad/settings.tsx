@@ -17,6 +17,7 @@ import { CitiesPanel } from "@/components/admin/checkout/CitiesPanel";
 import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPanel";
 import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSettingsPanel";
 import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSettingsPanel";
+import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
@@ -286,6 +287,11 @@ function AdminSettings() {
                 <Link to="/ad/settings/invoice" className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 rounded-full px-4 text-xs">Manage Invoices</Link>
               </Button>
             </div>
+          </div>
+
+          {/* AI SETTINGS — ARCHITECTURAL PREP */}
+          <div className="mt-6">
+            <AISettingsPanel />
           </div>
 
           {/* STEADFAST API INTEGRATION — COMPLETED (Admin / Super Admin only) */}
