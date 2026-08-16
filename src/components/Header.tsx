@@ -53,7 +53,7 @@ export function Header() {
 
         {/* CENTER: Main navigation (Perfectly centered to the viewport) */}
         <nav
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1.5 lg:flex"
+          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 xl:gap-3 lg:flex"
           aria-label="Main"
         >
           {navLinks.map((link) => (
