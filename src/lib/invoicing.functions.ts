@@ -48,12 +48,8 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
-    // REQUIRE SUPER ADMIN FOR RESETTING SERIALS
-    if (data.nextNumber !== undefined) {
-      assertAccess(actor, PERMISSIONS.apiManage); // Assume Super Admin or high-level dev permission
-    } else {
-      assertAccess(actor, PERMISSIONS.apiManage);
-    }
+    // REQUIRE ADMIN FOR RESETTING SERIALS
+    assertAccess(actor, PERMISSIONS.ordersManage);
 
     const { data: before } = await context.supabase
       .from("invoice_settings")
