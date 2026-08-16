@@ -584,10 +584,10 @@ function AdminProducts() {
                     </div>
                   </td>
                   <td className="p-3">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-end gap-1">
                       <Button
                         variant="steel"
-                        size="sm"
+                        className="h-7 px-2 text-[10px]"
                         disabled={!canManage}
                         onClick={() => {
                           setCreating(false);
@@ -596,20 +596,20 @@ function AdminProducts() {
                       >
                         Edit
                       </Button>
-                      <Button variant="steel" size="sm" onClick={() => setColorsFor(row)}>
-                        Colours
+                      <Button variant="steel" className="h-7 px-2 text-[10px]" onClick={() => setColorsFor(row)}>
+                        Colors
                       </Button>
                       <Button
                         variant="steel"
-                        size="sm"
+                        className="h-7 px-2 text-[10px]"
                         disabled={!canManage}
                         onClick={() => setView360For(row)}
                       >
-                        360 View
+                        360
                       </Button>
                       <Button
                         variant="steel"
-                        size="sm"
+                        className="h-7 px-2 text-[10px]"
                         disabled={!canManage}
                         onClick={() =>
                           flagMutation.mutate({
@@ -617,11 +617,11 @@ function AdminProducts() {
                           })
                         }
                       >
-                        {row.is_active ? "Deactivate" : "Activate"}
+                        {row.is_active ? "OFF" : "ON"}
                       </Button>
                       <Button
                         variant="destructive"
-                        size="sm"
+                        className="h-7 px-2 text-[10px]"
                         disabled={!canManage}
                         onClick={() => {
                           const reason = window.prompt(
