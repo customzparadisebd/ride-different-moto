@@ -108,7 +108,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                       ? "aspect-[3/4] sm:aspect-21/9"
                       : "aspect-[4/5] sm:aspect-16/9 lg:aspect-21/9",
                   )}
-                  className="transition-transform duration-1000 group-hover:scale-105"
+                  className="transition-transform duration-1000 group-hover:scale-105 object-cover"
                 />
                 {!slide.isFullBanner && (
                   <>
