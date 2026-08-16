@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, Link2, Layout, Settings2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, Link2, Layout, Settings2, GripVertical } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,10 @@ import {
   restoreOldHeroSlides,
   getActiveBikeModelsForAdmin,
   updateBikeModel,
+  reorderHeroSlides,
+  updateBikeModelImage,
 } from "@/lib/hero.functions";
+import { SingleImageUpload } from "@/components/admin/SingleImageUpload";
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
   head: () => ({
@@ -48,6 +51,8 @@ function AdminHeroSlides() {
   const restoreSlides = useServerFn(restoreOldHeroSlides);
   const fetchBikeModels = useServerFn(getActiveBikeModelsForAdmin);
   const editBikeModel = useServerFn(updateBikeModel);
+  const reorderSlides = useServerFn(reorderHeroSlides);
+  const editBikeModelImage = useServerFn(updateBikeModelImage);
 
   const { data: slides = [], isLoading: slidesLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
@@ -62,6 +67,8 @@ function AdminHeroSlides() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [uploadingType, setUploadingType] = useState<string | null>(null);
+  const dragItem = useRef<number | null>(null);
+  const dragOverItem = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mobileFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -178,6 +185,42 @@ function AdminHeroSlides() {
       bike_model_id: (formData.get("bike_model_id") as string) || null,
     };
     addMutation.mutate({ data });
+  };
+
+  const reorderMutation = useMutation({
+    mutationFn: reorderSlides,
+    onSuccess: () => {
+      toast.success("Order updated");
+      queryClient.invalidateQueries({ queryKey: ["hero-slides-admin"] });
+      queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to reorder"),
+  });
+
+  const bikeImageMutation = useMutation({
+    mutationFn: editBikeModelImage,
+    onSuccess: () => {
+      toast.success("Bike image updated");
+      queryClient.invalidateQueries({ queryKey: ["bike-models-admin"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to update bike image"),
+  });
+
+  const handleSort = () => {
+    if (dragItem.current === null || dragOverItem.current === null) return;
+    if (dragItem.current === dragOverItem.current) return;
+
+    const items = [...slides].sort((a, b) => a.order - b.order);
+    const draggedItem = items[dragItem.current];
+    if (draggedItem) {
+      const newItems = [...items];
+      newItems.splice(dragItem.current, 1);
+      newItems.splice(dragOverItem.current, 0, draggedItem);
+
+      dragItem.current = null;
+      dragOverItem.current = null;
+      reorderMutation.mutate({ data: { ids: newItems.map((s) => s.id) } });
+    }
   };
 
   if (slidesLoading || modelsLoading)
@@ -345,12 +388,17 @@ function AdminHeroSlides() {
             ) : (
               [...slides]
                 .sort((a, b) => a.order - b.order)
-                .map((slide) => (
+                .map((slide, index) => (
                   <div
                     key={slide.id}
+                    draggable={!editingId}
+                    onDragStart={() => (dragItem.current = index)}
+                    onDragEnter={() => (dragOverItem.current = index)}
+                    onDragEnd={handleSort}
+                    onDragOver={(e) => e.preventDefault()}
                     className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
                       slide.active ? "border-border bg-card shadow-sm" : "border-dashed border-muted-foreground/30 bg-muted/5 opacity-80"
-                    } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"}`}
+                    } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"} ${!editingId ? "cursor-move" : ""}`}
                   >
                     {editingId === slide.id ? (
                       <form
@@ -464,8 +512,9 @@ function AdminHeroSlides() {
                           <div className="flex items-start justify-between">
                             <div className="space-y-1">
                               <div className="flex items-center gap-2">
+                                <GripVertical className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
                                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary border border-primary/20">
-                                  {slide.order}
+                                  {index + 1}
                                 </span>
                                 <h3 className="font-display text-xl font-bold uppercase tracking-wide">
                                   {slide.bikeName}
@@ -518,12 +567,30 @@ function AdminHeroSlides() {
             <CardContent>
               <div className="grid gap-4">
                 {bikeModels.map((model: any) => (
-                  <div key={model.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
-                    <div className="space-y-1">
-                      <p className="font-display font-bold uppercase tracking-wide">{model.name}</p>
-                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{model.slug}</p>
+                  <div key={model.id} className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="h-12 w-20 shrink-0 overflow-hidden rounded bg-black/20">
+                        {model.image_url ? (
+                          <img src={model.image_url} alt={model.name} className="h-full w-full object-cover" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center text-[8px] uppercase text-muted-foreground">No Image</div>
+                        )}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="font-display font-bold uppercase tracking-wide">{model.name}</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{model.slug}</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-6">
+                    <div className="flex flex-wrap items-center gap-6">
+                      <div className="flex-1 min-w-[200px]">
+                        <SingleImageUpload
+                          value={model.image_url || ""}
+                          onChange={(url) => bikeImageMutation.mutate({ data: { id: model.id, imageUrl: url } })}
+                          guideline="Bike Explorer Card (3:2 suggested)"
+                          bucket="hero"
+                          pathPrefix="bikes"
+                        />
+                      </div>
                       <div className="flex items-center gap-2">
                         <Label htmlFor={`order-${model.id}`} className="text-[10px] uppercase text-muted-foreground">Order</Label>
                         <Input
