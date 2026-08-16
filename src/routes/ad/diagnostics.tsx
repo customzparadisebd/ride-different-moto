@@ -21,7 +21,7 @@ function AdminDiagnostics() {
   const runCheck = async () => {
     setLoading(true);
     try {
-      const res = await verify({ data: {} });
+      const res = await (verify as any)({ data: {} });
       setResults(res);
       toast.success("Security check completed");
     } catch (err: any) {
