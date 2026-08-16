@@ -26,6 +26,14 @@ Required for automated booking and tracking.
 | `STEADFAST_API_KEY`    | Backend Only | Your production API Key from SteadFast.    | **Set in Admin Settings UI** (or Env) |
 | `STEADFAST_API_SECRET` | Backend Only | Your production API Secret from SteadFast. | **Set in Admin Settings UI** (or Env) |
 
+## 3. Integration: AI Extraction (Optional)
+
+Required for future AI-powered order extraction.
+
+| Key                    | Scope        | Description                                | Manual Action                         |
+| ---------------------- | ------------ | ------------------------------------------ | ------------------------------------- |
+| `LOVABLE_API_KEY`      | Backend Only | Your Lovable/AI Gateway API Key.           | **Set in Admin Settings UI** (or Env) |
+
 ## 3. Rate Limiting (Optional / Tuning)
 
 Controls the progressive lockout and request throttling.
