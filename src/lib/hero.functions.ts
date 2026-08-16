@@ -3,12 +3,18 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
-
 export const getHeroSlides = createServerFn({ method: "GET" })
   .validator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const query = supabaseAdmin.from("hero_slides").select("*");
+    
+    // Join with bike_models to get name and slug if linked
+    const query = supabaseAdmin
+      .from("hero_slides")
+      .select(`
+        *,
+        bike_model:bike_models(id, name, slug)
+      `);
 
     if (!admin) {
       query.eq("is_active", true);
@@ -18,18 +24,22 @@ export const getHeroSlides = createServerFn({ method: "GET" })
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map((slide) => ({
-      id: slide.id,
-      bikeName: slide.title,
-      label: slide.subtitle || undefined,
-      image: slide.image_url,
-      mobileImage: (slide as any).mobile_image_url || undefined,
-      alt: slide.title,
-      bikeSlug: slide.link_url || "all-products",
-      order: slide.sort_order,
-      active: slide.is_active,
-      isFullBanner: slide.title.includes("Perfect Price"),
-    }));
+    return (data || []).map((slide) => {
+      const bikeModel = (slide as any).bike_model;
+      return {
+        id: slide.id,
+        bikeName: slide.title || bikeModel?.name,
+        label: slide.subtitle || undefined,
+        image: slide.image_url,
+        mobileImage: (slide as any).mobile_image_url || undefined,
+        alt: slide.title,
+        bikeSlug: bikeModel?.slug || slide.link_url || "all-products",
+        order: slide.sort_order,
+        active: slide.is_active,
+        isFullBanner: slide.title?.includes("Perfect Price") || false,
+        bikeModelId: (slide as any).bike_model_id,
+      };
+    });
   });
 
 export const updateHeroSlide = createServerFn({ method: "POST" })
@@ -47,6 +57,7 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
           link_label: z.string().optional().nullable(),
           sort_order: z.number().optional(),
           is_active: z.boolean().optional(),
+          bike_model_id: z.string().uuid().optional().nullable(),
         }),
       })
       .parse(d),
@@ -78,6 +89,7 @@ export const createHeroSlide = createServerFn({ method: "POST" })
         link_label: z.string().optional().nullable(),
         sort_order: z.number().default(0),
         is_active: z.boolean().default(true),
+        bike_model_id: z.string().uuid().optional().nullable(),
       })
       .parse(d),
   )
@@ -117,4 +129,48 @@ export const restoreOldHeroSlides = createServerFn({ method: "POST" })
 
     const { restoreHeroSlides } = await import("./hero-restore.server");
     return restoreHeroSlides();
+  });
+
+export const getActiveBikeModelsForAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { data, error } = await context.supabase
+      .from("bike_models")
+      .select("id, name, slug, is_active, sort_order")
+      .order("sort_order", { ascending: true });
+
+    if (error) throw new Error(error.message);
+    return data || [];
+  });
+
+export const updateBikeModel = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((d) =>
+    z.object({
+      id: z.string().uuid(),
+      updates: z.object({
+        name: z.string().optional(),
+        slug: z.string().optional(),
+        label: z.string().optional().nullable(),
+        sort_order: z.number().optional(),
+        is_active: z.boolean().optional(),
+      }),
+    }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { error } = await context.supabase
+      .from("bike_models")
+      .update(data.updates as any)
+      .eq("id", data.id);
+
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });

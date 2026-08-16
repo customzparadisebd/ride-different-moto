@@ -24,11 +24,19 @@ export const restoreHeroSlides = async () => {
       is_active: true
     },
     {
+      title: "Pulsar N250",
+      subtitle: "Full Modification Guide",
+      image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-pulsar-n160.jpg",
+      link_url: "pulsar-n250",
+      sort_order: 2,
+      is_active: true
+    },
+    {
       title: "Yamaha R15 V4",
       subtitle: "Silver & Carbon Build",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-r15-v4.jpg",
       link_url: "r15-v4",
-      sort_order: 2,
+      sort_order: 3,
       is_active: true
     },
     {
@@ -36,12 +44,23 @@ export const restoreHeroSlides = async () => {
       subtitle: "Blacked Out Build",
       image_url: "https://pqphihorljepzfdacant.supabase.co/storage/v1/object/public/hero-banners/hero-duke-250.jpg",
       link_url: "duke-250",
-      sort_order: 3,
+      sort_order: 4,
       is_active: true
     }
   ];
 
+  // Fetch all bike models to link slides correctly
+  const { data: bikeModels } = await supabaseAdmin
+    .from("bike_models")
+    .select("id, slug");
+
   for (const slide of slides) {
+    const bikeModel = bikeModels?.find(m => m.slug === slide.link_url);
+    const slideWithModel: HeroSlideInsert = {
+      ...slide,
+      bike_model_id: bikeModel?.id ?? null
+    };
+
     const { data: existing } = await supabaseAdmin
       .from("hero_slides")
       .select("id")
@@ -49,9 +68,9 @@ export const restoreHeroSlides = async () => {
       .maybeSingle();
 
     if (existing) {
-      await supabaseAdmin.from("hero_slides").update(slide).eq("id", existing.id);
+      await supabaseAdmin.from("hero_slides").update(slideWithModel).eq("id", existing.id);
     } else {
-      await supabaseAdmin.from("hero_slides").insert(slide);
+      await supabaseAdmin.from("hero_slides").insert(slideWithModel);
     }
   }
   return { success: true };

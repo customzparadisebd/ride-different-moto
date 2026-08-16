@@ -88,8 +88,8 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               aria-label={`${index + 1} of ${slides.length}`}
             >
               <Link
-                to={slide.bikeSlug === "all-products" ? "/" : "/bike-models/$slug"}
-                params={slide.bikeSlug === "all-products" ? {} : ({ slug: slide.bikeSlug } as any)}
+                to={slide.bikeSlug === "all-products" || !slide.bikeSlug ? "/" : "/bike-models/$slug"}
+                params={slide.bikeSlug === "all-products" || !slide.bikeSlug ? {} : ({ slug: slide.bikeSlug } as any)}
                 className="group relative block"
                 aria-label={slide.isFullBanner ? slide.alt : `${slide.bikeName} modification parts`}
               >

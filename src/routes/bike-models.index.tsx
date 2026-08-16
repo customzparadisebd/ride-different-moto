@@ -1,7 +1,9 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { SafeImage } from "@/components/SafeImage";
-import { getBikeModels } from "@/data/catalog";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { site } from "@/data/site";
 
 const title = "Bike Models — Customz Paradise BD";
@@ -24,7 +26,11 @@ export const Route = createFileRoute("/bike-models/")({
 });
 
 function BikeModelsPage() {
-  const models = getBikeModels();
+  const fetchBikeModels = useServerFn(getStorefrontBikeModels);
+  const { data: models = [] } = useQuery({
+    queryKey: ["bike-models"],
+    queryFn: () => fetchBikeModels(),
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
