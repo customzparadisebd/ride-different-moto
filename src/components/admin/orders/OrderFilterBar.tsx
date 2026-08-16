@@ -417,7 +417,7 @@ function Select({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`h-11 w-full rounded-md border border-input bg-background px-3 text-sm ${className ?? ""}`}
+      className={`h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${className ?? ""}`}
     >
       {allowEmpty ? <option value="">{placeholder}</option> : null}
       {children}

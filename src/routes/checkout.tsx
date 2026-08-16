@@ -196,7 +196,7 @@ function CheckoutPage() {
                 id="city"
                 value={form.city}
                 onChange={(event) => update("city")(event.target.value)}
-                className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-base sm:text-sm"
+                className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-sm"
               >
                 <option value="">
                   {config.isLoading ? "Loading cities…" : "Select your city / district"}
@@ -216,7 +216,7 @@ function CheckoutPage() {
                 id="deliveryZone"
                 value={form.deliveryZone}
                 onChange={(event) => update("deliveryZone")(event.target.value)}
-                className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-base sm:text-sm"
+                className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-sm"
               >
                 <option value="" disabled>
                   {config.isLoading ? "Loading zones…" : "Select delivery zone"}

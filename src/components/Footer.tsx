@@ -35,7 +35,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5 text-sm">
                 {navLinks.map((link) => (
                   <li key={link.to}>
-                    <Link to={link.to} className="opacity-80 hover:text-primary hover:opacity-100">
+                    <Link to={link.to} className="opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm">
                       {t(link.translationKey)}
                     </Link>
                   </li>
@@ -51,7 +51,7 @@ export function Footer() {
                     href={site.whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
+                    className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <WhatsAppIcon className="size-4 shrink-0 text-brand-whatsapp" />
                     <span>WhatsApp</span>
@@ -60,7 +60,7 @@ export function Footer() {
                 <li>
                   <a
                     href={site.phoneHref}
-                    className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
+                    className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
                     <span>{site.phoneDisplay}</span>
@@ -69,7 +69,7 @@ export function Footer() {
                 <li>
                   <a
                     href={site.emailHref}
-                    className="flex items-start gap-2 opacity-80 hover:text-primary hover:opacity-100"
+                    className="flex items-start gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Mail className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
                     <span className="break-all">{site.email}</span>
@@ -97,7 +97,7 @@ export function Footer() {
                         href={social.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100"
+                        className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                       >
                         {Icon && <Icon className={`size-4 shrink-0 ${entry?.color}`} />}
                         <span>{social.name}</span>
@@ -111,7 +111,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5 text-sm">
                 {legalLinks.map((link) => (
                   <li key={link.to}>
-                    <Link to={link.to} className="opacity-80 hover:text-primary hover:opacity-100">
+                    <Link to={link.to} className="opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm">
                       {link.label}
                     </Link>
                   </li>

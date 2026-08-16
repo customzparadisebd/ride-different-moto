@@ -7,6 +7,7 @@
 // ============================================================
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
@@ -100,7 +101,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
               id="filter-bike"
               value={bike}
               onChange={(event) => setBike(event.target.value)}
-              className={selectClass}
+              className={cn(selectClass, "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary")}
             >
               <option value="all">All bike models</option>
               {bikeOptions.map((option) => (
@@ -116,7 +117,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
               id="filter-category"
               value={category}
               onChange={(event) => setCategory(event.target.value)}
-              className={selectClass}
+              className={cn(selectClass, "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary")}
             >
               <option value="all">All categories</option>
               {categoryOptions.map((option) => (
@@ -132,7 +133,7 @@ export function ProductBrowser({ products }: { products: StorefrontProduct[] }) 
               id="filter-sort"
               value={sort}
               onChange={(event) => setSort(event.target.value as SortKey)}
-              className={selectClass}
+              className={cn(selectClass, "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary")}
             >
               <option value="newest">Newest first</option>
               <option value="price-asc">Price: low to high</option>

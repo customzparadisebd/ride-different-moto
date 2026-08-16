@@ -74,7 +74,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
           <button
             onClick={toggleLanguage}
-            className="flex h-10 items-center rounded-full bg-secondary/50 px-4 font-display text-[12px] font-bold tracking-wider transition-all hover:bg-secondary active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
+            className="flex h-10 items-center rounded-full bg-secondary/50 px-4 font-display text-[12px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
             aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
           >
             <span className={language === "bn" ? "text-primary" : "text-foreground/40"}>বাং</span>

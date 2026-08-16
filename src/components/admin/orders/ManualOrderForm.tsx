@@ -272,7 +272,7 @@ export function ManualOrderForm({
             />
           </Field>
           <Field label="Delivery zone">
-            <SelectInput value={form.deliveryZone} onChange={set("deliveryZone")}>
+            <SelectInput value={form.deliveryZone} onChange={set("deliveryZone")} id="manual-delivery-zone">
               {DELIVERY_ZONES.map((zone) => (
                 <option key={zone.value} value={zone.value}>
                   {zone.label}
@@ -461,7 +461,7 @@ export function ManualOrderForm({
 
       {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
 
-      <Button type="submit" variant="red" size="touch" disabled={externalIsPending}>
+      <Button type="submit" variant="red" size="touch" disabled={externalIsPending} className="focus-visible:ring-offset-2">
         {externalIsPending ? "Saving order…" : "Create order"}
       </Button>
     </form>
@@ -493,16 +493,19 @@ function SelectInput({
   value,
   onChange,
   children,
+  id,
 }: {
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
     <select
+      id={id}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+      className="h-11 w-full rounded-md border border-input bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-sm"
     >
       {children}
     </select>

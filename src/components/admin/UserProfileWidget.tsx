@@ -354,7 +354,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                 value="upload"
                 className="pt-4 space-y-4 animate-in fade-in slide-in-from-bottom-2"
               >
-                <div className="rounded-lg border border-dashed border-border bg-muted/20 p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-muted/30">
+                <label className="rounded-lg border border-dashed border-border bg-muted/20 p-8 flex flex-col items-center justify-center gap-3 transition-colors hover:bg-muted/30 cursor-pointer focus-within:ring-2 focus-within:ring-primary">
                   <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center">
                     <Upload className="h-6 w-6 text-primary" />
                   </div>
@@ -369,7 +369,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                   <input
                     type="file"
                     ref={fileInputRef}
-                    className="hidden"
+                    className="sr-only"
                     accept="image/jpeg,image/png,image/webp"
                     onChange={handleFileUpload}
                   />
@@ -382,7 +382,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                   >
                     Select Image
                   </Button>
-                </div>
+                </label>
 
                 <div className="rounded-md bg-primary/5 border border-primary/20 p-3 flex gap-3">
                   <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />

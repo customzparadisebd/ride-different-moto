@@ -261,7 +261,7 @@ function AuthPage() {
                     </p>
                     <Button
                       variant="outline"
-                      className="w-full mt-4"
+                      className="w-full mt-4 focus-visible:ring-offset-2"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);
@@ -284,7 +284,7 @@ function AuthPage() {
                     </p>
                     <Button
                       variant="outline"
-                      className="w-full mt-4"
+                      className="w-full mt-4 focus-visible:ring-offset-2"
                       onClick={async () => {
                         await supabase.auth.signOut();
                         setApprovalRequestId(null);
@@ -390,7 +390,8 @@ function AuthPage() {
                 type="submit"
                 variant="red"
                 size="touch"
-                className="w-full h-12 text-sm font-black uppercase tracking-widest shadow-3d-red active:translate-y-0.5 active:shadow-none transition-all"
+                autoFocus
+                className="w-full h-12 text-sm font-black uppercase tracking-widest shadow-3d-red active:translate-y-0.5 active:shadow-none transition-all focus-visible:ring-offset-2"
                 disabled={busy || locked}
               >
                 {locked
