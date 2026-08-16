@@ -7,18 +7,25 @@ export const Route = createFileRoute("/api/public/sitemap/xml")({
       GET: async () => {
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         
-        // Fetch active products from DB
-        const { data: products } = await supabaseAdmin
-          .from("products")
-          .select("slug, updated_at")
-          .eq("is_active", true)
-          .is("deleted_at", null);
+        // Fetch active products and bike models from DB
+        const [{ data: products }, { data: models }] = await Promise.all([
+          supabaseAdmin
+            .from("products")
+            .select("slug, updated_at")
+            .eq("is_active", true)
+            .is("deleted_at", null),
+          supabaseAdmin
+            .from("bike_models")
+            .select("slug, updated_at")
+            .eq("is_active", true)
+        ]);
 
         const lastMod = new Date().toISOString().split("T")[0];
 
         const urls = [
           { loc: site.url, priority: "1.0", lastmod: lastMod },
           { loc: `${site.url}/shop`, priority: "0.8", lastmod: lastMod },
+          { loc: `${site.url}/bike-models`, priority: "0.7", lastmod: lastMod },
           // Category pages
           ...["graphics", "lighting", "seat", "exhaust", "handlebar", "body-kit", "accessories", "other"].map(cat => ({
             loc: `${site.url}/shop?category=${cat}`,
@@ -29,6 +36,11 @@ export const Route = createFileRoute("/api/public/sitemap/xml")({
             loc: `${site.url}/products/${p.slug}`,
             priority: "0.7",
             lastmod: p.updated_at ? new Date(p.updated_at).toISOString().split("T")[0] : lastMod,
+          })),
+          ...(models || []).map((m) => ({
+            loc: `${site.url}/bike-models/${m.slug}`,
+            priority: "0.7",
+            lastmod: m.updated_at ? new Date(m.updated_at).toISOString().split("T")[0] : lastMod,
           })),
         ];
 
