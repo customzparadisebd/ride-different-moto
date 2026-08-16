@@ -26,7 +26,11 @@ export const Route = createFileRoute("/bike-models/")({
 });
 
 function BikeModelsPage() {
-  const models = getBikeModels();
+  const fetchBikeModels = useServerFn(getStorefrontBikeModels);
+  const { data: models = [] } = useQuery({
+    queryKey: ["bike-models"],
+    queryFn: () => fetchBikeModels(),
+  });
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
