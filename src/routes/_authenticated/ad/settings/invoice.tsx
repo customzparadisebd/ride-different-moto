@@ -18,36 +18,37 @@ export const Route = createFileRoute("/_authenticated/ad/settings/invoice")({
 function AdminInvoiceSettings() {
   const access = useServerFn(getMyAccess);
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
-  const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
+  const canManage = accessQuery.data?.permissions.includes("orders.manage") ?? false;
 
   return (
     <section className="mx-auto max-w-2xl">
-      <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
-        Invoice Labeling & Management
-      </h1>
-      <p className="text-xs text-muted-foreground">
-        Manage the invoice numbering system and labeling rules.
-      </p>
-
-      <div className="mt-8">
-        <InvoiceSettingsPanel canManage={canManage} />
+      <div className="mb-8">
+        <h1 className="font-display text-3xl font-bold uppercase tracking-wide">
+          Invoice Settings
+        </h1>
+        <p className="text-xs text-muted-foreground mt-1">
+          Manage the invoice numbering sequence for newly created orders.
+        </p>
       </div>
+
+      <InvoiceSettingsPanel canManage={canManage} />
       
       <div className="mt-8 rounded-xl border border-border bg-card p-6 shadow-card">
         <h3 className="font-display text-sm font-bold uppercase tracking-wide mb-4">
-          Invoice Labeling Reference
+          Invoice Control Guidelines
         </h3>
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div className="space-y-2">
-            <p><span className="text-muted-foreground">Invoice Number:</span> {`{Prefix}-{Sequence}`}</p>
-            <p><span className="text-muted-foreground">Order ID:</span> System UUID</p>
-            <p><span className="text-muted-foreground">Customer:</span> Name + Phone</p>
-          </div>
-          <div className="space-y-2">
-            <p><span className="text-muted-foreground">Prices:</span> BDT (৳)</p>
-            <p><span className="text-muted-foreground">Layout:</span> POS Card (680px)</p>
-            <p><span className="text-muted-foreground">Font:</span> Professional Monospace</p>
-          </div>
+        <div className="space-y-4 text-xs text-muted-foreground leading-relaxed">
+          <p>
+            <strong className="text-foreground">Sequential Integrity:</strong> The system automatically increments the serial by 1 for every new order. 
+            If you set a starting number, the sequence will continue from that point exactly.
+          </p>
+          <p>
+            <strong className="text-foreground">Historical Data:</strong> Changing these settings <span className="text-red-500 font-bold">DOES NOT</span> affect existing orders or their invoice numbers. 
+            Only FUTURE orders will follow the new sequence.
+          </p>
+          <p>
+            <strong className="text-foreground">Prefix Management:</strong> The "CZP-" prefix is the brand standard. You can update it, but it's recommended to keep it consistent for accounting purposes.
+          </p>
         </div>
       </div>
     </section>
