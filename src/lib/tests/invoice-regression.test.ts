@@ -59,6 +59,7 @@ describe('Invoice Sequence Regression Tests', () => {
     
     // Generate next
     const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
+    // LPAD(..., 2, '0') for 500 will be '500' because it's > 2 chars, LPAD doesn't truncate
     expect(nextInv).toBe(`CZP-${startAt}`);
     
     // Generate following
