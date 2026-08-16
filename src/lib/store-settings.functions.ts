@@ -9,6 +9,7 @@
 // ============================================================
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
@@ -22,7 +23,8 @@ import {
 } from "./settings.shared";
 
 /** Publishable-key client for public reads (no session, RLS as anon). */
-function publicClient() {
+function getEffectiveClient() {
+  if (typeof window !== "undefined") return supabase;
   const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
   return createClient<Database>(process.env["SUPABASE_URL"]!, key, {
     auth: { persistSession: false, autoRefreshToken: false },
@@ -41,7 +43,7 @@ function publicClient() {
 
 export const getStoreSettings = createServerFn({ method: "GET" }).handler(
   async (): Promise<StoreSettings> => {
-    const { data, error } = await publicClient()
+    const { data, error } = await getEffectiveClient()
       .from("store_settings")
       .select(SETTINGS_COLUMNS)
       .eq("id", "default")
