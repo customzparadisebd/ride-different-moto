@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import imageCompression from "browser-image-compression";
 import {
   Upload,
   X,
@@ -8,6 +9,7 @@ import {
   RefreshCw,
   GripVertical,
   CheckCircle2,
+  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
