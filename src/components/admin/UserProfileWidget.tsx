@@ -382,7 +382,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
                   >
                     Select Image
                   </Button>
-                </div>
+                </label>
 
                 <div className="rounded-md bg-primary/5 border border-primary/20 p-3 flex gap-3">
                   <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />

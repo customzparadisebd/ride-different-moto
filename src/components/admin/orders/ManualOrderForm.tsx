@@ -461,7 +461,7 @@ export function ManualOrderForm({
 
       {error ? <p className="text-sm font-semibold text-destructive">{error}</p> : null}
 
-      <Button type="submit" variant="red" size="touch" disabled={externalIsPending}>
+      <Button type="submit" variant="red" size="touch" disabled={externalIsPending} className="focus-visible:ring-offset-2">
         {externalIsPending ? "Saving order…" : "Create order"}
       </Button>
     </form>
