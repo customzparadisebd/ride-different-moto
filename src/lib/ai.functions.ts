@@ -29,7 +29,10 @@ export const getAISettings = createServerFn({ method: "GET" })
 
 export const saveAISettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => aiSettingsSchema.parse(input))
+  .validator((input: unknown) => {
+    const { aiSettingsSchema } = require("./ai.shared");
+    return aiSettingsSchema.parse(input);
+  })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
