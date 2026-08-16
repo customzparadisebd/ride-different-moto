@@ -85,6 +85,7 @@ describe('Invoice Sequence Regression Tests', () => {
     }).select().single();
     
     expect(insertError).toBeNull();
+    if (!order) throw new Error("Order was not created");
     expect(order.invoice_no).toBe(testInvoiceNo);
     
     // 2. Change invoice settings (prefix and sequence)
