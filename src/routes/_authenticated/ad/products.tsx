@@ -494,10 +494,23 @@ function AdminProducts() {
                       </div>
                     </div>
                   </td>
-                  <td className="p-3 text-muted-foreground">{row.sku}</td>
-                  <td className="p-3 text-muted-foreground">{categoryLabel(row.category)}</td>
-                  <td className="p-3 text-right">{formatBDT(Number(row.price))}</td>
-                  <td className="p-3 text-right">
+                  <td className="p-3 text-muted-foreground truncate hidden lg:table-cell" title={row.sku}>
+                    {row.sku}
+                  </td>
+                  <td className="p-3 text-muted-foreground truncate hidden md:table-cell">
+                    {categoryLabel(row.category)}
+                  </td>
+                  <td className="p-3 text-right font-medium">
+                    {formatBDT(Number(row.price))}
+                    <div className="xl:hidden">
+                       {row.offer_price !== null && (
+                         <span className="text-[10px] font-bold text-primary block">
+                           {formatBDT(Number(row.offer_price))}
+                         </span>
+                       )}
+                    </div>
+                  </td>
+                  <td className="p-3 text-right hidden xl:table-cell">
                     {row.offer_price === null ? (
                       <span className="text-muted-foreground">—</span>
                     ) : (
