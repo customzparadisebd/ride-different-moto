@@ -37,6 +37,7 @@ const securityHeadersMiddleware = createMiddleware().server(async ({ next }) => 
     response.headers.set("x-permitted-cross-domain-policies", "none");
     response.headers.set("permissions-policy", "geolocation=(), microphone=(), camera=()");
     response.headers.set("x-xss-protection", "1; mode=block");
+    response.headers.set("x-frame-options", "DENY");
     response.headers.set(
       "strict-transport-security",
       "max-age=31536000; includeSubDomains; preload",
