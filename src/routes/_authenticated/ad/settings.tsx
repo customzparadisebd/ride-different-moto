@@ -89,7 +89,7 @@ function AdminSettings() {
     <section className="mx-auto max-w-3xl">
       <Outlet />
       
-      {!location.pathname.endsWith("/invoice") && (
+      {location.pathname === "/ad/settings" && (
         <>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Settings</h1>
           <p className="text-xs text-muted-foreground">
