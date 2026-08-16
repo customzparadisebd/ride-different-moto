@@ -137,6 +137,45 @@ export type Database = {
         }
         Relationships: []
       }
+      bike_models: {
+        Row: {
+          alt_text: string | null
+          created_at: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean | null
+          label: string | null
+          name: string
+          slug: string
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          label?: string | null
+          name: string
+          slug: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean | null
+          label?: string | null
+          name?: string
+          slug?: string
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       brands: {
         Row: {
           created_at: string
@@ -665,6 +704,7 @@ export type Database = {
       }
       hero_slides: {
         Row: {
+          bike_model_id: string | null
           created_at: string
           id: string
           image_url: string
@@ -678,6 +718,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          bike_model_id?: string | null
           created_at?: string
           id?: string
           image_url: string
@@ -691,6 +732,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          bike_model_id?: string | null
           created_at?: string
           id?: string
           image_url?: string
@@ -703,7 +745,15 @@ export type Database = {
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "hero_slides_bike_model_id_fkey"
+            columns: ["bike_model_id"]
+            isOneToOne: false
+            referencedRelation: "bike_models"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       inventory_movements: {
         Row: {
