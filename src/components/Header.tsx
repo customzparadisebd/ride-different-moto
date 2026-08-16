@@ -95,7 +95,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative"
+            className="relative h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-5 sm:[&_svg]:size-5.5"
             onClick={() => setCartOpen(true)}
             aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
           >
