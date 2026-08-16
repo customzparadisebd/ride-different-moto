@@ -722,7 +722,7 @@ function AdminProducts() {
                         label="Replace Main Images"
                         multiple={false}
                         value=""
-                        onChange={(url) => {
+                        onChange={(url: string | string[]) => {
                           if (window.confirm(`Apply this main image to ${selectedIds.length} products?`)) {
                              bulkImagesMutation.mutate({ data: { ids: selectedIds, imageUrl: url as string } });
                           }
