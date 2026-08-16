@@ -438,14 +438,14 @@ function AdminProducts() {
           <tbody>
             {listQuery.isLoading && (
               <tr>
-                <td colSpan={8} className="p-6 text-center text-muted-foreground">
+                <td colSpan={9} className="p-6 text-center text-muted-foreground">
                   Loading products…
                 </td>
               </tr>
             )}
             {!listQuery.isLoading && rows.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-6 text-center text-muted-foreground">
+                <td colSpan={9} className="p-6 text-center text-muted-foreground">
                   No products yet. Use “Add product” to create your first one.
                 </td>
               </tr>
