@@ -24,10 +24,13 @@ import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Image as ImageIcon } from "lucide-react";
+import { ProductImageUpload } from "@/components/admin/products/ProductImageUpload";
 import { X, CheckSquare, Square, Trash2, Tag, Eye, EyeOff, LayoutPanelLeft } from "lucide-react";
 import {
   bulkUpdateProducts,
   bulkRecycleProducts,
+  bulkUpdateProductImages,
   listProductColors,
   listProduct360Images,
 } from "@/lib/products.functions";
@@ -132,6 +135,7 @@ function AdminProducts() {
   const recycle = useServerFn(softDeleteProduct);
   const bulkUpdate = useServerFn(bulkUpdateProducts);
   const bulkRecycle = useServerFn(bulkRecycleProducts);
+  const bulkImages = useServerFn(bulkUpdateProductImages);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -225,6 +229,15 @@ function AdminProducts() {
     mutationFn: bulkRecycle,
     onSuccess: () => {
       toast.success("Products moved to Recycle Bin");
+      setSelectedIds([]);
+      refresh();
+    },
+    onError,
+  });
+  const bulkImagesMutation = useMutation({
+    mutationFn: bulkImages,
+    onSuccess: () => {
+      toast.success("Product images updated");
       setSelectedIds([]);
       refresh();
     },
@@ -696,6 +709,28 @@ function AdminProducts() {
                 </div>
               </div>
 
+              <div className="h-6 w-px bg-border mx-2" />
+              <div className="relative group">
+                <Button variant="steel" size="sm" className="h-9 gap-2 rounded-full px-4">
+                  <ImageIcon className="size-4" />
+                  Images
+                </Button>
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
+                   <div className="w-64 overflow-hidden rounded-xl border border-border bg-card shadow-2xl p-4 space-y-4">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bulk Image Update</p>
+                      <ProductImageUpload
+                        label="Replace Main Images"
+                        multiple={false}
+                        value=""
+                        onChange={(url: string | string[]) => {
+                          if (window.confirm(`Apply this main image to ${selectedIds.length} products?`)) {
+                             bulkImagesMutation.mutate({ data: { ids: selectedIds, imageUrl: url as string } });
+                          }
+                        }}
+                      />
+                   </div>
+                </div>
+              </div>
               <div className="h-6 w-px bg-border mx-2" />
 
               <Button

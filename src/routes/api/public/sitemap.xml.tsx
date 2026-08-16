@@ -1,20 +1,28 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { getProducts } from "@/data/catalog";
 import { site } from "@/data/site";
 
 export const Route = createFileRoute("/api/public/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {
-        const products = getProducts();
+        const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+        
+        // Fetch active products from DB
+        const { data: products } = await supabaseAdmin
+          .from("products")
+          .select("slug, updated_at")
+          .eq("is_active", true)
+          .is("deleted_at", null);
+
         const lastMod = new Date().toISOString().split("T")[0];
 
         const urls = [
-          { loc: site.url, priority: "1.0" },
-          { loc: `${site.url}/all-products`, priority: "0.8" },
-          ...products.map((p) => ({
+          { loc: site.url, priority: "1.0", lastmod: lastMod },
+          { loc: `${site.url}/shop`, priority: "0.8", lastmod: lastMod },
+          ...(products || []).map((p) => ({
             loc: `${site.url}/products/${p.slug}`,
             priority: "0.7",
+            lastmod: p.updated_at ? new Date(p.updated_at).toISOString().split("T")[0] : lastMod,
           })),
         ];
 
@@ -24,7 +32,7 @@ ${urls
   .map(
     (u) => `  <url>
     <loc>${u.loc}</loc>
-    <lastmod>${lastMod}</lastmod>
+    <lastmod>${u.lastmod}</lastmod>
     <changefreq>daily</changefreq>
     <priority>${u.priority}</priority>
   </url>`

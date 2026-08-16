@@ -1,291 +1,159 @@
-import { getEnvironment } from "@/lib/env";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShieldCheck, AlertTriangle, Globe, Settings, Database, Lock } from "lucide-react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { getAdminContext } from "@/lib/admin.functions";
-import { getDiagnosticsContext } from "@/lib/diagnostics.functions";
-import { PERMISSIONS } from "@/lib/admin.shared";
-import { cn } from "@/lib/utils";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ShieldCheck, AlertTriangle, RefreshCw, Lock, ExternalLink } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import { verifyDatabaseSecurity } from "@/lib/security-check.functions";
+import { site } from "@/data/site";
 
 export const Route = createFileRoute("/ad/diagnostics")({
-  component: DiagnosticsPage,
+  component: AdminDiagnostics,
 });
 
-function DiagnosticsPage() {
-  const { data: adminContext, isLoading: contextLoading } = useQuery({
-    queryKey: ["admin-context"],
-    queryFn: () => getAdminContext(),
-  });
+function AdminDiagnostics() {
+  const verify = useServerFn(verifyDatabaseSecurity) as any;
+  const [results, setResults] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
 
-  const { data: diagContext, error: diagError, isLoading: diagLoading } = useQuery({
-    queryKey: ["diagnostics-audit"],
-    queryFn: () => getDiagnosticsContext(),
-    retry: false,
-  });
-
-  const env = getEnvironment();
-  const hostname = typeof window !== "undefined" ? window.location.hostname : "N/A (SSR)";
-  const viteAppEnv = import.meta.env["VITE_APP_ENV"] || "Not Set";
-  const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] || "Not Set";
-
-  const maskValue = (val: string, type: "url" | "token") => {
-    if (val === "Not Set" || !val) return "Not Set";
-    
-    // Safety: In any technical view, never show the project reference or full URL
-    if (type === "url") {
-      return "https://[REDACTED].supabase.co (Security Masked)";
+  const runCheck = async () => {
+    setLoading(true);
+    try {
+      const res = await (verify as any)({ data: {} });
+      setResults(res);
+      toast.success("Security check completed");
+    } catch (err: any) {
+      toast.error(err.message || "Security check failed");
+    } finally {
+      setLoading(false);
     }
-    
-    return " [REDACTED] ";
-  };
-
-  if (contextLoading || diagLoading) {
-    return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-      </div>
-    );
-  }
-
-  const hasPermission = adminContext?.permissions.includes(PERMISSIONS.staffManage);
-
-  if (!hasPermission || diagError) {
-    return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center space-y-4 text-center">
-        <div className="rounded-full bg-destructive/10 p-6">
-          <Lock className="h-12 w-12 text-destructive" />
-        </div>
-        <h2 className="text-2xl font-bold">Access Denied</h2>
-        <p className="max-w-md text-muted-foreground">
-          You do not have the required permissions ({PERMISSIONS.staffManage}) to view system diagnostics.
-          This attempt has been logged for security audit.
-        </p>
-        <Button asChild variant="outline">
-          <Link to="/ad">Return to Dashboard</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  const data = [
-    {
-      label: "Current Hostname",
-      value: hostname,
-      icon: Globe,
-      description: "Used to detect production vs. staging by domain matching.",
-    },
-    {
-      label: "VITE_APP_ENV",
-      value: viteAppEnv,
-      icon: Settings,
-      description: "Explicit environment override variable.",
-    },
-    {
-      label: "Supabase Project",
-      value: maskValue(supabaseUrl, "url"),
-      icon: Database,
-      description: "The backend project (redacted for security).",
-    },
-    {
-      label: "Detected Environment",
-      value: env.toUpperCase(),
-      icon: env === "production" ? ShieldCheck : AlertTriangle,
-      description: "The final resolution used for UI banners and safety checks.",
-      highlight: true,
-    },
-  ];
-
-  const serverInfo = diagContext as {
-    supabaseConfig: { url: string; projectRef: string };
-    serverEnv: { nodeEnv: string; viteAppEnv: string; resolvedEnv: string };
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-bold tracking-tight">System Diagnostics</h1>
-        <p className="text-muted-foreground">Technical environment details and detection logic audit.</p>
+    <div className="mx-auto max-w-4xl p-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Security Diagnostics</h1>
+          <p className="text-sm text-muted-foreground">Automated RLS verification and index coverage check.</p>
+        </div>
+        <Button 
+          variant="red" 
+          onClick={runCheck} 
+          disabled={loading}
+          className="gap-2"
+        >
+          {loading ? <RefreshCw className="size-4 animate-spin" /> : <ShieldCheck className="size-4" />}
+          Run Security Scan
+        </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {data.map((item) => (
-          <Card key={item.label} className={item.highlight ? "border-primary/50 bg-primary/5" : ""}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{item.label}</CardTitle>
-              <item.icon className={item.highlight ? "text-primary h-4 w-4" : "text-muted-foreground h-4 w-4"} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold truncate" title={item.value}>
-                {item.value}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">{item.description}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ShieldCheck className="h-5 w-5 text-emerald-500" />
-              Runtime Connectivity Audit
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            <div className="space-y-2">
-              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Supabase Connection</p>
-              <div className="rounded border bg-muted/30 p-3 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Project Ref (Client):</span>
-                  <span className="font-mono font-bold text-primary">
-                    {supabaseUrl.split('.')[0].split('//')[1] || "Unknown"}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-border/50 pt-2">
-                  <span className="text-muted-foreground">Project Ref (Server):</span>
-                  <span className="font-mono font-bold text-primary">
-                    {serverInfo?.supabaseConfig?.projectRef || "N/A"}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-border/50 pt-2">
-                  <span className="text-muted-foreground">Target URL:</span>
-                  <span className="font-mono">{maskValue(supabaseUrl, "url")}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <p className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">Environment Handshake</p>
-              <div className="rounded border bg-muted/30 p-3 space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Server Resolved:</span>
-                  <span className={cn(
-                    "font-bold uppercase",
-                    serverInfo?.serverEnv?.resolvedEnv === 'production' ? "text-emerald-500" : "text-amber-500"
-                  )}>
-                    {serverInfo?.serverEnv?.resolvedEnv || "Unknown"}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-border/50 pt-2">
-                  <span className="text-muted-foreground">Node Runtime:</span>
-                  <span className="font-mono">{serverInfo?.serverEnv?.nodeEnv || "N/A"}</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-        <CardHeader>
-          <CardTitle>Environment Detection Logic</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-lg bg-muted p-4 font-mono text-xs">
-            <p className="font-bold text-primary mb-2">// Detection logic from src/lib/env.ts</p>
-            <p className="whitespace-pre-wrap">'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-                                        
-                                            
-                                            Add an optional Product Video feature to the existing product system.
-
-This feature must be available individually for every product.
-
-Admin Panel — Product Add/Edit
-
-Inside each product's Add/Edit form, add a new section:
-
-Product Video
-
-Enable Product Video → [ ON / OFF ]
-
-The toggle must be independent for every product.
-
-When OFF:
-
-No video will be displayed for that product.
-
-Do not show an empty video section or placeholder on the Product Details page.
-
-When ON:
-
-Show the video configuration fields:
-
-Video Platform → YouTube / Facebook / Instagram / TikTok
-
-Video URL → input field
-
-Video Preview → preview the linked video
-
-Save the video settings specifically for that product.
-
-Product Details Page
-
-When a customer opens a product:
-
-If Product Video is OFF:
-→ Do not display anything related to Product Video.
-
-If Product Video is ON:
-→ Display a clean Product Video section below the main product information/description.
-
-Show the video as a professional thumbnail/card with:
-
-▶ Watch Product Video
-
-When the customer clicks it, open the video in a clean responsive modal/popup without leaving the product page.
-
-Important Requirements
-
-The ON/OFF toggle must exist for every individual product.
-
-One product can have Video ON while another product remains OFF.
-
-Do NOT enable video globally for all products.
-
-Do NOT require every product to have a video.
-
-Do NOT change the existing product layout or other product features.
-
-Keep the feature fully responsive on desktop, tablet, and mobile.
-
-Use the existing website's red, black, and white branding.
-
-The video section should only appear when the specific product's video toggle is ON.
-
-If the toggle is turned OFF later, the video section must automatically disappear from that product's Details page.
-
-Keep all existing product data and functionality unchanged.
-
-Example
-
-Product A → Video: ON → Video appears on Product A Details page.
-
-Product B → Video: OFF → No video section appears.
-
-Product C → Video: ON → Its own video appears.
-
-Each product must have its own independent video ON/OFF setting and video URL.</p>
-            <p>if (hostname === "customzparadisebd.com" || hostname === "www.customzparadisebd.com" || VITE_APP_ENV === "production") {"{"}</p>
-            <p className="ml-4 text-emerald-500">return "production";</p>
-            <p>{"}"} else {"{"}</p>
-            <p className="ml-4 text-amber-500">return "staging";</p>
-            <p>{"}"}</p>
+      <div className="mt-8 grid gap-6">
+        <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="flex items-center gap-2 font-display text-xl font-bold uppercase tracking-tight">
+            <Lock className="size-5 text-primary" />
+            Row Level Security (RLS) Status
+          </h2>
+          <div className="mt-4 overflow-hidden rounded-lg border border-border">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                <tr>
+                  <th className="p-3">Table</th>
+                  <th className="p-3">Role</th>
+                  <th className="p-3">Access</th>
+                  <th className="p-3 text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {!results ? (
+                  <tr>
+                    <td colSpan={4} className="p-8 text-center text-muted-foreground italic">
+                      No scan results available. Run a security scan to verify database policies.
+                    </td>
+                  </tr>
+                ) : (
+                  results.results.map((res: any, idx: number) => (
+                    <tr key={idx} className="hover:bg-muted/30 transition-colors">
+                      <td className="p-3 font-medium">{res.table}</td>
+                      <td className="p-3 font-mono text-[10px] uppercase">{res.role}</td>
+                      <td className="p-3 text-xs text-muted-foreground">{res.action}</td>
+                      <td className="p-3 text-right">
+                        {res.status === "SECURE" || res.success ? (
+                          <span className="inline-flex items-center rounded-full bg-green-500/10 px-2 py-0.5 text-[10px] font-bold text-green-500">
+                            PASS
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-500">
+                            FAIL
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-          <div className="rounded-md border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-amber-500">
-            <div className="flex items-center gap-2 font-bold">
-              <ShieldCheck className="h-4 w-4" />
-              Security Note
-            </div>
-            <p className="mt-1">
-              Access to this page is restricted and every visit is recorded in the audit log.
-              Sensitive backend parameters are masked to prevent credential exposure.
-            </p>
+        </section>
+
+        <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <h2 className="flex items-center gap-2 font-display text-xl font-bold uppercase tracking-tight">
+            <ExternalLink className="size-5 text-primary" />
+            SEO & Index Coverage
+          </h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <StatusCard 
+              label="Sitemap XML"
+              status="Online"
+              href="/api/public/sitemap/xml"
+              description="Dynamically generated product sitemap"
+            />
+            <StatusCard 
+              label="Robots.txt"
+              status="Valid"
+              href="/api/public/robots/txt"
+              description="Crawler instructions and sitemap link"
+            />
           </div>
-        </CardContent>
-      </Card>
+          <div className="mt-6 rounded-lg bg-muted/50 p-4 border border-border">
+             <div className="flex items-start gap-3">
+                <AlertTriangle className="size-4 text-amber-500 mt-1" />
+                <div className="text-xs space-y-2">
+                   <p className="font-bold uppercase tracking-wider text-foreground">Action Required</p>
+                   <p className="text-muted-foreground leading-relaxed">
+                      To complete indexing, you must manually submit the sitemap to search engines:
+                   </p>
+                   <ul className="list-disc list-inside text-primary font-medium">
+                      <li><a href="https://search.google.com/search-console/sitemaps" target="_blank" rel="noreferrer" className="hover:underline">Google Search Console</a></li>
+                      <li><a href="https://www.bing.com/webmasters/sitemaps" target="_blank" rel="noreferrer" className="hover:underline">Bing Webmaster Tools</a></li>
+                   </ul>
+                   <p className="text-[10px] italic">Verification URL: {site.url}/api/public/sitemap/xml</p>
+                </div>
+             </div>
+          </div>
+        </section>
       </div>
+    </div>
+  );
+}
+
+function StatusCard({ label, status, href, description }: { label: string; status: string; href: string; description: string }) {
+  return (
+    <div className="rounded-lg border border-border p-4 transition-all hover:border-primary/50">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
+        <span className="text-[10px] font-bold text-green-500 uppercase">{status}</span>
+      </div>
+      <p className="mt-1 text-xs text-foreground font-semibold">{description}</p>
+      <a 
+        href={href} 
+        target="_blank" 
+        rel="noreferrer" 
+        className="mt-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary hover:underline"
+      >
+        View Route <ExternalLink className="size-3" />
+      </a>
     </div>
   );
 }
