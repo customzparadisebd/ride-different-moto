@@ -63,7 +63,7 @@ export function Header() {
               activeOptions={{ exact: link.to === "/" }}
               activeProps={{ className: "text-primary" }}
               inactiveProps={{ className: "text-foreground/80" }}
-              className="whitespace-nowrap rounded-md px-2.5 py-2 font-display text-sm font-semibold uppercase tracking-wide transition-colors hover:text-primary"
+              className="whitespace-nowrap rounded-md px-3 py-2.5 font-display text-[15px] font-bold uppercase tracking-wider transition-colors hover:text-primary active:scale-95"
             >
               {t(link.translationKey)}
             </Link>
