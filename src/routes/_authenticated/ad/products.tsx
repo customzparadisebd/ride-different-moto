@@ -822,11 +822,13 @@ function FlagChip({
   label,
   on,
   disabled,
+  title,
   onClick,
 }: {
   label: string;
   on: boolean;
   disabled: boolean;
+  title?: string;
   onClick: () => void;
 }) {
   return (
