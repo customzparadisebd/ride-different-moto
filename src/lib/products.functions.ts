@@ -634,11 +634,6 @@ export const bulkUpdateProductImages = createServerFn({ method: "POST" })
       }
       return Promise.resolve();
     });
-      }
-      if (Object.keys(update).length > 0) {
-        return context.supabase.from("products").update(update).eq("id", id);
-      }
-    });
 
     await Promise.all(updates);
     await auditFromActor(actor, {
