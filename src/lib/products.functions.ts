@@ -273,7 +273,7 @@ export const purgeProduct = createServerFn({ method: "POST" })
     const before = await context.supabase
       .from("products")
       .select(PRODUCT_COLUMNS)
-      .eq("id", id)
+      .eq("id", data.id)
       .maybeSingle();
     if (!before.data) throw new Error("Product not found.");
     if (before.data.name.trim() !== data.confirmName.trim()) {
@@ -628,6 +628,12 @@ export const bulkUpdateProductImages = createServerFn({ method: "POST" })
           .single();
         const current = Array.isArray(existing?.images) ? existing.images : [];
         update.images = Array.from(new Set([...current, ...data.appendGallery]));
+      }
+      if (Object.keys(update).length > 0) {
+        return context.supabase.from("products").update(update).eq("id", id);
+      }
+      return Promise.resolve();
+    });
       }
       if (Object.keys(update).length > 0) {
         return context.supabase.from("products").update(update).eq("id", id);
