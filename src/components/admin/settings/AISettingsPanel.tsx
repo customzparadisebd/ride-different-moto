@@ -123,11 +123,14 @@ export function AISettingsPanel() {
                 type="password"
                 placeholder="Paste your API key here"
                 value={draft.apiKey}
+                autoComplete="off"
                 onChange={(e) => setDraft((c) => ({ ...c, apiKey: e.target.value }))}
                 disabled={!draft.enabled}
               />
               <p className="text-[10px] text-muted-foreground italic">
-                Note: This feature is currently in architectural preparation mode. No requests are made.
+                {draft.provider === 'gemini' ? 'Gemini keys typically start with AIza.' : 
+                 draft.provider === 'openai' ? 'OpenAI keys typically start with sk-.' : 
+                 'Enter your provider credentials.'}
               </p>
             </div>
           </div>
