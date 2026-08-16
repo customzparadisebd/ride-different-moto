@@ -7,6 +7,7 @@
 // ============================================================
 import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { cn } from "@/lib/utils";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { Button } from "@/components/ui/button";
