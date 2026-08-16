@@ -113,21 +113,40 @@ export function SafeImage({
 
       {status !== "error" && (
         <picture className="contents">
-          {/* 1 & 2. Responsive delivery and format optimization */}
+          {/* 1 & 2. Responsive delivery and format optimization (AVIF then WebP) */}
           {mobileSrc && (
-            <source
-              media="(max-width: 640px)"
-              srcSet={`${mobileSrc}?w=640&format=webp&q=80 1x, ${mobileSrc}?w=1280&format=webp&q=60 2x`}
-              type="image/webp"
-            />
+            <>
+              <source
+                media="(max-width: 640px)"
+                srcSet={`${mobileSrc}?w=400&format=avif&q=70 400w, ${mobileSrc}?w=640&format=avif&q=70 640w, ${mobileSrc}?w=1280&format=avif&q=50 1280w`}
+                type="image/avif"
+                sizes="(max-width: 640px) 100vw, 400px"
+              />
+              <source
+                media="(max-width: 640px)"
+                srcSet={`${mobileSrc}?w=400&format=webp&q=80 400w, ${mobileSrc}?w=640&format=webp&q=80 640w, ${mobileSrc}?w=1280&format=webp&q=60 1280w`}
+                type="image/webp"
+                sizes="(max-width: 640px) 100vw, 400px"
+              />
+            </>
           )}
 
+          {/* Desktop/Default sources */}
           <source
             srcSet={
               srcSet ||
-              `${src}?w=${width || 800}&format=webp&q=80 1x, ${src}?w=${(width || 800) * 2}&format=webp&q=70 2x`
+              `${src}?w=640&format=avif&q=75 640w, ${src}?w=800&format=avif&q=75 800w, ${src}?w=1200&format=avif&q=75 1200w, ${src}?w=1920&format=avif&q=60 1920w`
+            }
+            type="image/avif"
+            sizes={sizes}
+          />
+          <source
+            srcSet={
+              srcSet ||
+              `${src}?w=640&format=webp&q=85 640w, ${src}?w=800&format=webp&q=85 800w, ${src}?w=1200&format=webp&q=85 1200w, ${src}?w=1920&format=webp&q=70 1920w`
             }
             type="image/webp"
+            sizes={sizes}
           />
 
           <img
