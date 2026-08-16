@@ -39,6 +39,9 @@ import {
   PRODUCT_COLUMNS,
   PRODUCT_TOGGLE_COLUMNS,
   productToRow,
+  bulkProductUpdateInput,
+  bulkProductRecycleInput,
+  bulkProductImageInput,
 } from "./products.shared";
 
 export const listProducts = createServerFn({ method: "POST" })
@@ -200,7 +203,6 @@ export const toggleProductFlag = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** RECYCLE BIN: soft delete only. The row and its audit trail stay. */
 export const softDeleteProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => productDeleteInput.parse(input))
@@ -260,7 +262,6 @@ export const restoreProduct = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-/** PERMANENT DELETE: Super Admin only, needs the exact product name typed. */
 export const purgeProduct = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => productPurgeInput.parse(input))
@@ -272,7 +273,7 @@ export const purgeProduct = createServerFn({ method: "POST" })
     const before = await context.supabase
       .from("products")
       .select(PRODUCT_COLUMNS)
-      .eq("id", data.id)
+      .eq("id", id)
       .maybeSingle();
     if (!before.data) throw new Error("Product not found.");
     if (before.data.name.trim() !== data.confirmName.trim()) {
@@ -285,7 +286,6 @@ export const purgeProduct = createServerFn({ method: "POST" })
     const { error } = await context.supabase.from("products").delete().eq("id", data.id);
     if (error) throw new Error("Could not permanently delete the product.");
 
-    // The audit entry deliberately keeps a copy of the deleted record.
     await auditFromActor(actor, {
       action: AUDIT_ACTIONS.productPurged,
       targetType: "product",
@@ -296,14 +296,6 @@ export const purgeProduct = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-// ============================================================
-// PRODUCT COLOR VARIATIONS (admin)
-// Purpose: Manage colour options per product — add, edit, enable /
-//          disable, colour-specific price and image, reorder, remove.
-// Status: COMPLETED
-// Security: Reads need orders.view, writes need products.manage, and
-//          every write is recorded in the append-only audit log.
-// ============================================================
 export const listProductColors = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => productColorListInput.parse(input))
@@ -422,7 +414,6 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
     );
 
     const error = results.find((r: any) => r.error);
-
     if (error) throw new Error("Could not update some products.");
 
     await auditFromActor(actor, {
@@ -431,14 +422,9 @@ export const updateFeaturedProducts = createServerFn({ method: "POST" })
       targetLabel: "Bulk Featured Update",
       newValue: data.items,
     });
-
     return { ok: true };
   });
 
-// ============================================================
-// PRODUCT 360 VIEWER (admin)
-// Purpose: Manage 360° image sequences per product.
-// ============================================================
 export const listProduct360Images = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => product360ListInput.parse(input))
@@ -466,9 +452,6 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    // Basic dimension validation check on URL
-    if (!data.imageUrl.includes("https://")) throw new Error("Invalid image URL.");
-
     const row = product360ToRow(data);
     if (data.id) {
       const { error } = await context.supabase
@@ -493,27 +476,22 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
 export const saveProduct360Sequence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) =>
-    z
-      .object({
-        productId: z.string().uuid(),
-        items: z.array(z.object({ imageUrl: z.string().url() })),
-      })
-      .parse(input),
+    z.object({
+      productId: z.string().uuid(),
+      items: z.array(z.object({ imageUrl: z.string().url() })),
+    }).parse(input)
   )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    // Delete existing and re-insert
     await context.supabase.from("product_360_images").delete().eq("product_id", data.productId);
-
     const rows = data.items.map((item, index) => ({
       product_id: data.productId,
       image_url: item.imageUrl,
       display_order: index,
     }));
-
     const { error } = await context.supabase.from("product_360_images").insert(rows);
     if (error) throw new Error("Could not bulk update sequence.");
 
@@ -577,9 +555,7 @@ export const reorderProduct360Images = createServerFn({ method: "POST" })
 
 export const bulkUpdateProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) =>
-    import("./products.shared").then((m) => m.bulkProductUpdateInput.parse(input))
-  )
+  .validator((input: unknown) => bulkProductUpdateInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -593,7 +569,6 @@ export const bulkUpdateProducts = createServerFn({ method: "POST" })
     if (typeof data.isNewArrival === "boolean") update.is_new_arrival = data.isNewArrival;
 
     if (Object.keys(update).length === 0) return { ok: true };
-
     const { error } = await context.supabase.from("products").update(update).in("id", data.ids);
     if (error) throw new Error("Could not update products.");
 
@@ -603,15 +578,12 @@ export const bulkUpdateProducts = createServerFn({ method: "POST" })
       targetLabel: `Bulk update (${data.ids.length} items)`,
       newValue: { ...update, ids: data.ids },
     });
-
     return { ok: true };
   });
 
 export const bulkRecycleProducts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) =>
-    import("./products.shared").then((m) => m.bulkProductRecycleInput.parse(input))
-  )
+  .validator((input: unknown) => bulkProductRecycleInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
@@ -626,7 +598,6 @@ export const bulkRecycleProducts = createServerFn({ method: "POST" })
         is_active: false,
       })
       .in("id", data.ids);
-
     if (error) throw new Error("Could not recycle products.");
 
     await auditFromActor(actor, {
@@ -635,48 +606,40 @@ export const bulkRecycleProducts = createServerFn({ method: "POST" })
       targetLabel: `Bulk recycle (${data.ids.length} items)`,
       metadata: { ids: data.ids, reason: data.reason },
     });
-
     return { ok: true };
   });
 
 export const bulkUpdateProductImages = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => {
-     const { bulkProductImageInput } = require("./products.shared");
-     return bulkProductImageInput.parse(input);
-  })
+  .validator((input: unknown) => bulkProductImageInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
     const updates = data.ids.map(async (id) => {
-       const update: any = {};
-       if (data.imageUrl) update.image_url = data.imageUrl;
-       
-       if (data.appendGallery && data.appendGallery.length > 0) {
-          const { data: existing } = await context.supabase
-            .from("products")
-            .select("images")
-            .eq("id", id)
-            .single();
-          const current = Array.isArray(existing?.images) ? existing.images : [];
-          update.images = Array.from(new Set([...current, ...data.appendGallery]));
-       }
-
-       if (Object.keys(update).length > 0) {
-          return context.supabase.from("products").update(update).eq("id", id);
-       }
+      const update: any = {};
+      if (data.imageUrl) update.image_url = data.imageUrl;
+      if (data.appendGallery && data.appendGallery.length > 0) {
+        const { data: existing } = await context.supabase
+          .from("products")
+          .select("images")
+          .eq("id", id)
+          .single();
+        const current = Array.isArray(existing?.images) ? existing.images : [];
+        update.images = Array.from(new Set([...current, ...data.appendGallery]));
+      }
+      if (Object.keys(update).length > 0) {
+        return context.supabase.from("products").update(update).eq("id", id);
+      }
     });
 
     await Promise.all(updates);
-
     await auditFromActor(actor, {
       action: AUDIT_ACTIONS.productUpdated,
       targetType: "product",
       targetLabel: "Bulk Image Update",
       metadata: { ids: data.ids, imageUrl: data.imageUrl, appendGallery: data.appendGallery },
     });
-
     return { ok: true };
   });
