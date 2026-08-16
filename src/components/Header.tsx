@@ -101,7 +101,7 @@ export function Header() {
           >
             <ShoppingBag />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid size-4.5 min-w-4.5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+              <span className="absolute -right-0.5 -top-0.5 grid size-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">
                 {count}
               </span>
             )}
