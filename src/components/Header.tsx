@@ -47,7 +47,7 @@ export function Header() {
         {/* LEFT: Logo */}
         <div className="flex flex-1 items-center justify-start">
           <Link to="/" className="min-w-0" aria-label={`${site.name} home`}>
-            <Logo priority className="h-8 w-auto sm:h-10" />
+            <Logo priority className="h-9 w-auto sm:h-12" />
           </Link>
         </div>
 
