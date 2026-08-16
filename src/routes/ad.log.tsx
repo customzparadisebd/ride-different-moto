@@ -390,6 +390,7 @@ function AuthPage() {
                 type="submit"
                 variant="red"
                 size="touch"
+                autoFocus
                 className="w-full h-12 text-sm font-black uppercase tracking-widest shadow-3d-red active:translate-y-0.5 active:shadow-none transition-all"
                 disabled={busy || locked}
               >

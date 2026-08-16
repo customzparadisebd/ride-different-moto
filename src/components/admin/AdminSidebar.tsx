@@ -147,8 +147,8 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
         <SidebarGroupContent>
           <SidebarMenu>
             {visible.map((item) => (
-              <SidebarMenuItem key={item.to}>
-                <SidebarMenuButton asChild isActive={isActive(item)} tooltip={item.label}>
+                <SidebarMenuItem key={item.to} className="focus-within:ring-2 focus-within:ring-primary rounded-md">
+                  <SidebarMenuButton asChild isActive={isActive(item)} tooltip={item.label}>
                   <Link to={item.to}>
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>

@@ -224,7 +224,7 @@ export function ProductForm({
           example="Select the primary category"
         >
           <select
-            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow"
+            className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             value={value["category"]}
             onChange={(e) => set("category", e.target.value)}
           >
@@ -424,7 +424,7 @@ export function ProductForm({
               example="Select where the video is hosted"
             >
               <select
-                className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow"
+                className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus:ring-2 focus:ring-red-500 transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 value={value.videoPlatform}
                 onChange={(e) => set("videoPlatform", e.target.value)}
               >
@@ -567,10 +567,10 @@ function Check({
   onChange: (value: boolean) => void;
 }) {
   return (
-    <label className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm">
+    <label className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm cursor-pointer hover:bg-muted/50 transition-colors focus-within:ring-2 focus-within:ring-primary">
       <input
         type="checkbox"
-        className="h-4 w-4"
+        className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
       />

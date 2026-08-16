@@ -322,14 +322,14 @@ export function ProductImageUpload({
         {(multiple || images.length === 0) && (
           <label
             className={cn(
-              "flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 hover:border-cyan-500/50 transition-all",
+              "flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed border-border bg-muted/30 cursor-pointer hover:bg-muted/50 hover:border-cyan-500/50 transition-all focus-within:ring-2 focus-within:ring-primary",
               uploads.some((u) => u.status !== "completed" && u.status !== "error") &&
                 "pointer-events-none opacity-50",
             )}
           >
             <input
               type="file"
-              className="hidden"
+              className="sr-only"
               accept="image/*"
               multiple={multiple}
               onChange={(e) => handleFiles(e.target.files)}
