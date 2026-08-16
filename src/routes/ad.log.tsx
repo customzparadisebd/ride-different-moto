@@ -211,7 +211,12 @@ function AuthPage() {
         <div className="flex w-full flex-col items-center justify-center px-6 py-12 md:w-1/2 md:px-12 bg-gradient-onyx">
           <div className="w-full max-w-sm space-y-8 text-center">
             <div className="flex flex-col items-center">
-              <img src={logo3dAsset.url} alt={site.name} className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" />
+              <img 
+                src={logo3dAsset.url} 
+                alt={`${site.name} logo`} 
+                className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" 
+                role="img"
+              />
               <div className="mt-8 p-6 rounded-2xl border border-white/5 bg-white/5 space-y-6">
                 {approvalStatus === "pending" ? (
                   <>
@@ -324,7 +329,12 @@ function AuthPage() {
       <div className="flex w-full flex-col items-center justify-center px-6 py-12 md:w-1/2 md:px-12 bg-gradient-onyx">
         <div className="w-full max-w-sm space-y-8">
           <div className="flex flex-col items-center">
-            <img src={logo3dAsset.url} alt={site.name} className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" />
+            <img 
+              src={logo3dAsset.url} 
+              alt={`${site.name} logo`} 
+              className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" 
+              role="img"
+            />
             <div className="mt-6 text-center">
               <h1 className="font-display text-2xl font-bold uppercase tracking-[0.2em] text-white">
                 Admin Panel
