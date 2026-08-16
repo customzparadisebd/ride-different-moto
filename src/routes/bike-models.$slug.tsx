@@ -3,7 +3,7 @@ import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 
 import { ProductGrid } from "@/components/ProductCard";
 import { SafeImage } from "@/components/SafeImage";
-import { getBikeModel } from "@/data/catalog";
+import { getStorefrontBikeModel } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
