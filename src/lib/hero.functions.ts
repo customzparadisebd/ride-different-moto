@@ -13,7 +13,7 @@ export const getHeroSlides = createServerFn({ method: "GET" })
       .from("hero_slides")
       .select(`
         *,
-        bike_model:bike_models(id, name, slug)
+        bike_model:bike_models(id, name, slug, image_url, mobile_image_url)
       `);
 
     if (!admin) {
@@ -30,8 +30,8 @@ export const getHeroSlides = createServerFn({ method: "GET" })
         id: slide.id,
         bikeName: slide.title || bikeModel?.name,
         label: slide.subtitle || undefined,
-        image: slide.image_url,
-        mobileImage: (slide as any).mobile_image_url || undefined,
+        image: slide.image_url || bikeModel?.image_url,
+        mobileImage: (slide as any).mobile_image_url || bikeModel?.mobile_image_url || undefined,
         alt: slide.title,
         bikeSlug: bikeModel?.slug || slide.link_url || "all-products",
         order: slide.sort_order,
