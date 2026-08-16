@@ -43,6 +43,7 @@ function AdminSettings() {
   const save = useServerFn(saveStoreSettings);
   const access = useServerFn(getMyAccess);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
 
