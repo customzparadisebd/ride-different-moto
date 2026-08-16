@@ -107,17 +107,21 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
                       ? "aspect-[3/4] sm:aspect-21/9"
                       : "aspect-[4/5] sm:aspect-16/9 lg:aspect-21/9",
                   )}
-                  className="transition-transform duration-700 group-hover:scale-[1.02]"
+                  className="transition-transform duration-1000 group-hover:scale-105"
                 />
                 {!slide.isFullBanner && (
                   <>
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                    <div className="absolute inset-x-0 bottom-0 p-4 pb-16 sm:p-8 sm:pb-20">
-                      {slide.label && <p className="eyebrow text-white/70">{slide.label}</p>}
-                      <h2 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-white sm:text-5xl lg:text-6xl">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 pb-16 sm:p-10 sm:pb-24">
+                      {slide.label && (
+                        <p className="eyebrow text-white/70 text-[10px] sm:text-xs">
+                          {slide.label}
+                        </p>
+                      )}
+                      <h2 className="mt-2 font-display text-4xl font-bold uppercase leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
                         {slide.bikeName}
                       </h2>
-                      <span className="mt-2 inline-block h-0.5 w-14 bg-gradient-red" />
+                      <span className="mt-4 inline-block h-1 w-20 bg-gradient-red" />
                     </div>
                   </>
                 )}
