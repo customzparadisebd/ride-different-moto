@@ -486,10 +486,10 @@ function AdminProducts() {
                         ) : null}
                       </div>
                       <div>
-                        <span className="font-semibold">{row.name}</span>
-                        <span className="block text-xs text-muted-foreground">
+                        <span className="font-semibold block truncate" title={row.name}>{row.name}</span>
+                        <span className="block text-[10px] text-muted-foreground truncate">
                           {row.is_active ? "Active" : "Inactive"}
-                          {row.is_universal ? " · Universal fit" : ""}
+                          {row.is_universal ? " · Universal" : ""}
                         </span>
                       </div>
                     </div>
