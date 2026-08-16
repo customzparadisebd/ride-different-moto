@@ -63,8 +63,9 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
         <SafeImage
           src={product.image ?? ""}
           alt={product.name}
-          width={800}
-          height={800}
+          width={600}
+          height={600}
+          aspectRatio="1/1"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           containerClassName="aspect-square w-full bg-secondary/5"
           className="transition-transform duration-700 hover:scale-105"

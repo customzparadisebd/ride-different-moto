@@ -86,9 +86,10 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
                 <SafeImage
                   src={model.image}
                   alt={model.alt}
-                  width={800}
-                  height={600}
-                  sizes="(max-width: 640px) 70vw, 25vw"
+                  width={600}
+                  height={400}
+                  aspectRatio="3/2"
+                  sizes="(max-width: 640px) 70vw, (max-width: 1024px) 40vw, 25vw"
                   containerClassName="aspect-[3/2] w-full"
                   className="transition-transform duration-700 group-hover:scale-105"
                 />
