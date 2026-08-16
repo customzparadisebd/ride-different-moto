@@ -204,6 +204,29 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
       <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Shop",
+                  "item": `${site.url}/shop`
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": product.name,
+                  "item": `${site.url}/products/${product.slug}`
+                }
+              ]
+            })
+          }}
+        />
         <Link to="/shop" className="hover:text-primary">
           Shop
         </Link>
