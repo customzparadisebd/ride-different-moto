@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getProducts } from "@/data/catalog";
 import { site } from "@/data/site";
 
-export const Route = createFileRoute("/api/public/sitemap.xml")({
+export const Route = createFileRoute("/api/public/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {

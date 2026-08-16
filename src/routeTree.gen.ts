@@ -55,6 +55,8 @@ import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
 import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
 import { Route as AuthenticatedAdSettingsInvoiceRouteImport } from './routes/_authenticated/ad/settings/invoice'
+import { Route as ApiPublicRobotsTxtRouteImport } from './routes/api/public/robots.txt'
+import { Route as ApiPublicSitemapXmlRouteImport } from './routes/api/public/sitemap.xml'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -294,6 +296,16 @@ const AuthenticatedAdSettingsInvoiceRoute =
     path: '/invoice',
     getParentRoute: () => AuthenticatedAdSettingsRoute,
   } as any)
+const ApiPublicRobotsTxtRoute = ApiPublicRobotsTxtRouteImport.update({
+  id: '/api/public/robots/txt',
+  path: '/api/public/robots/txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicSitemapXmlRoute = ApiPublicSitemapXmlRouteImport.update({
+  id: '/api/public/sitemap/xml',
+  path: '/api/public/sitemap/xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -340,6 +352,8 @@ export interface FileRoutesByFullPath {
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
   '/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
+  '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
+  '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -386,6 +400,8 @@ export interface FileRoutesByTo {
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
   '/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
+  '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
+  '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/ad/orders': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRoutesById {
@@ -435,6 +451,8 @@ export interface FileRoutesById {
   '/_authenticated/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/_authenticated/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
   '/_authenticated/ad/settings/invoice': typeof AuthenticatedAdSettingsInvoiceRoute
+  '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
+  '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/_authenticated/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
 }
 export interface FileRouteTypes {
@@ -484,6 +502,8 @@ export interface FileRouteTypes {
     | '/ad/orders/$id'
     | '/ad/orders/new'
     | '/ad/settings/invoice'
+    | '/api/public/robots/txt'
+    | '/api/public/sitemap/xml'
     | '/ad/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -530,6 +550,8 @@ export interface FileRouteTypes {
     | '/ad/orders/$id'
     | '/ad/orders/new'
     | '/ad/settings/invoice'
+    | '/api/public/robots/txt'
+    | '/api/public/sitemap/xml'
     | '/ad/orders'
   id:
     | '__root__'
@@ -578,6 +600,8 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/orders/$id'
     | '/_authenticated/ad/orders/new'
     | '/_authenticated/ad/settings/invoice'
+    | '/api/public/robots/txt'
+    | '/api/public/sitemap/xml'
     | '/_authenticated/ad/orders/'
   fileRoutesById: FileRoutesById
 }
@@ -606,6 +630,8 @@ export interface RootRouteChildren {
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
   ApiHeroUploadRoute: typeof ApiHeroUploadRoute
+  ApiPublicRobotsTxtRoute: typeof ApiPublicRobotsTxtRoute
+  ApiPublicSitemapXmlRoute: typeof ApiPublicSitemapXmlRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -932,6 +958,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdSettingsInvoiceRouteImport
       parentRoute: typeof AuthenticatedAdSettingsRoute
     }
+    '/api/public/robots/txt': {
+      id: '/api/public/robots/txt'
+      path: '/api/public/robots/txt'
+      fullPath: '/api/public/robots/txt'
+      preLoaderRoute: typeof ApiPublicRobotsTxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/sitemap/xml': {
+      id: '/api/public/sitemap/xml'
+      path: '/api/public/sitemap/xml'
+      fullPath: '/api/public/sitemap/xml'
+      preLoaderRoute: typeof ApiPublicSitemapXmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -1034,6 +1074,8 @@ const rootRouteChildren: RootRouteChildren = {
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
   ApiHeroUploadRoute: ApiHeroUploadRoute,
+  ApiPublicRobotsTxtRoute: ApiPublicRobotsTxtRoute,
+  ApiPublicSitemapXmlRoute: ApiPublicSitemapXmlRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

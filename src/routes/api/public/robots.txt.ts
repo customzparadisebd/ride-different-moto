@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { site } from "@/data/site";
 
-export const Route = createFileRoute("/api/public/robots.txt")({
+export const Route = createFileRoute("/api/public/robots/txt")({
   server: {
     handlers: {
       GET: async () => {
