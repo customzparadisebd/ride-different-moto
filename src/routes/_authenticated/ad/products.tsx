@@ -520,9 +520,9 @@ function AdminProducts() {
                     )}
                   </td>
                   <td className="p-3">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
                       <Input
-                        className="h-9 w-20"
+                        className="h-8 w-16 text-xs sm:h-9 sm:w-20 sm:text-sm"
                         defaultValue={String(row.stock_qty)}
                         inputMode="numeric"
                         disabled={!canManage}
@@ -534,7 +534,7 @@ function AdminProducts() {
                         }}
                       />
                       <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-semibold uppercase ${
+                        className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase sm:text-xs ${
                           status.key === "in_stock"
                             ? "bg-primary/15 text-primary"
                             : status.key === "low_stock"
