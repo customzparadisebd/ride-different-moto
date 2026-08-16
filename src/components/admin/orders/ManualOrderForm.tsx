@@ -493,16 +493,19 @@ function SelectInput({
   value,
   onChange,
   children,
+  id,
 }: {
   value: string;
   onChange: (value: string) => void;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
     <select
+      id={id}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      className="h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+      className="h-11 w-full rounded-md border border-input bg-background px-3 text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:text-sm"
     >
       {children}
     </select>
