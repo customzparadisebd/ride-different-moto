@@ -14,8 +14,8 @@ import { SectionHeading } from "@/components/home/SectionHeading";
 import { SocialSection } from "@/components/home/SocialSection";
 
 import { StoreComingSoon } from "@/components/home/StoreComingSoon";
-import { getBikeModels } from "@/data/catalog";
 import { getHeroSlides } from "@/lib/hero.functions";
+import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
