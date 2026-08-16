@@ -6,6 +6,13 @@ import { toast } from "sonner";
 import { Plus, Trash2, Edit2, Save, X, Upload, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,6 +23,7 @@ import {
   deleteHeroSlide,
   restoreOldHeroSlides,
 } from "@/lib/hero.functions";
+import { getActiveBikeModelsForAdmin } from "@/lib/hero.functions";
 
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
