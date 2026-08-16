@@ -3,9 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2 } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, Link2, Layout, Settings2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -13,18 +16,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   getHeroSlides,
   createHeroSlide,
   updateHeroSlide,
   deleteHeroSlide,
   restoreOldHeroSlides,
+  getActiveBikeModelsForAdmin,
+  updateBikeModel,
 } from "@/lib/hero.functions";
-import { getActiveBikeModelsForAdmin } from "@/lib/hero.functions";
-
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
   head: () => ({
@@ -44,11 +46,17 @@ function AdminHeroSlides() {
   const editSlide = useServerFn(updateHeroSlide);
   const removeSlide = useServerFn(deleteHeroSlide);
   const restoreSlides = useServerFn(restoreOldHeroSlides);
+  const fetchBikeModels = useServerFn(getActiveBikeModelsForAdmin);
+  const editBikeModel = useServerFn(updateBikeModel);
 
-
-  const { data: slides = [], isLoading } = useQuery({
+  const { data: slides = [], isLoading: slidesLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
     queryFn: () => fetchSlides({ data: { admin: true } }),
+  });
+
+  const { data: bikeModels = [], isLoading: modelsLoading } = useQuery({
+    queryKey: ["bike-models-admin"],
+    queryFn: () => fetchBikeModels({ data: {} }),
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -133,6 +141,14 @@ function AdminHeroSlides() {
     onError: (e: any) => toast.error(e.message || "Failed to restore slides"),
   });
 
+  const bikeModelMutation = useMutation({
+    mutationFn: editBikeModel,
+    onSuccess: () => {
+      toast.success("Bike model updated");
+      queryClient.invalidateQueries({ queryKey: ["bike-models-admin"] });
+    },
+    onError: (e: any) => toast.error(e.message || "Failed to update bike model"),
+  });
 
   const handleSave = (id: string, formData: FormData) => {
     const data = {
@@ -143,6 +159,7 @@ function AdminHeroSlides() {
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: formData.get("is_active") === "on",
+      bike_model_id: (formData.get("bike_model_id") as string) || null,
     };
     updateMutation.mutate({ data: { id, updates: data } });
   };
@@ -158,20 +175,21 @@ function AdminHeroSlides() {
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: true,
+      bike_model_id: (formData.get("bike_model_id") as string) || null,
     };
     addMutation.mutate({ data });
   };
 
-  if (isLoading)
-    return <div className="p-8 text-center text-muted-foreground">Loading slides...</div>;
+  if (slidesLoading || modelsLoading)
+    return <div className="p-8 text-center text-muted-foreground">Loading...</div>;
 
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Hero Slider</h1>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Homepage Visuals</h1>
           <p className="text-sm text-muted-foreground">
-            Manage the banners displayed on the homepage. Recommended aspect ratio: 21:9 (Desktop).
+            Manage the Hero Slider banners and Bike Model Explorer cards.
           </p>
         </div>
         <div className="flex gap-2">
@@ -181,358 +199,366 @@ function AdminHeroSlides() {
             size="sm"
             disabled={restoreMutation.isPending}
           >
-            {restoreMutation.isPending ? "Restoring..." : "Restore Old Slides"}
+            {restoreMutation.isPending ? "Restoring..." : "Restore Defaults"}
           </Button>
-          {!isAdding && (
-            <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2">
-              <Plus className="h-4 w-4" /> Add Slide
-            </Button>
-          )}
         </div>
-
       </div>
 
-      {isAdding && (
-        <div className="rounded-xl border border-primary/20 bg-card p-6 shadow-xl animate-in fade-in slide-in-from-top-4 duration-300">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold uppercase text-primary">New Slide</h2>
-            <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
-          <form onSubmit={handleAdd} className="grid gap-6 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="title">Slide Title (Main Heading)</Label>
-              <Input id="title" name="title" required placeholder="e.g. Perfect Price" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="subtitle">Subtitle (Optional)</Label>
-              <Input id="subtitle" name="subtitle" placeholder="e.g. For limited time only" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="image_url">Desktop Image URL</Label>
-              <div className="flex gap-2">
-                <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
-                <Button aria-label="Upload image"
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploadingType === "desktop-new"}
-                >
-                  {uploadingType === "desktop-new" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Upload className="h-4 w-4" />
-                  )}
-                </Button>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) =>
-                    handleFileUpload(e, "desktop", (url) => {
-                      const input = document.getElementById("image_url") as HTMLInputElement;
-                      if (input) input.value = url;
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="mobile_image_url">Mobile Image URL (Recommended 4:5)</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="mobile_image_url"
-                  name="mobile_image_url"
-                  placeholder="CDN URL preferred"
-                />
-                <Button aria-label="Upload image"
-                  type="button"
-                  variant="outline"
-                  size="icon"
-                  onClick={() => mobileFileInputRef.current?.click()}
-                  disabled={uploadingType === "mobile-new"}
-                >
-                  {uploadingType === "mobile-new" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Upload className="h-4 w-4" />
-                  )}
-                </Button>
-                <input
-                  type="file"
-                  ref={mobileFileInputRef}
-                  className="hidden"
-                  accept="image/*"
-                  onChange={(e) =>
-                    handleFileUpload(e, "mobile", (url) => {
-                      const input = document.getElementById("mobile_image_url") as HTMLInputElement;
-                      if (input) input.value = url;
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="link_url">Link Destination</Label>
-              <Input
-                id="link_url"
-                name="link_url"
-                placeholder="e.g. /products/visor or all-products"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="sort_order">Sort Order</Label>
-              <Input
-                id="sort_order"
-                name="sort_order"
-                type="number"
-                defaultValue={slides.length + 1}
-              />
-            </div>
-            <div className="flex items-end pt-2">
-              <Button
-                type="submit"
-                variant="red"
-                className="w-full"
-                disabled={addMutation.isPending}
-              >
-                {addMutation.isPending ? "Adding..." : "Create Slide"}
+      <Tabs defaultValue="hero" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1">
+          <TabsTrigger value="hero" className="gap-2 font-display text-sm uppercase tracking-wide">
+            <Layout className="h-4 w-4" /> Hero Slider
+          </TabsTrigger>
+          <TabsTrigger value="models" className="gap-2 font-display text-sm uppercase tracking-wide">
+            <Settings2 className="h-4 w-4" /> Bike Explorer
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="hero" className="mt-6 space-y-6 animate-in fade-in duration-500">
+          <div className="flex justify-end">
+            {!isAdding && (
+              <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2 shadow-lg shadow-red-500/20">
+                <Plus className="h-4 w-4" /> Add New Slide
               </Button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <div className="grid gap-6">
-        {slides.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
-            No slides found. Add your first banner above.
+            )}
           </div>
-        ) : (
-          [...slides]
-            .sort((a, b) => a.order - b.order)
-            .map((slide) => (
-              <div
-                key={slide.id}
-                className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                  slide.active
-                    ? "border-border bg-card"
-                    : "border-dashed border-muted-foreground/30 bg-muted/5 opacity-80"
-                } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"}`}
-              >
-                {editingId === slide.id ? (
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      handleSave(slide.id, new FormData(e.currentTarget));
-                    }}
-                    className="p-6"
-                  >
-                    <div className="mb-4 grid gap-6 sm:grid-cols-2">
-                      <div className="space-y-2">
-                        <Label>Title</Label>
-                        <Input name="title" defaultValue={slide.bikeName} required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Subtitle</Label>
-                        <Input name="subtitle" defaultValue={slide.label || ""} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Desktop Image URL</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            name="image_url"
-                            id={`img-${slide.id}`}
-                            defaultValue={slide.image}
-                            required
-                          />
-                          <Button aria-label="Upload image"
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => fileInputRef.current?.click()}
-                            disabled={uploadingType === `desktop-${slide.id}`}
-                          >
-                            {uploadingType === `desktop-${slide.id}` ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Upload className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleFileUpload(e, "desktop", (url) => {
-                                const input = document.getElementById(
-                                  `img-${slide.id}`,
-                                ) as HTMLInputElement;
-                                if (input) input.value = url;
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Mobile Image URL</Label>
-                        <div className="flex gap-2">
-                          <Input
-                            name="mobile_image_url"
-                            id={`mobile-img-${slide.id}`}
-                            defaultValue={slide.mobileImage || ""}
-                          />
-                          <Button aria-label="Upload image"
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => mobileFileInputRef.current?.click()}
-                            disabled={uploadingType === `mobile-${slide.id}`}
-                          >
-                            {uploadingType === `mobile-${slide.id}` ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Upload className="h-4 w-4" />
-                            )}
-                          </Button>
-                          <input
-                            type="file"
-                            ref={mobileFileInputRef}
-                            className="hidden"
-                            accept="image/*"
-                            onChange={(e) =>
-                              handleFileUpload(e, "mobile", (url) => {
-                                const input = document.getElementById(
-                                  `mobile-img-${slide.id}`,
-                                ) as HTMLInputElement;
-                                if (input) input.value = url;
-                              })
-                            }
-                          />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Link URL</Label>
-                        <Input name="link_url" defaultValue={slide.bikeSlug} />
-                      </div>
-                      <div className="space-y-2">
-                        <Label>Order</Label>
-                        <Input name="sort_order" type="number" defaultValue={slide.order} />
-                      </div>
-                      <div className="flex items-center gap-4 pt-4">
-                        <div className="flex items-center gap-2">
-                          <Checkbox
-                            id={`active-${slide.id}`}
-                            name="is_active"
-                            defaultChecked={slide.active}
-                          />
-                          <Label htmlFor={`active-${slide.id}`}>Active</Label>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 border-t pt-4">
-                      <Button
+
+          {isAdding && (
+            <Card className="border-primary/20 bg-card shadow-xl animate-in fade-in slide-in-from-top-4 duration-300">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+                <CardTitle className="font-display text-lg font-bold uppercase text-primary">New Hero Slide</CardTitle>
+                <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAdd} className="grid gap-6 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">Slide Title (Main Heading)</Label>
+                    <Input id="title" name="title" required placeholder="e.g. Pulsar N160" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="bike_model_id">Link to Bike Model (Optional)</Label>
+                    <Select name="bike_model_id">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select existing model" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None / Manual Link</SelectItem>
+                        {bikeModels.map((m: any) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            {m.name} ({m.slug})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="subtitle">Subtitle (Optional)</Label>
+                    <Input id="subtitle" name="subtitle" placeholder="e. eyebrow text" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="image_url">Desktop Image URL</Label>
+                    <div className="flex gap-2">
+                      <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
+                      <Button aria-label="Upload image"
                         type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingId(null)}
+                        variant="outline"
+                        size="icon"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadingType === "desktop-new"}
                       >
-                        Cancel
+                        {uploadingType === "desktop-new" ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
                       </Button>
-                      <Button
-                        type="submit"
-                        variant="red"
-                        size="sm"
-                        className="gap-2"
-                        disabled={updateMutation.isPending}
-                      >
-                        <Save className="h-4 w-4" />{" "}
-                        {updateMutation.isPending ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
-                  </form>
-                ) : (
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="relative h-48 w-full shrink-0 overflow-hidden sm:h-auto sm:w-64 bg-black">
-                      <img
-                        src={slide.image}
-                        alt={slide.alt}
-                        className="h-full w-full object-cover opacity-80 transition-transform group-hover:scale-110 duration-700"
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleFileUpload(e, "desktop", (url) => {
+                            const input = document.getElementById("image_url") as HTMLInputElement;
+                            if (input) input.value = url;
+                          })
+                        }
                       />
-                      {!slide.active && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                          <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white border border-white/20">
-                            Inactive
-                          </span>
-                        </div>
-                      )}
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="mobile_image_url">Mobile Image URL</Label>
+                    <div className="flex gap-2">
+                      <Input id="mobile_image_url" name="mobile_image_url" placeholder="CDN URL preferred" />
+                      <Button aria-label="Upload mobile image"
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => mobileFileInputRef.current?.click()}
+                        disabled={uploadingType === "mobile-new"}
+                      >
+                        {uploadingType === "mobile-new" ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4" />
+                        )}
+                      </Button>
+                      <input
+                        type="file"
+                        ref={mobileFileInputRef}
+                        className="hidden"
+                        accept="image/*"
+                        onChange={(e) =>
+                          handleFileUpload(e, "mobile", (url) => {
+                            const input = document.getElementById("mobile_image_url") as HTMLInputElement;
+                            if (input) input.value = url;
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="link_url">Manual Destination (if no model selected)</Label>
+                    <Input id="link_url" name="link_url" placeholder="e.g. all-products" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sort_order">Sort Order</Label>
+                    <Input id="sort_order" name="sort_order" type="number" defaultValue={slides.length + 1} />
+                  </div>
+                  <div className="flex items-end">
+                    <Button type="submit" variant="red" className="w-full shadow-lg shadow-red-500/20" disabled={addMutation.isPending}>
+                      {addMutation.isPending ? "Creating..." : "Create Slide"}
+                    </Button>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
 
-                    <div className="flex flex-1 flex-col justify-between p-6">
-                      <div>
-                        <div className="flex items-start justify-between">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary border border-primary/20">
-                                {slide.order}
-                              </span>
-                              <h3 className="font-display text-xl font-bold uppercase tracking-wide">
-                                {slide.bikeName}
-                              </h3>
+          <div className="grid gap-6">
+            {slides.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-border p-12 text-center text-muted-foreground">
+                No slides found.
+              </div>
+            ) : (
+              [...slides]
+                .sort((a, b) => a.order - b.order)
+                .map((slide) => (
+                  <div
+                    key={slide.id}
+                    className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                      slide.active ? "border-border bg-card shadow-sm" : "border-dashed border-muted-foreground/30 bg-muted/5 opacity-80"
+                    } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"}`}
+                  >
+                    {editingId === slide.id ? (
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          handleSave(slide.id, new FormData(e.currentTarget));
+                        }}
+                        className="p-6"
+                      >
+                        <div className="mb-4 grid gap-6 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label>Title</Label>
+                            <Input name="title" defaultValue={slide.bikeName} required />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Linked Bike Model</Label>
+                            <Select name="bike_model_id" defaultValue={slide.bikeModelId || "none"}>
+                              <SelectTrigger>
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="none">None / Manual Link</SelectItem>
+                                {bikeModels.map((m: any) => (
+                                  <SelectItem key={m.id} value={m.id}>
+                                    {m.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Subtitle</Label>
+                            <Input name="subtitle" defaultValue={slide.label || ""} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Desktop Image URL</Label>
+                            <div className="flex gap-2">
+                              <Input name="image_url" id={`img-${slide.id}`} defaultValue={slide.image} required />
+                              <Button aria-label="Upload desktop"
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => fileInputRef.current?.click()}
+                                disabled={uploadingType === `desktop-${slide.id}`}
+                              >
+                                {uploadingType === `desktop-${slide.id}` ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Upload className="h-4 w-4" />
+                                )}
+                              </Button>
                             </div>
-                            {slide.label && (
-                              <p className="text-sm text-muted-foreground">{slide.label}</p>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Mobile Image URL</Label>
+                            <div className="flex gap-2">
+                              <Input name="mobile_image_url" id={`mob-${slide.id}`} defaultValue={slide.mobileImage || ""} />
+                              <Button aria-label="Upload mobile"
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => mobileFileInputRef.current?.click()}
+                                disabled={uploadingType === `mobile-${slide.id}`}
+                              >
+                                {uploadingType === `mobile-${slide.id}` ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Upload className="h-4 w-4" />
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Manual Link URL</Label>
+                            <Input name="link_url" defaultValue={slide.bikeSlug} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Order</Label>
+                            <Input name="sort_order" type="number" defaultValue={slide.order} />
+                          </div>
+                          <div className="flex items-center gap-2 pt-8">
+                            <Checkbox id={`act-${slide.id}`} name="is_active" defaultChecked={slide.active} />
+                            <Label htmlFor={`act-${slide.id}`}>Active Banner</Label>
+                          </div>
+                        </div>
+                        <div className="flex justify-end gap-2 border-t pt-4">
+                          <Button type="button" variant="ghost" size="sm" onClick={() => setEditingId(null)}>Cancel</Button>
+                          <Button type="submit" variant="red" size="sm" className="gap-2 shadow-lg shadow-red-500/20" disabled={updateMutation.isPending}>
+                            <Save className="h-4 w-4" /> {updateMutation.isPending ? "Saving..." : "Save Changes"}
+                          </Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row">
+                        <div className="relative h-48 w-full shrink-0 overflow-hidden sm:h-auto sm:w-64 bg-onyx/50">
+                          <img
+                            src={slide.image}
+                            alt={slide.alt}
+                            className="h-full w-full object-cover opacity-80 transition-transform group-hover:scale-105 duration-700"
+                          />
+                          {!slide.active && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                              <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white border border-white/20">
+                                Inactive
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex flex-1 flex-col justify-between p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2">
+                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary border border-primary/20">
+                                  {slide.order}
+                                </span>
+                                <h3 className="font-display text-xl font-bold uppercase tracking-wide">
+                                  {slide.bikeName}
+                                </h3>
+                              </div>
+                              {slide.label && (
+                                <p className="text-xs text-muted-foreground">{slide.label}</p>
+                              )}
+                            </div>
+                            <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-primary/10 hover:text-primary" onClick={() => setEditingId(slide.id)}>
+                                <Edit2 className="h-4 w-4" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:bg-destructive/10" onClick={() => {
+                                if (confirm("Delete this slide?")) deleteMutation.mutate({ data: slide.id });
+                              }}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 flex flex-wrap gap-4 text-[10px]">
+                            <div className="flex items-center gap-1 text-muted-foreground">
+                              <Link2 className="h-3 w-3" />
+                              <span className="font-semibold uppercase tracking-tighter opacity-50">Link:</span>
+                              <code className="rounded bg-muted px-1 py-0.5 text-primary">{slide.bikeSlug}</code>
+                            </div>
+                            {slide.bikeModelId && (
+                              <div className="flex items-center gap-1 text-primary/70">
+                                <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+                                <span className="font-semibold uppercase tracking-tighter">Mapped to Bike Model</span>
+                              </div>
                             )}
                           </div>
-                          <div className="flex gap-1">
-                            <Button aria-label="Edit"
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-primary/10 hover:text-primary"
-                              onClick={() => setEditingId(slide.id)}
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button aria-label="Delete"
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive hover:bg-destructive/10"
-                              onClick={() => {
-                                if (confirm("Delete this slide?"))
-                                  deleteMutation.mutate({ data: slide.id });
-                              }}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
                         </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+            )}
+          </div>
+        </TabsContent>
 
-                        <div className="mt-4 grid gap-2 text-xs">
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <span className="font-semibold uppercase tracking-tighter opacity-50">
-                              Link:
-                            </span>
-                            <code className="rounded bg-muted px-1 py-0.5">{slide.bikeSlug}</code>
-                          </div>
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <span className="font-semibold uppercase tracking-tighter opacity-50 text-[10px]">
-                              Image URL:
-                            </span>
-                            <span className="truncate max-w-[200px]">{slide.image}</span>
-                          </div>
-                        </div>
+        <TabsContent value="models" className="mt-6 animate-in fade-in duration-500">
+          <Card className="border-border bg-card/50">
+            <CardHeader>
+              <CardTitle className="font-display text-lg font-bold uppercase">Bike Explorer Controls</CardTitle>
+              <CardDescription>Select which bike models appear in the homepage explorer carousel.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {bikeModels.map((model: any) => (
+                  <div key={model.id} className="flex items-center justify-between rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50">
+                    <div className="space-y-1">
+                      <p className="font-display font-bold uppercase tracking-wide">{model.name}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{model.slug}</p>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <Label htmlFor={`order-${model.id}`} className="text-[10px] uppercase text-muted-foreground">Order</Label>
+                        <Input
+                          id={`order-${model.id}`}
+                          type="number"
+                          className="h-8 w-16 text-center text-xs"
+                          defaultValue={model.sort_order}
+                          onBlur={(e) => {
+                            const val = parseInt(e.target.value);
+                            if (val !== model.sort_order) {
+                              bikeModelMutation.mutate({ data: { id: model.id, updates: { sort_order: val } } });
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id={`active-model-${model.id}`}
+                          defaultChecked={model.is_active}
+                          onCheckedChange={(checked) => {
+                            bikeModelMutation.mutate({ data: { id: model.id, updates: { is_active: !!checked } } });
+                          }}
+                        />
+                        <Label htmlFor={`active-model-${model.id}`} className="text-[10px] font-bold uppercase tracking-widest cursor-pointer">
+                          {model.is_active ? "Visible" : "Hidden"}
+                        </Label>
                       </div>
                     </div>
                   </div>
-                )}
+                ))}
               </div>
-            ))
-        )}
-      </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
