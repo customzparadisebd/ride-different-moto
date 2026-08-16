@@ -24,8 +24,13 @@ import { ProductDetail } from "@/routes/products.$slug.tsx";
 import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { Product360Panel } from "@/components/admin/products/Product360Panel";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { X } from "lucide-react";
-import { listProductColors, listProduct360Images } from "@/lib/products.functions";
+import { X, CheckSquare, Square, Trash2, Tag, Eye, EyeOff, LayoutPanelLeft } from "lucide-react";
+import {
+  bulkUpdateProducts,
+  bulkRecycleProducts,
+  listProductColors,
+  listProduct360Images,
+} from "@/lib/products.functions";
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -125,6 +130,8 @@ function AdminProducts() {
   const stock = useServerFn(setProductStock);
   const flag = useServerFn(toggleProductFlag);
   const recycle = useServerFn(softDeleteProduct);
+  const bulkUpdate = useServerFn(bulkUpdateProducts);
+  const bulkRecycle = useServerFn(bulkRecycleProducts);
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
@@ -134,6 +141,7 @@ function AdminProducts() {
   const [creating, setCreating] = useState(false);
   const [previewing, setPreviewing] = useState<ProductFormValue | null>(null);
   const [previewingId, setPreviewingId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   // PRODUCT COLOR MANAGEMENT — panel opens for one product at a time.
   const [colorsFor, setColorsFor] = useState<ProductRow | null>(null);
   // PRODUCT 360 MANAGEMENT
@@ -203,9 +211,43 @@ function AdminProducts() {
     onError,
   });
 
+  const bulkUpdateMutation = useMutation({
+    mutationFn: bulkUpdate,
+    onSuccess: () => {
+      toast.success("Products updated");
+      setSelectedIds([]);
+      refresh();
+    },
+    onError,
+  });
+
+  const bulkRecycleMutation = useMutation({
+    mutationFn: bulkRecycle,
+    onSuccess: () => {
+      toast.success("Products moved to Recycle Bin");
+      setSelectedIds([]);
+      refresh();
+    },
+    onError,
+  });
+
   const rows = (listQuery.data?.rows ?? []) as unknown as ProductRow[];
   const total = listQuery.data?.total ?? 0;
   const pageCount = Math.max(Math.ceil(total / 25), 1);
+
+  const toggleAll = () => {
+    if (selectedIds.length === rows.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(rows.map((r) => r.id));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    setSelectedIds((current) =>
+      current.includes(id) ? current.filter((i) => i !== id) : [...current, id]
+    );
+  };
 
   return (
     <section className="mx-auto max-w-6xl">
@@ -357,6 +399,19 @@ function AdminProducts() {
         <table className="w-full min-w-[980px] text-sm">
           <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
             <tr>
+              <th className="p-3 w-10">
+                <button
+                  type="button"
+                  onClick={toggleAll}
+                  className="flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {selectedIds.length === rows.length && rows.length > 0 ? (
+                    <CheckSquare className="size-4 text-primary" />
+                  ) : (
+                    <Square className="size-4" />
+                  )}
+                </button>
+              </th>
               <th className="p-3">Product</th>
               <th className="p-3">SKU</th>
               <th className="p-3">Category</th>
@@ -385,7 +440,25 @@ function AdminProducts() {
             {rows.map((row) => {
               const status = stockStatus(row.stock_qty, lowThreshold);
               return (
-                <tr key={row.id} className="border-b border-border last:border-0">
+                <tr
+                  key={row.id}
+                  className={`border-b border-border last:border-0 transition-colors ${
+                    selectedIds.includes(row.id) ? "bg-primary/5" : ""
+                  }`}
+                >
+                  <td className="p-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleOne(row.id)}
+                      className="flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {selectedIds.includes(row.id) ? (
+                        <CheckSquare className="size-4 text-primary" />
+                      ) : (
+                        <Square className="size-4" />
+                      )}
+                    </button>
+                  </td>
                   <td className="p-3">
                     <div className="flex items-center gap-3">
                       <div className="h-12 w-12 overflow-hidden rounded-md border border-border">
@@ -564,6 +637,96 @@ function AdminProducts() {
           </Button>
         </div>
       </div>
+
+      {selectedIds.length > 0 && canManage && (
+        <div className="fixed bottom-6 left-1/2 z-[100] -translate-x-1/2 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="flex items-center gap-4 rounded-full border border-border bg-card/95 px-6 py-3 shadow-2xl backdrop-blur-md">
+            <span className="text-sm font-bold uppercase tracking-wider text-primary">
+              {selectedIds.length} Selected
+            </span>
+
+            <div className="h-6 w-px bg-border mx-2" />
+
+            <div className="flex items-center gap-2">
+              <Button
+                variant="steel"
+                size="sm"
+                className="h-9 gap-2 rounded-full px-4"
+                onClick={() =>
+                  bulkUpdateMutation.mutate({ data: { ids: selectedIds, isActive: true } as any })
+                }
+              >
+                <Eye className="size-4" />
+                Publish
+              </Button>
+              <Button
+                variant="steel"
+                size="sm"
+                className="h-9 gap-2 rounded-full px-4"
+                onClick={() =>
+                  bulkUpdateMutation.mutate({ data: { ids: selectedIds, isActive: false } as any })
+                }
+              >
+                <EyeOff className="size-4" />
+                Unpublish
+              </Button>
+
+              <div className="relative group">
+                <Button variant="steel" size="sm" className="h-9 gap-2 rounded-full px-4">
+                  <Tag className="size-4" />
+                  Category
+                </Button>
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block animate-in fade-in zoom-in-95 duration-200">
+                  <div className="w-48 overflow-hidden rounded-xl border border-border bg-card shadow-2xl p-1">
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() =>
+                          bulkUpdateMutation.mutate({
+                            data: { ids: selectedIds, category: cat } as any,
+                          })
+                        }
+                        className="w-full px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide hover:bg-primary/10 hover:text-primary transition-colors rounded-lg"
+                      >
+                        {categoryLabel(cat)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-6 w-px bg-border mx-2" />
+
+              <Button
+                variant="destructive"
+                size="sm"
+                className="h-9 gap-2 rounded-full px-4"
+                onClick={() => {
+                  const reason = window.prompt(
+                    `Move ${selectedIds.length} products to the Recycle Bin? Optional reason:`,
+                    ""
+                  );
+                  if (reason === null) return;
+                  bulkRecycleMutation.mutate({ data: { ids: selectedIds, reason } as any });
+                }}
+              >
+                <Trash2 className="size-4" />
+                Recycle
+              </Button>
+            </div>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 size-8 rounded-full p-0 text-muted-foreground hover:bg-muted hover:text-foreground"
+              onClick={() => setSelectedIds([])}
+            >
+              <X className="size-4" />
+            </Button>
+          </div>
+        </div>
+      )}
 
       {!canManage ? (
         <p className="mt-3 text-xs text-muted-foreground">
