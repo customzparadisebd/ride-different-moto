@@ -85,6 +85,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
+            className="h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-5 sm:[&_svg]:size-5.5"
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           >
