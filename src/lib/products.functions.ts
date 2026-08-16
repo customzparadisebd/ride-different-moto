@@ -630,7 +630,7 @@ export const bulkUpdateProductImages = createServerFn({ method: "POST" })
         update.images = Array.from(new Set([...current, ...data.appendGallery]));
       }
       if (Object.keys(update).length > 0) {
-        return context.supabase.return context.supabase.from("products").update(update).eq("id", id);
+        return context.supabase.from("products").update(update).eq("id", id);
       }
     });
 
