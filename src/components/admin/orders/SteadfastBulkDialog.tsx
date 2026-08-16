@@ -164,7 +164,7 @@ export function SteadfastBulkDialog({
             {finished ? "Close" : "Cancel"}
           </Button>
           {!finished ? (
-            <Button variant="red" size="touch" disabled={sending} onClick={() => void run()}>
+            <Button variant="red" size="touch" disabled={sending} onClick={() => void run()} className="focus-visible:ring-offset-2">
               {sending ? "Sending…" : `Confirm & send ${orderIds.length}`}
             </Button>
           ) : null}

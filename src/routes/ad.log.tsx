@@ -391,7 +391,7 @@ function AuthPage() {
                 variant="red"
                 size="touch"
                 autoFocus
-                className="w-full h-12 text-sm font-black uppercase tracking-widest shadow-3d-red active:translate-y-0.5 active:shadow-none transition-all"
+                className="w-full h-12 text-sm font-black uppercase tracking-widest shadow-3d-red active:translate-y-0.5 active:shadow-none transition-all focus-visible:ring-offset-2"
                 disabled={busy || locked}
               >
                 {locked

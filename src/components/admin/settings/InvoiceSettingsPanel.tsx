@@ -128,7 +128,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               <Button
                 type="button"
                 variant="red"
-                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
+                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0 focus-visible:ring-offset-2"
                 disabled={!canManage || mutation.isPending || !manualStart}
                 onClick={() => handleSetStartingNumber()}
               >
@@ -144,7 +144,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-10 border-red-500/50 text-red-500 hover:bg-red-500/10 uppercase font-bold text-[11px] tracking-wider"
+              className="w-full h-10 border-red-500/50 text-red-500 hover:bg-red-500/10 uppercase font-bold text-[11px] tracking-wider focus-visible:ring-offset-2"
               disabled={!canManage || mutation.isPending}
               onClick={() => handleResetTo01()}
             >

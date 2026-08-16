@@ -479,18 +479,19 @@ export function ProductForm({
       ) : null}
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" variant="red" size="touch" disabled={isPending}>
+        <Button type="submit" variant="red" size="touch" disabled={isPending} className="focus-visible:ring-offset-2">
           {isPending ? "Saving…" : submitLabel}
         </Button>
         <Button
           type="button"
           variant="steel"
           size="touch"
+          className="focus-visible:ring-offset-2"
           onClick={() => validate() && onPreview(value)}
         >
           Preview
         </Button>
-        <Button type="button" variant="steel" size="touch" onClick={onCancel}>
+        <Button type="button" variant="steel" size="touch" className="focus-visible:ring-offset-2" onClick={onCancel}>
           Cancel
         </Button>
       </div>

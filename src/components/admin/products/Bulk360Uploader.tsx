@@ -177,6 +177,7 @@ export function Bulk360Uploader({ onSave, isPending, currentCount }: Bulk360Uplo
         <Button
           variant="red"
           size="touch"
+          className="focus-visible:ring-offset-2"
           disabled={isPending || previewImages.length === 0 || validationErrors.length > 0}
           onClick={handleSubmit}
         >
