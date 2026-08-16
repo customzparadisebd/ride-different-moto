@@ -181,6 +181,20 @@ export const featuredProductsUpdateInput = z.object({
   ),
 });
 
+export const bulkProductUpdateInput = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(100),
+  category: z.enum(PRODUCT_CATEGORIES).optional(),
+  isActive: z.boolean().optional(),
+  isBestDeal: z.boolean().optional(),
+  isFeatured: z.boolean().optional(),
+  isNewArrival: z.boolean().optional(),
+});
+
+export const bulkProductRecycleInput = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(100),
+  reason: blankable(300),
+});
+
 export function stockStatus(qty: number, lowThreshold: number) {
   if (qty <= 0) return { key: "out_of_stock", label: "Out of stock" } as const;
   if (qty <= lowThreshold) return { key: "low_stock", label: "Low stock" } as const;
