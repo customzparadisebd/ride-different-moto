@@ -71,7 +71,7 @@ export function Header() {
         </nav>
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
-        <div className="flex flex-1 items-center justify-end gap-1 sm:gap-2">
+        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
           <button
             onClick={toggleLanguage}
             className="flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary active:scale-95 sm:h-10 sm:px-4 sm:text-xs"
