@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { site } from "@/data/site";
+import { getBaseUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/api/public/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {
         const settings = await getSiteSettings();
-        const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+        const siteUrl = await getBaseUrl(settings);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         
         // Fetch active products and bike models from DB
