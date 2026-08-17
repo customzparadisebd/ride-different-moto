@@ -2,29 +2,34 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Monitor, Smartphone } from "lucide-react";
 import { HeroSlider } from "@/components/home/HeroSlider";
-import { cn } from "@/lib/utils";
+import { type HeroSlide } from "@/data/types";
 
 interface SlidePreviewProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   slide: {
     bikeName: string;
-    label?: string;
+    label?: string | null;
     image: string;
-    mobileImage?: string;
-    bikeSlug?: string;
+    mobileImage?: string | null;
+    bikeSlug?: string | null;
     isFullBanner?: boolean;
   };
 }
 
 export function HeroSlidePreview({ open, onOpenChange, slide }: SlidePreviewProps) {
-  // Transform form data to match HeroSlider prop structure
-  const previewSlides = [{
+  // Transform form data to match HeroSlide structure strictly
+  const previewSlides: HeroSlide[] = [{
     id: 'preview',
-    ...slide,
-    alt: slide.bikeName,
+    bikeName: slide.bikeName || "Slide Preview",
+    label: slide.label || null,
+    image: slide.image || "",
+    mobileImage: slide.mobileImage || null,
+    alt: slide.bikeName || "Hero Slide",
+    bikeSlug: slide.bikeSlug || "all-products",
     order: 0,
     active: true,
+    isFullBanner: slide.isFullBanner || false
   }];
 
   return (
