@@ -19,103 +19,116 @@ import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
-
-const title = "Customz Paradise BD — Premium Motorcycle Modification Parts in Bangladesh";
-const description = "Shop high-quality motorcycle modification parts, stickers, and accessories at Customz Paradise BD. Nationwide delivery across Bangladesh. Ride Different. Be Different.";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title },
-      { name: "description", content: description },
-      { property: "og:title", content: title },
-      { property: "og:description", content: description },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: site.url },
-      { property: "og:image", content: `${site.url}/logo-main.png` },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: title },
-      { name: "twitter:description", content: description },
-      { name: "twitter:image", content: `${site.url}/logo-main.png` },
-    ],
-    links: [{ rel: "canonical", href: site.url }],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify([
-          {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": site.name,
-            "url": site.url,
-            "logo": `${site.url}/logo-main.png`,
-            "sameAs": site.socials.map((social) => social.href),
-            "contactPoint": {
-              "@type": "ContactPoint",
-              "telephone": site.phoneDisplay,
-              "contactType": "customer service",
-              "areaServed": "BD",
-              "availableLanguage": ["en", "bn"]
+  head: ({ loaderData }) => {
+    const settings = (loaderData as any)?.siteSettings || site;
+    const siteUrl = settings?.productionDomain ? `https://${settings.productionDomain}` : site.url;
+    const businessName = settings?.businessName || (settings as any).name || site.name;
+    const businessTagline = settings?.tagline || (settings as any).tagline || site.tagline;
+    const businessDescription = settings?.businessDescription || (settings as any).description || site.description;
+    const businessPhone = settings?.phone || (settings as any).phoneDisplay || site.phoneDisplay;
+    const businessAddress = settings?.address || site.address;
+    const businessCity = settings?.city || "Uttara";
+    const businessEmail = settings?.email || site.email;
+
+    const title = `${businessName} — ${businessTagline}`;
+    const description = businessDescription;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: siteUrl },
+        { property: "og:image", content: `${siteUrl}/logo-main.png` },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description },
+        { name: "twitter:image", content: `${siteUrl}/logo-main.png` },
+      ],
+      links: [{ rel: "canonical", href: siteUrl }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": businessName,
+              "url": siteUrl,
+              "logo": `${siteUrl}/logo-main.png`,
+              "sameAs": site.socials.map((social) => social.href),
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "telephone": businessPhone,
+                "contactType": "customer service",
+                "areaServed": "BD",
+                "availableLanguage": ["en", "bn"]
+              }
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              "name": businessName,
+              "image": `${siteUrl}/logo-main.png`,
+              "@id": siteUrl,
+              "url": siteUrl,
+              "telephone": businessPhone,
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": businessAddress,
+                "addressLocality": businessCity,
+                "addressRegion": "Dhaka",
+                "postalCode": "1230",
+                "addressCountry": "BD"
+              },
+              "geo": {
+                "@type": "GeoCoordinates",
+                "latitude": 23.8759,
+                "longitude": 90.3795
+              },
+              "openingHoursSpecification": {
+                "@type": "OpeningHoursSpecification",
+                "dayOfWeek": [
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday"
+                ],
+                "opens": "09:00",
+                "closes": "21:00"
+              }
+            },
+            {
+              "@context": "https://schema.org",
+              "@type": "Store",
+              "name": businessName,
+              "url": siteUrl,
+              "telephone": businessPhone,
+              "email": businessEmail,
+              "slogan": businessTagline,
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": `${businessCity}, Dhaka`,
+                "postalCode": "1230",
+                "addressCountry": "BD"
+              },
+              "sameAs": site.socials.map((social) => social.href)
             }
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            "name": site.name,
-            "image": `${site.url}/logo-main.png`,
-            "@id": site.url,
-            "url": site.url,
-            "telephone": site.phoneDisplay,
-            "address": {
-              "@type": "PostalAddress",
-              "streetAddress": "Sector 10",
-              "addressLocality": "Uttara",
-              "addressRegion": "Dhaka",
-              "postalCode": "1230",
-              "addressCountry": "BD"
-            },
-            "geo": {
-              "@type": "GeoCoordinates",
-              "latitude": 23.8759,
-              "longitude": 90.3795
-            },
-            "openingHoursSpecification": {
-              "@type": "OpeningHoursSpecification",
-              "dayOfWeek": [
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-                "Sunday"
-              ],
-              "opens": "09:00",
-              "closes": "21:00"
-            }
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "Store",
-            "name": site.name,
-            "url": site.url,
-            "telephone": site.phoneDisplay,
-            "email": site.email,
-            "slogan": site.tagline,
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Uttara, Dhaka",
-              "postalCode": "1230",
-              "addressCountry": "BD"
-            },
-            "sameAs": site.socials.map((social) => social.href)
-          }
-        ]),
-      },
-    ],
-  }),
-  loader: ({ context }) => {
-    void context.queryClient.ensureQueryData(storefrontProductsQuery());
+          ]),
+        },
+      ],
+    };
+  },
+  loader: async ({ context }) => {
+    await context.queryClient.ensureQueryData(storefrontProductsQuery());
   },
   component: Index,
   errorComponent: ({ error }) => (

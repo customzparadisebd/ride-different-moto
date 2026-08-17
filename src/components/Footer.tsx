@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import type { ComponentType } from "react";
 import { Mail, Phone, Store } from "lucide-react";
 
@@ -7,6 +7,9 @@ import { Logo } from "@/components/Logo";
 import { StoreMap } from "@/components/StoreMap";
 import { useLanguage } from "@/lib/i18n";
 import { legalLinks, navLinks, site } from "@/data/site";
+import { type SiteSettings } from "@/lib/settings.shared";
+import { useQuery } from "@tanstack/react-query";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 
 const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> =
   {
@@ -17,6 +20,19 @@ const socialIcons: Record<string, { Icon: ComponentType<{ className?: string }>;
 
 export function Footer() {
   const { t } = useLanguage();
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: () => getSiteSettings(),
+  });
+
+  const settings = siteSettings || site;
+  const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+  const businessTagline = (settings as SiteSettings).tagline || (settings as any).tagline || site.tagline;
+  const businessDescription = (settings as SiteSettings).businessDescription || (settings as any).description || site.description;
+  const businessPhone = (settings as SiteSettings).phone || (settings as any).phoneDisplay || site.phoneDisplay;
+  const businessAddress = (settings as SiteSettings).address || site.address;
+  const businessEmail = (settings as SiteSettings).email || site.email;
+
   return (
     <footer className="mt-16 bg-gradient-onyx text-onyx-foreground">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
@@ -25,9 +41,9 @@ export function Footer() {
             <div className="min-w-0">
               <Logo on="dark" className="h-11 w-auto" />
               <p className="mt-4 font-display text-sm uppercase tracking-[0.25em] text-primary">
-                Ride Different. Be Different.
+                {businessTagline}
               </p>
-              <p className="mt-3 max-w-xs text-sm opacity-75">{site.description}</p>
+              <p className="mt-3 max-w-xs text-sm opacity-75">{businessDescription}</p>
             </div>
 
             <div>
@@ -63,7 +79,7 @@ export function Footer() {
                     className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
-                    <span>{site.phoneDisplay}</span>
+                    <span>{businessPhone}</span>
                   </a>
                 </li>
                 <li>
@@ -72,7 +88,7 @@ export function Footer() {
                     className="flex items-start gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Mail className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                    <span className="break-all">{site.email}</span>
+                    <span className="break-all">{businessEmail}</span>
                   </a>
                 </li>
               </ul>
@@ -80,7 +96,7 @@ export function Footer() {
               <h2 className="eyebrow mt-6 text-primary">Store</h2>
               <p className="mt-3 flex items-start gap-2 text-sm opacity-80">
                 <Store className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                <span>{site.address}</span>
+                <span>{businessAddress}</span>
               </p>
               <p className="text-sm text-primary">Physical Store Coming Soon</p>
             </div>
@@ -126,7 +142,7 @@ export function Footer() {
         </div>
 
         <p className="mt-10 border-t border-white/10 pt-6 text-xs opacity-60">
-          © {new Date().getFullYear()} {site.name}. {t("footer.rights")}
+          © {new Date().getFullYear()} {businessName}. {t("footer.rights")}
         </p>
       </div>
     </footer>

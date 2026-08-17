@@ -6,7 +6,7 @@
 // Security: Public read of active products only; the price shown is
 //           recalculated server-side when the order is placed.
 // ============================================================
-import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
+import { queryOptions, useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
 import { Check, Minus, Plus } from "lucide-react";
 import { useMemo, useState, useEffect, lazy, Suspense } from "react";
@@ -23,16 +23,19 @@ const Product360Viewer = lazy(() =>
 );
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { site } from "@/data/site";
 import { useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/format";
 import { getStorefrontProduct } from "@/lib/storefront.functions";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import {
   basePrice,
   colorPrice,
   compareAtPrice,
   type StorefrontProduct,
 } from "@/lib/storefront.shared";
+import { type SiteSettings } from "@/lib/settings.shared";
 import { cn } from "@/lib/utils";
 
 const productQuery = (slug: string) =>
@@ -43,8 +46,20 @@ const productQuery = (slug: string) =>
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
-    const product = await context.queryClient.ensureQueryData(productQuery(params.slug));
+    const [product, siteSettings] = await Promise.all([
+      context.queryClient.ensureQueryData(productQuery(params.slug)),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-settings"],
+        queryFn: () => getSiteSettings(),
+      })
+    ]);
+
     if (!product) throw notFound();
+
+    const settings = (siteSettings as SiteSettings) || site;
+    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
+    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
+    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
 
     const jsonLd = {
       "@context": "https://schema.org",
@@ -54,11 +69,11 @@ export const Route = createFileRoute("/products/$slug")({
       description: product.description,
       brand: {
         "@type": "Brand",
-        name: "Customz Paradise BD",
+        name: businessName,
       },
       offers: {
         "@type": "Offer",
-        url: `${site.url}/products/${product.slug}`,
+        url: `${siteUrl}/products/${product.slug}`,
         priceCurrency: "BDT",
         price: product.offerPrice || product.price,
         availability: product.inStock && !product.outOfStockManual
@@ -87,19 +102,25 @@ export const Route = createFileRoute("/products/$slug")({
       videoEnabled: product.videoEnabled,
       videoUrl: product.videoUrl,
       image: product.image || product.gallery[0],
+      siteSettings
     };
   },
 
   head: ({ loaderData, params }) => {
+    const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
+    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
+    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+
     if (!loaderData) {
       return {
-        meta: [{ title: `Product — ${site.name}` }, { name: "robots", content: "noindex" }],
+        meta: [{ title: `Product — ${businessName}` }, { name: "robots", content: "noindex" }],
       };
     }
-    const title = `${loaderData.name} — Motorcycle Modification Parts Bangladesh — ${site.name}`;
+    const title = `${loaderData.name} — Motorcycle Modification Parts Bangladesh — ${businessName}`;
     const description =
       loaderData.description ??
-      `Get the best price for ${loaderData.name} in Bangladesh. High-quality motorcycle modification accessory from Customz Paradise BD with nationwide delivery.`;
+      `Get the best price for ${loaderData.name} in Bangladesh. High-quality motorcycle modification accessory from ${businessName} with nationwide delivery.`;
 
     return {
       meta: [
@@ -108,7 +129,7 @@ export const Route = createFileRoute("/products/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `${site.url}/products/${params.slug}` },
+        { property: "og:url", content: `${siteUrl}/products/${params.slug}` },
         { property: "og:image", content: loaderData.image },
         ...(loaderData.videoEnabled && loaderData.videoUrl
           ? [
@@ -131,7 +152,7 @@ export const Route = createFileRoute("/products/$slug")({
             ]
           : []),
       ],
-      links: [{ rel: "canonical", href: `/products/${params.slug}` }],
+      links: [{ rel: "canonical", href: `${siteUrl}/products/${params.slug}` }],
       scripts: [
         {
           type: "application/ld+json",
@@ -142,41 +163,30 @@ export const Route = createFileRoute("/products/$slug")({
   },
 
   component: ProductDetailPage,
-  errorComponent: ({ error }) => (
-    <div className="mx-auto max-w-xl px-4 py-20 text-center" role="alert">
-      <h1 className="font-display text-2xl font-bold uppercase">Product unavailable</h1>
-      <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
-      <Button variant="red" size="touch" className="mt-6" asChild>
-        <Link to="/shop">Back to shop</Link>
-      </Button>
-    </div>
-  ),
-  notFoundComponent: () => (
-    <div className="mx-auto max-w-xl px-4 py-20 text-center">
-      <h1 className="font-display text-2xl font-bold uppercase">Product not found</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        This product is no longer available. Browse the full catalogue instead.
-      </p>
-      <Button variant="red" size="touch" className="mt-6" asChild>
-        <Link to="/shop">All products</Link>
-      </Button>
-    </div>
-  ),
 });
 
 function ProductDetailPage() {
   const { slug } = Route.useParams();
   const { data } = useSuspenseQuery(productQuery(slug));
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: () => getSiteSettings(),
+  });
+
   if (!data) return null;
-  return <ProductDetail product={data} />;
+  return <ProductDetail product={data} siteSettings={siteSettings as SiteSettings} />;
 }
 
-export function ProductDetail({ product }: { product: StorefrontProduct }) {
+export function ProductDetail({ product, siteSettings }: { product: StorefrontProduct; siteSettings?: SiteSettings }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [colorId, setColorId] = useState<string | null>(product.colors[0]?.id ?? null);
   const [qty, setQty] = useState(1);
   const [show360, setShow360] = useState(false);
+
+  const settings = (siteSettings as SiteSettings) || site;
+  const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
+  const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
 
   const color = useMemo(
     () => product.colors.find((entry) => entry.id === colorId) ?? null,
@@ -215,13 +225,13 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Shop",
-                  "item": `${site.url}/shop`
+                  "item": `${siteUrl}/shop`
                 },
                 {
                   "@type": "ListItem",
                   "position": 2,
                   "name": product.name,
-                  "item": `${site.url}/products/${product.slug}`
+                  "item": `${siteUrl}/products/${product.slug}`
                 }
               ]
             })
@@ -268,10 +278,10 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            {product.newArrival && <Badge tone="outline">New</Badge>}
-            {product.bestDeal && <Badge tone="dark">Best Deal</Badge>}
-            {product.featured && <Badge tone="dark">Top Seller</Badge>}
-            {product.badgeText ? <Badge tone="red">{product.badgeText}</Badge> : null}
+            {product.newArrival && <Badge variant="outline">New</Badge>}
+            {product.bestDeal && <Badge variant="default">Best Deal</Badge>}
+            {product.featured && <Badge variant="default">Top Seller</Badge>}
+            {product.badgeText ? <Badge variant="destructive">{product.badgeText}</Badge> : null}
           </div>
 
           <h1 className="mt-2 font-display text-2xl font-bold uppercase leading-tight tracking-tight sm:text-3xl">
@@ -451,36 +461,8 @@ export function ProductDetail({ product }: { product: StorefrontProduct }) {
               </p>
             </section>
           ) : null}
-
-          <p className="mt-4 text-xs text-muted-foreground">
-            Need help choosing? Call {site.phoneDisplay}.
-          </p>
         </div>
       </div>
     </div>
-  );
-}
-
-function Badge({
-  tone,
-  children,
-}: {
-  tone: "red" | "dark" | "outline";
-  children: React.ReactNode;
-}) {
-  const styles = {
-    red: "bg-gradient-red text-primary-foreground",
-    dark: "bg-onyx text-onyx-foreground",
-    outline: "border border-border bg-background text-foreground",
-  } as const;
-  return (
-    <span
-      className={cn(
-        "rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-        styles[tone],
-      )}
-    >
-      {children}
-    </span>
   );
 }

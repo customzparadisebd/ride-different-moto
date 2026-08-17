@@ -1,17 +1,31 @@
 import { Store } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import { WhatsAppIcon, FacebookIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
+import { getSiteSettings } from "@/lib/site-settings.functions";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 export function ContactSection() {
   const { t } = useLanguage();
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: () => getSiteSettings(),
+  });
+
+  const settings = (siteSettings as SiteSettings) || site;
+  const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+  const businessPhone = (settings as SiteSettings).phone || (settings as any).phoneDisplay || site.phoneDisplay;
+  const businessAddress = (settings as SiteSettings).address || site.address;
+  const whatsappNumber = (settings as SiteSettings).whatsapp || (settings as any).whatsapp || site.whatsappNumber;
+
   const getWhatsAppHref = () => {
     const text = encodeURIComponent(
-      "Hello Customz Paradise BD, I'm interested in modifying my bike. Can you help me?",
+      `Hello ${businessName}, I'm interested in modifying my bike. Can you help me?`,
     );
-    return `https://wa.me/${site.whatsappNumber}?text=${text}`;
+    return `https://wa.me/${whatsappNumber.replace(/\D/g, "")}?text=${text}`;
   };
 
   return (
@@ -38,7 +52,7 @@ export function ContactSection() {
               <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
                 WhatsApp
               </h3>
-              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.phoneDisplay}</p>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{businessPhone}</p>
             </div>
           </a>
 
@@ -55,7 +69,7 @@ export function ContactSection() {
               <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
                 {t("section.contact.messenger")}
               </h3>
-              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">Customz Paradise BD</p>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{businessName}</p>
             </div>
           </a>
 
@@ -67,7 +81,7 @@ export function ContactSection() {
               <h3 className="font-display text-sm font-bold uppercase tracking-tight sm:text-base">
                 {t("section.contact.office")}
               </h3>
-              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{site.address}</p>
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{businessAddress}</p>
             </div>
           </div>
         </div>

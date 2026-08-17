@@ -25,35 +25,53 @@ import { whatsappHref } from "@/lib/checkout-config.shared";
 import { formatBDT } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import { checkoutSubmitInput, newIdempotencyKey } from "@/lib/orders.shared";
+import { getSiteSettings } from "@/lib/site-settings.functions";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({
-    meta: [
-      { title: `Checkout — ${site.name}` },
-      {
-        name: "description",
-        content:
-          "Confirm your motorcycle modification parts order with cash on delivery. Nationwide delivery across Bangladesh.",
-      },
-      { property: "og:title", content: `Checkout — ${site.name}` },
-      {
-        property: "og:description",
-        content: "Securely place your order for premium motorcycle modification parts at Customz Paradise BD.",
-      },
-      { property: "og:url", content: `${site.url}/checkout` },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: `Checkout — ${site.name}` },
-      { name: "twitter:description", content: "Securely place your order for premium motorcycle modification parts." },
-      { property: "og:image", content: `${site.url}/logo-main.png` },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  loader: async ({ context }) => {
+    return {
+      siteSettings: await context.queryClient.ensureQueryData({
+        queryKey: ["site-settings"],
+        queryFn: () => getSiteSettings(),
+      })
+    };
+  },
+  head: ({ loaderData }) => {
+    const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
+    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
+    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+
+    return {
+      meta: [
+        { title: `Checkout — ${businessName}` },
+        {
+          name: "description",
+          content:
+            "Confirm your motorcycle modification parts order with cash on delivery. Nationwide delivery across Bangladesh.",
+        },
+        { property: "og:title", content: `Checkout — ${businessName}` },
+        {
+          property: "og:description",
+          content: `Securely place your order for premium motorcycle modification parts at ${businessName}.`,
+        },
+        { property: "og:url", content: `${siteUrl}/checkout` },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "twitter:title", content: `Checkout — ${businessName}` },
+        { name: "twitter:description", content: "Securely place your order for premium motorcycle modification parts." },
+        { property: "og:image", content: `${siteUrl}/logo-main.png` },
+        { name: "robots", content: "noindex" },
+      ],
+    };
+  },
   component: CheckoutPage,
 });
 
 function CheckoutPage() {
   const { lines, subtotal, clear } = useCart();
+  const { siteSettings } = Route.useLoaderData();
   const router = useRouter();
   const submitOrder = useServerFn(placeOrder);
   const config = useQuery(checkoutConfigQuery());
@@ -71,7 +89,10 @@ function CheckoutPage() {
 
   const zones = config.data?.zones ?? [];
   const cities = config.data?.cities ?? [];
-  const whatsappPhone = config.data?.whatsappPhone ?? site.phoneDisplay;
+  const settings = (siteSettings as SiteSettings) || site;
+  const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+  const whatsappNumber = (settings as SiteSettings).whatsapp || (settings as any).phoneDisplay || site.phoneDisplay;
+  const whatsappPhone = config.data?.whatsappPhone ?? whatsappNumber;
   const whatsappMessage =
     config.data?.whatsappMessage ?? "Having any problem with your order? Contact us on WhatsApp.";
 
@@ -330,7 +351,7 @@ function CheckoutPage() {
             >
               {mutation.isPending ? "Placing order…" : "Place Order"}
             </Button>
-            <WhatsAppSupport phone={whatsappPhone} message={whatsappMessage} />
+            <WhatsAppSupport phone={whatsappPhone} message={whatsappMessage} businessName={businessName} />
           </aside>
         </form>
       )}
@@ -339,12 +360,12 @@ function CheckoutPage() {
 }
 
 // WHATSAPP SUPPORT — COMPLETED
-function WhatsAppSupport({ phone, message }: { phone: string; message: string }) {
+function WhatsAppSupport({ phone, message, businessName }: { phone: string; message: string; businessName: string }) {
   return (
     <div className="mt-4 rounded-lg border border-border bg-secondary/60 p-3 text-center">
       <p className="text-xs text-muted-foreground">{message}</p>
       <a
-        href={whatsappHref(phone, "Hi! I need help with my order on Customz Paradise BD.")}
+        href={whatsappHref(phone, `Hi! I need help with my order on ${businessName}.`)}
         target="_blank"
         rel="noopener noreferrer"
         className="mt-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-md bg-[#25D366] px-4 text-sm font-semibold text-white transition-opacity hover:opacity-90"

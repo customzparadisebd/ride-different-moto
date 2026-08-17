@@ -5,25 +5,39 @@ import { ProductGrid } from "@/components/ProductCard";
 import { SafeImage } from "@/components/SafeImage";
 import { getStorefrontBikeModel } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import { site } from "@/data/site";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 export const Route = createFileRoute("/bike-models/$slug")({
   loader: async ({ params, context }) => {
-    const model = await getStorefrontBikeModel({ data: { slug: params.slug } });
+    const [model, siteSettings] = await Promise.all([
+      getStorefrontBikeModel({ data: { slug: params.slug } }),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-settings"],
+        queryFn: () => getSiteSettings(),
+      })
+    ]);
+    
     if (!model) throw notFound();
     void context.queryClient.ensureQueryData(storefrontProductsQuery());
-    return { model };
+    return { model, siteSettings };
   },
   head: ({ loaderData, params }) => {
+    const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
+    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
+    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+
     if (!loaderData) {
       return {
         meta: [
-          { title: "Bike model unavailable — Customz Paradise BD" },
+          { title: `Bike model unavailable — ${businessName}` },
           { name: "robots", content: "noindex" },
         ],
       };
     }
-    const title = `${loaderData.model.name} Modification Parts & Accessories Bangladesh — Customz Paradise BD`;
+    const title = `${loaderData.model.name} Modification Parts & Accessories Bangladesh — ${businessName}`;
     const description = `Shop premium modification parts, custom visual upgrades, and stickers for ${loaderData.model.name} in Bangladesh. Nationwide delivery available.`;
     return {
       meta: [
@@ -32,9 +46,9 @@ export const Route = createFileRoute("/bike-models/$slug")({
         { property: "og:title", content: title },
         { property: "og:description", content: description },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `${site.url}/bike-models/${params.slug}` },
+        { property: "og:url", content: `${siteUrl}/bike-models/${params.slug}` },
       ],
-      links: [{ rel: "canonical", href: `${site.url}/bike-models/${params.slug}` }],
+      links: [{ rel: "canonical", href: `${siteUrl}/bike-models/${params.slug}` }],
     };
   },
   component: BikeModelPage,

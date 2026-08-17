@@ -24,8 +24,10 @@ import { CartProvider } from "@/lib/cart";
 import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/i18n";
 import { logNotFound } from "@/lib/analytics.functions";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import errorGif from "@/assets/404-error.gif.asset.json";
 import { SmoothCursor } from "@/components/SmoothCursor";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 function NotFoundComponent() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -119,96 +121,116 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5",
-      },
-      { title: `${site.name} — ${site.tagline}` },
-      { name: "description", content: site.description },
-      { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
-      { name: "generator", content: "CZP-Secure-Engine" },
-      { property: "og:site_name", content: site.name },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "theme-color", content: "#111111" },
-    ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.png", type: "image/png" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=Permanent+Marker&display=swap",
-      },
-      { rel: "sitemap", type: "application/xml", href: "/api/public/sitemap/xml" },
-    ],
-    scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: site.name,
-          url: site.url,
-          logo: `${site.url}/logo-main.png`,
-          contactPoint: {
-            "@type": "ContactPoint",
-            telephone: site.phoneDisplay,
-            contactType: "customer service",
-            areaServed: "BD",
-            availableLanguage: ["en", "bn"],
-          },
-          sameAs: site.socials.map((s) => s.href),
-        }),
-      },
-      {
-        type: "application/ld+json",
-        children: JSON.stringify({
-          "@context": "https://schema.org",
-          "@type": "LocalBusiness",
-          name: site.name,
-          image: `${site.url}/logo-main.png`,
-          "@id": site.url,
-          url: site.url,
-          telephone: site.phoneDisplay,
-          address: {
-            "@type": "PostalAddress",
-            streetAddress: "Sector 10",
-            addressLocality: "Uttara",
-            addressRegion: "Dhaka",
-            postalCode: "1230",
-            addressCountry: "BD",
-          },
-          geo: {
-            "@type": "GeoCoordinates",
-            latitude: 23.8759,
-            longitude: 90.3795,
-          },
-          openingHoursSpecification: {
-            "@type": "OpeningHoursSpecification",
-            dayOfWeek: [
-              "Monday",
-              "Tuesday",
-              "Wednesday",
-              "Thursday",
-              "Friday",
-              "Saturday",
-              "Sunday",
-            ],
-            opens: "09:00",
-            closes: "21:00",
-          },
-        }),
-      },
-    ],
-  }),
+  loader: async ({ context }) => {
+    const siteSettings = await context.queryClient.ensureQueryData({
+      queryKey: ["site-settings"],
+      queryFn: () => getSiteSettings(),
+    });
+    return { siteSettings };
+  },
+  head: ({ loaderData }) => {
+    const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+    
+    // Explicitly handle fields that might be missing in one type vs another
+    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
+    const businessTagline = (settings as SiteSettings).tagline || (settings as any).tagline || site.tagline;
+    const businessDescription = (settings as SiteSettings).businessDescription || (settings as any).description || site.description;
+    const businessPhone = (settings as SiteSettings).phone || (settings as any).phoneDisplay || site.phoneDisplay;
+    const businessAddress = (settings as SiteSettings).address || site.address;
+    const businessCity = (settings as SiteSettings).city || "Uttara";
+
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5",
+        },
+        { title: `${businessName} — ${businessTagline}` },
+        { name: "description", content: businessDescription },
+        { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
+        { name: "generator", content: "CZP-Secure-Engine" },
+        { property: "og:site_name", content: businessName },
+        { property: "og:type", content: "website" },
+        { name: "twitter:card", content: "summary_large_image" },
+        { name: "theme-color", content: "#111111" },
+      ],
+      links: [
+        {
+          rel: "stylesheet",
+          href: appCss,
+        },
+        { rel: "icon", href: "/favicon.png", type: "image/png" },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@500;600;700;800&family=Permanent+Marker&display=swap",
+        },
+        { rel: "sitemap", type: "application/xml", href: "/api/public/sitemap/xml" },
+      ],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: businessName,
+            url: siteUrl,
+            logo: `${siteUrl}/logo-main.png`,
+            contactPoint: {
+              "@type": "ContactPoint",
+              telephone: businessPhone,
+              contactType: "customer service",
+              areaServed: "BD",
+              availableLanguage: ["en", "bn"],
+            },
+            sameAs: site.socials.map((s) => s.href),
+          }),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            name: businessName,
+            image: `${siteUrl}/logo-main.png`,
+            "@id": siteUrl,
+            url: siteUrl,
+            telephone: businessPhone,
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: businessAddress,
+              addressLocality: businessCity,
+              addressRegion: "Dhaka",
+              postalCode: "1230",
+              addressCountry: "BD",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: 23.8759,
+              longitude: 90.3795,
+            },
+            openingHoursSpecification: {
+              "@type": "OpeningHoursSpecification",
+              dayOfWeek: [
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+              ],
+              opens: "09:00",
+              closes: "21:00",
+            },
+          }),
+        },
+      ],
+    };
+  },
 
   shellComponent: RootShell,
   component: RootComponent,

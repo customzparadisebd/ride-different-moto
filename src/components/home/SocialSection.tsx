@@ -1,8 +1,11 @@
 import type { ComponentType } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { FacebookIcon, InstagramIcon, YouTubeIcon } from "@/components/BrandIcons";
 import { SectionHeading } from "@/components/home/SectionHeading";
 import { site } from "@/data/site";
+import { getSiteSettings } from "@/lib/site-settings.functions";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 const icons: Record<string, { Icon: ComponentType<{ className?: string }>; color: string }> = {
   Facebook: { Icon: FacebookIcon, color: "text-brand-facebook" },
@@ -11,11 +14,21 @@ const icons: Record<string, { Icon: ComponentType<{ className?: string }>; color
 };
 
 export function SocialSection() {
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: () => getSiteSettings(),
+  });
+
+  const settings = (siteSettings as SiteSettings) || site;
+  const socials = (settings as SiteSettings).socialLinks?.length 
+    ? (settings as SiteSettings).socialLinks 
+    : (settings as any).socials || site.socials;
+
   return (
     <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16">
       <SectionHeading eyebrow="Follow the builds" title="Social Media" />
       <div className="mt-6 grid grid-cols-1 gap-3 sm:mt-8 sm:grid-cols-2 lg:grid-cols-3">
-        {site.socials.map((social) => {
+        {socials.map((social: any) => {
           const entry = icons[social.name];
           const Icon = entry?.Icon;
           return (
