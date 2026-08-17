@@ -32,6 +32,14 @@ export function Footer() {
   const businessPhone = (settings as SiteSettings).phone || (settings as any).phoneDisplay || site.phoneDisplay;
   const businessAddress = (settings as SiteSettings).address || site.address;
   const businessEmail = (settings as SiteSettings).email || site.email;
+  const businessWhatsApp = (settings as SiteSettings).whatsapp || (settings as any).whatsapp || site.whatsappNumber;
+  const whatsappNumber = businessWhatsApp.replace(/\D/g, "");
+  const whatsappHref = whatsappNumber ? `https://wa.me/${whatsappNumber}` : site.whatsappHref;
+  const phoneHref = businessPhone ? `tel:${businessPhone.replace(/\D/g, "")}` : site.phoneHref;
+  const emailHref = businessEmail ? `mailto:${businessEmail}` : site.emailHref;
+  const socials = (settings as SiteSettings).socialLinks?.length 
+    ? (settings as SiteSettings).socialLinks 
+    : (settings as any).socials || site.socials;
 
   return (
     <footer className="mt-16 bg-gradient-onyx text-onyx-foreground">
@@ -64,7 +72,7 @@ export function Footer() {
               <ul className="mt-4 space-y-2.5 text-sm">
                 <li>
                   <a
-                    href={site.whatsappHref}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
@@ -75,7 +83,7 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href={site.phoneHref}
+                    href={phoneHref}
                     className="flex items-center gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Phone className="size-4 shrink-0 text-primary" aria-hidden="true" />
@@ -84,7 +92,7 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href={site.emailHref}
+                    href={emailHref}
                     className="flex items-start gap-2 opacity-80 hover:text-primary hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm"
                   >
                     <Mail className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
@@ -104,7 +112,7 @@ export function Footer() {
             <div>
               <h2 className="eyebrow text-primary">Social</h2>
               <ul className="mt-4 space-y-2.5 text-sm">
-                {site.socials.map((social) => {
+                {socials.map((social: any) => {
                   const entry = socialIcons[social.name];
                   const Icon = entry?.Icon;
                   return (
