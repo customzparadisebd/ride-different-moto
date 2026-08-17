@@ -107,7 +107,7 @@ export function ProductGallery({ images, productName, activeColorImage }: Produc
       {/* Thumbnails Navigation */}
       {displayImages.length > 1 && (
         <div
-          className="flex snap-x gap-2 overflow-x-auto pb-2 scrollbar-none"
+          className="flex snap-x snap-mandatory gap-2 overflow-x-auto pb-2 scrollbar-none touch-pan-x"
           role="tablist"
           aria-label="Product images"
         >
