@@ -11,11 +11,11 @@ import { getSiteSettings } from "./site-settings.functions";
  * Defaults to the production domain in site settings if available, 
  * otherwise uses the current origin.
  */
-export async function getBaseUrl() {
+export async function getBaseUrl(settings?: any) {
   try {
-    const settings = await getSiteSettings();
-    if (settings?.productionDomain) {
-      return `https://${settings.productionDomain}`;
+    const s = settings || await getSiteSettings();
+    if (s?.productionDomain) {
+      return `https://${s.productionDomain}`;
     }
   } catch (e) {
     // Fallback to hardcoded site URL if DB fetch fails
@@ -26,10 +26,12 @@ export async function getBaseUrl() {
 /**
  * Generates a canonical URL for a given path.
  */
-export async function getCanonicalUrl(path: string = "/") {
-  const baseUrl = await getBaseUrl();
+export async function getCanonicalUrl(path: string = "/", settings?: any) {
+  const baseUrl = await getBaseUrl(settings);
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  return `${baseUrl}${normalizedPath}`;
+  // Ensure we don't end up with trailing slashes unless it's just the root
+  const url = `${baseUrl}${normalizedPath}`;
+  return url.endsWith("/") && url.length > baseUrl.length ? url.slice(0, -1) : url;
 }
 
 /**
