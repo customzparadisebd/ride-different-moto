@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getSiteSettings } from "@/lib/site-settings.functions";
-import { site } from "@/data/site";
 import { getBaseUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/api/public/robots/txt")({
