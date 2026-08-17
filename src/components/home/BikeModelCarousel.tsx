@@ -12,7 +12,13 @@ const AUTOPLAY_MS = 5000;
 
 export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
   const { t } = useLanguage();
-  const [emblaRef, embla] = useEmblaCarousel({ align: "start", dragFree: true, loop: false });
+  const [emblaRef, embla] = useEmblaCarousel({ 
+    align: "start", 
+    dragFree: true, 
+    loop: false,
+    containScroll: "trimSnaps",
+    dragThreshold: 8
+  });
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {

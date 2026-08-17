@@ -15,6 +15,9 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
     align: "start",
     watchDrag: true,
     skipSnaps: false,
+    dragFree: false, // Enforce snapping for hero banners
+    duration: 35, // Faster, punchier transitions
+    dragThreshold: 5, // More sensitive for easier swiping
   });
   const [selected, setSelected] = useState(0);
   const [paused, setPaused] = useState(false);

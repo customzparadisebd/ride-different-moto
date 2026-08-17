@@ -85,11 +85,11 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
       if (!isDragging || lastX.current === null) return;
 
       const deltaX = clientX - lastX.current;
-      // Sensivity: pixels to move one frame
-      const sensitivity = 10;
+      // Sensitivity: reduced for mobile to feel more direct
+      const sensitivity = window.innerWidth < 768 ? 6 : 10;
 
       if (Math.abs(deltaX) > sensitivity) {
-        const framesToMove = Math.floor(deltaX / sensitivity);
+        const framesToMove = Math.round(deltaX / sensitivity); // Use round for smoother mapping
 
         setCurrentIndex((prev) => {
           let next = (prev - framesToMove) % totalImages;
