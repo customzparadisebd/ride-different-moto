@@ -17,6 +17,7 @@ import { CitiesPanel } from "@/components/admin/checkout/CitiesPanel";
 import { DeliveryZonesPanel } from "@/components/admin/checkout/DeliveryZonesPanel";
 import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSettingsPanel";
 import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSettingsPanel";
+import { SiteSettingsPanel } from "@/components/admin/settings/SiteSettingsPanel";
 import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { Button } from "@/components/ui/button";
 
@@ -94,8 +95,13 @@ function AdminSettings() {
         <>
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Settings</h1>
           <p className="text-xs text-muted-foreground">
-            Delivery charges, payment methods and support contact used across the store.
+            Identity, delivery charges, payment methods and support contact used across the store.
           </p>
+
+          <div className="mt-6">
+            <SiteSettingsPanel canManage={canManage} />
+          </div>
+
 
           {settingsQuery.isLoading ? (
             <p className="py-16 text-center text-sm text-muted-foreground">Loading settings…</p>

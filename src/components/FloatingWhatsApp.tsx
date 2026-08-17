@@ -5,13 +5,20 @@ import { useEffect, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { getStoreSettings } from "@/lib/store-settings.functions";
+import { getSiteSettings } from "@/lib/site-settings.functions";
+import { type SiteSettings } from "@/lib/settings.shared";
 
 export function FloatingWhatsApp() {
-  const load = useServerFn(getStoreSettings);
-  const { data: settings } = useQuery({
+  const loadStore = useServerFn(getStoreSettings);
+  const { data: storeSettings } = useQuery({
     queryKey: ["store-settings"],
-    queryFn: () => load(),
+    queryFn: () => loadStore(),
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+
+  const { data: siteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: () => getSiteSettings(),
   });
 
   const [isVisible, setIsVisible] = useState(false);
@@ -22,9 +29,9 @@ export function FloatingWhatsApp() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!settings || !settings.whatsappFloatingEnabled) return null;
+  if (!storeSettings || !storeSettings.whatsappFloatingEnabled) return null;
 
-  const position = settings.whatsappFloatingPosition as
+  const position = storeSettings.whatsappFloatingPosition as
     "bottom-right" | "bottom-left" | "top-right" | "top-left";
 
   const positionClasses = {
@@ -34,7 +41,8 @@ export function FloatingWhatsApp() {
     "top-left": "top-24 left-6",
   }[position || "bottom-right"];
 
-  const whatsappUrl = `https://wa.me/${settings.whatsappPhone.replace(/\D/g, "")}`;
+  const whatsappNumber = (siteSettings as SiteSettings)?.whatsapp || storeSettings.whatsappPhone;
+  const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`;
 
   return (
     <div

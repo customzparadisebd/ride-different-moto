@@ -1841,6 +1841,75 @@ export type Database = {
         }
         Relationships: []
       }
+      site_settings: {
+        Row: {
+          address: string | null
+          branch_relationship: string | null
+          business_description: string | null
+          business_hours: Json | null
+          business_name: string | null
+          city: string | null
+          country: string | null
+          default_meta_description: string | null
+          default_meta_title: string | null
+          email: string | null
+          id: string
+          local_business_schema: Json | null
+          main_branch_info: string | null
+          organization_schema: Json | null
+          phone: string | null
+          production_domain: string | null
+          social_links: Json | null
+          tagline: string | null
+          updated_at: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          branch_relationship?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          city?: string | null
+          country?: string | null
+          default_meta_description?: string | null
+          default_meta_title?: string | null
+          email?: string | null
+          id?: string
+          local_business_schema?: Json | null
+          main_branch_info?: string | null
+          organization_schema?: Json | null
+          phone?: string | null
+          production_domain?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          branch_relationship?: string | null
+          business_description?: string | null
+          business_hours?: Json | null
+          business_name?: string | null
+          city?: string | null
+          country?: string | null
+          default_meta_description?: string | null
+          default_meta_title?: string | null
+          email?: string | null
+          id?: string
+          local_business_schema?: Json | null
+          main_branch_info?: string | null
+          organization_schema?: Json | null
+          phone?: string | null
+          production_domain?: string | null
+          social_links?: Json | null
+          tagline?: string | null
+          updated_at?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       social_links: {
         Row: {
           created_at: string

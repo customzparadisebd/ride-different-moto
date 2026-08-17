@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { getSiteSettings } from "@/lib/site-settings.functions";
 import { site } from "@/data/site";
+import { getBaseUrl } from "@/lib/seo";
 
 export const Route = createFileRoute("/api/public/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {
+        const settings = await getSiteSettings();
+        const siteUrl = await getBaseUrl(settings);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         
         // Fetch active products and bike models from DB
@@ -23,22 +27,22 @@ export const Route = createFileRoute("/api/public/sitemap/xml")({
         const lastMod = new Date().toISOString().split("T")[0];
 
         const urls = [
-          { loc: site.url, priority: "1.0", lastmod: lastMod },
-          { loc: `${site.url}/shop`, priority: "0.8", lastmod: lastMod },
-          { loc: `${site.url}/bike-models`, priority: "0.7", lastmod: lastMod },
+          { loc: siteUrl, priority: "1.0", lastmod: lastMod },
+          { loc: `${siteUrl}/shop`, priority: "0.8", lastmod: lastMod },
+          { loc: `${siteUrl}/bike-models`, priority: "0.7", lastmod: lastMod },
           // Category pages
           ...["graphics", "lighting", "seat", "exhaust", "handlebar", "body-kit", "accessories", "other"].map(cat => ({
-            loc: `${site.url}/shop?category=${cat}`,
+            loc: `${siteUrl}/shop?category=${cat}`,
             priority: "0.6",
             lastmod: lastMod,
           })),
           ...(products || []).map((p) => ({
-            loc: `${site.url}/products/${p.slug}`,
+            loc: `${siteUrl}/products/${p.slug}`,
             priority: "0.7",
             lastmod: p.updated_at ? new Date(p.updated_at).toISOString().split("T")[0] : lastMod,
           })),
           ...(models || []).map((m) => ({
-            loc: `${site.url}/bike-models/${m.slug}`,
+            loc: `${siteUrl}/bike-models/${m.slug}`,
             priority: "0.7",
             lastmod: m.updated_at ? new Date(m.updated_at).toISOString().split("T")[0] : lastMod,
           })),
