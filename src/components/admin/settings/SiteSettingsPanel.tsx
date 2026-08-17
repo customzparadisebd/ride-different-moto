@@ -130,6 +130,70 @@ export function SiteSettingsPanel({ canManage }: { canManage: boolean }) {
 
       <div className="rounded-xl border border-border bg-card p-4 shadow-card">
         <div className="flex items-center gap-2">
+          <Share2 className="size-4 text-primary" />
+          <h2 className="font-display text-sm font-bold uppercase tracking-wide">Contact & Social Info</h2>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">Manage your public contact details and social media links.</p>
+
+        <div className="mt-6 space-y-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-wide">Public Phone</Label>
+              <Input
+                id="phone"
+                value={draft.phone}
+                onChange={(e) => updateField("phone", e.target.value)}
+                disabled={!canManage || mutation.isPending}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="whatsapp" className="text-xs font-bold uppercase tracking-wide">WhatsApp Number</Label>
+              <Input
+                id="whatsapp"
+                value={draft.whatsapp}
+                onChange={(e) => updateField("whatsapp", e.target.value)}
+                disabled={!canManage || mutation.isPending}
+                placeholder="+8801890722202"
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-bold uppercase tracking-wide">Public Email</Label>
+              <Input
+                id="email"
+                value={draft.email}
+                onChange={(e) => updateField("email", e.target.value)}
+                disabled={!canManage || mutation.isPending}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="city" className="text-xs font-bold uppercase tracking-wide">City</Label>
+              <Input
+                id="city"
+                value={draft.city}
+                onChange={(e) => updateField("city", e.target.value)}
+                disabled={!canManage || mutation.isPending}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="address" className="text-xs font-bold uppercase tracking-wide">Physical Address</Label>
+            <Textarea
+              id="address"
+              value={draft.address}
+              onChange={(e) => updateField("address", e.target.value)}
+              disabled={!canManage || mutation.isPending}
+              rows={2}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+        <div className="flex items-center gap-2">
           <Search className="size-4 text-primary" />
           <h2 className="font-display text-sm font-bold uppercase tracking-wide">SEO & Meta Defaults</h2>
         </div>
