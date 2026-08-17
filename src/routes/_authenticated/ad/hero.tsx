@@ -437,7 +437,8 @@ function AdminHeroSlides() {
                     } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"} ${!editingId ? "cursor-move" : ""}`}
                   >
                     {editingId === slide.id ? (
-                      <form
+                       <form
+                        id={`edit-form-${slide.id}`}
                         onSubmit={(e) => {
                           e.preventDefault();
                           handleSave(slide.id, new FormData(e.currentTarget));
@@ -487,6 +488,20 @@ function AdminHeroSlides() {
                                 )}
                               </Button>
                             </div>
+                            <ImageSpecGuidance 
+                              type="desktop" 
+                              onPreview={() => {
+                                const form = document.getElementById(`edit-form-${slide.id}`) as HTMLFormElement;
+                                const fd = new FormData(form);
+                                setPreviewSlide({
+                                  bikeName: fd.get("title") as string,
+                                  subtitle: fd.get("subtitle") as string,
+                                  image: fd.get("image_url") as string,
+                                  mobileImage: fd.get("mobile_image_url") as string,
+                                  bikeSlug: bikeModels.find(m => m.id === fd.get("bike_model_id"))?.slug || fd.get("link_url") as string,
+                                });
+                              }}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label>Mobile Image URL</Label>
@@ -506,6 +521,20 @@ function AdminHeroSlides() {
                                 )}
                               </Button>
                             </div>
+                            <ImageSpecGuidance 
+                              type="mobile" 
+                              onPreview={() => {
+                                const form = document.getElementById(`edit-form-${slide.id}`) as HTMLFormElement;
+                                const fd = new FormData(form);
+                                setPreviewSlide({
+                                  bikeName: fd.get("title") as string,
+                                  subtitle: fd.get("subtitle") as string,
+                                  image: fd.get("image_url") as string,
+                                  mobileImage: fd.get("mobile_image_url") as string,
+                                  bikeSlug: bikeModels.find(m => m.id === fd.get("bike_model_id"))?.slug || fd.get("link_url") as string,
+                                });
+                              }}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label>Manual Link URL</Label>
