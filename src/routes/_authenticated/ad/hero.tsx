@@ -312,7 +312,7 @@ function AdminHeroSlides() {
                     <Label htmlFor="image_url">Desktop Image URL</Label>
                     <div className="flex gap-2">
                       <Input id="image_url" name="image_url" required placeholder="CDN URL preferred" />
-                      <Button aria-label="Upload image"
+                      <Button aria-label="Upload desktop banner"
                         type="button"
                         variant="outline"
                         size="icon"
@@ -474,7 +474,7 @@ function AdminHeroSlides() {
                             <Label>Desktop Image URL</Label>
                             <div className="flex gap-2">
                               <Input name="image_url" id={`img-${slide.id}`} defaultValue={slide.image} required />
-                              <Button aria-label="Upload desktop"
+                              <Button aria-label="Upload desktop banner"
                                 type="button"
                                 variant="outline"
                                 size="icon"
@@ -507,7 +507,7 @@ function AdminHeroSlides() {
                             <Label>Mobile Image URL</Label>
                             <div className="flex gap-2">
                               <Input name="mobile_image_url" id={`mob-${slide.id}`} defaultValue={slide.mobileImage || ""} />
-                              <Button aria-label="Upload mobile"
+                              <Button aria-label="Upload mobile banner"
                                 type="button"
                                 variant="outline"
                                 size="icon"

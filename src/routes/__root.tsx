@@ -149,12 +149,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         },
         { title: `${businessName} — ${businessTagline}` },
         { name: "description", content: businessDescription },
+        { property: "og:title", content: `${businessName} — ${businessTagline}` },
+        { property: "og:description", content: businessDescription },
         { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
         { name: "generator", content: "CZP-Secure-Engine" },
         { property: "og:site_name", content: businessName },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "theme-color", content: "#111111" },
+        { property: "og:url", content: siteUrl },
+        { rel: "canonical", href: siteUrl },
       ],
       links: [
         {

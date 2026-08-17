@@ -13,10 +13,12 @@ export const Route = createFileRoute("/order-confirmed/$id")({
       { title: `Order Confirmed — ${site.name}` },
       {
         name: "description",
-        content: "Thank you for your order! Your motorcycle parts modification is being processed.",
+        content: "Thank you for your order! Your motorcycle parts modification is being processed. Ride Different. Be Different.",
       },
       { property: "og:title", content: `Order Confirmed — ${site.name}` },
+      { property: "og:description", content: "Thank you for your order! Your motorcycle parts modification is being processed. Ride Different. Be Different." },
       { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
