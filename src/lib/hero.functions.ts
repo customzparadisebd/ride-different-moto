@@ -57,7 +57,11 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
           link_label: z.string().optional().nullable(),
           sort_order: z.number().optional(),
           is_active: z.boolean().optional(),
-          bike_model_id: z.string().uuid().optional().nullable(),
+          // The admin form submits "" when no bike model is selected — treat it as null.
+          bike_model_id: z
+            .preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v),
+              z.string().uuid().nullable())
+            .optional(),
         }),
       })
       .parse(d),
@@ -89,7 +93,10 @@ export const createHeroSlide = createServerFn({ method: "POST" })
         link_label: z.string().optional().nullable(),
         sort_order: z.number().default(0),
         is_active: z.boolean().default(true),
-        bike_model_id: z.string().uuid().optional().nullable(),
+        bike_model_id: z
+          .preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v),
+            z.string().uuid().nullable())
+          .optional(),
       })
       .parse(d),
   )
