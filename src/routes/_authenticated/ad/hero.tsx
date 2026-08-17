@@ -132,7 +132,10 @@ function AdminHeroSlides() {
       queryClient.invalidateQueries({ queryKey: ["hero-slides-admin"] });
       queryClient.invalidateQueries({ queryKey: ["hero-slides"] });
     },
-    onError: (e: any) => toast.error(e.message || "Failed to update slide"),
+    onError: (e: any) => {
+      console.error("Update slide error:", e);
+      toast.error(e.message || "Failed to update slide. Please check your inputs.");
+    },
   });
 
   const deleteMutation = useMutation({
