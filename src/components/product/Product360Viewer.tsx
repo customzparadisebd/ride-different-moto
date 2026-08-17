@@ -206,7 +206,7 @@ export function Product360Viewer({ images, productName, onClose }: Product360Vie
                 src={src}
                 alt={`${productName} frame ${index + 1}`}
                 className={cn(
-                  "absolute inset-0 h-full w-full object-contain transition-opacity duration-75",
+                  "absolute inset-0 h-full w-full object-contain transition-opacity duration-75 will-change-opacity",
                   index === currentIndex ? "opacity-100" : "opacity-0",
                 )}
                 draggable={false}

@@ -81,7 +81,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         role="region"
         aria-roledescription="carousel"
       >
-        <div className="flex touch-pan-y cursor-grab active:cursor-grabbing">
+        <div className="flex touch-pan-y cursor-grab active:cursor-grabbing will-change-transform">
           {slides.map((slide, index) => (
             <div
               key={slide.id}

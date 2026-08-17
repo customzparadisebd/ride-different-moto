@@ -78,7 +78,7 @@ export function BikeModelCarousel({ models }: { models: BikeModel[] }) {
       </h2>
 
       <div className="overflow-hidden" ref={emblaRef}>
-        <ul className="flex touch-pan-y gap-3 sm:gap-4 pb-1">
+        <ul className="flex touch-pan-y gap-3 sm:gap-4 pb-1 will-change-transform">
           {models.map((model) => (
             <li
               key={model.id}
