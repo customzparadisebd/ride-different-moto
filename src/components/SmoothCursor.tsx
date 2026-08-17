@@ -4,9 +4,11 @@ import { createPortal } from "react-dom";
 /**
  * SmoothCursor Component
  * Implements a premium, ultra-smooth custom cursor-following effect.
+ * Only active on desktop devices (non-touch, width > 1024px).
  */
 export function SmoothCursor() {
   const [mounted, setMounted] = useState(false);
+  const [shouldShow, setShouldShow] = useState(false);
   const ringRef = useRef<HTMLDivElement>(null);
   const mouseRef = useRef({ x: -100, y: -100 });
   const currentRef = useRef({ x: -100, y: -100 });
@@ -15,13 +17,24 @@ export function SmoothCursor() {
   const LERP_FACTOR = 0.15;
 
   useEffect(() => {
+    // Check if the device supports hover (primary input) and is large enough
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine) and (min-width: 1024px)");
+    
+    const checkDisplay = () => {
+      setShouldShow(mediaQuery.matches);
+    };
+
+    checkDisplay();
     setMounted(true);
+
+    if (!mediaQuery.matches) return;
 
     const onMouseMove = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
+    mediaQuery.addEventListener("change", checkDisplay);
 
     let rafId: number;
     const animate = () => {
@@ -41,11 +54,12 @@ export function SmoothCursor() {
 
     return () => {
       window.removeEventListener("mousemove", onMouseMove);
+      mediaQuery.removeEventListener("change", checkDisplay);
       cancelAnimationFrame(rafId);
     };
   }, []);
 
-  if (!mounted) return null;
+  if (!mounted || !shouldShow) return null;
 
   return createPortal(
     <div
