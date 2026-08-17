@@ -6,9 +6,8 @@ import { SectionHeading } from "@/components/home/SectionHeading";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { site } from "@/data/site";
 
-const title = "Shop Motorcycle Modification Parts & Visual Accessories BD — Customz Paradise BD";
-const description =
-  "Buy premium motorcycle modification parts, visual upgrades, sequential indicators, and performance accessories in Bangladesh. Express nationwide delivery available.";
+const title = "Shop Motorcycle Parts & Accessories — Customz Paradise BD";
+const description = "Browse our full collection of premium motorcycle modification parts, stickers, and accessories. Nationwide delivery in Bangladesh. Ride Different. Be Different.";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({

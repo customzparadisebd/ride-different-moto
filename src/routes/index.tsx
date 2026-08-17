@@ -44,13 +44,14 @@ export const Route = createFileRoute("/")({
         { property: "og:description", content: description },
         { property: "og:type", content: "website" },
         { property: "og:url", content: siteUrl },
+        { rel: "canonical", href: siteUrl },
         { property: "og:image", content: `${siteUrl}/logo-main.png` },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
         { name: "twitter:image", content: `${siteUrl}/logo-main.png` },
       ],
-      links: [{ rel: "canonical", href: siteUrl }],
+      
       scripts: [
         {
           type: "application/ld+json",

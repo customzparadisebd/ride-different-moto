@@ -66,7 +66,7 @@ export const siteSettingsInput = z.object({
 export type SiteSettings = z.infer<typeof siteSettingsInput>;
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
-  productionDomain: "customparadisebd.com",
+  productionDomain: "customzparadisebd.com",
   businessName: "Customz Paradise BD",
   businessDescription: "Premium motorcycle modification parts and accessories in Bangladesh. Unique designs, quality-focused products and nationwide delivery.",
   tagline: "Ride Different. Be Different.",
