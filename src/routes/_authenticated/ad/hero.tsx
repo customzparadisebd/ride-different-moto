@@ -30,6 +30,8 @@ import {
   updateBikeModelImage,
 } from "@/lib/hero.functions";
 import { SingleImageUpload } from "@/components/admin/SingleImageUpload";
+import { ImageSpecGuidance } from "@/components/admin/hero/ImageSpecGuidance";
+import { HeroSlidePreview } from "@/components/admin/hero/HeroSlidePreview";
 
 export const Route = createFileRoute("/_authenticated/ad/hero")({
   head: () => ({
@@ -71,6 +73,8 @@ function AdminHeroSlides() {
   const dragOverItem = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mobileFileInputRef = useRef<HTMLInputElement>(null);
+
+  const [previewSlide, setPreviewSlide] = useState<any>(null);
 
   const handleFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -275,7 +279,11 @@ function AdminHeroSlides() {
                 </Button>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleAdd} className="grid gap-6 sm:grid-cols-2">
+                <form 
+                  id="new-slide-form"
+                  onSubmit={handleAdd} 
+                  className="grid gap-6 sm:grid-cols-2"
+                >
                   <div className="space-y-2">
                     <Label htmlFor="title">Slide Title (Main Heading)</Label>
                     <Input id="title" name="title" required placeholder="e.g. Pulsar N160" />
@@ -330,6 +338,20 @@ function AdminHeroSlides() {
                         }
                       />
                     </div>
+                    <ImageSpecGuidance 
+                      type="desktop" 
+                      onPreview={() => {
+                        const form = document.getElementById("new-slide-form") as HTMLFormElement;
+                        const fd = new FormData(form);
+                        setPreviewSlide({
+                          bikeName: fd.get("title") as string,
+                          subtitle: fd.get("subtitle") as string,
+                          image: fd.get("image_url") as string,
+                          mobileImage: fd.get("mobile_image_url") as string,
+                          bikeSlug: bikeModels.find(m => m.id === fd.get("bike_model_id"))?.slug || fd.get("link_url") as string,
+                        });
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="mobile_image_url">Mobile Image URL</Label>
@@ -361,6 +383,20 @@ function AdminHeroSlides() {
                         }
                       />
                     </div>
+                    <ImageSpecGuidance 
+                      type="mobile" 
+                      onPreview={() => {
+                        const form = document.getElementById("new-slide-form") as HTMLFormElement;
+                        const fd = new FormData(form);
+                        setPreviewSlide({
+                          bikeName: fd.get("title") as string,
+                          subtitle: fd.get("subtitle") as string,
+                          image: fd.get("image_url") as string,
+                          mobileImage: fd.get("mobile_image_url") as string,
+                          bikeSlug: bikeModels.find(m => m.id === fd.get("bike_model_id"))?.slug || fd.get("link_url") as string,
+                        });
+                      }}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="link_url">Manual Destination (if no model selected)</Label>
@@ -626,6 +662,14 @@ function AdminHeroSlides() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {previewSlide && (
+        <HeroSlidePreview
+          open={!!previewSlide}
+          onOpenChange={(open) => !open && setPreviewSlide(null)}
+          slide={previewSlide}
+        />
+      )}
     </div>
   );
 }
