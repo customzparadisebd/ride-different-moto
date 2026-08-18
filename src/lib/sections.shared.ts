@@ -28,5 +28,6 @@ export function parseSectionSettingRow(row: any): SectionSetting {
     sortOrder: row.sort_order,
     isSlider: row.is_slider,
     sliderItems: row.slider_items,
+    productCategory: row.product_category,
   };
 }
