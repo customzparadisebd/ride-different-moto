@@ -163,8 +163,32 @@ function SectionCard({
                   onChange={(e) => handleChange("sortOrder", parseInt(e.target.value))}
                   className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
                 />
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Product Category</Label>
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4 text-muted-foreground" />
+                <Select
+                  value={formData.productCategory || "all"}
+                  onValueChange={(value) => handleChange("productCategory", value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="h-9 bg-black/20 border-white/10 focus:border-primary/50 text-xs">
+                    <SelectValue placeholder="All Products (Default)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-white/10">
+                    <SelectItem value="all">All Products (Default)</SelectItem>
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {categoryLabel(cat)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
+              <p className="text-[10px] text-muted-foreground/60 italic">
+                Filter section to show only products from this category.
+              </p>
             </div>
+          </div>
           </div>
 
           {/* Display Limits */}
