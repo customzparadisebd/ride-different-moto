@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { StickyNote } from "lucide-react";
+import { NoteIcon } from "@/components/BrandIcons";
 
 interface OrderNoteDialogProps {
   order: { invoice_no: string; notes: string | null } | null;
@@ -14,7 +14,7 @@ export function OrderNoteDialog({ order, onOpenChange }: OrderNoteDialogProps) {
       <DialogContent className="max-w-md bg-card border-border shadow-2xl">
         <DialogHeader className="border-b border-border pb-4">
           <div className="flex items-center gap-2 text-blue-500">
-            <StickyNote className="size-5" />
+            <NoteIcon className="size-5" />
             <DialogTitle className="font-display text-xl uppercase tracking-wider">
               Note: {order.invoice_no}
             </DialogTitle>
