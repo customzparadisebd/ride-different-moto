@@ -58,17 +58,17 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="relative mx-auto flex h-16 max-w-7xl items-center px-4 sm:h-20 sm:px-6 md:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:h-20 sm:px-6 md:px-8">
         {/* LEFT: Logo */}
-        <div className="flex flex-1 items-center justify-start">
+        <div className="flex shrink-0 items-center">
           <Link to="/" className="min-w-0" aria-label={`${businessName} home`}>
             <Logo priority className="h-9 w-auto sm:h-12" />
           </Link>
         </div>
 
-        {/* CENTER: Main navigation (Perfectly centered to the viewport) */}
+        {/* CENTER: Main navigation */}
         <nav
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-2 xl:gap-3 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-1 xl:gap-2 lg:flex"
           aria-label="Main"
         >
           {navLinks.map((link) => (
@@ -78,7 +78,7 @@ export function Header() {
               activeOptions={{ exact: link.to === "/" }}
               activeProps={{ className: "text-primary" }}
               inactiveProps={{ className: "text-foreground/80" }}
-              className="whitespace-nowrap rounded-md px-3 py-2.5 font-display text-[15px] font-bold uppercase tracking-wider transition-colors hover:text-primary active:scale-95"
+              className="whitespace-nowrap rounded-md px-2.5 py-2 font-display text-[14px] font-bold uppercase tracking-wider transition-colors hover:text-primary active:scale-95 xl:px-3 xl:text-[15px]"
             >
               {t(link.translationKey)}
             </Link>
@@ -86,21 +86,21 @@ export function Header() {
         </nav>
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
-        <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
+        <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3">
           <button
             onClick={toggleLanguage}
-            className="flex h-10 items-center rounded-full bg-secondary/50 px-4 font-display text-[12px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
+            className="group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
             aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
           >
-            <span className={language === "bn" ? "text-primary" : "text-foreground/40"}>বাং</span>
-            <span className="mx-1.5 h-3 w-px bg-border/50" />
-            <span className={language === "en" ? "text-primary" : "text-foreground/40"}>ENG</span>
+            <span className={`transition-colors ${language === "bn" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>বাং</span>
+            <span className="mx-1.5 h-3 w-px bg-border/50 sm:mx-2" />
+            <span className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>ENG</span>
           </button>
 
           <Button
             variant="ghost"
             size="icon"
-            className="h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-5 sm:[&_svg]:size-5.5"
+            className="h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           >
@@ -110,13 +110,13 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-5 sm:[&_svg]:size-5.5"
+            className="relative h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
             onClick={() => setCartOpen(true)}
             aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
           >
             <ShoppingBag />
             {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid size-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">
+              <span className="absolute -right-0.5 -top-0.5 grid size-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground sm:size-5 sm:min-w-5 sm:text-[11px]">
                 {count}
               </span>
             )}
@@ -124,7 +124,7 @@ export function Header() {
 
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="lg:hidden h-10 w-10 sm:h-11 sm:w-11 [&_svg]:size-6" aria-label="Open menu">
+              <Button variant="ghost" size="icon" className="lg:hidden h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-5.5 sm:[&_svg]:size-6" aria-label="Open menu">
                 <Menu />
               </Button>
             </SheetTrigger>
