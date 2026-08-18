@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered } from "lucide-react";
+import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
 import type { SectionSetting } from "@/lib/sections.shared";
+import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
 
 export function SectionSettingsPanel() {
   const queryClient = useQueryClient();
