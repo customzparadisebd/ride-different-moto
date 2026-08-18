@@ -23,6 +23,7 @@ import { getSectionSettings } from "@/lib/sections.functions";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
 import { type SiteSettings } from "@/lib/settings.shared";
+import type { SectionSetting } from "@/lib/sections.shared";
 
 export const Route = createFileRoute("/")({
   head: ({ loaderData }) => {
