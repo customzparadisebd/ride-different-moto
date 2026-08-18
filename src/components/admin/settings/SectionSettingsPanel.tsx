@@ -189,7 +189,6 @@ function SectionCard({
               </p>
             </div>
           </div>
-          </div>
 
           {/* Display Limits */}
           <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
