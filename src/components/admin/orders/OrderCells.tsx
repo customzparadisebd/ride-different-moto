@@ -15,10 +15,10 @@ import {
   Pencil,
   Pin,
   Printer,
-  StickyNote,
   ShieldAlert,
   XCircle,
 } from "lucide-react";
+import { NoteIcon } from "@/components/BrandIcons";
 
 import { toast } from "sonner";
 
@@ -109,7 +109,7 @@ export function InvoiceCell({
         </IconAction>
         {onShowNote && (
           <IconAction label="View Note" onClick={onShowNote}>
-            <StickyNote className="fill-blue-500/20 text-blue-500" />
+            <NoteIcon className="fill-blue-500/20 text-blue-500" />
           </IconAction>
         )}
       </div>

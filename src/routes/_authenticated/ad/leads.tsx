@@ -13,9 +13,9 @@ import {
   CheckCircle2,
   Clock,
   PhoneCall,
-  StickyNote,
   Save,
 } from "lucide-react";
+import { NoteIcon } from "@/components/BrandIcons";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -190,7 +190,7 @@ function LeadsPage() {
                               setNotes(lead.internal_notes || "");
                             }}
                           >
-                            <StickyNote className="mr-2 size-4" />
+                            <NoteIcon className="mr-2 size-4" />
                             Internal Notes
                           </DropdownMenuItem>
                           <div className="my-1 h-px bg-muted" />
@@ -253,7 +253,7 @@ function LeadsPage() {
                   {lead.internal_notes && (
                     <div className="border-t pt-3">
                       <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-1">
-                        <StickyNote className="size-3" />
+                        <NoteIcon className="size-3" />
                         Internal Note
                       </div>
                       <p className="text-xs text-foreground/80 line-clamp-2">
