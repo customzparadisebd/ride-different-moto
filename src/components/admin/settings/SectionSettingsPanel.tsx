@@ -163,6 +163,8 @@ function SectionCard({
                   onChange={(e) => handleChange("sortOrder", parseInt(e.target.value))}
                   className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
                 />
+              </div>
+            </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Product Category</Label>
               <div className="flex items-center gap-2">
