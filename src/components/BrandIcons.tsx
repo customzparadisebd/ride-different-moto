@@ -45,7 +45,35 @@ export function YouTubeIcon(props: IconProps) {
 export function NoteIcon(props: IconProps) {
   return (
     <svg {...base} {...props} viewBox="0 0 24 24">
-      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 14H7v-2h10v2zm0-4H7v-2h10v2zm0-4H7V7h10v2z" />
+      {/* Glow/Shadow for emphasis */}
+      <defs>
+        <filter id="note-glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      
+      {/* Pinned paper background with subtle perspective */}
+      <path 
+        d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" 
+        className="fill-yellow-400" 
+        filter="url(#note-glow)"
+      />
+      
+      {/* Folded corner detail */}
+      <path d="M16 19v2h2a2 2 0 0 0 2-2h-2v-2l-2 2z" className="fill-yellow-600 opacity-50" />
+      
+      {/* Horizontal lines representing text */}
+      <path 
+        d="M8 8h8M8 12h8M8 16h5" 
+        stroke="currentColor" 
+        strokeWidth="1.5" 
+        strokeLinecap="round" 
+        className="text-yellow-900/40"
+      />
+      
+      {/* Pin head for "Pinned Note" aesthetic */}
+      <circle cx="12" cy="5" r="1.5" className="fill-red-500 shadow-sm" />
     </svg>
   );
 }
