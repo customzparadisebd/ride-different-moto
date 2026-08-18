@@ -185,22 +185,45 @@ function Index() {
   const featuredDealsSetting = getSetting("featured_deals");
   const allProductsSetting = getSetting("all_products");
 
-  const universalProducts = products.filter((product) => product.universal);
+  const universalProducts = products.filter((product) => product.universal && product.isActive);
+  
+  const getDisplayProducts = (setting: SectionSetting | undefined, defaultLimit: number, fallbackFilter: (p: any) => boolean) => {
+    if (!setting) return products.filter(fallbackFilter).filter(p => p.isActive).slice(0, defaultLimit);
+    
+    let filtered = products.filter(p => p.isActive);
+    
+    // If a category is explicitly set for the section, use it
+    if (setting.productCategory) {
+      filtered = filtered.filter(p => p.category === setting.productCategory);
+    } else {
+      // Fallback to the original section logic
+      filtered = filtered.filter(fallbackFilter);
+    }
 
-  const bestDeals = products
-    .filter((product) => product.bestDeal || product.featured)
-    .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+    // Apply sorting for featured if not using a specific category
+    if (!setting.productCategory && (setting.id === "featured_deals")) {
+       filtered = filtered.sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+    }
 
-  const bestDealsDisplay = featuredDealsSetting
-    ? bestDeals.slice(0, featuredDealsSetting.displayLimit)
-    : bestDeals.slice(0, 6);
+    return filtered.slice(0, setting.displayLimit);
+  };
 
-  const allProductsDisplay = allProductsSetting
-    ? products.slice(0, allProductsSetting.displayLimit)
-    : products.slice(0, 8);
+  const bestDealsFilter = (p: any) => p.isBestDeal || p.isFeatured;
+  const allProductsFilter = () => true;
 
-  const showFeaturedSeeAll = featuredDealsSetting?.showSeeAll && bestDeals.length > (featuredDealsSetting?.displayLimit ?? 6);
-  const showAllProductsSeeAll = allProductsSetting?.showSeeAll && products.length > (allProductsSetting?.displayLimit ?? 8);
+  const bestDealsDisplay = getDisplayProducts(featuredDealsSetting, 6, bestDealsFilter);
+  const allProductsDisplay = getDisplayProducts(allProductsSetting, 8, allProductsFilter);
+
+  const getTotalCount = (setting: SectionSetting | undefined, fallbackFilter: (p: any) => boolean) => {
+    let filtered = products.filter(p => p.isActive);
+    if (setting?.productCategory) {
+      return filtered.filter(p => p.category === setting.productCategory).length;
+    }
+    return filtered.filter(fallbackFilter).length;
+  };
+
+  const showFeaturedSeeAll = featuredDealsSetting?.showSeeAll && getTotalCount(featuredDealsSetting, bestDealsFilter) > (featuredDealsSetting?.displayLimit ?? 6);
+  const showAllProductsSeeAll = allProductsSetting?.showSeeAll && getTotalCount(allProductsSetting, allProductsFilter) > (allProductsSetting?.displayLimit ?? 8);
 
   return (
     <>
