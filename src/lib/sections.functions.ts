@@ -66,9 +66,9 @@ export const saveSectionSetting = createServerFn({ method: "POST" })
         button_link: data.buttonLink,
         sort_order: data.sortOrder,
         is_slider: data.isSlider,
-        slider_items: data.sliderItems,
+        slider_items: data.sliderItems ?? null,
         updated_at: new Date().toISOString(),
-      });
+      } as any);
 
     if (error) throw new Error(`Could not save section setting for ${data.id}`);
 
