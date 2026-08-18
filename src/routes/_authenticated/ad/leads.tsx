@@ -252,8 +252,8 @@ function LeadsPage() {
 
                   {lead.internal_notes && (
                     <div className="border-t pt-3">
-                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70 mb-1">
-                        <NoteIcon className="size-3" />
+                      <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
+                        <NoteIcon className="size-3.5 drop-shadow-[0_0_2px_rgba(245,158,11,0.3)]" />
                         Internal Note
                       </div>
                       <p className="text-xs text-foreground/80 line-clamp-2">

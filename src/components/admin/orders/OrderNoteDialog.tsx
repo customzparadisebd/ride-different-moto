@@ -13,8 +13,8 @@ export function OrderNoteDialog({ order, onOpenChange }: OrderNoteDialogProps) {
     <Dialog open={Boolean(order)} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md bg-card border-border shadow-2xl">
         <DialogHeader className="border-b border-border pb-4">
-          <div className="flex items-center gap-2 text-blue-500">
-            <NoteIcon className="size-5" />
+          <div className="flex items-center gap-2 text-primary">
+            <NoteIcon className="size-6 drop-shadow-[0_0_8px_rgba(245,158,11,0.4)]" />
             <DialogTitle className="font-display text-xl uppercase tracking-wider">
               Note: {order.invoice_no}
             </DialogTitle>
