@@ -11,6 +11,7 @@ export const sectionSettingInput = z.object({
   sortOrder: z.number().int(),
   isSlider: z.boolean(),
   sliderItems: z.number().int().min(1).max(10).optional().nullable(),
+  productCategory: z.string().trim().max(40).optional().nullable(),
 });
 
 export type SectionSetting = z.infer<typeof sectionSettingInput>;
