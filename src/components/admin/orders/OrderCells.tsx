@@ -109,7 +109,7 @@ export function InvoiceCell({
         </IconAction>
         {onShowNote && (
           <IconAction label="View Note" onClick={onShowNote}>
-            <NoteIcon className="fill-blue-500/20 text-blue-500" />
+            <NoteIcon className="size-4 drop-shadow-[0_0_3px_rgba(245,158,11,0.5)] transition-transform hover:scale-110 active:scale-95" />
           </IconAction>
         )}
       </div>

@@ -25,6 +25,10 @@ export class SectionBoundary extends Component<Props, State> {
         </div>
       );
     }
-    return this.props.children;
+    return (
+      <div data-section-label={this.props.label}>
+        {this.props.children}
+      </div>
+    );
   }
 }
