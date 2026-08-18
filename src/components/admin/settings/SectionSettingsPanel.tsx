@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered } from "lucide-react";
+import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,10 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
 import type { SectionSetting } from "@/lib/sections.shared";
+import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
 
 export function SectionSettingsPanel() {
   const queryClient = useQueryClient();
@@ -162,6 +164,31 @@ function SectionCard({
                   className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
                 />
               </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-xs text-muted-foreground">Product Category</Label>
+              <div className="flex items-center gap-2">
+                <Tag className="h-4 w-4 text-muted-foreground" />
+                <Select
+                  value={formData.productCategory || "all"}
+                  onValueChange={(value) => handleChange("productCategory", value === "all" ? null : value)}
+                >
+                  <SelectTrigger className="h-9 bg-black/20 border-white/10 focus:border-primary/50 text-xs">
+                    <SelectValue placeholder="All Products (Default)" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-900 border-white/10">
+                    <SelectItem value="all">All Products (Default)</SelectItem>
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <SelectItem key={cat} value={cat}>
+                        {categoryLabel(cat)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <p className="text-[10px] text-muted-foreground/60 italic">
+                Filter section to show only products from this category.
+              </p>
             </div>
           </div>
 

@@ -1821,6 +1821,7 @@ export type Database = {
           id: string
           is_slider: boolean
           name: string
+          product_category: string | null
           show_see_all: boolean
           slider_items: number | null
           sort_order: number
@@ -1835,6 +1836,7 @@ export type Database = {
           id: string
           is_slider?: boolean
           name: string
+          product_category?: string | null
           show_see_all?: boolean
           slider_items?: number | null
           sort_order?: number
@@ -1849,6 +1851,7 @@ export type Database = {
           id?: string
           is_slider?: boolean
           name?: string
+          product_category?: string | null
           show_see_all?: boolean
           slider_items?: number | null
           sort_order?: number
