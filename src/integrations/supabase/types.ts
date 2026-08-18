@@ -1811,6 +1811,51 @@ export type Database = {
         }
         Relationships: []
       }
+      section_settings: {
+        Row: {
+          button_link: string
+          button_text: string
+          created_at: string
+          display_limit: number
+          enabled: boolean
+          id: string
+          is_slider: boolean
+          name: string
+          show_see_all: boolean
+          slider_items: number | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          button_link: string
+          button_text?: string
+          created_at?: string
+          display_limit?: number
+          enabled?: boolean
+          id: string
+          is_slider?: boolean
+          name: string
+          show_see_all?: boolean
+          slider_items?: number | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          button_link?: string
+          button_text?: string
+          created_at?: string
+          display_limit?: number
+          enabled?: boolean
+          id?: string
+          is_slider?: boolean
+          name?: string
+          show_see_all?: boolean
+          slider_items?: number | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_events: {
         Row: {
           actor_email: string | null

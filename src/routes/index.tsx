@@ -1,10 +1,12 @@
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { ArrowRight } from "lucide-react";
 
 import { ProductBrowser } from "@/components/ProductBrowser";
 import { ProductGrid } from "@/components/ProductCard";
 import { SectionBoundary } from "@/components/SectionBoundary";
+import { Button } from "@/components/ui/button";
 
 import { AboutSection } from "@/components/home/AboutSection";
 import { BikeModelCarousel } from "@/components/home/BikeModelCarousel";
@@ -17,6 +19,7 @@ import { StoreComingSoon } from "@/components/home/StoreComingSoon";
 import { getHeroSlides } from "@/lib/hero.functions";
 import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { getSectionSettings } from "@/lib/sections.functions";
 import { site } from "@/data/site";
 import { useLanguage } from "@/lib/i18n";
 import { type SiteSettings } from "@/lib/settings.shared";
@@ -155,6 +158,7 @@ function Index() {
   const { t } = useLanguage();
   const fetchHeroSlides = useServerFn(getHeroSlides);
   const fetchBikeModels = useServerFn(getStorefrontBikeModels);
+  const fetchSectionSettings = useServerFn(getSectionSettings);
 
   const heroSlidesQuery = useQuery({
     queryKey: ["hero-slides"],
@@ -167,15 +171,36 @@ function Index() {
     queryFn: () => fetchBikeModels(),
   });
 
+  const sectionSettingsQuery = useQuery({
+    queryKey: ["section-settings"],
+    queryFn: () => fetchSectionSettings(),
+  });
+
   const bikeModels = bikeModelsQuery.data || [];
-  // ALL PRODUCTS SECTION
-  // Purpose: Displays all active products dynamically from the database.
-  // Status: COMPLETED
   const { data: products } = useSuspenseQuery(storefrontProductsQuery());
+  const sectionSettings = sectionSettingsQuery.data || [];
+
+  const getSetting = (id: string) => sectionSettings.find((s) => s.id === id);
+
+  const featuredDealsSetting = getSetting("featured_deals");
+  const allProductsSetting = getSetting("all_products");
+
   const universalProducts = products.filter((product) => product.universal);
+
   const bestDeals = products
     .filter((product) => product.bestDeal || product.featured)
     .sort((a, b) => (a.sortOrder ?? 999) - (b.sortOrder ?? 999));
+
+  const bestDealsDisplay = featuredDealsSetting
+    ? bestDeals.slice(0, featuredDealsSetting.displayLimit)
+    : bestDeals.slice(0, 6);
+
+  const allProductsDisplay = allProductsSetting
+    ? products.slice(0, allProductsSetting.displayLimit)
+    : products.slice(0, 8);
+
+  const showFeaturedSeeAll = featuredDealsSetting?.showSeeAll && bestDeals.length > (featuredDealsSetting?.displayLimit ?? 6);
+  const showAllProductsSeeAll = allProductsSetting?.showSeeAll && products.length > (allProductsSetting?.displayLimit ?? 8);
 
   return (
     <>
@@ -201,26 +226,56 @@ function Index() {
         </section>
       </SectionBoundary>
 
-      <SectionBoundary label="best-deals">
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading
-            eyebrow={t("section.bestDeals.eyebrow")}
-            title={t("section.bestDeals.title")}
-          />
-          <ProductGrid products={bestDeals} />
-        </section>
-      </SectionBoundary>
+      {(!featuredDealsSetting || featuredDealsSetting.enabled) && (
+        <SectionBoundary label="best-deals">
+          <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+            <SectionHeading
+              eyebrow={t("section.bestDeals.eyebrow")}
+              title={featuredDealsSetting?.name || t("section.bestDeals.title")}
+              action={showFeaturedSeeAll && (
+                <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80 hover:bg-primary/5 transition-all group">
+                  <Link to={featuredDealsSetting?.buttonLink || "/shop"}>
+                    {featuredDealsSetting?.buttonText || "See All"}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              )}
+            />
+            <ProductGrid products={bestDealsDisplay} />
+          </section>
+        </SectionBoundary>
+      )}
 
-      <SectionBoundary label="all-products">
-        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
-          <SectionHeading
-            eyebrow={`${products.length} ${t("section.allProducts.eyebrow")}`}
-            title={t("section.allProducts.title")}
-          />
-          {/* PRODUCT SEARCH & FILTERS — COMPLETED */}
-          <ProductBrowser products={products} />
-        </section>
-      </SectionBoundary>
+      {(!allProductsSetting || allProductsSetting.enabled) && (
+        <SectionBoundary label="all-products">
+          <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
+            <SectionHeading
+              eyebrow={`${products.length} ${t("section.allProducts.eyebrow")}`}
+              title={allProductsSetting?.name || t("section.allProducts.title")}
+              action={showAllProductsSeeAll && (
+                <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80 hover:bg-primary/5 transition-all group">
+                  <Link to={allProductsSetting?.buttonLink || "/shop"}>
+                    {allProductsSetting?.buttonText || "See All Products"}
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              )}
+            />
+            <ProductBrowser products={allProductsDisplay} />
+            
+            {showAllProductsSeeAll && (
+              <div className="mt-12 flex justify-center">
+                <Button variant="outline" size="lg" asChild className="shadow-3d hover:translate-y-[-2px] active:translate-y-[1px] transition-all border-white/10 text-white hover:bg-white/5 font-display uppercase tracking-wider">
+                  <Link to={allProductsSetting?.buttonLink || "/shop"}>
+                    {allProductsSetting?.buttonText || "See All Products"}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </section>
+        </SectionBoundary>
+      )}
 
       <SectionBoundary label="about">
         <AboutSection />

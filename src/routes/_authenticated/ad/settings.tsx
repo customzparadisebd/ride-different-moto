@@ -19,6 +19,7 @@ import { SteadfastSettingsPanel } from "@/components/admin/couriers/SteadfastSet
 import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSettingsPanel";
 import { SiteSettingsPanel } from "@/components/admin/settings/SiteSettingsPanel";
 import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
+import { SectionSettingsPanel } from "@/components/admin/settings/SectionSettingsPanel";
 import { Button } from "@/components/ui/button";
 
 import { Input } from "@/components/ui/input";
@@ -298,6 +299,11 @@ function AdminSettings() {
           {/* AI SETTINGS — ARCHITECTURAL PREP */}
           <div className="mt-6">
             <AISettingsPanel />
+          </div>
+
+          {/* HOMEPAGE SECTIONS — COMPLETED */}
+          <div className="mt-6">
+            <SectionSettingsPanel />
           </div>
 
           {/* STEADFAST API INTEGRATION — COMPLETED (Admin / Super Admin only) */}
