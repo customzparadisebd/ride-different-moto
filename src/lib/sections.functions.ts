@@ -67,6 +67,7 @@ export const saveSectionSetting = createServerFn({ method: "POST" })
         sort_order: data.sortOrder,
         is_slider: data.isSlider,
         slider_items: data.sliderItems ?? null,
+        product_category: data.productCategory ?? null,
         updated_at: new Date().toISOString(),
       } as any);
 
