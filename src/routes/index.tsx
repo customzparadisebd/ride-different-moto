@@ -186,12 +186,12 @@ function Index() {
   const featuredDealsSetting = getSetting("featured_deals");
   const allProductsSetting = getSetting("all_products");
 
-  const universalProducts = products.filter((product) => product.universal && product.isActive);
+  const universalProducts = products.filter((product) => product.universal);
   
   const getDisplayProducts = (setting: SectionSetting | undefined, defaultLimit: number, fallbackFilter: (p: any) => boolean) => {
-    if (!setting) return products.filter(fallbackFilter).filter(p => p.isActive).slice(0, defaultLimit);
+    if (!setting) return products.filter(fallbackFilter).slice(0, defaultLimit);
     
-    let filtered = products.filter(p => p.isActive);
+    let filtered = [...products];
     
     // If a category is explicitly set for the section, use it
     if (setting.productCategory) {
@@ -209,18 +209,17 @@ function Index() {
     return filtered.slice(0, setting.displayLimit);
   };
 
-  const bestDealsFilter = (p: any) => p.isBestDeal || p.isFeatured;
+  const bestDealsFilter = (p: any) => p.bestDeal || p.featured;
   const allProductsFilter = () => true;
 
   const bestDealsDisplay = getDisplayProducts(featuredDealsSetting, 6, bestDealsFilter);
   const allProductsDisplay = getDisplayProducts(allProductsSetting, 8, allProductsFilter);
 
   const getTotalCount = (setting: SectionSetting | undefined, fallbackFilter: (p: any) => boolean) => {
-    let filtered = products.filter(p => p.isActive);
     if (setting?.productCategory) {
-      return filtered.filter(p => p.category === setting.productCategory).length;
+      return products.filter(p => p.category === setting.productCategory).length;
     }
-    return filtered.filter(fallbackFilter).length;
+    return products.filter(fallbackFilter).length;
   };
 
   const showFeaturedSeeAll = featuredDealsSetting?.showSeeAll && getTotalCount(featuredDealsSetting, bestDealsFilter) > (featuredDealsSetting?.displayLimit ?? 6);
