@@ -63,7 +63,7 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
   });
 
   const [color, setColor] = useState<ProductColor | null>(
-    (product?.colors && product.colors.length > 0) ? product.colors[0] : null
+    (product?.colors && product.colors.length > 0) ? (product.colors[0] as ProductColor) : null
   );
   const [qty, setQty] = useState(1);
 
