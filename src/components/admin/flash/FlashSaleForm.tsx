@@ -34,14 +34,17 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
   const form = useForm<FlashSaleInput>({
     resolver: zodResolver(flashSaleInput),
     defaultValues: {
-      name: "",
-      description: "",
-      discountType: "percentage",
-      discountValue: 0,
-      isActive: false,
-      priority: 0,
-      productIds: [],
-      ...initialData,
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      discountType: initialData?.discountType || "percentage",
+      discountValue: initialData?.discountValue || 0,
+      isActive: initialData?.isActive ?? false,
+      priority: initialData?.priority || 0,
+      productIds: initialData?.productIds || [],
+      startDate: initialData?.startDate || null,
+      endDate: initialData?.endDate || null,
+      startTime: initialData?.startTime || null,
+      endTime: initialData?.endTime || null,
     },
   });
 
