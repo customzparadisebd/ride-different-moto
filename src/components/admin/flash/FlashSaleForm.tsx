@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Control, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Plus, Trash2, Calendar, Clock, Percent, Banknote, Package } from "lucide-react";
 
@@ -31,7 +31,7 @@ interface FlashSaleFormProps {
 
 export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }: FlashSaleFormProps) {
   const form = useForm<FlashSaleInput>({
-    resolver: zodResolver(flashSaleInput),
+    resolver: zodResolver(flashSaleInput) as any,
     defaultValues: {
       id: initialData?.id,
       name: initialData?.name || "",
@@ -69,7 +69,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
             <Card className="bg-zinc-900/50 border-white/10">
               <CardContent className="pt-6 space-y-4">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
@@ -83,7 +83,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                 />
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="description"
                   render={({ field }) => (
                     <FormItem>
@@ -107,7 +107,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                     <p className="text-xs text-muted-foreground">Turn offer ON/OFF globally</p>
                   </div>
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="isActive"
                     render={({ field }) => (
                       <FormControl>
@@ -130,7 +130,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                 </div>
                 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="productIds"
                   render={({ field }) => (
                     <FormItem>
@@ -165,7 +165,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="startDate"
                     render={({ field }) => (
                       <FormItem>
@@ -178,7 +178,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="endDate"
                     render={({ field }) => (
                       <FormItem>
@@ -194,7 +194,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="startTime"
                     render={({ field }) => (
                       <FormItem>
@@ -207,7 +207,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                     )}
                   />
                   <FormField
-                    control={form.control}
+                    control={form.control as any}
                     name="endTime"
                     render={({ field }) => (
                       <FormItem>
@@ -234,7 +234,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                 </div>
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="discountType"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
@@ -269,7 +269,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
                 />
 
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="discountValue"
                   render={({ field }) => (
                     <FormItem>
