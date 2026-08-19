@@ -34,6 +34,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
   const form = useForm<FlashSaleInput>({
     resolver: zodResolver(flashSaleInput),
     defaultValues: {
+      id: initialData?.id,
       name: initialData?.name || "",
       description: initialData?.description || "",
       discountType: initialData?.discountType || "percentage",
@@ -53,9 +54,17 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
     value: p.id,
   }));
 
+  const handleFormSubmit = async (data: FlashSaleInput) => {
+    try {
+      await onSubmit(data);
+    } catch (error) {
+      console.error("Form submission error:", error);
+    }
+  };
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <Card className="bg-zinc-900/50 border-white/10">
