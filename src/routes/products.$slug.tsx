@@ -1,207 +1,67 @@
 // ============================================================
 // PRODUCT DETAIL PAGE
-// Purpose: Displays complete product information, image gallery and
-//          colour-variation selection before adding to the cart.
+// Purpose: Main product showcase with gallery, pricing,
+//          description and bike-fitment data.
 // Status: COMPLETED
-// Security: Public read of active products only; the price shown is
-//           recalculated server-side when the order is placed.
+// Security: Uses RLS; price logic validated on checkout server.
 // ============================================================
-import { queryOptions, useSuspenseQuery, useQuery } from "@tanstack/react-query";
-import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-router";
-import { Check, Minus, Plus } from "lucide-react";
-import { useMemo, useState, useEffect, lazy, Suspense } from "react";
-import { toast } from "sonner";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useState } from "react";
+import { 
+  CheckCircle2, 
+  ChevronRight, 
+  MessageCircle, 
+  ShieldCheck, 
+  Truck, 
+  RotateCcw,
+  Zap,
+  Package,
+  Bike
+} from "lucide-react";
+import { toast } from "sonner";
 
-import { SafeImage } from "@/components/SafeImage";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { RotateCw } from "lucide-react";
-import { ProductVideo } from "@/components/product/ProductVideo";
-import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
-
-// 360 viewer is large, load lazily
-const Product360Viewer = lazy(() =>
-  import("@/components/product/Product360Viewer").then((m) => ({ default: m.Product360Viewer })),
-);
-
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { site } from "@/data/site";
-import { useCart } from "@/lib/cart";
-import { formatBDT } from "@/lib/format";
-import { getStorefrontProduct } from "@/lib/storefront.functions";
-import { getSiteSettings } from "@/lib/site-settings.functions";
+import { getProductBySlug } from "@/lib/products.functions";
 import { getFlashSales } from "@/lib/flash.functions";
 import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
-import {
-  basePrice,
-  colorPrice,
-  compareAtPrice,
-  type StorefrontProduct,
-} from "@/lib/storefront.shared";
-import { type SiteSettings } from "@/lib/settings.shared";
+import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
+import { ProductGallery } from "@/components/product/ProductGallery";
+import { ProductColorsPanel } from "@/components/product/ProductColorsPanel";
+import { ProductVideo } from "@/components/product/ProductVideo";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { useCart } from "@/lib/cart";
+import { formatBDT } from "@/lib/format";
+import { useLanguage } from "@/lib/i18n";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
+import { WhatsAppFloating } from "@/components/WhatsAppFloating";
 import { cn } from "@/lib/utils";
-
-const productQuery = (slug: string) =>
-  queryOptions({
-    queryKey: ["storefront-product", slug],
-    queryFn: () => getStorefrontProduct({ data: { slug } }),
-  });
-
+import type { ProductColor } from "@/lib/storefront.shared";
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
-    const [product, siteSettings] = await Promise.all([
-      context.queryClient.ensureQueryData(productQuery(params.slug)),
-      context.queryClient.ensureQueryData({
-        queryKey: ["site-settings"],
-        queryFn: () => getSiteSettings(),
-      })
-    ]);
-
-    if (!product) throw notFound();
-
-    const settings = (siteSettings as SiteSettings) || site;
-    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
-    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
-    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
-
-    const jsonLd = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: product.name,
-      image: product.gallery,
-      description: product.description,
-      brand: {
-        "@type": "Brand",
-        name: businessName,
-      },
-      offers: {
-        "@type": "Offer",
-        url: `${siteUrl}/products/${product.slug}`,
-        priceCurrency: "BDT",
-        price: product.offerPrice || product.price,
-        availability: product.inStock && !product.outOfStockManual
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
-      },
-      ...(product.videoEnabled && product.videoUrl
-        ? {
-            video: {
-              "@type": "VideoObject",
-              name: `${product.name} Video`,
-              description: `Product demonstration for ${product.name}`,
-              thumbnailUrl: product.image || product.gallery[0],
-              contentUrl: product.videoUrl,
-              embedUrl: product.videoUrl,
-              uploadDate: new Date().toISOString(),
-            },
-          }
-        : {}),
-    };
-
-    return {
-      name: product.name,
-      description: product.description,
-      jsonLd,
-      videoEnabled: product.videoEnabled,
-      videoUrl: product.videoUrl,
-      image: product.image || product.gallery[0],
-      siteSettings
-    };
+    return context.queryClient.ensureQueryData({
+      queryKey: ["product", params.slug],
+      queryFn: () => getProductBySlug({ data: params.slug }),
+    });
   },
-
-  head: ({ loaderData, params }) => {
-    const settings = (loaderData?.siteSettings as SiteSettings) || site;
-    const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
-    const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
-    const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
-
-    if (!loaderData) {
-      return {
-        meta: [{ title: `Product — ${businessName}` }, { name: "robots", content: "noindex" }],
-      };
-    }
-    const title = `${loaderData.name} — Motorcycle Modification Parts Bangladesh — ${businessName}`;
-    const description =
-      loaderData.description ??
-      `Get the best price for ${loaderData.name} in Bangladesh. High-quality motorcycle modification accessory from ${businessName} with nationwide delivery.`;
-
-    return {
-      meta: [
-        { title },
-        { name: "description", content: description },
-        { property: "og:title", content: title },
-        { property: "og:description", content: description },
-        { property: "og:type", content: "product" },
-        { property: "og:url", content: `${siteUrl}/products/${params.slug}` },
-        { property: "og:image", content: loaderData.image },
-        ...(loaderData.videoEnabled && loaderData.videoUrl
-          ? [
-              { property: "og:video", content: loaderData.videoUrl },
-              { property: "og:video:secure_url", content: loaderData.videoUrl },
-              { property: "og:video:type", content: "text/html" },
-              { property: "og:video:width", content: "1280" },
-              { property: "og:video:height", content: "720" },
-            ]
-          : []),
-        { name: "twitter:card", content: loaderData.videoEnabled ? "player" : "summary_large_image" },
-        { name: "twitter:title", content: title },
-        { name: "twitter:description", content: description },
-        { name: "twitter:image", content: loaderData.image },
-        ...(loaderData.videoEnabled && loaderData.videoUrl
-          ? [
-              { name: "twitter:player", content: loaderData.videoUrl },
-              { name: "twitter:player:width", content: "1280" },
-              { name: "twitter:player:height", content: "720" },
-            ]
-          : []),
-      ],
-      links: [{ rel: "canonical", href: `${siteUrl}/products/${params.slug}` }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: loaderData.jsonLd ? JSON.stringify(loaderData.jsonLd) : undefined,
-        },
-      ],
-    };
-  },
-
-  component: ProductDetailPage,
+  component: ProductDetail,
 });
 
-function ProductDetailPage() {
+function ProductDetail() {
   const { slug } = Route.useParams();
-  const { data } = useSuspenseQuery(productQuery(slug));
-  const { data: siteSettings } = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: () => getSiteSettings(),
-  });
-
-  if (!data) return null;
-  return <ProductDetail product={data} siteSettings={siteSettings as SiteSettings} />;
-}
-
-export function ProductDetail({ product, siteSettings }: { product: StorefrontProduct; siteSettings?: SiteSettings }) {
-  const { addItem } = useCart();
+  const { t } = useLanguage();
   const navigate = useNavigate();
-  const [colorId, setColorId] = useState<string | null>(product.colors[0]?.id ?? null);
-  const [qty, setQty] = useState(1);
-  const [show360, setShow360] = useState(false);
+  const { addItem } = useCart();
 
-  const settings = (siteSettings as SiteSettings) || site;
-  const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
-  const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
-
-  const color = useMemo(
-    () => product.colors.find((entry) => entry.id === colorId) ?? null,
-    [product.colors, colorId],
-  );
-
-  // PRODUCT COLOR VARIATIONS — price updates with the selected colour.
-  const unitPrice = colorPrice(product, color);
-  const wasPrice = compareAtPrice(product, color);
-  const gallery = product.gallery.length ? product.gallery : [""];
+  const fetchProduct = useServerFn(getProductBySlug);
+  const { data: product } = useSuspenseQuery({
+    queryKey: ["product", slug],
+    queryFn: () => fetchProduct({ data: slug }),
+  });
 
   const fetchFlashSales = useServerFn(getFlashSales);
   const { data: sales = [] } = useQuery({
@@ -210,291 +70,301 @@ export function ProductDetail({ product, siteSettings }: { product: StorefrontPr
     staleTime: 60000,
   });
 
-  const activeSale = getActiveSaleForProduct(product.id, sales);
-  const flashPrice = activeSale ? calculateFlashPrice(product.price, activeSale) : null;
-  const isFlashActive = flashPrice !== null;
+  // STATE: Variant / Config
+  const [color, setColor] = useState<ProductColor | null>(
+    product.colors.length > 0 ? product.colors[0] : null
+  );
+  const [qty, setQty] = useState(1);
 
-  // PRODUCT COLOR VARIATIONS — price updates with the selected colour.
-  // If flash sale is active, it overrides the base price, but color delta still applies if applicable.
-  // Note: Standard flash sales usually apply to the base product.
-  const displayUnitPrice = isFlashActive ? calculateFlashPrice(unitPrice, activeSale!) : unitPrice;
-  const displayWasPrice = isFlashActive ? unitPrice : wasPrice;
-  const finalDiscount = isFlashActive 
-    ? (activeSale!.discountType === "percentage" ? activeSale!.discountValue : Math.round((1 - displayUnitPrice / unitPrice) * 100))
-    : (wasPrice ? Math.round((1 - unitPrice / wasPrice) * 100) : null);
+  if (!product) return null;
+
+  // PRICING CALCULATION
+  const activeSale = getActiveSaleForProduct(product.id, sales);
+  const baseUnitPrice = product.price + (color?.priceDelta || 0);
+  const isFlashActive = activeSale !== null;
+  
+  const displayUnitPrice = isFlashActive 
+    ? calculateFlashPrice(baseUnitPrice, activeSale!) 
+    : (product.offerPrice ? product.offerPrice + (color?.priceDelta || 0) : baseUnitPrice);
+  
+  const wasPrice = isFlashActive 
+    ? baseUnitPrice 
+    : (product.offerPrice ? baseUnitPrice : null);
+
+  const discountValue = isFlashActive 
+    ? (activeSale!.discountType === "percentage" ? activeSale!.discountValue : Math.round((1 - displayUnitPrice / baseUnitPrice) * 100))
+    : (wasPrice ? Math.round((1 - displayUnitPrice / wasPrice) * 100) : null);
 
   const isActuallyInStock = product.inStock && !product.outOfStockManual;
-  const add = (thenCheckout: boolean) => {
+
+  const handleAddToCart = (thenCheckout: boolean) => {
     if (!isActuallyInStock) return;
     addItem({ 
-      product, 
+      product: product as any, 
       color, 
       qty, 
-      flashSaleId: activeSale?.id,
-      unitPrice: displayUnitPrice 
-    });
+      flashSaleId: activeSale?.id || null,
+      unitPrice: isFlashActive ? displayUnitPrice : undefined 
+    } as any);
+    
     if (thenCheckout) {
       void navigate({ to: "/checkout" });
-      return;
+    } else {
+      toast.success(t("common.addedToCart"), {
+        description: `${product.name} (${color?.name || "Standard"})`,
+      });
     }
-    toast.success("Added to cart", {
-      description: color ? `${product.name} — ${color.name}` : product.name,
-    });
   };
 
-
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-      <nav aria-label="Breadcrumb" className="text-xs text-muted-foreground">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BreadcrumbList",
-              "itemListElement": [
-                {
-                  "@type": "ListItem",
-                  "position": 1,
-                  "name": "Shop",
-                  "item": `${siteUrl}/shop`
-                },
-                {
-                  "@type": "ListItem",
-                  "position": 2,
-                  "name": product.name,
-                  "item": `${siteUrl}/products/${product.slug}`
-                }
-              ]
-            })
-          }}
-        />
-        <Link to="/shop" className="hover:text-primary">
-          Shop
-        </Link>
-        <span className="px-1.5">/</span>
-        <span className="text-foreground">{product.name}</span>
-      </nav>
+    <div className="min-h-screen bg-background">
+      <Header />
+      
+      <main className="container mx-auto px-4 py-8 lg:py-12">
+        {/* BREADCRUMBS */}
+        <nav className="mb-8 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+          <a href="/" className="hover:text-primary transition-colors">Home</a>
+          <ChevronRight className="size-3" />
+          <a href="/products" className="hover:text-primary transition-colors">Shop</a>
+          <ChevronRight className="size-3" />
+          <span className="text-white truncate max-w-[200px]">{product.name}</span>
+        </nav>
 
-      <div className="mt-4 grid gap-6 lg:grid-cols-2 lg:gap-10">
-        {/* Gallery Section */}
-        <ProductGallery
-          images={gallery}
-          productName={product.name}
-          activeColorImage={color?.image ?? null}
-        />
-
-        {product.has360View && product.product360Images.length > 0 ? (
-          <div className="mt-4 flex justify-center lg:hidden">
-            <Button
-              variant="outline"
-              size="sm"
-              className="group flex items-center gap-2 rounded-full border-primary/30 bg-primary/5 px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary hover:border-primary hover:bg-primary/10"
-              onClick={() => setShow360(true)}
-            >
-              <RotateCw className="size-4 transition-transform group-hover:rotate-180" />
-              Interactive 360° View
-            </Button>
-          </div>
-        ) : null}
-
-        {show360 && (
-          <Suspense fallback={null}>
-            <Product360Viewer
-              images={product.product360Images}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+          {/* LEFT: GALLERY & MEDIA */}
+          <div className="space-y-6">
+            <ProductGallery 
+              mainImage={product.image || ""} 
+              gallery={product.gallery || []} 
               productName={product.name}
-              onClose={() => setShow360(false)}
+              badgeText={isFlashActive ? "FLASH SALE" : (product.badgeText || undefined)}
             />
-          </Suspense>
-        )}
 
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            {product.newArrival && <Badge variant="outline">New</Badge>}
-            {product.bestDeal && <Badge variant="default">Best Deal</Badge>}
-            {product.featured && <Badge variant="default">Top Seller</Badge>}
-            {product.badgeText ? <Badge variant="destructive">{product.badgeText}</Badge> : null}
-          </div>
-
-          <h1 className="mt-2 font-display text-2xl font-bold uppercase leading-tight tracking-tight sm:text-3xl">
-            {product.name}
-          </h1>
-
-          <div className="mt-3 flex flex-wrap items-baseline gap-3">
-            <span className="font-display text-3xl font-bold text-primary">
-              {formatBDT(unitPrice)}
-            </span>
-            {wasPrice ? (
-              <span className="text-base text-muted-foreground line-through">
-                {formatBDT(wasPrice)}
-              </span>
-            ) : null}
-            {wasPrice ? (
-              <span className="rounded bg-gradient-red px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground">
-                Save {formatBDT(wasPrice - unitPrice)}
-              </span>
-            ) : null}
-          </div>
-
-          <p className="mt-2 text-sm">
-            {isActuallyInStock ? (
-              <span className="font-semibold text-primary">In stock</span>
-            ) : (
-              <span className="font-semibold text-muted-foreground">Out of stock</span>
-            )}
-            {isActuallyInStock && product.stockQty <= 5 ? (
-              <span className="text-muted-foreground"> — only {product.stockQty} left</span>
-            ) : null}
-          </p>
-
-          {product.description ? (
-            <p className="mt-4 text-sm text-muted-foreground">{product.description}</p>
-          ) : null}
-
-          {product.has360View && product.product360Images.length > 0 ? (
-            <div className="mt-6 hidden lg:block">
-              <Button
-                variant="outline"
-                className="group flex items-center gap-3 rounded-xl border-primary/30 bg-primary/5 px-6 py-3 text-sm font-bold uppercase tracking-wider text-primary transition-all hover:border-primary hover:bg-primary/10 hover:shadow-lg hover:shadow-primary/10"
-                onClick={() => setShow360(true)}
-              >
-                <div className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:rotate-180">
-                  <RotateCw className="size-5" />
+            {product.videoUrl && (
+              <Card className="bg-zinc-900/50 border-white/5 overflow-hidden">
+                <div className="p-4 border-b border-white/5 flex items-center justify-between">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-white flex items-center gap-2">
+                    <Zap className="size-4 text-primary" />
+                    Product Showcase
+                  </h3>
                 </div>
-                <div>
-                  <div className="text-left leading-none">Interactive</div>
-                  <div className="mt-1 text-left text-[10px] opacity-70">
-                    Experience 360° Rotation
+                <ProductVideo url={product.videoUrl} />
+              </Card>
+            )}
+          </div>
+
+          {/* RIGHT: INFO & ACTIONS */}
+          <div className="flex flex-col">
+            {isFlashActive && <FlashSaleBanner sale={activeSale!} />}
+            
+            <div className="mb-6 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                {product.category && (
+                  <Badge variant="outline" className="border-primary/30 text-primary uppercase text-[10px] tracking-widest px-2">
+                    {product.category}
+                  </Badge>
+                )}
+                {product.sku && (
+                  <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                    SKU: {product.sku}
+                  </span>
+                )}
+              </div>
+              
+              <h1 className="font-display text-4xl font-black uppercase leading-[0.9] tracking-tighter text-white lg:text-5xl">
+                {product.name}
+              </h1>
+              
+              <div className="flex items-center gap-3">
+                <div className="flex items-baseline gap-3">
+                  <span className={cn("font-display text-3xl font-black", isFlashActive ? "text-primary" : "text-primary")}>
+                    {formatBDT(displayUnitPrice)}
+                  </span>
+                  {wasPrice && (
+                    <span className="text-xl text-muted-foreground line-through decoration-primary/40">
+                      {formatBDT(wasPrice)}
+                    </span>
+                  )}
+                </div>
+                {discountValue && (
+                  <Badge className="bg-gradient-red text-white border-none text-xs font-bold px-2 py-0.5 animate-pulse">
+                    -{discountValue}% OFF
+                  </Badge>
+                )}
+              </div>
+            </div>
+
+            <Separator className="bg-white/5 mb-8" />
+
+            {/* DESCRIPTION (SHORT) */}
+            {product.description && (
+              <div className="mb-8 prose prose-invert prose-sm max-w-none">
+                <p className="text-white/70 leading-relaxed text-base italic border-l-2 border-primary/30 pl-4">
+                  {product.description}
+                </p>
+              </div>
+            )}
+
+            {/* PRODUCT CONFIGURATION */}
+            <div className="space-y-8 mb-10">
+              {product.colors.length > 0 && (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold uppercase tracking-widest text-white/60">
+                      Select Color
+                    </label>
+                    {color && (
+                      <span className="text-xs font-bold text-primary uppercase tracking-wider">
+                        {color.name} {color.priceDelta > 0 && `(+৳${color.priceDelta})`}
+                      </span>
+                    )}
+                  </div>
+                  <ProductColorsPanel 
+                    colors={product.colors as any} 
+                    selected={color as any} 
+                    onSelect={setColor as any} 
+                  />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <label className="text-xs font-bold uppercase tracking-widest text-white/60 block">
+                  Quantity
+                </label>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 items-center rounded-lg border border-white/10 bg-black/40 p-1">
+                    <button 
+                      onClick={() => setQty(Math.max(1, qty - 1))}
+                      className="flex size-10 items-center justify-center rounded hover:bg-white/5 text-white transition-colors"
+                      aria-label="Decrease quantity"
+                    >
+                      -
+                    </button>
+                    <span className="w-12 text-center font-display text-lg font-bold text-white">
+                      {qty}
+                    </span>
+                    <button 
+                      onClick={() => setQty(Math.min(10, qty + 1))}
+                      className="flex size-10 items-center justify-center rounded hover:bg-white/5 text-white transition-colors"
+                      aria-label="Increase quantity"
+                    >
+                      +
+                    </button>
+                  </div>
+                  <div className="flex-1">
+                    <div className={cn(
+                      "flex items-center gap-2 rounded-lg px-4 py-3 border text-xs font-bold uppercase tracking-widest",
+                      isActuallyInStock 
+                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                        : "bg-red-500/10 border-red-500/20 text-red-500"
+                    )}>
+                      <Package className="size-4" />
+                      {isActuallyInStock ? "In Stock & Ready to Ship" : "Currently Out of Stock"}
+                    </div>
                   </div>
                 </div>
-              </Button>
-            </div>
-          ) : null}
-
-          {/* Colour chips: visible name + swatch, large touch targets. */}
-          {product.colors.length ? (
-            <div className="mt-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                Color: <span className="text-foreground">{color?.name ?? "Select"}</span>
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {product.colors.map((entry) => {
-                  const selected = entry.id === colorId;
-                  return (
-                    <button
-                      key={entry.id}
-                      type="button"
-                      onClick={() => setColorId(entry.id)}
-                      aria-pressed={selected}
-                      className={cn(
-                        "flex min-h-11 items-center gap-2 rounded-full border px-3 py-2 text-sm font-semibold transition",
-                        selected
-                          ? "border-primary bg-primary/10 text-foreground"
-                          : "border-border bg-card text-muted-foreground hover:border-primary/50",
-                      )}
-                    >
-                      <span
-                        className="size-5 shrink-0 rounded-full border border-black/40 dark:border-white/40 ring-1 ring-black/10 dark:ring-white/10"
-                        style={{ backgroundColor: entry.swatch }}
-                        aria-hidden="true"
-                      />
-                      <span className="truncate">{entry.name}</span>
-                      {selected ? (
-                        <Check className="size-4 text-primary" aria-hidden="true" />
-                      ) : null}
-                    </button>
-                  );
-                })}
               </div>
             </div>
-          ) : null}
 
-          {/* Quantity + cart actions */}
-          <div className="mt-6 flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-              Qty
-            </span>
-            <div className="flex items-center gap-2">
+            {/* PRIMARY ACTIONS */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
               <Button
-                variant="outline"
-                size="icon"
-                className="size-11"
-                aria-label="Decrease quantity"
-                onClick={() => setQty((current) => Math.max(1, current - 1))}
+                variant="steel"
+                size="lg"
+                onClick={() => handleAddToCart(false)}
+                disabled={!isActuallyInStock}
+                className="h-14 shadow-3d-steel active:translate-y-0.5 text-sm font-black uppercase tracking-widest"
               >
-                <Minus />
+                {t("nav.cart")}
               </Button>
-              <span className="w-8 text-center font-display text-lg font-bold">{qty}</span>
               <Button
-                variant="outline"
-                size="icon"
-                className="size-11"
-                aria-label="Increase quantity"
-                onClick={() => setQty((current) => Math.min(20, current + 1))}
+                variant="red"
+                size="lg"
+                onClick={() => handleAddToCart(true)}
+                disabled={!isActuallyInStock}
+                className="h-14 shadow-3d-primary active:translate-y-0.5 text-sm font-black uppercase tracking-widest"
               >
-                <Plus />
+                {product.badgeText === "Pre-order" ? "Pre-order Now" : t("common.orderNow")}
               </Button>
             </div>
-          </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-2">
-            <Button
-              variant="steel"
-              size="touch"
-              disabled={!isActuallyInStock}
-              onClick={() => add(false)}
-            >
-              Add to Cart
-            </Button>
-            <Button
-              variant="red"
-              size="touch"
-              disabled={!isActuallyInStock}
-              onClick={() => add(true)}
-            >
-              Buy Now
-            </Button>
-          </div>
-
-          {product.details ? (
-            <section className="mt-8 rounded-xl border border-border bg-card p-4">
-              <h2 className="font-display text-lg font-bold uppercase tracking-wide">
-                Product Details
-              </h2>
-              <div className="mt-2 whitespace-pre-line text-sm text-muted-foreground">
-                {product.details}
+            {/* TRUST BADGES */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl bg-zinc-900/30 border border-white/5">
+              <div className="flex flex-col items-center text-center gap-2">
+                <Truck className="size-5 text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-white/60">Fast Delivery</span>
               </div>
-
-              {product.videoEnabled && product.videoUrl && (
-                <ProductVideo 
-                  platform={product.videoPlatform as any}
-                  url={product.videoUrl}
-                  productName={product.name}
-                />
-              )}
-            </section>
-          ) : (
-            product.videoEnabled && product.videoUrl && (
-              <ProductVideo 
-                platform={product.videoPlatform as any}
-                url={product.videoUrl}
-                productName={product.name}
-              />
-            )
-          )}
-
-          {product.bikeCompatibility.length || product.universal ? (
-            <section className="mt-4 rounded-xl border border-border bg-card p-4">
-              <h2 className="font-display text-lg font-bold uppercase tracking-wide">Fitment</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {product.universal
-                  ? "Universal fit — suits most motorcycles."
-                  : product.bikeCompatibility.join(", ")}
-              </p>
-            </section>
-          ) : null}
+              <div className="flex flex-col items-center text-center gap-2">
+                <ShieldCheck className="size-5 text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-white/60">Genuine Parts</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <RotateCcw className="size-5 text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-white/60">Easy Return</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-2">
+                <CheckCircle2 className="size-5 text-primary" />
+                <span className="text-[10px] font-bold uppercase tracking-tighter text-white/60">Quality Tested</span>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
+
+        {/* BIKE FITMENT & DETAILS */}
+        <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="lg:col-span-2 space-y-10">
+            {product.bikeModels && product.bikeModels.length > 0 && (
+              <section className="space-y-6">
+                <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-white flex items-center gap-3">
+                  <Bike className="size-6 text-primary" />
+                  Bike Fitment
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {product.bikeModels.map((bike: any) => (
+                    <Badge 
+                      key={bike.id} 
+                      variant="outline" 
+                      className="bg-white/5 border-white/10 text-white font-medium py-1.5 px-4"
+                    >
+                      {bike.brand} {bike.model}
+                    </Badge>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <section className="space-y-6">
+              <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-white">Product Description</h2>
+              <div 
+                className="prose prose-invert max-w-none text-white/70 text-lg leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: product.description || "No description available." }}
+              />
+            </section>
+          </div>
+          
+          <div className="space-y-6">
+             <div className="p-8 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent border border-primary/20">
+                <h3 className="text-xl font-display font-black uppercase tracking-tighter text-white mb-4">Need Expert Advice?</h3>
+                <p className="text-white/60 text-sm mb-6 leading-relaxed">
+                  Confused about fitment? Our modification experts are ready to help you choose the best part for your beast.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-primary/30 text-primary hover:bg-primary hover:text-white transition-all gap-2 h-12 font-bold"
+                  asChild
+                >
+                  <a href="https://wa.me/8801890722202" target="_blank" rel="noopener noreferrer">
+                    <MessageCircle className="size-5" />
+                    Chat on WhatsApp
+                  </a>
+                </Button>
+             </div>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+      <WhatsAppFloating />
     </div>
   );
 }
