@@ -41,6 +41,7 @@ import {
 import { AddUserDialog } from "@/components/admin/AddUserDialog";
 import { UserActivityDialog } from "@/components/admin/UserActivityDialog";
 import { UserPermissionsDialog } from "@/components/admin/UserPermissionsDialog";
+import { StaffAvatar } from "@/components/admin/StaffAvatar";
 
 import {
   deleteStaff,
