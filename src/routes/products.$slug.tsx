@@ -11,11 +11,13 @@ import { Link, createFileRoute, notFound, useNavigate } from "@tanstack/react-ro
 import { Check, Minus, Plus } from "lucide-react";
 import { useMemo, useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 
 import { SafeImage } from "@/components/SafeImage";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { RotateCw } from "lucide-react";
 import { ProductVideo } from "@/components/product/ProductVideo";
+import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
 
 // 360 viewer is large, load lazily
 const Product360Viewer = lazy(() =>
@@ -29,6 +31,8 @@ import { useCart } from "@/lib/cart";
 import { formatBDT } from "@/lib/format";
 import { getStorefrontProduct } from "@/lib/storefront.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { getFlashSales } from "@/lib/flash.functions";
+import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
 import {
   basePrice,
   colorPrice,
@@ -43,6 +47,7 @@ const productQuery = (slug: string) =>
     queryKey: ["storefront-product", slug],
     queryFn: () => getStorefrontProduct({ data: { slug } }),
   });
+
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
