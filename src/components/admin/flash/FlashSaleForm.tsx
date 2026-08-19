@@ -1,8 +1,7 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Plus, Trash2, Calendar, Clock, Percent, Banknote, Package } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +36,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
       id: initialData?.id,
       name: initialData?.name || "",
       description: initialData?.description || "",
-      discountType: initialData?.discountType || "percentage",
+      discountType: (initialData?.discountType as any) || "percentage",
       discountValue: initialData?.discountValue || 0,
       isActive: initialData?.isActive ?? false,
       priority: initialData?.priority || 0,
@@ -54,7 +53,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
     value: p.id,
   }));
 
-  const handleFormSubmit = async (data: FlashSaleInput) => {
+  const handleFormSubmit: SubmitHandler<FlashSaleInput> = async (data) => {
     try {
       await onSubmit(data);
     } catch (error) {
