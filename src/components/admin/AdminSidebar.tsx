@@ -22,7 +22,9 @@ import {
   Star,
   Activity,
   KeyRound,
+  Flame,
 } from "lucide-react";
+
 
 import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
 
@@ -59,7 +61,14 @@ const OPERATIONS: NavItem[] = [
     permission: PERMISSIONS.productsManage,
   },
   {
+    to: "/ad/flash",
+    label: "Flash Sales",
+    icon: Flame,
+    permission: PERMISSIONS.productsManage,
+  },
+  {
     to: "/ad/hero",
+
     label: "Hero Slider",
     icon: LayoutDashboard,
     permission: PERMISSIONS.productsManage,

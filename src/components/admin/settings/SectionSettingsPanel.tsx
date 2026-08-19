@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag } from "lucide-react";
+import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag, AlertCircle } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
 import type { SectionSetting } from "@/lib/sections.shared";
 import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function SectionSettingsPanel() {
   const queryClient = useQueryClient();
@@ -60,6 +61,14 @@ export function SectionSettingsPanel() {
           Manage how products are displayed in different sections on your homepage.
         </p>
       </div>
+
+      <Alert className="bg-primary/10 border-primary/20 text-white">
+        <AlertCircle className="h-4 w-4 text-primary" />
+        <AlertTitle className="text-primary font-bold uppercase tracking-widest text-xs">Helpful Hint</AlertTitle>
+        <AlertDescription className="text-sm text-white/80">
+          Control limits, "See All" buttons, and categories for each homepage section here.
+        </AlertDescription>
+      </Alert>
 
       <div className="grid gap-8">
         {sections.map((section) => (
@@ -186,9 +195,6 @@ function SectionCard({
                   </SelectContent>
                 </Select>
               </div>
-              <p className="text-[10px] text-muted-foreground/60 italic">
-                Filter section to show only products from this category.
-              </p>
             </div>
           </div>
 

@@ -25,15 +25,15 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
     query = data.deleted ? query.not("deleted_at", "is", null) : query.is("deleted_at", null);
 
     if (data.search) {
-      const term = `%${data.search}%`;
+      const term = `%${data.search.replace(/[%_\\]/g, (c) => `\\${c}`)}%`;
       query = query.or(
         `name.ilike.${term},phone.ilike.${term},email.ilike.${term},city.ilike.${term},district.ilike.${term},area.ilike.${term}`,
       );
     }
-    if (data.customerName) query = query.ilike("name", `%${data.customerName}%`);
-    if (data.customerPhone) query = query.ilike("phone", `%${data.customerPhone}%`);
-    if (data.city) query = query.ilike("city", `%${data.city}%`);
-    if (data.district) query = query.ilike("district", `%${data.district}%`);
+    if (data.customerName) query = query.ilike("name", `%${data.customerName.replace(/[%_\\]/g, (c) => `\\${c}`)}%`);
+    if (data.customerPhone) query = query.ilike("phone", `%${data.customerPhone.replace(/[%_\\]/g, (c) => `\\${c}`)}%`);
+    if (data.city) query = query.ilike("city", `%${data.city.replace(/[%_\\]/g, (c) => `\\${c}`)}%`);
+    if (data.district) query = query.ilike("district", `%${data.district.replace(/[%_\\]/g, (c) => `\\${c}`)}%`);
 
 
     if (data.status === "fraud") {
