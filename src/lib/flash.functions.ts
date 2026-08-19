@@ -6,7 +6,7 @@ import { flashSaleInput, type FlashSale } from "./flash.shared";
 import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 export const getFlashSales = createServerFn({ method: "GET" }).handler(async (): Promise<FlashSale[]> => {
-  const { data, error } = await supabase
+  const { data, error } = await (supabase as any)
     .from("flash_sales")
     .select("*, flash_sale_products(product_id)")
     .order("priority", { ascending: false });
@@ -57,7 +57,7 @@ export const saveFlashSale = createServerFn({ method: "POST" })
     let saleId = data.id;
 
     if (isNew) {
-      const { data: newSale, error } = await context.supabase
+      const { data: newSale, error } = await (context.supabase as any)
         .from("flash_sales")
         .insert({ ...dbPayload, created_by: context.userId })
         .select("id")
@@ -65,7 +65,7 @@ export const saveFlashSale = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       saleId = newSale.id;
     } else {
-      const { error } = await context.supabase
+      const { error } = await (context.supabase as any)
         .from("flash_sales")
         .update(dbPayload)
         .eq("id", saleId!);
@@ -73,16 +73,16 @@ export const saveFlashSale = createServerFn({ method: "POST" })
     }
 
     // Sync products
-    await context.supabase.from("flash_sale_products").delete().eq("flash_sale_id", saleId!);
+    await (context.supabase as any).from("flash_sale_products").delete().eq("flash_sale_id", saleId!);
     if (productIds.length > 0) {
-      const { error } = await context.supabase
+      const { error } = await (context.supabase as any)
         .from("flash_sale_products")
         .insert(productIds.map(pid => ({ flash_sale_id: saleId!, product_id: pid })));
       if (error) throw new Error(error.message);
     }
 
     await auditFromActor(actor, {
-      action: isNew ? AUDIT_ACTIONS.productCreated : AUDIT_ACTIONS.productUpdated,
+      action: isNew ? "product.created" : "product.updated",
       targetType: "flash_sales",
       targetId: saleId!,
       targetLabel: `Flash Sale: ${saleData.name}`,
@@ -100,11 +100,11 @@ export const deleteFlashSale = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase.from("flash_sales").delete().eq("id", id);
+    const { error } = await (context.supabase as any).from("flash_sales").delete().eq("id", id);
     if (error) throw new Error(error.message);
 
     await auditFromActor(actor, {
-      action: AUDIT_ACTIONS.productDeleted,
+      action: "product.deleted",
       targetType: "flash_sales",
       targetId: id,
       targetLabel: "Flash Sale Deleted",

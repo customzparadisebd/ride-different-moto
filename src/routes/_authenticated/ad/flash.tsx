@@ -51,7 +51,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FlashSaleForm } from "@/components/admin/flash/FlashSaleForm";
 import { FlashSalePreviewDialog } from "@/components/admin/flash/FlashSalePreviewDialog";
 import { getFlashSales, saveFlashSale, deleteFlashSale } from "@/lib/flash.functions";
-import { getProducts } from "@/lib/products.functions";
+import { listProducts } from "@/lib/products.functions";
 import type { FlashSale, FlashSaleInput } from "@/lib/flash.shared";
 
 export const Route = createFileRoute("/_authenticated/ad/flash")({
@@ -61,7 +61,7 @@ export const Route = createFileRoute("/_authenticated/ad/flash")({
 function FlashSaleManager() {
   const queryClient = useQueryClient();
   const fetchSales = useServerFn(getFlashSales);
-  const fetchProducts = useServerFn(getProducts);
+  const fetchProducts = useServerFn(listProducts);
   const saveSaleFn = useServerFn(saveFlashSale);
   const deleteSaleFn = useServerFn(deleteFlashSale);
 
@@ -77,10 +77,10 @@ function FlashSaleManager() {
 
   const { data: productsData } = useQuery({
     queryKey: ["products", { page: 1, pageSize: 1000 }],
-    queryFn: () => fetchProducts({ data: { page: 1, pageSize: 1000 } }),
+    queryFn: () => fetchProducts({ data: { page: 1, pageSize: 1000, search: "" } } as any),
   });
 
-  const products = productsData?.products || [];
+  const products = (productsData as any)?.rows || [];
 
   const saveMutation = useMutation({
     mutationFn: (data: FlashSaleInput) => saveSaleFn({ data }),

@@ -9,25 +9,16 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { 
-  CheckCircle2, 
-  ChevronRight, 
-  MessageCircle, 
-  ShieldCheck, 
-  Truck, 
-  RotateCcw,
-  Zap,
-  Package,
-  Bike
-} from "lucide-react";
+import { Maximize2, CheckCircle2, ChevronRight, MessageCircle, ShieldCheck, Truck, RotateCcw, Zap, Package, Bike } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 
-import { getProductBySlug } from "@/lib/products.functions";
+import { getStorefrontProduct } from "@/lib/storefront.functions";
 import { getFlashSales } from "@/lib/flash.functions";
 import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
 import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
 import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductColorsPanel } from "@/components/product/ProductColorsPanel";
+import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
 import { ProductVideo } from "@/components/product/ProductVideo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -45,7 +36,7 @@ export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
     return context.queryClient.ensureQueryData({
       queryKey: ["product", params.slug],
-      queryFn: () => getProductBySlug({ data: params.slug }),
+      queryFn: () => getStorefrontProduct({ data: { slug: params.slug } }),
     });
   },
   component: ProductDetail,
@@ -57,10 +48,10 @@ function ProductDetail() {
   const navigate = useNavigate();
   const { addItem } = useCart();
 
-  const fetchProduct = useServerFn(getProductBySlug);
+  const fetchProduct = useServerFn(getStorefrontProduct);
   const { data: product } = useSuspenseQuery({
     queryKey: ["product", slug],
-    queryFn: () => fetchProduct({ data: slug }),
+    queryFn: () => fetchProduct({ data: { slug } }),
   });
 
   const fetchFlashSales = useServerFn(getFlashSales);
@@ -134,7 +125,7 @@ function ProductDetail() {
           {/* LEFT: GALLERY & MEDIA */}
           <div className="space-y-6">
             <ProductGallery 
-              mainImage={product.image || ""} 
+              image={product.image || ""} 
               gallery={product.gallery || []} 
               productName={product.name}
               badgeText={isFlashActive ? "FLASH SALE" : (product.badgeText || undefined)}
@@ -148,7 +139,7 @@ function ProductDetail() {
                     Product Showcase
                   </h3>
                 </div>
-                <ProductVideo url={product.videoUrl} />
+                <ProductVideo url={product.videoUrl} platform="youtube" productName={product.name} />
               </Card>
             )}
           </div>
