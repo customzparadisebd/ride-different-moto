@@ -179,17 +179,7 @@ function StaffPage() {
                   <TableCell className="py-4">
                     <div className="flex items-center gap-3">
                       <div className="flex size-10 items-center justify-center rounded-full bg-muted border border-border overflow-hidden shadow-sm">
-                        {member.avatar_url ? (
-                          <img
-                            src={member.avatar_url}
-                            alt={member.full_name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex size-full items-center justify-center bg-primary/10 text-primary">
-                            <User className="size-5" />
-                          </div>
-                        )}
+                        <StaffAvatar avatarUrl={member.avatar_url} alt={member.full_name} />
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bold text-foreground flex items-center gap-2">
