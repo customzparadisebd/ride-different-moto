@@ -23,6 +23,7 @@ import { basePrice, type StorefrontProduct } from "@/lib/storefront.shared";
 import { getFlashSales } from "@/lib/flash.functions";
 import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
 import { CountdownTimer } from "@/components/CountdownTimer";
+import { cn } from "@/lib/utils";
 
 export function ProductCard({ product }: { product: StorefrontProduct }) {
   const { addItem } = useCart();
@@ -43,7 +44,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
   
   const activePrice = isFlashActive ? flashPrice : basePrice(product);
   const discount = isFlashActive 
-    ? (activeSale.discountType === "percentage" ? activeSale.discountValue : Math.round((1 - flashPrice / product.price) * 100))
+    ? (activeSale!.discountType === "percentage" ? activeSale!.discountValue : Math.round((1 - flashPrice! / product.price) * 100))
     : discountPercent(product.price, product.offerPrice ?? undefined);
 
   const hasColors = product.colors.length > 0;
@@ -51,11 +52,15 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
   const handleAdd = () => {
     if (busy || !product.inStock) return;
     if (hasColors) {
-      void navigate({ to: "/products/", params: { slug: product.slug } });
+      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
       return;
     }
     setBusy(true);
-    addItem({ product, flashSaleId: activeSale?.id });
+    addItem({ 
+      product, 
+      flashSaleId: activeSale?.id,
+      unitPrice: isFlashActive ? flashPrice : undefined 
+    });
     toast.success("Added to cart", { description: product.name });
     window.setTimeout(() => setBusy(false), 600);
   };
@@ -63,17 +68,21 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
   const handleOrderNow = () => {
     if (!product.inStock) return;
     if (hasColors) {
-      void navigate({ to: "/products/", params: { slug: product.slug } });
+      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
       return;
     }
-    addItem({ product, flashSaleId: activeSale?.id });
+    addItem({ 
+      product, 
+      flashSaleId: activeSale?.id,
+      unitPrice: isFlashActive ? flashPrice : undefined 
+    });
     void navigate({ to: "/checkout" });
   };
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card">
       <Link
-        to="/products/"
+        to="/products/$slug"
         params={{ slug: product.slug }}
         className="relative block"
         aria-label={`View ${product.name}`}
@@ -105,11 +114,6 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
               {product.badgeText}
             </span>
           ) : null}
-          {product.bestDeal && !isFlashActive && (
-            <span className="rounded bg-onyx px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-onyx-foreground sm:text-[10px]">
-              Best Deal
-            </span>
-          )}
         </div>
         {!product.inStock && (
           <span className="absolute right-2 top-2 rounded bg-secondary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-secondary-foreground sm:text-[10px]">
@@ -117,11 +121,11 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           </span>
         )}
 
-        {isFlashActive && (activeSale.endDate || activeSale.endTime) && (
+        {isFlashActive && (activeSale!.endDate || activeSale!.endTime) && (
           <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-1.5 flex justify-center border-t border-white/10">
             <CountdownTimer 
-              endDate={activeSale.endDate} 
-              endTime={activeSale.endTime} 
+              endDate={activeSale!.endDate} 
+              endTime={activeSale!.endTime} 
               className="text-[10px] sm:text-xs"
             />
           </div>
@@ -130,7 +134,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
 
       <div className="flex flex-1 flex-col p-3">
         <h3 className="font-display text-base font-bold uppercase leading-tight tracking-wide sm:text-base">
-          <Link to="/products/" params={{ slug: product.slug }} className="hover:text-primary">
+          <Link to="/products/$slug" params={{ slug: product.slug }} className="hover:text-primary">
             {product.name}
           </Link>
         </h3>
