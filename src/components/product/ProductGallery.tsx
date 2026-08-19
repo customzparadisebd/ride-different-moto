@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Maximize2, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Maximize2, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
 import { SafeImage } from "@/components/SafeImage";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";

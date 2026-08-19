@@ -69,7 +69,6 @@ function ProductDetail() {
 
   if (!product) return null;
 
-  // PRICING CALCULATION
   const activeSale = getActiveSaleForProduct(product.id, sales);
   const baseUnitPrice = product.price + (color?.priceDelta || 0);
   const isFlashActive = activeSale !== null;
@@ -125,10 +124,9 @@ function ProductDetail() {
           {/* LEFT: GALLERY & MEDIA */}
           <div className="space-y-6">
             <ProductGallery 
-              image={product.image || ""} 
-              gallery={product.gallery || []} 
+              images={[product.image || "", ...(product.gallery || [])]} 
               productName={product.name}
-              badgeText={isFlashActive ? "FLASH SALE" : (product.badgeText || undefined)}
+              activeColorImage={color?.image}
             />
 
             {product.videoUrl && (

@@ -16,10 +16,13 @@ export type StorefrontColor = {
   image: string | null;
 };
 
+export type ProductColor = StorefrontColor;
+
 export type StorefrontProduct = {
   id: string;
   slug: string;
   name: string;
+  sku?: string | null;
   description: string | null;
   details: string | null;
   category: string;
@@ -43,6 +46,7 @@ export type StorefrontProduct = {
   videoPlatform: "youtube" | "facebook" | "instagram" | "tiktok" | null;
   videoUrl: string | null;
   sortOrder: number | null;
+  bikeModels?: { id: string; brand: string; model: string }[];
 };
 
 export const productSlugInput = z.object({ slug: z.string().trim().min(1).max(160) });

@@ -34,15 +34,15 @@ export function SectionSettingsPanel() {
   });
 
   const handleUpdate = (sectionKey: string, field: string, value: any) => {
-    const existing = settings.find(s => s.sectionKey === sectionKey);
+    const existing = settings.find((s: any) => s.sectionKey === sectionKey);
     const newData = { ...(existing?.data || {}), [field]: value };
     mutation.mutate({ sectionKey, data: newData });
   };
 
   if (isLoading) return <div className="p-8 text-center text-muted-foreground italic">Loading section settings...</div>;
 
-  const featured = settings.find(s => s.sectionKey === "featured")?.data || { limit: 8, title: "Featured Products" };
-  const allProducts = settings.find(s => s.sectionKey === "all_products")?.data || { limit: 12, title: "All Products" };
+  const featured = settings.find((s: any) => s.sectionKey === "featured")?.data || { limit: 8, title: "Featured Products" };
+  const allProducts = settings.find((s: any) => s.sectionKey === "all_products")?.data || { limit: 12, title: "All Products" };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

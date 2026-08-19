@@ -39,7 +39,8 @@ export function getActiveSaleForProduct(productId: string, sales: FlashSale[]): 
   if (activeSales.length === 0) return null;
 
   // Highest priority, then newest
-  return activeSales.sort((a, b) => b.priority - a.priority || b.id.localeCompare(a.id))[0];
+  const sorted = activeSales.sort((a, b) => b.priority - a.priority || b.id.localeCompare(a.id));
+  return sorted[0] || null;
 }
 
 export function calculateFlashPrice(originalPrice: number, sale: FlashSale): number {
