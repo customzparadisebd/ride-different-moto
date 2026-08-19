@@ -58,7 +58,7 @@ export const listProducts = createServerFn({ method: "POST" })
     query = data.deleted ? query.not("deleted_at", "is", null) : query.is("deleted_at", null);
 
     if (data.search) {
-      const term = `%${data.search}%`;
+      const term = `%${data.search.replace(/[%_\\]/g, (c) => `\\${c}`)}%`;
       query = query.or(`name.ilike.${term},sku.ilike.${term},slug.ilike.${term}`);
     }
     if (data.category && data.category !== "all") query = query.eq("category", data.category);
