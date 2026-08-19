@@ -1,7 +1,7 @@
 // ============================================================
-// CART WITH PRODUCT VARIATIONS
-// Purpose: Local cart that keeps the selected colour variation and
-//          its variation price attached to every line.
+// CART WITH PRODUCT VARIATIONS & FLASH SALES
+// Purpose: Local cart that keeps the selected colour variation,
+//          its variation price, and flash sale context attached to every line.
 // Status: COMPLETED
 // Security: Display only. Prices are re-resolved server-side at
 //          checkout, so a tampered cart cannot change what is charged.
@@ -29,18 +29,21 @@ export type CartLine = {
   colorName: string | null;
   unitPrice: number;
   qty: number;
+  flashSaleId?: string | null;
 };
 
-const STORAGE_KEY = "czp-cart-v2";
+const STORAGE_KEY = "czp-cart-v3"; // Incremented version for flash sales
 const MAX_QTY = 20;
 
-export const cartLineKey = (productId: string, colorId?: string | null) =>
-  `${productId}::${colorId ?? ""}`;
+export const cartLineKey = (productId: string, colorId?: string | null, flashSaleId?: string | null) =>
+  `${productId}::${colorId ?? ""}::${flashSaleId ?? ""}`;
 
 type AddItemInput = {
   product: StorefrontProduct;
   color?: StorefrontColor | null;
   qty?: number;
+  flashSaleId?: string | null;
+  unitPrice?: number; // Optional override for flash sale price
 };
 
 type CartContextValue = {
@@ -91,8 +94,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [lines, hydrated]);
 
-  const addItem = useCallback(({ product, color, qty = 1 }: AddItemInput) => {
-    const key = cartLineKey(product.id, color?.id ?? null);
+  const addItem = useCallback(({ product, color, qty = 1, flashSaleId, unitPrice }: AddItemInput) => {
+    const key = cartLineKey(product.id, color?.id ?? null, flashSaleId);
     setLines((current) => {
       const existing = current.find((line) => line.key === key);
       if (existing) {
@@ -110,8 +113,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
           image: color?.image ?? product.image ?? "",
           colorId: color?.id ?? null,
           colorName: color?.name ?? null,
-          unitPrice: colorPrice(product, color),
+          unitPrice: unitPrice ?? colorPrice(product, color),
           qty: Math.min(MAX_QTY, Math.max(1, qty)),
+          flashSaleId: flashSaleId ?? null,
         },
       ];
     });
