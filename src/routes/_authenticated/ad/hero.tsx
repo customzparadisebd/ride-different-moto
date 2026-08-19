@@ -168,6 +168,7 @@ function AdminHeroSlides() {
   });
 
   const handleSave = (id: string, formData: FormData) => {
+    const bikeModelId = formData.get("bike_model_id") as string;
     const data = {
       title: formData.get("title") as string,
       subtitle: formData.get("subtitle") as string,
@@ -176,7 +177,7 @@ function AdminHeroSlides() {
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: formData.get("is_active") === "on",
-      bike_model_id: (formData.get("bike_model_id") as string) || null,
+      bike_model_id: bikeModelId === "none" ? null : (bikeModelId || null),
     };
     updateMutation.mutate({ data: { id, updates: data } });
   };
@@ -184,6 +185,7 @@ function AdminHeroSlides() {
   const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    const bikeModelId = formData.get("bike_model_id") as string;
     const data = {
       title: formData.get("title") as string,
       subtitle: formData.get("subtitle") as string,
@@ -192,7 +194,7 @@ function AdminHeroSlides() {
       link_url: formData.get("link_url") as string,
       sort_order: parseInt(formData.get("sort_order") as string) || 0,
       is_active: true,
-      bike_model_id: (formData.get("bike_model_id") as string) || null,
+      bike_model_id: bikeModelId === "none" ? null : (bikeModelId || null),
     };
     addMutation.mutate({ data });
   };

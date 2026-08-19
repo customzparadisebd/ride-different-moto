@@ -59,7 +59,7 @@ export const updateHeroSlide = createServerFn({ method: "POST" })
           is_active: z.boolean().optional(),
           // The admin form submits "" when no bike model is selected — treat it as null.
           bike_model_id: z
-            .preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), z.string().uuid({ message: "Invalid bike model ID format" }).nullable())
+            .preprocess((v) => (typeof v === "string" && (v.trim() === "" || v === "none") ? null : v), z.string().uuid({ message: "Invalid bike model ID format" }).nullable())
             .optional(),
         }),
       })
@@ -93,7 +93,7 @@ export const createHeroSlide = createServerFn({ method: "POST" })
         sort_order: z.number().default(0),
         is_active: z.boolean().default(true),
         bike_model_id: z
-          .preprocess((v) => (typeof v === "string" && v.trim() === "" ? null : v), z.string().uuid({ message: "Invalid bike model ID format" }).nullable())
+          .preprocess((v) => (typeof v === "string" && (v.trim() === "" || v === "none") ? null : v), z.string().uuid({ message: "Invalid bike model ID format" }).nullable())
           .optional(),
       })
       .parse(d),
