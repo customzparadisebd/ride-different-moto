@@ -58,8 +58,8 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
     setBusy(true);
     addItem({ 
       product, 
-      flashSaleId: activeSale?.id,
-      unitPrice: isFlashActive ? flashPrice : undefined 
+      flashSaleId: activeSale?.id || null,
+      unitPrice: isFlashActive ? (flashPrice ?? undefined) : undefined 
     });
     toast.success("Added to cart", { description: product.name });
     window.setTimeout(() => setBusy(false), 600);
@@ -73,8 +73,8 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
     }
     addItem({ 
       product, 
-      flashSaleId: activeSale?.id,
-      unitPrice: isFlashActive ? flashPrice : undefined 
+      flashSaleId: activeSale?.id || null,
+      unitPrice: isFlashActive ? (flashPrice ?? undefined) : undefined 
     });
     void navigate({ to: "/checkout" });
   };
