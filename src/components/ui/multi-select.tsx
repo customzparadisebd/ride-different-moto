@@ -107,7 +107,7 @@ interface MultiSelectProps
    * The handler to control the popover open state.
    * Optional.
    */
-  asChild?: boolean;
+  modalPopover?: boolean;
 }
 
 export const MultiSelect = React.forwardRef<

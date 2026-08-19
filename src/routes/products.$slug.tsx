@@ -18,7 +18,6 @@ import { getFlashSales } from "@/lib/flash.functions";
 import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
 import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
 import { ProductGallery } from "@/components/product/ProductGallery";
-// Removed admin colors panel from storefront to avoid circularity and prop mismatches
 import { ProductVideo } from "@/components/product/ProductVideo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,7 +29,7 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloating } from "@/components/WhatsAppFloating";
 import { cn } from "@/lib/utils";
-import type { ProductColor } from "@/lib/storefront.shared";
+import type { ProductColor, StorefrontProduct } from "@/lib/storefront.shared";
 
 export const Route = createFileRoute("/products/$slug")({
   loader: async ({ params, context }) => {
@@ -42,17 +41,19 @@ export const Route = createFileRoute("/products/$slug")({
   component: ProductDetail,
 });
 
-function ProductDetail() {
+export function ProductDetail({ product: manualProduct }: { product?: StorefrontProduct }) {
   const { slug } = Route.useParams();
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { addItem } = useCart();
 
   const fetchProduct = useServerFn(getStorefrontProduct);
-  const { data: product } = useSuspenseQuery({
+  const storefrontQuery = useSuspenseQuery({
     queryKey: ["product", slug],
     queryFn: () => fetchProduct({ data: { slug } }),
   });
+  
+  const product = manualProduct || storefrontQuery.data;
 
   const fetchFlashSales = useServerFn(getFlashSales);
   const { data: sales = [] } = useQuery({
@@ -61,7 +62,6 @@ function ProductDetail() {
     staleTime: 60000,
   });
 
-  // STATE: Variant / Config
   const [color, setColor] = useState<ProductColor | null>(
     (product?.colors && product.colors.length > 0) ? product.colors[0] : null
   );
@@ -108,10 +108,9 @@ function ProductDetail() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      {!manualProduct && <Header />}
       
       <main className="container mx-auto px-4 py-8 lg:py-12">
-        {/* BREADCRUMBS */}
         <nav className="mb-8 flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-muted-foreground">
           <a href="/" className="hover:text-primary transition-colors">Home</a>
           <ChevronRight className="size-3" />
@@ -121,7 +120,6 @@ function ProductDetail() {
         </nav>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-          {/* LEFT: GALLERY & MEDIA */}
           <div className="space-y-6">
             <ProductGallery 
               images={[product.image || "", ...(product.gallery || [])]} 
@@ -142,7 +140,6 @@ function ProductDetail() {
             )}
           </div>
 
-          {/* RIGHT: INFO & ACTIONS */}
           <div className="flex flex-col">
             {isFlashActive && <FlashSaleBanner sale={activeSale!} />}
             
@@ -185,7 +182,6 @@ function ProductDetail() {
 
             <Separator className="bg-white/5 mb-8" />
 
-            {/* DESCRIPTION (SHORT) */}
             {product.description && (
               <div className="mb-8 prose prose-invert prose-sm max-w-none">
                 <p className="text-white/70 leading-relaxed text-base italic border-l-2 border-primary/30 pl-4">
@@ -194,7 +190,6 @@ function ProductDetail() {
               </div>
             )}
 
-            {/* PRODUCT CONFIGURATION */}
             <div className="space-y-8 mb-10">
               {product.colors.length > 0 && (
                 <div className="space-y-4">
@@ -213,7 +208,7 @@ function ProductDetail() {
                       {product.colors.map((c) => (
                         <button
                           key={c.id}
-                          onClick={() => setColor(c as any)}
+                          onClick={() => setColor(c)}
                           className={cn(
                             "group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all",
                             color?.id === c.id 
@@ -244,7 +239,6 @@ function ProductDetail() {
                     <button 
                       onClick={() => setQty(Math.max(1, qty - 1))}
                       className="flex size-10 items-center justify-center rounded hover:bg-white/5 text-white transition-colors"
-                      aria-label="Decrease quantity"
                     >
                       -
                     </button>
@@ -254,7 +248,6 @@ function ProductDetail() {
                     <button 
                       onClick={() => setQty(Math.min(10, qty + 1))}
                       className="flex size-10 items-center justify-center rounded hover:bg-white/5 text-white transition-colors"
-                      aria-label="Increase quantity"
                     >
                       +
                     </button>
@@ -274,14 +267,13 @@ function ProductDetail() {
               </div>
             </div>
 
-            {/* PRIMARY ACTIONS */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
               <Button
                 variant="steel"
                 size="lg"
                 onClick={() => handleAddToCart(false)}
                 disabled={!isActuallyInStock}
-                className="h-14 shadow-3d-steel active:translate-y-0.5 text-sm font-black uppercase tracking-widest"
+                className="h-14 font-black uppercase tracking-widest"
               >
                 {t("nav.cart")}
               </Button>
@@ -290,13 +282,12 @@ function ProductDetail() {
                 size="lg"
                 onClick={() => handleAddToCart(true)}
                 disabled={!isActuallyInStock}
-                className="h-14 shadow-3d-primary active:translate-y-0.5 text-sm font-black uppercase tracking-widest"
+                className="h-14 font-black uppercase tracking-widest"
               >
                 {product.badgeText === "Pre-order" ? "Pre-order Now" : t("common.orderNow")}
               </Button>
             </div>
 
-            {/* TRUST BADGES */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-6 rounded-2xl bg-zinc-900/30 border border-white/5">
               <div className="flex flex-col items-center text-center gap-2">
                 <Truck className="size-5 text-primary" />
@@ -318,7 +309,6 @@ function ProductDetail() {
           </div>
         </div>
 
-        {/* BIKE FITMENT & DETAILS */}
         <div className="mt-20 grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-10">
             {product.bikeModels && product.bikeModels.length > 0 && (
@@ -371,8 +361,8 @@ function ProductDetail() {
         </div>
       </main>
 
-      <Footer />
-      <WhatsAppFloating />
+      {!manualProduct && <Footer />}
+      {!manualProduct && <WhatsAppFloating />}
     </div>
   );
 }
