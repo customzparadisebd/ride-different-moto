@@ -42,7 +42,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
   const flashPrice = activeSale ? calculateFlashPrice(product.price, activeSale) : null;
   const isFlashActive = flashPrice !== null;
   
-  const activePrice = isFlashActive ? flashPrice : basePrice(product);
+  const activePrice = isFlashActive ? flashPrice! : basePrice(product);
   const discount = isFlashActive 
     ? (activeSale!.discountType === "percentage" ? activeSale!.discountValue : Math.round((1 - flashPrice! / product.price) * 100))
     : discountPercent(product.price, product.offerPrice ?? undefined);
@@ -59,8 +59,8 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
     addItem({ 
       product, 
       flashSaleId: activeSale?.id || null,
-      unitPrice: isFlashActive ? (flashPrice ?? undefined) : undefined 
-    });
+      unitPrice: isFlashActive ? flashPrice! : undefined 
+    } as any);
     toast.success("Added to cart", { description: product.name });
     window.setTimeout(() => setBusy(false), 600);
   };
@@ -74,8 +74,8 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
     addItem({ 
       product, 
       flashSaleId: activeSale?.id || null,
-      unitPrice: isFlashActive ? (flashPrice ?? undefined) : undefined 
-    });
+      unitPrice: isFlashActive ? flashPrice! : undefined 
+    } as any);
     void navigate({ to: "/checkout" });
   };
 
