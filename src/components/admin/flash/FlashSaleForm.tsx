@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, Plus, Trash2, Calendar, Clock, Percent, Banknote, Package } from "lucide-react";
 
@@ -53,7 +53,7 @@ export function FlashSaleForm({ initialData, onSubmit, products, isSubmitting }:
     value: p.id,
   }));
 
-  const handleFormSubmit: SubmitHandler<FlashSaleInput> = async (data) => {
+  const handleFormSubmit = async (data: FlashSaleInput) => {
     try {
       await onSubmit(data);
     } catch (error) {
