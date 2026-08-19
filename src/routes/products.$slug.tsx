@@ -203,10 +203,36 @@ export function ProductDetail({ product, siteSettings }: { product: StorefrontPr
   const wasPrice = compareAtPrice(product, color);
   const gallery = product.gallery.length ? product.gallery : [""];
 
+  const fetchFlashSales = useServerFn(getFlashSales);
+  const { data: sales = [] } = useQuery({
+    queryKey: ["flash-sales"],
+    queryFn: () => fetchFlashSales(),
+    staleTime: 60000,
+  });
+
+  const activeSale = getActiveSaleForProduct(product.id, sales);
+  const flashPrice = activeSale ? calculateFlashPrice(product.price, activeSale) : null;
+  const isFlashActive = flashPrice !== null;
+
+  // PRODUCT COLOR VARIATIONS — price updates with the selected colour.
+  // If flash sale is active, it overrides the base price, but color delta still applies if applicable.
+  // Note: Standard flash sales usually apply to the base product.
+  const displayUnitPrice = isFlashActive ? calculateFlashPrice(unitPrice, activeSale!) : unitPrice;
+  const displayWasPrice = isFlashActive ? unitPrice : wasPrice;
+  const finalDiscount = isFlashActive 
+    ? (activeSale!.discountType === "percentage" ? activeSale!.discountValue : Math.round((1 - displayUnitPrice / unitPrice) * 100))
+    : (wasPrice ? Math.round((1 - unitPrice / wasPrice) * 100) : null);
+
   const isActuallyInStock = product.inStock && !product.outOfStockManual;
   const add = (thenCheckout: boolean) => {
     if (!isActuallyInStock) return;
-    addItem({ product, color, qty });
+    addItem({ 
+      product, 
+      color, 
+      qty, 
+      flashSaleId: activeSale?.id,
+      unitPrice: displayUnitPrice 
+    });
     if (thenCheckout) {
       void navigate({ to: "/checkout" });
       return;
@@ -215,6 +241,7 @@ export function ProductDetail({ product, siteSettings }: { product: StorefrontPr
       description: color ? `${product.name} — ${color.name}` : product.name,
     });
   };
+
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
