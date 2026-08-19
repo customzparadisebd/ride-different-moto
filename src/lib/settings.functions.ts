@@ -26,7 +26,7 @@ export const updateSectionSetting = createServerFn({ method: "POST" })
     
     const { error } = await (context.supabase as any)
       .from("section_settings")
-      .upsert({ section_key: data.sectionKey, data: data.data }, { onConflict: "section_key" });
+      .upsert({ section_key: data.sectionKey, data: data.data });
     if (error) throw new Error(error.message);
     return { ok: true };
   });

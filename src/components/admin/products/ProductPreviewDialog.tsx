@@ -16,9 +16,28 @@ interface ProductPreviewDialogProps {
 }
 
 export function ProductPreviewDialog({ value, productId, onClose }: ProductPreviewDialogProps) {
-  const fetchColors = useServerFn(listProductColors);
-  const fetch360 = useServerFn(listProduct360Images);
   const [isPreviewActive, setIsPreviewActive] = useState(value.isActive);
+  
+  // Minimal internal detail preview to avoid circular deps
+  const DetailPreview = ({ product }: { product: StorefrontProduct }) => (
+    <div className="p-8 space-y-8">
+      <div className="flex gap-8">
+        <div className="w-1/2 aspect-square bg-muted rounded-xl flex items-center justify-center overflow-hidden">
+          {product.image ? <img src={product.image} className="w-full h-full object-cover" /> : "No Image"}
+        </div>
+        <div className="w-1/2 space-y-4">
+          <h1 className="text-4xl font-black uppercase tracking-tighter">{product.name}</h1>
+          <p className="text-2xl font-bold text-primary">{product.price} BDT</p>
+          <div className="flex gap-2">
+            {product.colors.map(c => (
+              <div key={c.id} className="size-8 rounded-full border" style={{ backgroundColor: c.swatch }} title={c.name} />
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="prose prose-invert" dangerouslySetInnerHTML={{ __html: product.description || "" }} />
+    </div>
+  );
 
   // Load existing data if we have a product ID to merge with unsaved changes
   const colorsQuery = useQuery({
@@ -135,17 +154,8 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto bg-background custom-scrollbar">
-          {!isPreviewActive && (
-            <div className="bg-primary/10 border-b border-primary/20 px-6 py-2 text-center">
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                Previewing unpublished state — This product is currently hidden from customers
-              </p>
-            </div>
-          )}
           <div className="pb-20">
-            <div className="p-8 text-center text-muted-foreground italic">
-              Preview engine for detail page is disabled in this dialog to prevent circularity.
-            </div>
+            <DetailPreview product={mockProduct} />
           </div>
         </div>
       </DialogContent>

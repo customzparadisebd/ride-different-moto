@@ -18,7 +18,7 @@ import { getFlashSales } from "@/lib/flash.functions";
 import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
 import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
 import { ProductGallery } from "@/components/product/ProductGallery";
-import { ProductColorsPanel } from "@/components/admin/products/ProductColorsPanel";
+// Removed admin colors panel from storefront to avoid circularity and prop mismatches
 import { ProductVideo } from "@/components/product/ProductVideo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -208,11 +208,30 @@ function ProductDetail() {
                       </span>
                     )}
                   </div>
-                  <ProductColorsPanel 
-                    colors={product.colors as any} 
-                    selected={color as any} 
-                    onSelect={setColor as any} 
-                  />
+                  <div className="rounded-xl border border-border bg-card p-6">
+                    <div className="flex flex-wrap gap-3">
+                      {product.colors.map((c) => (
+                        <button
+                          key={c.id}
+                          onClick={() => setColor(c as any)}
+                          className={cn(
+                            "group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all",
+                            color?.id === c.id 
+                              ? "border-primary bg-primary/5 ring-4 ring-primary/10" 
+                              : "border-white/5 bg-black/20 hover:border-white/20"
+                          )}
+                        >
+                          <span 
+                            className="size-10 rounded-full border border-black/20 shadow-inner"
+                            style={{ backgroundColor: c.swatch }}
+                          />
+                          <span className="text-[10px] font-bold uppercase tracking-widest text-white/80">
+                            {c.name}
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               )}
 
