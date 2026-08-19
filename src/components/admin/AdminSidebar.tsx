@@ -22,7 +22,9 @@ import {
   Star,
   Activity,
   KeyRound,
+  Flame,
 } from "lucide-react";
+
 
 import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
 
