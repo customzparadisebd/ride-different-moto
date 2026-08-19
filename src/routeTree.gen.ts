@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdAuditLogRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdCouriersRouteImport } from './routes/_authenticated/ad/couriers'
 import { Route as AuthenticatedAdCustomersRouteImport } from './routes/_authenticated/ad/customers'
 import { Route as AuthenticatedAdFeaturedRouteImport } from './routes/_authenticated/ad/featured'
+import { Route as AuthenticatedAdFlashRouteImport } from './routes/_authenticated/ad/flash'
 import { Route as AuthenticatedAdHeroRouteImport } from './routes/_authenticated/ad/hero'
 import { Route as AuthenticatedAdLeadsRouteImport } from './routes/_authenticated/ad/leads'
 import { Route as AuthenticatedAdLoginRequestsRouteImport } from './routes/_authenticated/ad/login-requests'
@@ -203,6 +204,11 @@ const AuthenticatedAdFeaturedRoute = AuthenticatedAdFeaturedRouteImport.update({
   path: '/featured',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
+const AuthenticatedAdFlashRoute = AuthenticatedAdFlashRouteImport.update({
+  id: '/flash',
+  path: '/flash',
+  getParentRoute: () => AuthenticatedAdRouteRoute,
+} as any)
 const AuthenticatedAdHeroRoute = AuthenticatedAdHeroRouteImport.update({
   id: '/hero',
   path: '/hero',
@@ -335,6 +341,7 @@ export interface FileRoutesByFullPath {
   '/ad/couriers': typeof AuthenticatedAdCouriersRoute
   '/ad/customers': typeof AuthenticatedAdCustomersRoute
   '/ad/featured': typeof AuthenticatedAdFeaturedRoute
+  '/ad/flash': typeof AuthenticatedAdFlashRoute
   '/ad/hero': typeof AuthenticatedAdHeroRoute
   '/ad/leads': typeof AuthenticatedAdLeadsRoute
   '/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
@@ -383,6 +390,7 @@ export interface FileRoutesByTo {
   '/ad/couriers': typeof AuthenticatedAdCouriersRoute
   '/ad/customers': typeof AuthenticatedAdCustomersRoute
   '/ad/featured': typeof AuthenticatedAdFeaturedRoute
+  '/ad/flash': typeof AuthenticatedAdFlashRoute
   '/ad/hero': typeof AuthenticatedAdHeroRoute
   '/ad/leads': typeof AuthenticatedAdLeadsRoute
   '/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
@@ -434,6 +442,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/couriers': typeof AuthenticatedAdCouriersRoute
   '/_authenticated/ad/customers': typeof AuthenticatedAdCustomersRoute
   '/_authenticated/ad/featured': typeof AuthenticatedAdFeaturedRoute
+  '/_authenticated/ad/flash': typeof AuthenticatedAdFlashRoute
   '/_authenticated/ad/hero': typeof AuthenticatedAdHeroRoute
   '/_authenticated/ad/leads': typeof AuthenticatedAdLeadsRoute
   '/_authenticated/ad/login-requests': typeof AuthenticatedAdLoginRequestsRoute
@@ -485,6 +494,7 @@ export interface FileRouteTypes {
     | '/ad/couriers'
     | '/ad/customers'
     | '/ad/featured'
+    | '/ad/flash'
     | '/ad/hero'
     | '/ad/leads'
     | '/ad/login-requests'
@@ -533,6 +543,7 @@ export interface FileRouteTypes {
     | '/ad/couriers'
     | '/ad/customers'
     | '/ad/featured'
+    | '/ad/flash'
     | '/ad/hero'
     | '/ad/leads'
     | '/ad/login-requests'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/couriers'
     | '/_authenticated/ad/customers'
     | '/_authenticated/ad/featured'
+    | '/_authenticated/ad/flash'
     | '/_authenticated/ad/hero'
     | '/_authenticated/ad/leads'
     | '/_authenticated/ad/login-requests'
@@ -839,6 +851,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdFeaturedRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/_authenticated/ad/flash': {
+      id: '/_authenticated/ad/flash'
+      path: '/flash'
+      fullPath: '/ad/flash'
+      preLoaderRoute: typeof AuthenticatedAdFlashRouteImport
+      parentRoute: typeof AuthenticatedAdRouteRoute
+    }
     '/_authenticated/ad/hero': {
       id: '/_authenticated/ad/hero'
       path: '/hero'
@@ -994,6 +1013,7 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdCouriersRoute: typeof AuthenticatedAdCouriersRoute
   AuthenticatedAdCustomersRoute: typeof AuthenticatedAdCustomersRoute
   AuthenticatedAdFeaturedRoute: typeof AuthenticatedAdFeaturedRoute
+  AuthenticatedAdFlashRoute: typeof AuthenticatedAdFlashRoute
   AuthenticatedAdHeroRoute: typeof AuthenticatedAdHeroRoute
   AuthenticatedAdLeadsRoute: typeof AuthenticatedAdLeadsRoute
   AuthenticatedAdLoginRequestsRoute: typeof AuthenticatedAdLoginRequestsRoute
@@ -1017,6 +1037,7 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdCouriersRoute: AuthenticatedAdCouriersRoute,
   AuthenticatedAdCustomersRoute: AuthenticatedAdCustomersRoute,
   AuthenticatedAdFeaturedRoute: AuthenticatedAdFeaturedRoute,
+  AuthenticatedAdFlashRoute: AuthenticatedAdFlashRoute,
   AuthenticatedAdHeroRoute: AuthenticatedAdHeroRoute,
   AuthenticatedAdLeadsRoute: AuthenticatedAdLeadsRoute,
   AuthenticatedAdLoginRequestsRoute: AuthenticatedAdLoginRequestsRoute,
