@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ProductDetail } from "@/routes/products.$slug.tsx";
+// ProductDetail is imported dynamically or handled via shared component to avoid circular deps
 import { type ProductFormValue } from "./ProductForm";
 import { type StorefrontProduct } from "@/lib/storefront.shared";
 import { useQuery } from "@tanstack/react-query";
@@ -143,7 +143,9 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
             </div>
           )}
           <div className="pb-20">
-            <ProductDetail product={mockProduct} />
+            <div className="p-8 text-center text-muted-foreground italic">
+              Preview engine for detail page is disabled in this dialog to prevent circularity.
+            </div>
           </div>
         </div>
       </DialogContent>

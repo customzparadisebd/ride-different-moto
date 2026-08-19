@@ -63,7 +63,7 @@ function ProductDetail() {
 
   // STATE: Variant / Config
   const [color, setColor] = useState<ProductColor | null>(
-    product.colors.length > 0 ? product.colors[0] : null
+    (product?.colors && product.colors.length > 0) ? product.colors[0] : null
   );
   const [qty, setQty] = useState(1);
 
@@ -126,7 +126,7 @@ function ProductDetail() {
             <ProductGallery 
               images={[product.image || "", ...(product.gallery || [])]} 
               productName={product.name}
-              activeColorImage={color?.image}
+              activeColorImage={color?.image ?? null}
             />
 
             {product.videoUrl && (

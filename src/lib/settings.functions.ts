@@ -24,7 +24,7 @@ export const updateSectionSetting = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     assertAccess(await resolveActor(context.userId, context.claims as never), PERMISSIONS.productsManage);
     
-    const { error } = await context.supabase
+    const { error } = await (context.supabase as any)
       .from("section_settings")
       .upsert({ section_key: data.sectionKey, data: data.data }, { onConflict: "section_key" });
     if (error) throw new Error(error.message);
