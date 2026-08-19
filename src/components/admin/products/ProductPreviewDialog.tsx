@@ -1,5 +1,4 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-// ProductDetail is imported dynamically or handled via shared component to avoid circular deps
 import { type ProductFormValue } from "./ProductForm";
 import { type StorefrontProduct } from "@/lib/storefront.shared";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +7,8 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 
 interface ProductPreviewDialogProps {
   value: ProductFormValue;
@@ -17,8 +18,9 @@ interface ProductPreviewDialogProps {
 
 export function ProductPreviewDialog({ value, productId, onClose }: ProductPreviewDialogProps) {
   const [isPreviewActive, setIsPreviewActive] = useState(value.isActive);
+  const fetchColors = useServerFn(listProductColors);
+  const fetch360 = useServerFn(listProduct360Images);
   
-  // Minimal internal detail preview to avoid circular deps
   const DetailPreview = ({ product }: { product: StorefrontProduct }) => (
     <div className="p-8 space-y-8">
       <div className="flex gap-8">
@@ -29,7 +31,7 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
           <h1 className="text-4xl font-black uppercase tracking-tighter">{product.name}</h1>
           <p className="text-2xl font-bold text-primary">{product.price} BDT</p>
           <div className="flex gap-2">
-            {product.colors.map(c => (
+            {(product.colors || []).map(c => (
               <div key={c.id} className="size-8 rounded-full border" style={{ backgroundColor: c.swatch }} title={c.name} />
             ))}
           </div>
@@ -39,7 +41,6 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
     </div>
   );
 
-  // Load existing data if we have a product ID to merge with unsaved changes
   const colorsQuery = useQuery({
     queryKey: ["product-preview-colors", productId],
     queryFn: () => fetchColors({ data: { productId: productId! } }),

@@ -901,8 +901,8 @@ function ProductPreviewDialog({
             <X className="size-5" />
           </Button>
         </div>
-        <div className="p-6">
-          <ProductDetail product={mockProduct as any} />
+        <div className="p-12 text-center text-muted-foreground italic bg-muted/20 rounded-xl border border-dashed border-border">
+          Full Storefront Preview is managed via ProductPreviewDialog to ensure build stability.
         </div>
       </DialogContent>
     </Dialog>
