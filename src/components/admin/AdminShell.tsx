@@ -18,6 +18,7 @@ import { toast } from "sonner";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { EnvironmentBanner } from "@/components/admin/EnvironmentBanner";
+import { StaffAvatar } from "@/components/admin/StaffAvatar";
 import { getEnvironment } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -118,7 +119,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                   </div>
                   <div className="flex -space-x-2 ml-2">
                     <div className="h-8 w-8 rounded-full border-2 border-background bg-muted overflow-hidden shadow-sm">
-                      <HeaderAvatar
+                      <StaffAvatar
                         avatarUrl={access.avatarUrl}
                         fallbackSeed={access.fullName || access.email || ""}
                       />
