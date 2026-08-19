@@ -118,13 +118,9 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                   </div>
                   <div className="flex -space-x-2 ml-2">
                     <div className="h-8 w-8 rounded-full border-2 border-background bg-muted overflow-hidden shadow-sm">
-                      <img
-                        src={
-                          access.avatarUrl ||
-                          `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || "")}`
-                        }
-                        alt="Profile"
-                        className="h-full w-full object-cover"
+                      <HeaderAvatar
+                        avatarUrl={access.avatarUrl}
+                        fallbackSeed={access.fullName || access.email || ""}
                       />
                     </div>
                   </div>
