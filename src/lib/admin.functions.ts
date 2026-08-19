@@ -64,7 +64,8 @@ export const updateAdminProfile = createServerFn({ method: "POST" })
       .object({
         fullName: z.string().min(2).optional(),
         gender: z.enum(["male", "female", "other"]).optional(),
-        avatarUrl: z.string().url().optional(),
+        // Either a private storage object path or an external preset avatar URL.
+        avatarUrl: z.string().max(500).optional(),
       })
       .parse(input),
   )

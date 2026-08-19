@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getCroppedImg } from "@/lib/cropImage";
+import { AVATAR_BUCKET, useAvatarSrc } from "@/lib/avatar";
 import { Slider } from "@/components/ui/slider";
 
 interface UserProfileWidgetProps {
@@ -113,7 +114,8 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
     : "Staff";
 
   const defaultAvatar = `https://api.dicebear.com/9.x/adventurer/svg?seed=${encodeURIComponent(access.fullName || access.email || access.userId)}`;
-  const currentAvatar = access.avatarUrl || defaultAvatar;
+  const resolvedAvatar = useAvatarSrc(access.avatarUrl);
+  const currentAvatar = resolvedAvatar || defaultAvatar;
 
   const onCropComplete = useCallback((_area: Area, pixels: Area) => {
     setCroppedAreaPixels(pixels);
@@ -169,7 +171,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
       const filePath = `${access.userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from("avatars")
+        .from(AVATAR_BUCKET)
         .upload(filePath, croppedBlob, {
           contentType: "image/webp",
           upsert: true,
@@ -177,11 +179,8 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("avatars").getPublicUrl(filePath);
-
-      await handleUpdateProfile({ avatarUrl: publicUrl });
+      // Store the private object path; display code signs it on demand.
+      await handleUpdateProfile({ avatarUrl: filePath });
       setCropImage(null);
     } catch (error) {
       console.error("Upload error:", error);
