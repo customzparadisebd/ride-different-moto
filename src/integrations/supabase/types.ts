@@ -14,18 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      _sec_exec_probe: {
-        Row: {
-          id: number
-        }
-        Insert: {
-          id: number
-        }
-        Update: {
-          id?: number
-        }
-        Relationships: []
-      }
       admin_audit_log: {
         Row: {
           action: string
@@ -2202,7 +2190,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      _sec_exec_probe_fn: { Args: never; Returns: boolean }
       generate_next_invoice_no:
         | { Args: never; Returns: string }
         | { Args: { is_test?: boolean }; Returns: string }
