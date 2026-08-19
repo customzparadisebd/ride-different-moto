@@ -9,8 +9,10 @@
 // ============================================================
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { RotateCw } from "lucide-react";
+import { RotateCw, Flame } from "lucide-react";
 import { toast } from "sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 
 import { SafeImage } from "@/components/SafeImage";
 import { Button } from "@/components/ui/button";
@@ -18,26 +20,42 @@ import { useCart } from "@/lib/cart";
 import { discountPercent, formatBDT } from "@/lib/format";
 import { useLanguage } from "@/lib/i18n";
 import { basePrice, type StorefrontProduct } from "@/lib/storefront.shared";
+import { getFlashSales } from "@/lib/flash.functions";
+import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils";
+import { CountdownTimer } from "@/components/CountdownTimer";
 
 export function ProductCard({ product }: { product: StorefrontProduct }) {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const { t } = useLanguage();
+  
+  const fetchFlashSales = useServerFn(getFlashSales);
+  const { data: sales = [] } = useQuery({
+    queryKey: ["flash-sales"],
+    queryFn: () => fetchFlashSales(),
+    staleTime: 60000,
+  });
 
-  const activePrice = basePrice(product);
-  const discount = discountPercent(product.price, product.offerPrice ?? undefined);
+  const activeSale = getActiveSaleForProduct(product.id, sales);
+  const flashPrice = activeSale ? calculateFlashPrice(product.price, activeSale) : null;
+  const isFlashActive = flashPrice !== null;
+  
+  const activePrice = isFlashActive ? flashPrice : basePrice(product);
+  const discount = isFlashActive 
+    ? (activeSale.discountType === "percentage" ? activeSale.discountValue : Math.round((1 - flashPrice / product.price) * 100))
+    : discountPercent(product.price, product.offerPrice ?? undefined);
+
   const hasColors = product.colors.length > 0;
 
   const handleAdd = () => {
     if (busy || !product.inStock) return;
-    // Products with colour variations must be configured on the detail page.
     if (hasColors) {
-      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
+      void navigate({ to: "/products/", params: { slug: product.slug } });
       return;
     }
     setBusy(true);
-    addItem({ product });
+    addItem({ product, flashSaleId: activeSale?.id });
     toast.success("Added to cart", { description: product.name });
     window.setTimeout(() => setBusy(false), 600);
   };
@@ -45,17 +63,17 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
   const handleOrderNow = () => {
     if (!product.inStock) return;
     if (hasColors) {
-      void navigate({ to: "/products/$slug", params: { slug: product.slug } });
+      void navigate({ to: "/products/", params: { slug: product.slug } });
       return;
     }
-    addItem({ product });
+    addItem({ product, flashSaleId: activeSale?.id });
     void navigate({ to: "/checkout" });
   };
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card">
       <Link
-        to="/products/$slug"
+        to="/products/"
         params={{ slug: product.slug }}
         className="relative block"
         aria-label={`View ${product.name}`}
@@ -71,30 +89,25 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           className="transition-transform duration-700 hover:scale-105 object-contain p-2"
         />
         <div className="absolute left-2 top-2 flex flex-col items-start gap-1">
+          {isFlashActive && (
+             <span className="flex items-center gap-1 rounded bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary-foreground sm:text-[10px] animate-pulse">
+               <Flame className="size-2.5 sm:size-3" />
+               Flash Sale
+             </span>
+          )}
           {discount !== null && (
             <span className="rounded bg-gradient-red px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary-foreground sm:text-[10px]">
               -{discount}% Off
             </span>
           )}
-          {product.badgeText ? (
+          {product.badgeText && !isFlashActive ? (
             <span className="rounded bg-onyx px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-onyx-foreground sm:text-[10px]">
               {product.badgeText}
             </span>
           ) : null}
-          {product.bestDeal && (
+          {product.bestDeal && !isFlashActive && (
             <span className="rounded bg-onyx px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-onyx-foreground sm:text-[10px]">
               Best Deal
-            </span>
-          )}
-          {product.newArrival && (
-            <span className="rounded border border-border bg-background px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-foreground sm:text-[10px]">
-              New
-            </span>
-          )}
-          {product.has360View && (
-            <span className="flex items-center gap-1 rounded bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary-foreground sm:text-[10px]">
-              <RotateCw className="size-2.5 sm:size-3" />
-              360°
             </span>
           )}
         </div>
@@ -103,30 +116,37 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
             Out of Stock
           </span>
         )}
+
+        {isFlashActive && (activeSale.endDate || activeSale.endTime) && (
+          <div className="absolute inset-x-0 bottom-0 bg-black/60 backdrop-blur-sm p-1.5 flex justify-center border-t border-white/10">
+            <CountdownTimer 
+              endDate={activeSale.endDate} 
+              endTime={activeSale.endTime} 
+              className="text-[10px] sm:text-xs"
+            />
+          </div>
+        )}
       </Link>
 
       <div className="flex flex-1 flex-col p-3">
         <h3 className="font-display text-base font-bold uppercase leading-tight tracking-wide sm:text-base">
-          <Link to="/products/$slug" params={{ slug: product.slug }} className="hover:text-primary">
+          <Link to="/products/" params={{ slug: product.slug }} className="hover:text-primary">
             {product.name}
           </Link>
         </h3>
-        {product.description && (
-          <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{product.description}</p>
-        )}
-
+        
         <div className="mt-2 flex flex-wrap items-baseline gap-2">
-          <span className="font-display text-lg font-bold text-primary">
+          <span className={cn("font-display text-lg font-bold", isFlashActive ? "text-primary" : "text-primary")}>
             {formatBDT(activePrice)}
           </span>
-          {discount !== null && (
+          {(discount !== null || isFlashActive) && (
             <span className="text-sm text-muted-foreground line-through">
               {formatBDT(product.price)}
             </span>
           )}
         </div>
 
-        {/* Colour indicator — full selection happens on the detail page. */}
+        {/* Colour indicator */}
         {hasColors ? (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1.5">
