@@ -15,7 +15,7 @@ export const Route = createFileRoute("/bike-models/$slug")({
       getStorefrontBikeModel({ data: { slug: params.slug } }),
       context.queryClient.ensureQueryData({
         queryKey: ["site-settings"],
-        queryFn: () => getSiteSettings(),
+        queryFn: () => getSiteSettings({ data: undefined }),
       })
     ]);
     

@@ -53,7 +53,7 @@ function CouriersPage() {
   );
 
   const canManage = access.permissions.includes(PERMISSIONS.couriersManage);
-  const query = useQuery({ queryKey: ["admin-couriers"], queryFn: () => fetchCouriers({}) });
+  const query = useQuery({ queryKey: ["admin-couriers"], queryFn: () => fetchCouriers({ data: undefined }) });
   const couriers = query.data?.couriers ?? [];
 
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-couriers"] });

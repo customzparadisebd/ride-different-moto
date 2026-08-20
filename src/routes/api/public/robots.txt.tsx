@@ -6,7 +6,7 @@ export const Route = createFileRoute("/api/public/robots/txt")({
   server: {
     handlers: {
       GET: async () => {
-        const settings = await getSiteSettings();
+        const settings = await getSiteSettings({ data: undefined });
         const siteUrl = await getBaseUrl(settings);
 
         const robots = `User-agent: *
