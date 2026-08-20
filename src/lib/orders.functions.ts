@@ -224,7 +224,7 @@ export const listOrders = createServerFn({ method: "POST" })
     
     // SECURITY: Unapproved staff cannot access orders (customer PII)
     // Super Admins and Admins bypass the approval gate
-    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin" || actor.primaryRole === "manager";
     if (actor.status !== "approved" && !isPrivileged) {
       throw new Error("Access denied. Your account is not approved yet.");
     }
