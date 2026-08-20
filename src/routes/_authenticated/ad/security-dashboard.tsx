@@ -379,17 +379,61 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-"Fix the recurring runtime crash caused by Error: aborted at node:_http_server.
+Complete Bike Model Management System – Admin Panel
 
-Instructions to solve:
+I want to make both the Bike Models section and the Explore by Bike Model section fully manageable from the Admin Panel without requiring any coding.
 
-Add Request Abort Handling: Wrap all backend HTTP/API route handlers and asynchronous data fetching logic with proper try-catch blocks and handle connection aborts gracefully without crashing the Node.js process.
+1. Bike Model Management
+Create a dedicated Bike Model Management section in the Admin Panel.
+The Admin should be able to:
+- Add a new Bike Model
+- Edit an existing Bike Model
+- Remove/Delete a Bike Model
+- Enable/Disable a Bike Model
+- Upload or change the Bike Model image
+- Add an image through an Image URL
+- Preview the Bike Model before publishing
+- See the current Bike Models in a clean management list
+- Reorder Bike Models if the existing website structure requires ordering
+Any changes made from the Admin Panel should automatically reflect in the website's Bike Models section.
 
-Prevent Socket Termination Crashes: Add event listeners for req.on('close') and req.on('aborted') in API endpoints/middleware so early client disconnects do not trigger unhandled exceptions.
+2. Explore by Bike Model Management
+The website currently has a section called: “Explore by Bike Model”
+This entire section should also be manageable from the Admin Panel in the same way.
+The Admin should be able to:
+- Add a new Bike Model card
+- Edit an existing Bike Model card
+- Remove/Delete a Bike Model card
+- Enable/Disable a Bike Model card
+- Change the Bike Model image (Upload or URL)
+- Edit the Bike Model name/title
+- Edit any other existing information associated with the card
+- Preview the card before publishing
+- Reorder the cards if necessary
+The Admin should be able to control exactly which Bike Models appear in the Explore by Bike Model section.
 
-Fix Infinite Re-renders: Check for any React useEffect hook or API-fetching loops that might be spamming requests continuously and causing network sockets to drop.
+3. Preview System
+Add a proper Preview option before saving/publishing changes. The Admin should be able to preview desktop/mobile appearance, images, names, and layout within the existing section design.
 
-Add Fallback UI: Ensure the frontend handles lost backend connections with proper error boundaries so has_blank_screen: true doesn't happen."`}
+4. Image Management
+For Bike Model images, provide Manual Upload and Image URL. Validate before saving. Analyze the existing website's actual card dimensions and determine/display the best recommended image size.
+
+5. No Coding Required
+The complete workflow must work without editing source code (Add → Upload/URL → Preview → Save/Publish).
+
+6. Website Synchronization
+Make sure the Admin Panel and frontend are properly connected. Changes should automatically reflect without hardcoding.
+
+7. Existing Design Preservation
+Analyze the existing sections and integrate the management system into the existing architecture without unnecessarily redesigning the UI.
+
+8. Admin Management UI
+Keep the interface clean with a management table/card layout showing name, preview, status, order, and actions (Edit, Preview, Toggle, Delete).
+
+9. Important: Provide Implementation Instructions
+After implementing, provide a clear step-by-step instruction guide for the Admin explaining how to manage everything.
+
+Final Goal: Both Bike Models and Explore by Bike Model must become fully dynamic and manageable from the Admin Panel.`}
               </div>
 
 
