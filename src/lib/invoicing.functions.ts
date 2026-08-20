@@ -43,7 +43,10 @@ export const getInvoiceSettings = createServerFn({ method: "POST" })
 /** Admin: Updates the invoice prefix and/or starting number. */
 export const saveInvoiceSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => invoiceSettingsInput.parse(input))
+  .validator((input: unknown) => {
+    console.log("Validator input:", input);
+    return invoiceSettingsInput.parse(input);
+  })
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
