@@ -379,24 +379,22 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-Bike Explorer Controls — Make It Fully Functional
+For the code present, I get the error below.
 
-The Bike Explorer Controls section in the Admin Panel is currently non-functional. It only displays the text: “Select which bike models appear in the homepage explorer carousel.” But the admin cannot actually select, delete, add, or manage any bike models.
+Please think step-by-step in order to resolve it.
+\`\`\`
+Error: aborted
 
-Please make this section fully functional.
-
-Required Features:
-- Display All Bike Models: Show all available models in a clean list/grid with image, name, status, and toggle.
-- Select / Unselect: Admin should be able to select which bikes appear in the homepage carousel.
-- Delete: Add a remove action for each bike from Explorer (not from database) with confirmation.
-- Add Bike: Button to select an existing bike model from the database and add it to the Explorer.
-- Reorder: Allow admin to drag and drop to change the carousel order.
-- Save Changes: Clear button that persists changes in the database.
-- Homepage Sync: The homepage carousel must load its data from the database. Do NOT hard-code.
-- Empty State: Handle empty configurations gracefully in both Admin and storefront.
-- UI: Keep existing design language; clean, compact, and professional.
-
-Important: Inspect existing database schema and connect controls to the actual homepage carousel. Every control must work and persist correctly.`}
+{
+  "timestamp": 1787224695154,
+  "error_type": "RUNTIME_ERROR",
+  "filename": "Unknown file",
+  "lineno": 0,
+  "colno": 0,
+  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
+  "has_blank_screen": true
+}
+\`\`\``}
               </div>
 
 
