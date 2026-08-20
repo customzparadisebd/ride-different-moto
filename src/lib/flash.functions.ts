@@ -43,11 +43,11 @@ export const saveFlashSale = createServerFn({ method: "POST" })
 
     const dbPayload = {
       name: saleData.name,
-      description: saleData.description,
-      start_date: saleData.startDate,
-      end_date: saleData.endDate,
-      start_time: saleData.startTime,
-      end_time: saleData.endTime,
+      description: saleData.description ?? null,
+      start_date: saleData.startDate ?? null,
+      end_date: saleData.endDate ?? null,
+      start_time: saleData.startTime ?? null,
+      end_time: saleData.endTime ?? null,
       discount_type: saleData.discountType,
       discount_value: saleData.discountValue,
       is_active: saleData.isActive,
