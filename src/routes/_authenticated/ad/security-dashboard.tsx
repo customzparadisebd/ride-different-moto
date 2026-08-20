@@ -379,23 +379,74 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-I want to know whether a proper caching system can be implemented on my existing website to improve loading speed, especially for images and other static assets.
+\`\`\`javascript
+const server = http.createServer((req, res) => {
+  // Handle client disconnections
+  req.on('aborted', () => {
+    console.warn('Client aborted the request');
+    // Stop processing if request was aborted
+  });
+  req.on('close', () => {
+    if (!res.writableEnded) {
+      console.warn('Connection closed before response sent');
+    }
+  });
+  // Your request handling code...
+});
 
-For example, if a user opens the website on a mobile phone or PC for the first time and the images are downloaded, can those images and static assets be properly cached so that when the same user visits the website again, they can load much faster from the browser cache instead of downloading everything again?
+server.on('clientError', (err, socket) => {
+  console.error('Client error:', err.message);
+  if (err.code === 'ECONNRESET' || !socket.writable) {
+    return;
+  }
+  socket.end('HTTP/1.1 400 Bad Request\\r\\n\\r\\n');
+});
 
-Please analyze my existing website and explain:
-- Whether Browser/HTTP Cache should be implemented.
-- Whether CDN caching would be beneficial.
-- Whether Service Worker/PWA caching is actually necessary or not.
-- Which website assets should be cached (images, logos, CSS, JS, fonts, etc.).
-- Which data should not be aggressively cached (stock, prices, orders, etc.).
-- How image updates should work to prevent stale cached images.
-- Whether proper cache versioning/cache-busting should be implemented.
-- Ideal cache duration for different asset types.
-- Potential performance problems or downsides.
-- Compatibility across mobile, desktop, and modern browsers.
+const server = http.createServer(app);
+server.timeout = 120000; // 2 minutes
+server.keepAliveTimeout = 30000; // 30 seconds
+server.headersTimeout = 60000; // 60 seconds
 
-Most importantly, do not blindly implement. Analyze the architecture first, then determine the best strategy. The goal is faster repeat visits without compromising data accuracy.`}
+app.use((err, req, res, next) => {
+  if (err.code === 'ECONNRESET' || err.code === 'EPIPE') {
+    console.warn('Connection closed by client');
+    return;
+  }
+  res.status(500).send('Internal Server Error');
+});
+
+app.use((req, res, next) => {
+  req.on('aborted', () => {
+    res.aborted = true;
+  });
+  const originalSend = res.send;
+  res.send = function(...args) {
+    if (res.aborted) {
+      console.warn('Request aborted, skipping response');
+      return;
+    }
+    originalSend.apply(this, args);
+  };
+  next();
+});
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+    process.exit(0);
+  });
+  setTimeout(() => {
+    process.exit(1);
+  }, 10000);
+});
+
+process.on('uncaughtException', (err) => {
+  if (err.code === 'ECONNRESET' || err.message.includes('aborted')) {
+    console.warn('Ignoring aborted connection error');
+    return;
+  }
+  process.exit(1);
+});
+\`\`\``}
               </div>
 
 
