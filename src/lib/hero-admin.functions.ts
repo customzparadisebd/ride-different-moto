@@ -3,7 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
-export const getActiveBikeModelsForAdmin = createServerFn({ method: "GET" })
+export const getActiveBikeModelsForAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
