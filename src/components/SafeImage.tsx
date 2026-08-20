@@ -118,6 +118,7 @@ export function SafeImage({
       className={cn("relative overflow-hidden bg-muted", containerClassName)}
       style={{
         aspectRatio: fixedAspectRatio ? (aspectRatio || (width && height ? `${width} / ${height}` : "1/1")) : undefined,
+        height: fixedAspectRatio ? "auto" : undefined,
       }}
     >
       {/* 4. Blur-up placeholder effect */}

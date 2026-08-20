@@ -95,7 +95,7 @@ export function ProductCard({ product }: { product: StorefrontProduct }) {
           aspectRatio="1/1"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           containerClassName="aspect-square w-full bg-secondary/5"
-          className="transition-transform duration-700 hover:scale-105 object-contain p-2"
+          className="transition-transform duration-700 hover:scale-105 object-cover"
         />
         <div className="absolute left-2 top-2 flex flex-col items-start gap-1">
           {isFlashActive && (

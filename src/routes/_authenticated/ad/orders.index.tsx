@@ -198,7 +198,7 @@ function AdminOrderList() {
   const canCreate = accessQuery.data?.permissions.includes("orders.create") ?? false;
   const canShip = accessQuery.data?.permissions.includes("shipments.create") ?? false;
   const canDelete = accessQuery.data?.permissions.includes("orders.manage") ?? false; // or staffManage
-  const canSelect = canManage || canShip;
+  const canSelect = canManage || canShip || isManager;
   const pageValue = rows.reduce((sum, row) => sum + Number(row.total), 0);
   const courierOptions = useMemo(
     () => [...new Set(rows.map((row) => row.courier_name).filter(Boolean) as string[])],
