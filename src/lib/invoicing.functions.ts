@@ -82,10 +82,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       updated_by: actor.userId,
     };
 
+    console.log("Updating invoice settings with data:", updates);
     const { error } = await context.supabase
       .from("invoice_settings")
       .update(updates)
       .eq("id", "default");
+    console.log("Update error:", error);
 
     if (error) throw new Error("Could not save invoice settings.");
 
