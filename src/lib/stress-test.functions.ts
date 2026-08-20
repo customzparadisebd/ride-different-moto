@@ -8,7 +8,14 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
  * 10 times in parallel to verify concurrency safety.
  */
 export const runInvoiceStressTest = createServerFn({ method: "POST" })
-  .handler(async () => {
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.securityManage,
+    );
+    
     console.log("Starting backend invoice stress test...");
     
     // We execute 10 calls to the database function simultaneously
@@ -45,7 +52,14 @@ export const runInvoiceStressTest = createServerFn({ method: "POST" })
  * Simulate high traffic by fetching products and orders in parallel.
  */
 export const runLoadTest = createServerFn({ method: "POST" })
-  .handler(async () => {
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    assertAccess(
+      await resolveActor(context.userId, context.claims as never),
+      PERMISSIONS.securityManage,
+    );
+
     console.log("Starting load test...");
     const start = Date.now();
     

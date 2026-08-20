@@ -335,7 +335,11 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
               <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-white">Product Description</h2>
               <div 
                 className="prose prose-invert max-w-none text-white/70 text-lg leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: product.description || "No description available." }}
+                dangerouslySetInnerHTML={{ 
+                  __html: (typeof window !== 'undefined' && (window as any).DOMPurify)
+                    ? (window as any).DOMPurify.sanitize(product.description || "No description available.")
+                    : (product.description || "No description available.") 
+                }}
               />
             </section>
           </div>
