@@ -108,7 +108,7 @@ export function CourierPanel({
               <label className="block text-xs uppercase tracking-wider text-muted-foreground">
                 Choose courier
                 <select
-                  className="mt-1 h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground"
+                  className="mt-1 h-11 w-full rounded-lg border border-border bg-background dark:bg-background px-3 text-sm text-foreground"
                   value={selected?.id ?? ""}
                   onChange={(event) => setCourierId(event.target.value)}
                 >
@@ -128,7 +128,7 @@ export function CourierPanel({
               <label className="block text-xs uppercase tracking-wider text-muted-foreground">
                 Note for the rider (optional)
                 <input
-                  className="mt-1 h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground"
+                  className="mt-1 h-11 w-full rounded-lg border border-border bg-background dark:bg-background px-3 text-sm text-foreground"
                   value={note}
                   maxLength={300}
                   onChange={(event) => setNote(event.target.value)}

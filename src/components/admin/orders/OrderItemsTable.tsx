@@ -16,7 +16,7 @@ export function OrderItemsTable({ items }: { items: AdminOrderItem[] }) {
     <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-card">
       <table className="w-full min-w-[640px] text-sm">
         <caption className="sr-only">Ordered items</caption>
-        <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
+        <thead className="border-b border-border bg-accent/50 dark:bg-secondary text-left text-xs uppercase tracking-wider">
           <tr>
             <th className="p-3">Product</th>
             <th className="p-3">Variant</th>
@@ -37,7 +37,7 @@ export function OrderItemsTable({ items }: { items: AdminOrderItem[] }) {
             <tr key={item.id} className="border-b border-border last:border-0">
               <td className="p-3">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary">
+                  <span className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-accent/30 dark:bg-secondary">
                     {item.image_url ? (
                       <img
                         src={item.image_url}

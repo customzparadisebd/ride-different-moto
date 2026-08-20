@@ -316,7 +316,7 @@ function AdminDashboard() {
 
       {/* Charts Section */}
       <div className="grid gap-4 md:grid-cols-7 lg:grid-cols-7">
-        <Card className="col-span-full md:col-span-5 border-none shadow-sm overflow-hidden">
+        <Card className="col-span-full md:col-span-5 border border-border shadow-sm overflow-hidden">
           <CardHeader className="flex flex-row items-center justify-between pb-8">
             <CardTitle className="text-base font-bold">Revenue (last 14 days)</CardTitle>
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -379,7 +379,7 @@ function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="col-span-full md:col-span-2 border-none shadow-sm">
+        <Card className="col-span-full md:col-span-2 border border-border shadow-sm">
           <CardHeader>
             <CardTitle className="text-base font-bold">Order Status</CardTitle>
           </CardHeader>
@@ -411,7 +411,7 @@ function AdminDashboard() {
 
       {/* Inventory Alerts Section */}
       <div className="grid gap-4 md:grid-cols-2">
-        <Card className="border-none shadow-sm">
+        <Card className="border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-bold">Low Stock Products</CardTitle>
             <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -438,7 +438,7 @@ function AdminDashboard() {
             )}
           </CardContent>
         </Card>
-        <Card className="border-none shadow-sm">
+        <Card className="border border-border shadow-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-bold">Out of Stock Products</CardTitle>
             <Box className="h-4 w-4 text-rose-500" />

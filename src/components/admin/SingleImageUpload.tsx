@@ -114,7 +114,7 @@ export function SingleImageUpload({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "flex flex-col items-center justify-center aspect-video sm:aspect-[21/9] w-full max-w-md rounded-lg border-2 border-dashed border-border bg-muted/30 hover:bg-muted/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+              "flex flex-col items-center justify-center aspect-video sm:aspect-[21/9] w-full max-w-md rounded-lg border-2 border-dashed border-border bg-accent/30 dark:bg-muted/30 hover:bg-accent/50 dark:hover:bg-muted/50 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
               uploading && "pointer-events-none opacity-50"
             )}
           >
@@ -139,8 +139,8 @@ export function SingleImageUpload({
 
         {uploading && <Progress value={progress} className="h-1 bg-background" />}
 
-        <div className="rounded-md bg-muted/30 border border-border/50 p-2.5">
-          <p className="text-[9px] text-cyan-500 font-bold uppercase tracking-tight mb-1">
+        <div className="rounded-md bg-accent/30 dark:bg-muted/30 border border-border dark:border-border/50 p-2.5">
+          <p className="text-[9px] text-cyan-600 dark:text-cyan-500 font-bold uppercase tracking-tight mb-1">
             Auto-Optimization Active
           </p>
           <p className="text-[9px] text-muted-foreground leading-tight">

@@ -112,11 +112,11 @@ function AdminOrderDetail() {
         </Button>
       </div>
       <div className="mt-2 flex flex-wrap items-center gap-3">
-        <h1 className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-4xl font-black tracking-tighter text-primary ring-2 ring-primary/20">
+        <h1 className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-4xl font-black tracking-tighter text-primary ring-2 ring-primary/20 dark:bg-primary/10 dark:text-primary dark:ring-primary/20">
           {order.invoice_no}
         </h1>
         {order.is_pinned && (
-          <div className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 ring-1 ring-primary/40">
+          <div className="flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 ring-1 ring-primary/40 dark:bg-primary/20 dark:ring-primary/40">
             <Pin className="size-3 text-primary fill-primary" />
             <span className="text-[10px] font-black uppercase tracking-widest text-primary">Pinned</span>
           </div>
@@ -249,7 +249,7 @@ function AdminOrderDetail() {
                     <div className="z-10 mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-4 ring-background">
                       <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
                     </div>
-                    <div className="flex-1 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="flex-1 rounded-lg border border-primary/20 bg-primary/10 dark:bg-primary/5 p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase text-primary">
                           Live: {statusLabel(trackingQuery.data.latest.status)}

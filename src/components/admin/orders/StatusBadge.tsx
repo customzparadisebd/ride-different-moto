@@ -1,22 +1,22 @@
 import { statusLabel } from "@/lib/orders.shared";
 
 const TONES: Record<string, string> = {
-  pending: "bg-muted text-muted-foreground",
-  confirmed: "bg-primary/15 text-primary",
-  processing: "bg-primary/15 text-primary",
-  shipped: "bg-blue-500/15 text-blue-400",
-  delivered: "bg-emerald-500/15 text-emerald-400",
-  cancelled: "bg-destructive/15 text-destructive",
-  returned: "bg-amber-500/15 text-amber-400",
+  pending: "bg-muted text-muted-foreground dark:bg-muted dark:text-muted-foreground",
+  confirmed: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary",
+  processing: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary",
+  shipped: "bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
+  delivered: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+  cancelled: "bg-destructive/10 text-destructive dark:bg-destructive/15 dark:text-destructive",
+  returned: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
   unpaid: "bg-muted text-muted-foreground",
-  partial: "bg-amber-500/15 text-amber-400",
-  paid: "bg-emerald-500/15 text-emerald-400",
-  refunded: "bg-destructive/15 text-destructive",
+  partial: "bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400",
+  paid: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400",
+  refunded: "bg-destructive/10 text-destructive dark:bg-destructive/15 dark:text-destructive",
   not_booked: "bg-muted text-muted-foreground",
-  booked: "bg-primary/15 text-primary",
-  picked_up: "bg-blue-500/15 text-blue-400",
-  in_transit: "bg-blue-500/15 text-blue-400",
-  out_for_delivery: "bg-blue-500/15 text-blue-400",
+  booked: "bg-primary/10 text-primary dark:bg-primary/15 dark:text-primary",
+  picked_up: "bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
+  in_transit: "bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
+  out_for_delivery: "bg-sky-500/10 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400",
 };
 
 export function StatusBadge({
