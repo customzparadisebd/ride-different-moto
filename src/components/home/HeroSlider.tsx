@@ -135,7 +135,28 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 p-4 sm:p-6">
+      {/* Desktop Navigation Arrows - Far left and right */}
+      <div className="hidden sm:block">
+        <button
+          type="button"
+          onClick={scrollPrev}
+          aria-label="Previous slide"
+          className="absolute left-4 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <ChevronLeft className="size-6" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={scrollNext}
+          aria-label="Next slide"
+          className="absolute right-4 top-1/2 z-10 grid size-12 -translate-y-1/2 place-items-center rounded-full bg-black/40 text-white transition-colors hover:bg-black/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <ChevronRight className="size-6" aria-hidden="true" />
+        </button>
+      </div>
+
+      {/* Pagination Dots - Bottom Center */}
+      <div className="absolute inset-x-0 bottom-6 z-10 flex justify-center">
         <div className="flex items-center gap-2" role="tablist" aria-label="Hero slides">
           {slides.map((slide, index) => (
             <button
@@ -143,36 +164,19 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               type="button"
               role="tab"
               aria-selected={selected === index}
-              aria-label={`Show ${slide.bikeName}`}
+              aria-label={`Show ${slide.bikeName || 'Slide ' + (index + 1)}`}
               onClick={() => {
                 setPaused(true);
                 embla?.scrollTo(index);
               }}
               className={cn(
                 "h-1.5 rounded-full transition-all",
-                selected === index ? "w-8 bg-primary" : "w-4 bg-white/40 hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-black",
+                selected === index 
+                  ? "w-8 bg-white" 
+                  : "w-1.5 bg-white/40 hover:bg-white/70 focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black",
               )}
             />
           ))}
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={scrollPrev}
-            aria-label="Previous slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ChevronLeft className="size-5" aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            onClick={scrollNext}
-            aria-label="Next slide"
-            className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-white backdrop-blur transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            <ChevronRight className="size-5" aria-hidden="true" />
-          </button>
         </div>
       </div>
 
