@@ -380,6 +380,7 @@ function SecurityDashboardPage() {
                                             
                                             Load the security issues from the scan results and fix the selected issues.
 
+
             </CardTitle>
             <CardDescription className="text-xs uppercase tracking-wider font-medium text-muted-foreground">
               Critical system alerts and collision incidents
