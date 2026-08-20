@@ -131,8 +131,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
   head: ({ loaderData }) => {
     // Use type assertion for settings to avoid TS issues while safely accessing properties
-    const settings = (loaderData?.siteSettings as SiteSettings) || site;
-    const siteLogos = (loaderData?.logos as any[]) || [];
+    const settings = (loaderData?.siteSettings as unknown as SiteSettings) || site;
+    const siteLogos = (loaderData?.logos as unknown as any[]) || [];
     const siteUrl = (settings as any).productionDomain ? `https://${(settings as any).productionDomain}` : site.url;
 
     const getLogo = (category: string, fallback: string) => {
