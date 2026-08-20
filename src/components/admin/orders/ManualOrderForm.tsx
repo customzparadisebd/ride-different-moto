@@ -70,7 +70,7 @@ export function ManualOrderForm({
 
   const productsQuery = useQuery({
     queryKey: ["admin-catalog-search"],
-    queryFn: () => fetchProducts({ data: { pageSize: 100, activeOnly: true } }),
+    queryFn: () => fetchProducts({ data: { pageSize: 500, activeOnly: true } }),
   });
 
   const aiSettingsQuery = useQuery({

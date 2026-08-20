@@ -1,12 +1,12 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { flashSaleInput, type FlashSale } from "./flash.shared";
 import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 export const getFlashSales = createServerFn({ method: "GET" }).handler(async (): Promise<FlashSale[]> => {
-  const { data, error } = await (supabase as any)
+  const { data, error } = await supabaseAdmin
     .from("flash_sales")
     .select("*, flash_sale_products(product_id)")
     .order("priority", { ascending: false });
@@ -33,6 +33,7 @@ export const saveFlashSale = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => flashSaleInput.parse(input))
   .handler(async ({ data, context }) => {
+    const admin = supabaseAdmin;
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
@@ -42,11 +43,11 @@ export const saveFlashSale = createServerFn({ method: "POST" })
 
     const dbPayload = {
       name: saleData.name,
-      description: saleData.description,
-      start_date: saleData.startDate,
-      end_date: saleData.endDate,
-      start_time: saleData.startTime,
-      end_time: saleData.endTime,
+      description: saleData.description ?? null,
+      start_date: saleData.startDate ?? null,
+      end_date: saleData.endDate ?? null,
+      start_time: saleData.startTime ?? null,
+      end_time: saleData.endTime ?? null,
       discount_type: saleData.discountType,
       discount_value: saleData.discountValue,
       is_active: saleData.isActive,
@@ -57,7 +58,7 @@ export const saveFlashSale = createServerFn({ method: "POST" })
     let saleId = data.id;
 
     if (isNew) {
-      const { data: newSale, error } = await (context.supabase as any)
+      const { data: newSale, error } = await admin
         .from("flash_sales")
         .insert({ ...dbPayload, created_by: context.userId })
         .select("id")
@@ -65,7 +66,7 @@ export const saveFlashSale = createServerFn({ method: "POST" })
       if (error) throw new Error(error.message);
       saleId = newSale.id;
     } else {
-      const { error } = await (context.supabase as any)
+      const { error } = await admin
         .from("flash_sales")
         .update(dbPayload)
         .eq("id", saleId!);
@@ -73,9 +74,9 @@ export const saveFlashSale = createServerFn({ method: "POST" })
     }
 
     // Sync products
-    await (context.supabase as any).from("flash_sale_products").delete().eq("flash_sale_id", saleId!);
+    await admin.from("flash_sale_products").delete().eq("flash_sale_id", saleId!);
     if (productIds.length > 0) {
-      const { error } = await (context.supabase as any)
+      const { error } = await admin
         .from("flash_sale_products")
         .insert(productIds.map(pid => ({ flash_sale_id: saleId!, product_id: pid })));
       if (error) throw new Error(error.message);
@@ -100,7 +101,7 @@ export const deleteFlashSale = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await (context.supabase as any).from("flash_sales").delete().eq("id", id);
+    const { error } = await supabaseAdmin.from("flash_sales").delete().eq("id", id);
     if (error) throw new Error(error.message);
 
     await auditFromActor(actor, {
