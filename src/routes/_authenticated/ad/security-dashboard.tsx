@@ -69,7 +69,7 @@ function SecurityDashboardPage() {
 
   const { data: recentEvents, refetch: refetchEvents } = useSuspenseQuery({
     queryKey: ["recent-security-events"],
-    queryFn: () => listSecurityEvents({ data: { limit: 10 } }),
+    queryFn: () => listSecurityEvents({ data: { limit: 10 } } as never),
   });
 
   const { data: securityAlerts, refetch: refetchAlerts } = useSuspenseQuery({
