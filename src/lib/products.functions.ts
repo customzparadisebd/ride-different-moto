@@ -9,6 +9,8 @@
 //          (permanent delete requires Super Admin) and is written to
 //          the append-only audit log with old/new values.
 // ============================================================
+// Modified: Added bypass for Admin/Super Admin in staff approval gate.
+// ============================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -52,7 +54,7 @@ export const listProducts = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // SECURITY: Unapproved staff cannot access product management
-    if (actor.status !== "approved") {
+    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
       throw new Error("Access denied. Your account is not approved yet.");
     }
     

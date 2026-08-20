@@ -48,10 +48,14 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
-    assertAccess(
-      await resolveActor(context.userId, context.claims as never),
-      PERMISSIONS.ordersView,
-    );
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // SECURITY: Unapproved staff cannot access dashboard metrics
+    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+
+    assertAccess(actor, PERMISSIONS.ordersView);
 
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
@@ -218,10 +222,14 @@ export const listCustomers = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
-    assertAccess(
-      await resolveActor(context.userId, context.claims as never),
-      PERMISSIONS.ordersView,
-    );
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // SECURITY: Unapproved staff cannot access customer list (PII)
+    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+
+    assertAccess(actor, PERMISSIONS.ordersView);
 
     const { data: rows, error } = await context.supabase
       .from("orders")
