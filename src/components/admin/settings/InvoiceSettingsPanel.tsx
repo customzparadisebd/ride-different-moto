@@ -183,7 +183,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
                 className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
                 disabled={!canManage || mutation.isPending || draft.prefix === current?.prefix}
                 onClick={() => {
-                  mutation.mutate({ prefix: draft.prefix, startNumber: draft.startNumber, currentNumber: draft.currentNumber });
+                  mutation.mutate({ data: { prefix: draft.prefix, startNumber: draft.startNumber, currentNumber: draft.currentNumber } });
                 }}
               >
                 Update Prefix
