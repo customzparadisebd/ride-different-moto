@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -9,20 +9,39 @@ import {
   Save, 
   X, 
   GripVertical, 
-  Eye, 
-  EyeOff, 
   Info, 
   Image as ImageIcon,
   Monitor,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  ArrowUp,
+  ArrowDown,
+  RotateCcw
 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   getAdminBikeModels, 
   createBikeModel, 
@@ -35,21 +54,186 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
+function SortableBikeModelItem({ id, model, onEdit, onDelete, onUpdateStatus, onMove }: any) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={cn(
+        "group overflow-hidden rounded-lg border border-border bg-card transition-all duration-200",
+        isDragging ? "border-primary shadow-2xl ring-2 ring-primary/20 scale-[1.02] opacity-90" : "hover:border-primary/30"
+      )}
+    >
+      <div className={cn("h-1 w-full transition-colors", model.is_active ? "bg-primary" : "bg-muted")} />
+      <div className="p-4 sm:p-5 flex flex-col sm:flex-row gap-5 items-center">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-primary p-2 rounded-md hover:bg-primary/5 transition-colors"
+          title="Drag to reorder"
+        >
+          <GripVertical className="size-5" />
+        </button>
+
+        <div className="relative aspect-[3/2] w-full sm:w-40 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
+          {model.image_url ? (
+            <img 
+              src={model.image_url} 
+              alt={model.alt_text || model.name} 
+              className="h-full w-full object-cover transition-transform group-hover:scale-105" 
+            />
+          ) : (
+            <div className="flex h-full items-center justify-center text-muted-foreground/40">
+              <ImageIcon className="h-6 w-6" />
+            </div>
+          )}
+          {!model.is_active && (
+            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+              <Badge variant="outline" className="text-[9px] uppercase tracking-wider border-red-500 text-red-500 bg-red-500/10">
+                Inactive
+              </Badge>
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="text-lg font-bold uppercase tracking-tight text-foreground dark:text-white truncate">
+              {model.name}
+            </h3>
+            {model.is_active && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />}
+          </div>
+          <p className="text-[10px] text-primary font-bold uppercase tracking-[0.2em] mb-2">
+            {model.label || "Modification Parts"}
+          </p>
+          <div className="flex items-center gap-3 text-[9px] font-mono uppercase tracking-tighter text-muted-foreground/60">
+            <span>Slug: {model.slug}</span>
+            <span>•</span>
+            <span>Current Pos: {model.sort_order}</span>
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-1.5 bg-accent/20 p-1.5 rounded-lg border border-border/50">
+          <div className="flex flex-col gap-1">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 hover:text-primary hover:bg-primary/10" 
+              onClick={(e) => { e.stopPropagation(); onMove("up"); }}
+              title="Move Up"
+            >
+              <ArrowUp className="h-4 w-4"/>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-8 w-8 hover:text-primary hover:bg-primary/10" 
+              onClick={(e) => { e.stopPropagation(); onMove("down"); }}
+              title="Move Down"
+            >
+              <ArrowDown className="h-4 w-4"/>
+            </Button>
+          </div>
+          <div className="w-[1px] h-10 bg-border/50 mx-1" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10" 
+            onClick={onEdit}
+            title="Edit Details"
+          >
+            <Edit2 className="h-4 w-4" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-9 w-9 text-muted-foreground hover:text-destructive hover:bg-destructive/10" 
+            onClick={onDelete}
+            title="Delete Model"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function BikeModelsPanel() {
   const queryClient = useQueryClient();
   const fetchModels = useServerFn(getAdminBikeModels);
   const addModel = useServerFn(createBikeModel);
   const editModel = useServerFn(updateBikeModel);
   const removeModel = useServerFn(deleteBikeModel);
-  const reorderModels = useServerFn(reorderBikeModels);
+  const reorderModelsFn = useServerFn(reorderBikeModels);
 
-  const { data: models = [], isLoading } = useQuery({
+  const { data: rawModels = [], isLoading } = useQuery({
     queryKey: ["admin-bike-models"],
     queryFn: () => fetchModels({ data: undefined }),
   });
 
+  const [models, setModels] = useState<any[]>([]);
+  const [isDirty, setIsDirty] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (rawModels) {
+      setModels(rawModels);
+      setIsDirty(false);
+    }
+  }, [rawModels]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setModels((items) => {
+        const oldIndex = items.findIndex((i) => i.id === active.id);
+        const newIndex = items.findIndex((i) => i.id === over.id);
+        const result = arrayMove(items, oldIndex, newIndex);
+        setIsDirty(true);
+        return result;
+      });
+    }
+  };
+
+  const moveModel = (id: string, direction: "up" | "down") => {
+    const index = models.findIndex((m) => m.id === id);
+    if ((direction === "up" && index > 0) || (direction === "down" && index < models.length - 1)) {
+      const newIndex = direction === "up" ? index - 1 : index + 1;
+      const newModels = [...models];
+      [newModels[index], newModels[newIndex]] = [newModels[newIndex], newModels[index]];
+      setModels(newModels);
+      setIsDirty(true);
+    }
+  };
+
+  const saveOrder = async () => {
+    try {
+      await reorderModelsFn({ data: { ids: models.map((m) => m.id) } });
+      toast.success("New order saved to live website");
+      setIsDirty(false);
+      queryClient.invalidateQueries({ queryKey: ["admin-bike-models"] });
+      queryClient.invalidateQueries({ queryKey: ["storefront-bike-models"] });
+    } catch (e: any) {
+      toast.error(e.message || "Failed to save order");
+    }
+  };
 
   const addMutation = useMutation({
     mutationFn: (data: any) => addModel({ data }),
@@ -57,20 +241,18 @@ export function BikeModelsPanel() {
       toast.success("Bike model added");
       setIsAdding(false);
       queryClient.invalidateQueries({ queryKey: ["admin-bike-models"] });
-      queryClient.invalidateQueries({ queryKey: ["storefront-bike-models"] });
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add bike model"),
+    onError: (err: any) => toast.error(err.message || "Failed to add"),
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; updates: any }) => editModel({ data }),
+    mutationFn: (data: any) => editModel({ data }),
     onSuccess: () => {
       toast.success("Bike model updated");
       setEditingId(null);
       queryClient.invalidateQueries({ queryKey: ["admin-bike-models"] });
-      queryClient.invalidateQueries({ queryKey: ["storefront-bike-models"] });
     },
-    onError: (err: any) => toast.error(err.message || "Failed to update bike model"),
+    onError: (err: any) => toast.error(err.message || "Failed to update"),
   });
 
   const deleteMutation = useMutation({
@@ -78,191 +260,107 @@ export function BikeModelsPanel() {
     onSuccess: () => {
       toast.success("Bike model deleted");
       queryClient.invalidateQueries({ queryKey: ["admin-bike-models"] });
-      queryClient.invalidateQueries({ queryKey: ["storefront-bike-models"] });
     },
-    onError: (err: any) => toast.error(err.message || "Failed to delete bike model"),
+    onError: (err: any) => toast.error(err.message || "Failed to delete"),
   });
 
-  const reorderMutation = useMutation({
-    mutationFn: (ids: string[]) => reorderModels({ data: { ids } }),
-    onSuccess: () => {
-      toast.success("Order updated");
-      queryClient.invalidateQueries({ queryKey: ["admin-bike-models"] });
-    },
-    onError: (err: any) => toast.error(err.message || "Failed to reorder"),
-  });
-
-  if (isLoading) {
-    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading bike models...</div>;
-  }
+  if (isLoading) return <div className="p-12 text-center text-muted-foreground animate-pulse">Loading bike models...</div>;
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between sticky top-0 z-20 py-4 bg-background/80 backdrop-blur-md border-b border-border/50">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <Monitor className="h-6 w-6 text-primary" />
-            Bike Model Management
+            Bike Model Arrangement
           </h2>
-          <p className="text-muted-foreground mt-1 text-sm">
-            Manage the "Explore My Bike Models" and "Bike Models" storefront sections.
-          </p>
+          <p className="text-xs text-muted-foreground">Manual ordering for "Explore by Bike Model" storefront section.</p>
         </div>
-        <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2 shadow-lg shadow-red-500/20">
-          <Plus className="h-4 w-4" /> Add Bike Model
-        </Button>
+        <div className="flex gap-3">
+          {isDirty && (
+            <>
+              <Button 
+                onClick={() => { setModels(rawModels); setIsDirty(false); }} 
+                variant="outline" 
+                size="sm"
+                className="gap-2"
+              >
+                <RotateCcw className="h-4 w-4" /> Reset
+              </Button>
+              <Button 
+                onClick={saveOrder} 
+                variant="onyx" 
+                size="sm"
+                className="gap-2 shadow-lg shadow-black/20"
+              >
+                <Save className="h-4 w-4" /> Save New Order
+              </Button>
+            </>
+          )}
+          <Button onClick={() => setIsAdding(true)} variant="red" size="sm" className="gap-2 shadow-lg shadow-red-500/20">
+            <Plus className="h-4 w-4" /> Add Bike Model
+          </Button>
+        </div>
       </div>
 
       <Alert className="bg-primary/5 dark:bg-primary/10 border-primary/20">
         <Info className="h-4 w-4 text-primary" />
-        <AlertTitle className="text-primary font-bold uppercase tracking-widest text-[10px]">Image Specifications</AlertTitle>
+        <AlertTitle className="text-primary font-bold uppercase tracking-widest text-[10px]">Ordering Instructions</AlertTitle>
         <AlertDescription className="text-xs text-foreground/80 dark:text-white/80">
-          Recommended resolution: <strong>1200 × 800px (3:2 ratio)</strong>. Max size: 200KB. WebP/AVIF preferred.
+          Use the <strong>Grip Icon</strong> to drag & drop models, or the <strong>Up/Down arrows</strong> for precise control. Click <strong>"Save New Order"</strong> to reflect changes on the website.
         </AlertDescription>
       </Alert>
 
-      <div className="grid gap-4">
-        {isAdding && (
-          <ModelForm
-            onSave={(data) => addMutation.mutate(data)}
-            onCancel={() => setIsAdding(false)}
-            isSaving={addMutation.isPending}
-          />
-        )}
-
-        {models.map((model) => (
-          <div key={model.id}>
-            {editingId === model.id ? (
-              <ModelForm
-                initialData={model}
-                onSave={(updates) => updateMutation.mutate({ id: model.id, updates })}
-                onCancel={() => setEditingId(null)}
-                isSaving={updateMutation.isPending}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} modifiers={[restrictToVerticalAxis]}>
+        <SortableContext items={models.map((m) => m.id)} strategy={verticalListSortingStrategy}>
+          <div className="space-y-4">
+            {models.map((m) => (
+              <SortableBikeModelItem 
+                key={m.id} 
+                id={m.id} 
+                model={m} 
+                onEdit={() => setEditingId(m.id)} 
+                onDelete={() => {
+                  if(confirm(`Are you sure you want to delete "${m.name}"?`)) {
+                    deleteMutation.mutate(m.id);
+                  }
+                }}
+                onMove={(dir: "up" | "down") => moveModel(m.id, dir)}
               />
-            ) : (
-              <Card className="border-border bg-card dark:bg-black/40 backdrop-blur-sm group overflow-hidden">
-                <div className={cn("h-1 w-full transition-colors", model.is_active ? "bg-primary" : "bg-muted")} />
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row gap-6">
-                    {/* Thumbnail Preview */}
-                    <div className="relative aspect-[3/2] w-full sm:w-48 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
-                      {model.image_url ? (
-                        <img 
-                          src={model.image_url} 
-                          alt={model.alt_text || model.name} 
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-muted-foreground/40">
-                          <ImageIcon className="h-8 w-8" />
-                        </div>
-                      )}
-                      {!model.is_active && (
-                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <Badge variant="outline" className="text-[10px] uppercase tracking-wider border-red-500 text-red-500 bg-red-500/10">
-                            Inactive
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0 space-y-4">
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-xl font-bold uppercase tracking-tight text-foreground dark:text-white">
-                              {model.name}
-                            </h3>
-                            {model.is_active && (
-                              <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                            )}
-                          </div>
-                          <p className="text-xs text-primary font-bold uppercase tracking-[0.2em]">
-                            {model.label || "Modification Parts"}
-                          </p>
-                          <div className="flex items-center gap-3 text-[10px] font-mono uppercase tracking-tighter text-muted-foreground/60 mt-1">
-                            <span>Slug: {model.slug}</span>
-                            <span>•</span>
-                            <span>Order: {model.sort_order}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 text-muted-foreground hover:text-primary transition-colors"
-                            onClick={() => setEditingId(model.id)}
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 text-muted-foreground hover:text-destructive transition-colors"
-                            onClick={() => {
-                              if (confirm("Are you sure you want to delete this bike model?")) {
-                                deleteMutation.mutate(model.id);
-                              }
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-4 pt-2 border-t border-border/50">
-                        <div className="flex items-center gap-2">
-                          <Switch
-                            checked={!!model.is_active}
-                            onCheckedChange={(checked) => 
-                              updateMutation.mutate({ 
-                                id: model.id, 
-                                updates: { is_active: checked } 
-                              })
-                            }
-                          />
-                          <Label className="text-[10px] font-bold uppercase tracking-widest cursor-pointer">
-                            {model.is_active ? "Published" : "Draft Mode"}
-                          </Label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            ))}
           </div>
-        ))}
-        
-        {models.length === 0 && !isAdding && (
-          <div className="text-center py-20 border-2 border-dashed border-border rounded-2xl bg-accent/20">
-            <ImageIcon className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
-            <h3 className="text-lg font-bold uppercase tracking-tight text-foreground/60">No Bike Models Found</h3>
-            <p className="text-sm text-muted-foreground mt-1 max-w-xs mx-auto">
-              Start adding bike models to display them in the storefront explore section.
-            </p>
-            <Button onClick={() => setIsAdding(true)} variant="outline" className="mt-6 border-primary/20 hover:bg-primary/5">
-              Add First Model
-            </Button>
-          </div>
-        )}
-      </div>
+        </SortableContext>
+      </DndContext>
+      
+      {isAdding && (
+        <ModelForm 
+          onSave={(d: any) => addMutation.mutate(d)} 
+          onCancel={() => setIsAdding(false)} 
+          isSaving={addMutation.isPending} 
+        />
+      )}
+      
+      {editingId && (
+        <ModelForm 
+          initialData={models.find(m => m.id === editingId)} 
+          onSave={(updates: any) => updateMutation.mutate({ id: editingId, updates })} 
+          onCancel={() => setEditingId(null)} 
+          isSaving={updateMutation.isPending} 
+        />
+      )}
+
+      {models.length === 0 && !isAdding && (
+        <div className="text-center py-20 border-2 border-dashed border-border rounded-2xl bg-accent/20">
+          <ImageIcon className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
+          <h3 className="text-lg font-bold uppercase tracking-tight text-foreground/60">No Bike Models Found</h3>
+          <Button onClick={() => setIsAdding(true)} variant="outline" className="mt-6">Add First Model</Button>
+        </div>
+      )}
     </div>
   );
 }
 
-function ModelForm({ 
-  initialData, 
-  onSave, 
-  onCancel, 
-  isSaving 
-}: { 
-  initialData?: any; 
-  onSave: (data: any) => void; 
-  onCancel: () => void;
-  isSaving: boolean;
-}) {
+function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     slug: initialData?.slug || "",
@@ -277,225 +375,74 @@ function ModelForm({
     initialData?.image_url?.includes("supabase.co") ? "upload" : "url"
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSave(formData);
-  };
-
-  const generateSlug = () => {
-    if (!formData.name) return;
-    const slug = formData.name
-      .toLowerCase()
-      .replace(/[^\w ]+/g, '')
-      .replace(/ +/g, '-');
-    setFormData(prev => ({ ...prev, slug }));
-  };
-
   return (
-    <Card className="border-primary/20 bg-card shadow-2xl animate-in fade-in slide-in-from-top-4 duration-300">
-      <CardHeader className="pb-4 border-b border-border/50">
-        <div className="flex items-center justify-between">
-          <CardTitle className="font-display text-lg font-bold uppercase text-primary">
-            {initialData ? `Edit: ${initialData.name}` : "New Bike Model"}
-          </CardTitle>
-          <Button variant="ghost" size="icon" onClick={onCancel} className="h-8 w-8">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid gap-6 sm:grid-cols-2">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <Card className="w-full max-w-2xl border-primary/20 shadow-2xl overflow-hidden">
+        <CardHeader className="border-b border-border/50 pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-xl font-bold uppercase tracking-tight text-primary">
+              {initialData ? `Edit: ${initialData.name}` : "New Bike Model"}
+            </CardTitle>
+            <Button variant="ghost" size="icon" onClick={onCancel}><X className="h-4 w-4"/></Button>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Bike Name
-                </Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Pulsar N160"
-                    required
-                    className="h-11 border-border focus:ring-primary/20"
-                  />
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={generateSlug}
-                    className="h-11 px-3 text-[10px] uppercase font-bold tracking-tighter"
-                  >
-                    Auto Slug
-                  </Button>
-                </div>
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Bike Name</Label>
+                <Input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. Pulsar N160" />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="slug" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  URL Slug
-                </Label>
-                <Input
-                  id="slug"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  placeholder="e.g. pulsar-n160"
-                  required
-                  className="h-11 font-mono text-xs"
-                />
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">URL Slug</Label>
+                <Input value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} placeholder="e.g. pulsar-n160" />
               </div>
-
               <div className="space-y-2">
-                <Label htmlFor="label" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Display Label (Sub-label)
-                </Label>
-                <Input
-                  id="label"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  placeholder="e.g. Modification Parts"
-                  className="h-11"
-                />
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Label</Label>
+                <Input value={formData.label} onChange={(e) => setFormData({ ...formData, label: e.target.value })} placeholder="e.g. Modification Parts" />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="sort_order" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Display Order
-                  </Label>
-                  <Input
-                    id="sort_order"
-                    type="number"
-                    value={formData.sort_order}
-                    onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })}
-                    className="h-11"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Status
-                  </Label>
-                  <div className="flex items-center gap-3 h-11 px-3 border border-border rounded-md bg-accent/20">
-                    <Switch
-                      checked={formData.is_active}
-                      onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-                    />
-                    <span className="text-xs font-bold uppercase tracking-tighter">
-                      {formData.is_active ? "Active" : "Draft"}
-                    </span>
-                  </div>
-                </div>
+              <div className="flex items-center gap-2 pt-2">
+                <Switch checked={formData.is_active} onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })} />
+                <Label className="text-xs font-bold uppercase tracking-widest">Active Storefront</Label>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    Bike Model Image
-                  </Label>
-                  <div className="flex p-0.5 rounded-md bg-accent/40 border border-border">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-6 px-2 text-[9px] uppercase font-bold tracking-tighter rounded-sm",
-                        imageMode === "upload" && "bg-background shadow-sm text-primary"
-                      )}
-                      onClick={() => setImageMode("upload")}
-                    >
-                      Upload
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "h-6 px-2 text-[9px] uppercase font-bold tracking-tighter rounded-sm",
-                        imageMode === "url" && "bg-background shadow-sm text-primary"
-                      )}
-                      onClick={() => setImageMode("url")}
-                    >
-                      URL
-                    </Button>
-                  </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-1">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Model Image</Label>
+                <div className="flex gap-1 p-0.5 rounded-md bg-accent/40 border border-border">
+                  <Button type="button" variant="ghost" size="sm" className={cn("h-6 px-2 text-[9px] uppercase font-bold", imageMode === "upload" && "bg-background shadow-sm")} onClick={() => setImageMode("upload")}>Upload</Button>
+                  <Button type="button" variant="ghost" size="sm" className={cn("h-6 px-2 text-[9px] uppercase font-bold", imageMode === "url" && "bg-background shadow-sm")} onClick={() => setImageMode("url")}>URL</Button>
                 </div>
-
-                {imageMode === "upload" ? (
-                  <SingleImageUpload
-                    value={formData.image_url}
-                    onChange={(url) => setFormData({ ...formData, image_url: url })}
-                    bucket="products"
-                    pathPrefix="bike-models"
-                    guideline="1200x800px (3:2) WebP recommended."
-                  />
-                ) : (
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        Image URL
-                      </Label>
-                      <Input
-                        value={formData.image_url}
-                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                        placeholder="Paste image URL here"
-                        className="h-11 font-mono text-xs"
-                      />
-                    </div>
-                    {formData.image_url && (
-                      <div className="space-y-3">
-                        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg border border-border bg-muted">
-                          <img 
-                            src={formData.image_url} 
-                            className="h-full w-full object-cover" 
-                            onError={() => {
-                              toast.error("The provided image URL is invalid or the image could not be loaded. Please check the link.");
-                            }}
-                            alt="External preview"
-                          />
-                        </div>
-                        <p className="text-[10px] text-muted-foreground italic flex items-center gap-1.5">
-                          <AlertCircle className="h-3 w-3 text-amber-500" />
-                          If you don't see a preview above, the URL might be incorrect or protected.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="alt_text" className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Image Alt Text (SEO)
-                </Label>
-                <Input
-                  id="alt_text"
-                  value={formData.alt_text}
-                  onChange={(e) => setFormData({ ...formData, alt_text: e.target.value })}
-                  placeholder="e.g. Bajaj Pulsar N160 Modification Accessories"
-                  className="h-11"
+              {imageMode === "upload" ? (
+                <SingleImageUpload 
+                  value={formData.image_url} 
+                  onChange={(url) => setFormData({ ...formData, image_url: url })} 
+                  bucket="products" 
+                  pathPrefix="bike-models" 
+                  guideline="1200x800 (3:2) recommended"
                 />
+              ) : (
+                <Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="Image URL" />
+              )}
+              
+              <div className="space-y-2">
+                <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Alt Text (SEO)</Label>
+                <Input value={formData.alt_text} onChange={(e) => setFormData({ ...formData, alt_text: e.target.value })} placeholder="Image description" />
               </div>
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-border/50">
-            <Button type="button" variant="ghost" onClick={onCancel} className="uppercase font-bold tracking-widest text-xs">
-              Discard Changes
-            </Button>
-            <Button 
-              type="submit" 
-              variant="red" 
-              disabled={isSaving}
-              className="px-8 shadow-3d-primary active:translate-y-[2px] transition-all"
-            >
+          <div className="flex justify-end gap-3 pt-6 border-t border-border/50">
+            <Button variant="ghost" onClick={onCancel} className="uppercase font-bold tracking-widest text-xs">Cancel</Button>
+            <Button onClick={() => onSave(formData)} variant="red" disabled={isSaving} className="px-8 shadow-3d-primary active:translate-y-[2px] transition-all">
               {isSaving ? "Saving..." : (initialData ? "Update Model" : "Create Model")}
             </Button>
           </div>
-        </form>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
