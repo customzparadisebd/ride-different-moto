@@ -223,7 +223,9 @@ export const listOrders = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // SECURITY: Unapproved staff cannot access orders (customer PII)
-    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+    // Super Admins and Admins bypass the approval gate
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
       throw new Error("Access denied. Your account is not approved yet.");
     }
     
@@ -420,7 +422,9 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // SECURITY: Unapproved staff cannot access order counts
-    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+    // Super Admins and Admins bypass the approval gate
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
       throw new Error("Access denied. Your account is not approved yet.");
     }
     

@@ -235,7 +235,7 @@ export function assertAccess(actor: AdminActor, permission?: Permission): void {
     throw new AccessError("suspended", "This session was revoked. Please sign in again.");
   }
   if (!actor.roles.length) throw new AccessError("not_staff", "No admin access on this account.");
-  if (actor.status === "pending") {
+  if (actor.status === "pending" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
     throw new AccessError("pending", "Your access is awaiting approval.");
   }
   if (actor.status !== "approved") {
