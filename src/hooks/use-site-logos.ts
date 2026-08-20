@@ -25,7 +25,7 @@ export function useSiteLogos() {
 
   const { data: logos, isLoading } = useQuery({
     queryKey: ["site-logos-public"],
-    queryFn: () => list(),
+    queryFn: () => list({ data: undefined }),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 

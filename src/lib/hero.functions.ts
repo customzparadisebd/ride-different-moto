@@ -3,8 +3,10 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
-export const getHeroSlides = createServerFn({ method: "GET" })
+export const getHeroSlides = createServerFn({ method: "POST" })
+
   .validator((d: any) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
+
   .handler(async ({ data: { admin }, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { resolveActor } = await import("./admin.server");
@@ -154,7 +156,7 @@ export const restoreOldHeroSlides = createServerFn({ method: "POST" })
     return restoreHeroSlides();
   });
 
-export const getActiveBikeModelsForAdmin = createServerFn({ method: "GET" })
+export const getActiveBikeModelsForAdmin = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");

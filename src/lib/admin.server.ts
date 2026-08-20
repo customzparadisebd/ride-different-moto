@@ -214,7 +214,8 @@ export async function resolveActor(
     sessionRevoked,
     // Login approval is pending if they are already "approved" as a user
     // but haven't gotten a fresh 10-minute session approval, OR if they are still 'pending'.
-    loginApprovalPending: (status === "approved" || status === "pending") && !isOwner && !isSuperAdmin && primaryRole !== "admin",
+    loginApprovalPending: status === "pending" && !isOwner && !isSuperAdmin && primaryRole !== "admin",
+
   };
 }
 

@@ -190,12 +190,13 @@ function Index() {
 
   const bikeModelsQuery = useQuery({
     queryKey: ["bike-models"],
-    queryFn: () => fetchBikeModels(),
+    queryFn: () => fetchBikeModels({ data: undefined }),
   });
 
   const sectionSettingsQuery = useQuery({
     queryKey: ["section-settings"],
-    queryFn: () => fetchSectionSettings(),
+    queryFn: () => fetchSectionSettings({ data: undefined }),
+
   });
 
   const bikeModels = bikeModelsQuery.data || [];

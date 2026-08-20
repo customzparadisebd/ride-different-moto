@@ -15,7 +15,7 @@ async function getEffectiveClient() {
   return supabaseAdmin;
 }
 
-export const getSectionSettings = createServerFn({ method: "GET" }).handler(
+export const getSectionSettings = createServerFn({ method: "POST" }).handler(
   async (): Promise<SectionSetting[]> => {
     const client = await getEffectiveClient();
     const { data, error } = await client

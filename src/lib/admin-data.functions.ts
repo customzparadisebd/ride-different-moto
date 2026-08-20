@@ -29,11 +29,6 @@ function getTodaysSalesWindow() {
   const bdEnd = new Date(bdNow);
   bdEnd.setUTCHours(20, 0, 0, 0);
 
-  // If current BD time is before 8:00 AM, the "sales window" might be empty or 
-  // refer to the previous day? Requirement says "Orders submitted between 8:00 PM 
-  // and 8:00 AM should not be counted in the current day's sales window."
-  // So we just take the range for the current BD day.
-  
   // Convert back to UTC for querying the database
   const utcStart = new Date(bdStart.getTime() - offset * 60000);
   const utcEnd = new Date(bdEnd.getTime() - offset * 60000);
@@ -111,8 +106,6 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
       rows.filter((r) => r.status === "completed").reduce((sum, r) => sum + Number(r.total), 0);
 
     // TODAY'S SALES Calculation (SteadFast window rule)
-    // "Calculate the displayed sales amount from the applicable order amount according to the existing order/payment logic."
-    // We need the order totals for these shipments.
     let todaysSalesTotal = 0;
     const shipmentOrderIds = (todaysSalesShipments.data as any[])?.map(s => s.order_id) || [];
     
@@ -206,6 +199,93 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
     };
   });
 
+export const getAdminMetrics = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+
+    assertAccess(actor, PERMISSIONS.ordersView);
+
+    // For charts and summary stats
+    const { data: stats } = await context.supabase
+      .from("orders")
+      .select("status, total, created_at")
+      .is("deleted_at", null);
+
+    const orderRows = (stats as any[]) ?? [];
+    return {
+      totalRevenue: orderRows.filter(o => o.status === 'completed').reduce((sum, o) => sum + Number(o.total), 0),
+      totalOrders: orderRows.length,
+      pendingOrders: orderRows.filter(o => o.status === 'pending').length
+    };
+  });
+
+export const getRecentActivities = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+
+    assertAccess(actor, PERMISSIONS.auditView);
+    const { data } = await context.supabase
+      .from("admin_audit_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(20);
+    return data ?? [];
+  });
+
+export const getLoginApprovalStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    return {
+      status: actor.status,
+      loginApprovalPending: actor.loginApprovalPending
+    };
+  });
+
+export const listSecurityEvents = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.securityManage);
+    
+    const { data } = await context.supabase
+      .from("security_events")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(50);
+    return data ?? [];
+  });
+
+export const getSystemHealth = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.securityManage);
+    
+    return {
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      version: "1.0.0"
+    };
+  });
+
 type CustomerRow = {
   customer_name: string;
   customer_phone: string;
@@ -226,8 +306,8 @@ export const listCustomers = createServerFn({ method: "POST" })
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
-    // SECURITY: Unapproved staff cannot access customer list (PII)
-    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
       throw new Error("Access denied. Your account is not approved yet.");
     }
 
@@ -238,6 +318,7 @@ export const listCustomers = createServerFn({ method: "POST" })
       .select(
         "customer_name, customer_phone, customer_email, city, delivery_zone, total, status, created_at",
       )
+      .is("deleted_at", null)
       .order("created_at", { ascending: false })
       .limit(2000)
       .returns<CustomerRow[]>();
