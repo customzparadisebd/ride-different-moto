@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
 
 export const getHeroSlides = createServerFn({ method: "GET" })
-  .validator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
+  .validator((d: any) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     
