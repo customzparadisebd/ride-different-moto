@@ -408,6 +408,10 @@ function AdminSettings() {
                   <AISettingsPanel />
                 </div>
               )}
+              {/* TAB: PRODUCT ORDER */}
+              {search.tab === "product-order" && (
+                <ProductOrderPanel />
+              )}
 
               {/* TAB: BIKE MODELS */}
               {search.tab === "bike-models" && (
