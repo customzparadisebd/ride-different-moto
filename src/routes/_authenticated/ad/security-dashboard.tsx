@@ -379,7 +379,122 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-Configure Browser/HTTP cache-control rules for CSS, JavaScript, fonts, and logos so repeat visits load faster without breaking updates.`}
+The previous attempt did NOT fix the issue. The problem still exists.
+
+I need you to stop making assumptions and perform a deep technical investigation of why the Settings menu behaves differently between the Lovable environment and the external/production website.
+
+Current Problem
+
+Inside the Lovable environment, when I open:
+
+Admin Panel → Settings
+
+I can see all of these sections:
+
+General
+Invoice
+Logos
+Delivery Zones
+StreadFast
+Homepage
+Bike Models
+AI Tools
+
+But when I access the same Admin Panel from an external browser through the production/deployed website, I only see:
+
+General Settings
+
+The other sections are missing.
+
+Important: Previous Fix Failed
+
+The previous implementation did not solve the issue.
+
+Therefore, do not simply modify the Settings UI again or add the missing menu items manually.
+
+Find the actual reason why the production environment is behaving differently.
+
+Perform a Real Environment Comparison
+
+Compare the Lovable/preview environment and the production environment at the code and configuration level.
+
+Specifically inspect:
+
+Which frontend build/version is running in each environment.
+Whether both environments are connected to the exact same Supabase project.
+Whether the same database is being used.
+Whether the same environment variables are available.
+Whether the authenticated user receives the same role in both environments.
+Whether RLS policies behave differently.
+Whether any feature flags/configuration values differ.
+Whether Settings navigation is conditionally rendered.
+Whether route guards or permission checks hide the sections.
+Whether production is running an outdated JavaScript bundle.
+Whether browser/CDN caching is serving an older frontend.
+Whether production deployment failed to include recently added Settings functionality.
+Whether there are production-only runtime errors preventing the Settings components from loading.
+Whether any database query used by the Settings page is failing in production.
+Whether authentication/session state is different between the two environments.
+
+Verify With Evidence
+
+Do not tell me that something is fixed unless you actually verify it.
+
+Use the actual production environment and determine:
+
+Lovable Preview → what configuration/build/data is being used
+versus
+Production → what configuration/build/data is being used
+
+Identify the exact difference that causes the missing Settings sections.
+
+If necessary, inspect the browser console/network errors, frontend routes, environment configuration, database queries, authentication state, and deployed build.
+
+Fix the Root Cause
+
+Once the actual cause is identified, fix that root cause properly.
+
+The final production Admin Panel must show the same Settings sections that the authorized user can access inside the Lovable environment:
+
+General
+Invoice
+Logos
+Delivery Zones
+StreadFast
+Homepage
+Bike Models
+AI Tools
+
+Do not hardcode these menu items just to make them appear.
+
+The underlying functionality must also work correctly in production.
+
+Very Important
+
+If the production website is running an older build/version, determine why and make sure the correct/latest Admin Panel build is deployed.
+
+If the problem is caused by environment variables, database connection, authentication, role permissions, RLS, feature flags, caching, routing, or deployment configuration, fix that specific issue instead of creating a workaround.
+
+Final Verification
+
+After making the fix:
+
+Open the production website in a fresh/private browser session.
+Log in as an authorized Admin/Super Admin.
+Navigate to Settings.
+Verify that all Settings sections are visible.
+Open each section and verify that it actually works.
+Confirm that the Lovable preview and production environment are now using the intended configuration.
+
+Finally, report:
+
+Exact root cause
+Why Lovable worked but production did not
+What was changed
+Which files/configuration/database/permissions were involved
+How the fix was verified in production
+
+Do not report the task as completed unless the issue is actually reproduced, fixed, and verified in the external/production environment.`}
               </div>
 
 
