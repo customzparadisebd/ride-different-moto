@@ -33,6 +33,8 @@ import { Route as CzpOps9f2cIndexRouteImport } from './routes/czp-ops-9f2c.index
 import { Route as CzpOps9f2cSplatRouteImport } from './routes/czp-ops-9f2c.$'
 import { Route as OrderConfirmedIdRouteImport } from './routes/order-confirmed.$id'
 import { Route as ProductsSlugRouteImport } from './routes/products.$slug'
+import { Route as RobotsTxtRouteImport } from './routes/robots.txt'
+import { Route as SitemapXmlRouteImport } from './routes/sitemap.xml'
 import { Route as AuthenticatedAdIndexRouteImport } from './routes/_authenticated/ad/index'
 import { Route as AuthenticatedAdAuditLogRouteImport } from './routes/_authenticated/ad/audit-log'
 import { Route as AuthenticatedAdCouriersRouteImport } from './routes/_authenticated/ad/couriers'
@@ -176,6 +178,16 @@ const OrderConfirmedIdRoute = OrderConfirmedIdRouteImport.update({
 const ProductsSlugRoute = ProductsSlugRouteImport.update({
   id: '/products/$slug',
   path: '/products/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RobotsTxtRoute = RobotsTxtRouteImport.update({
+  id: '/robots/txt',
+  path: '/robots/txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapXmlRoute = SitemapXmlRouteImport.update({
+  id: '/sitemap/xml',
+  path: '/sitemap/xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdIndexRoute = AuthenticatedAdIndexRouteImport.update({
@@ -335,6 +347,8 @@ export interface FileRoutesByFullPath {
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
   '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -384,6 +398,8 @@ export interface FileRoutesByTo {
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/bike-models': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c': typeof CzpOps9f2cIndexRoute
   '/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -436,6 +452,8 @@ export interface FileRoutesById {
   '/czp-ops-9f2c/$': typeof CzpOps9f2cSplatRoute
   '/order-confirmed/$id': typeof OrderConfirmedIdRoute
   '/products/$slug': typeof ProductsSlugRoute
+  '/robots/txt': typeof RobotsTxtRoute
+  '/sitemap/xml': typeof SitemapXmlRoute
   '/bike-models/': typeof BikeModelsIndexRoute
   '/czp-ops-9f2c/': typeof CzpOps9f2cIndexRoute
   '/_authenticated/ad/audit-log': typeof AuthenticatedAdAuditLogRoute
@@ -488,6 +506,8 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/$'
     | '/order-confirmed/$id'
     | '/products/$slug'
+    | '/robots/txt'
+    | '/sitemap/xml'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
     | '/ad/audit-log'
@@ -537,6 +557,8 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/$'
     | '/order-confirmed/$id'
     | '/products/$slug'
+    | '/robots/txt'
+    | '/sitemap/xml'
     | '/bike-models'
     | '/czp-ops-9f2c'
     | '/ad/audit-log'
@@ -588,6 +610,8 @@ export interface FileRouteTypes {
     | '/czp-ops-9f2c/$'
     | '/order-confirmed/$id'
     | '/products/$slug'
+    | '/robots/txt'
+    | '/sitemap/xml'
     | '/bike-models/'
     | '/czp-ops-9f2c/'
     | '/_authenticated/ad/audit-log'
@@ -639,6 +663,8 @@ export interface RootRouteChildren {
   CzpOps9f2cSplatRoute: typeof CzpOps9f2cSplatRoute
   OrderConfirmedIdRoute: typeof OrderConfirmedIdRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
+  RobotsTxtRoute: typeof RobotsTxtRoute
+  SitemapXmlRoute: typeof SitemapXmlRoute
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
   ApiHeroUploadRoute: typeof ApiHeroUploadRoute
@@ -814,6 +840,20 @@ declare module '@tanstack/react-router' {
       path: '/products/$slug'
       fullPath: '/products/$slug'
       preLoaderRoute: typeof ProductsSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/robots/txt': {
+      id: '/robots/txt'
+      path: '/robots/txt'
+      fullPath: '/robots/txt'
+      preLoaderRoute: typeof RobotsTxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap/xml': {
+      id: '/sitemap/xml'
+      path: '/sitemap/xml'
+      fullPath: '/sitemap/xml'
+      preLoaderRoute: typeof SitemapXmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/ad/': {
@@ -1092,6 +1132,8 @@ const rootRouteChildren: RootRouteChildren = {
   CzpOps9f2cSplatRoute: CzpOps9f2cSplatRoute,
   OrderConfirmedIdRoute: OrderConfirmedIdRoute,
   ProductsSlugRoute: ProductsSlugRoute,
+  RobotsTxtRoute: RobotsTxtRoute,
+  SitemapXmlRoute: SitemapXmlRoute,
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
   ApiHeroUploadRoute: ApiHeroUploadRoute,
