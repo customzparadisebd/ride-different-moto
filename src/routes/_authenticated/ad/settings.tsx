@@ -20,7 +20,9 @@ import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSetting
 import { SiteSettingsPanel } from "@/components/admin/settings/SiteSettingsPanel";
 import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { SectionSettingsPanel } from "@/components/admin/settings/SectionSettingsPanel";
+import { LogoSettingsPanel } from "@/components/admin/settings/LogoSettingsPanel";
 import { Button } from "@/components/ui/button";
+
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
