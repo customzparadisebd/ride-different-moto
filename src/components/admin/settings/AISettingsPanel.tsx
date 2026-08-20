@@ -170,7 +170,7 @@ export function AISettingsPanel() {
       </div>
 
       {!draft.enabled && (
-        <div className="rounded-lg bg-secondary/20 p-4 border border-border/50">
+        <div className="rounded-lg bg-accent/30 dark:bg-secondary/20 p-4 border border-border dark:border-border/50">
           <p className="text-sm text-muted-foreground leading-relaxed">
             The AI feature is currently <strong>OFF</strong>. The existing Order System works exactly as it currently does. 
             No AI API requests are being made.

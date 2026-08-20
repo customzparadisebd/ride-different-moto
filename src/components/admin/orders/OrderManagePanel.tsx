@@ -112,7 +112,7 @@ export function OrderManagePanel({
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {/* ---- Order status updater ---- */}
-      <Card title="Order status">
+      <Card title="Order status" className="bg-card dark:bg-card">
         <div className="flex items-center gap-2">
           <StatusBadge value={order.status} />
           <span className="text-xs text-muted-foreground">current</span>
@@ -173,7 +173,7 @@ export function OrderManagePanel({
       </Card>
 
       {/* ---- Payment + transaction ---- */}
-      <Card title="Payment & transaction">
+      <Card title="Payment & transaction" className="bg-card dark:bg-card">
         <div className="grid gap-3 sm:grid-cols-2">
           <SelectField
             label="Payment method"
@@ -236,7 +236,7 @@ export function OrderManagePanel({
       </Card>
 
       {/* ---- Courier / delivery ---- */}
-      <Card title="Delivery & courier">
+      <Card title="Delivery & courier" className="bg-card dark:bg-card">
         <div className="grid gap-3 sm:grid-cols-2">
           <SelectField
             label="Delivery zone"
@@ -281,7 +281,7 @@ export function OrderManagePanel({
       </Card>
 
       {/* ---- Internal notes + history note ---- */}
-      <Card title="Admin internal notes">
+      <Card title="Admin internal notes" className="bg-card dark:bg-card">
         <Label htmlFor="internal-notes" className="sr-only">
           Internal notes
         </Label>
@@ -292,7 +292,7 @@ export function OrderManagePanel({
           rows={5}
           maxLength={4000}
           placeholder="Visible to staff only — never shown to the customer."
-          className="w-full rounded-md border border-input bg-background p-3 text-sm"
+          className="w-full rounded-md border border-input bg-background dark:bg-background p-3 text-sm"
         />
         <Button
           type="button"
@@ -334,9 +334,9 @@ export function OrderManagePanel({
   );
 }
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children, className }: { title: string; children: React.ReactNode; className?: string }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4 shadow-card">
+    <div className={cn("rounded-xl border border-border bg-card p-4 shadow-card", className)}>
       <h2 className="font-display text-lg font-bold uppercase tracking-wide">{title}</h2>
       <div className="mt-3">{children}</div>
     </div>
@@ -384,7 +384,7 @@ function SelectField({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm"
+        className="mt-1.5 h-11 w-full rounded-md border border-input bg-background dark:bg-background px-3 text-sm"
       >
         {options.map(([optionValue, optionLabel]) => (
           <option key={optionValue} value={optionValue}>
