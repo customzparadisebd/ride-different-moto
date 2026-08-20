@@ -42,7 +42,6 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
     if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
       mutation.mutate({
           ...draft,
-          nextNumber: 1,
         });
     }
   };
