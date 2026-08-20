@@ -14,15 +14,18 @@ export async function getSiteLogos(): Promise<SiteLogo[]> {
 export async function updateSiteLogo(input: LogoUpdateInput) {
   const { category, ...updates } = input;
   
+  const payload: any = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (updates.url !== undefined) payload.url = updates.url;
+  if (updates.storagePath !== undefined) payload.storage_path = updates.storagePath;
+  if (updates.settings !== undefined) payload.settings = updates.settings;
+  if (updates.isActive !== undefined) payload.is_active = updates.isActive;
+
   const { data, error } = await supabaseAdmin
     .from("site_logos")
-    .update({
-      url: updates.url,
-      storage_path: updates.storagePath,
-      settings: updates.settings,
-      is_active: updates.isActive,
-      updated_at: new Date().toISOString(),
-    })
+    .update(payload)
     .eq("category", category)
     .select()
     .single();
@@ -30,6 +33,7 @@ export async function updateSiteLogo(input: LogoUpdateInput) {
   if (error) throw error;
   return data as SiteLogo;
 }
+
 
 export async function uploadLogo(
   category: LogoCategory,
