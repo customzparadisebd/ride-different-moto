@@ -385,7 +385,13 @@ function AdminSettings() {
                   <AISettingsPanel />
                 </div>
               )}
+
+              {/* TAB: LOGOS */}
+              {search.tab === "logos" && (
+                <LogoSettingsPanel canManage={canManage} />
+              )}
             </>
+
           )}
         </div>
       </div>
