@@ -93,7 +93,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
 
       <div className="mt-6 space-y-6">
         {/* Current Info */}
-        <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-primary/5 p-4">
+        <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-primary/10 dark:bg-primary/5 p-4">
           <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
             Current Invoice Number
           </span>
