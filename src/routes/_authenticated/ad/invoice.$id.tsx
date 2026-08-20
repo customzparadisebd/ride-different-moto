@@ -37,7 +37,11 @@ function InvoicePage() {
     queryFn: () => fetchOrder({ data: { orderId: id } }),
   });
 
+  const { getLogo } = useSiteLogos();
+  const invoiceLogo = getLogo("invoice");
+
   const handlePrint = () => {
+
     const onAfterPrint = async () => {
       try {
         await markPrinted({ data: { orderIds: [id] } });

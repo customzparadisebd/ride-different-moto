@@ -131,6 +131,9 @@ const ADMINISTRATION: NavItem[] = [
   ];
 
 export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
+  const { getLogo } = useSiteLogos();
+  const logoUrl = getLogo("admin_sidebar");
+
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isPrivileged = access.primaryRole === "super_admin" || access.primaryRole === "admin";
 
