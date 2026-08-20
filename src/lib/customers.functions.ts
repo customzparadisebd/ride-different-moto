@@ -14,11 +14,17 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => customerListInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
-    assertAccess(
-      await resolveActor(context.userId, context.claims as never),
-      PERMISSIONS.ordersView,
-    );
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // SECURITY: Unapproved staff cannot access customer data (PII)
+    if (actor.status !== "approved") {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+    
+    if (!actor.permissions.includes(PERMISSIONS.ordersView)) {
+      throw new Error("Unauthorized. Missing orders.view permission.");
+    }
 
     let query = context.supabase.from("customers").select("*", { count: "exact" });
 
