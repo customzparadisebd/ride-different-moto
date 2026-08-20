@@ -5,8 +5,9 @@ import { SectionHeading } from "@/components/home/SectionHeading";
 import { ProductCard } from "@/components/ProductCard";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Info } from "lucide-react";
+import { Loader2, Info, ArrowRight } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 interface SectionPreviewDialogProps {
   open: boolean;
@@ -16,7 +17,7 @@ interface SectionPreviewDialogProps {
 
 export function SectionPreviewDialog({ open, onOpenChange, section }: SectionPreviewDialogProps) {
   const { data: products = [], isLoading } = useQuery({
-    queryKey: ["preview-products", section.categoryId, section.displayLimit],
+    queryKey: ["preview-products", section.productCategory, section.displayLimit],
     queryFn: async () => {
       let query = supabase
         .from("products")
@@ -25,8 +26,8 @@ export function SectionPreviewDialog({ open, onOpenChange, section }: SectionPre
         .order("created_at", { ascending: false })
         .limit(section.displayLimit);
 
-      if (section.categoryId !== "all") {
-        query = query.eq("category", section.categoryId);
+      if (section.productCategory && section.productCategory !== "all") {
+        query = query.eq("category", section.productCategory);
       }
 
       const { data, error } = await query;
@@ -62,11 +63,17 @@ export function SectionPreviewDialog({ open, onOpenChange, section }: SectionPre
             )}
 
             <SectionHeading
-              eyebrow={section.eyebrow}
+              eyebrow={section.productCategory ? (section.productCategory === "all" ? "Our Collection" : section.productCategory.replace(/-/g, " ")) : "Shop Now"}
               title={section.name}
-              showAction={section.showButton}
-              actionLabel={section.buttonText}
-              actionLink={section.buttonLink}
+              action={section.showSeeAll ? (
+                <Button 
+                  variant="ghost" 
+                  className="group h-auto p-0 font-display text-xs font-bold uppercase tracking-widest text-primary hover:bg-transparent"
+                >
+                  {section.buttonText}
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              ) : undefined}
             />
 
             <div className="mt-8">
@@ -102,5 +109,3 @@ export function SectionPreviewDialog({ open, onOpenChange, section }: SectionPre
     </Dialog>
   );
 }
-
-import { Button } from "@/components/ui/button";
