@@ -13,8 +13,9 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
-import type { SectionSetting } from "@/lib/sections.shared";
+import { SECTION_DEFAULTS, type SectionSetting } from "@/lib/sections.shared";
 import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export function SectionSettingsPanel() {
@@ -99,7 +100,17 @@ function SectionCard({
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleReset = () => {
+    const defaults = SECTION_DEFAULTS[section.id];
+    if (defaults) {
+      const resetData = { ...formData, ...defaults };
+      setFormData(resetData);
+      toast.info(`Resetting ${section.name} to defaults. Click "Save Changes" to apply.`);
+    }
+  };
+
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(section);
+
 
   return (
     <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
@@ -136,6 +147,15 @@ function SectionCard({
             </div>
             <Button
               size="sm"
+              variant="outline"
+              onClick={handleReset}
+              className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
+              title="Reset to original defaults"
+            >
+              <RotateCcw className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              size="sm"
               disabled={!hasChanges || isSaving}
               onClick={() => onSave(formData)}
               className="shadow-3d-primary active:translate-y-[2px] transition-all"
@@ -143,6 +163,7 @@ function SectionCard({
               {isSaving ? "Saving..." : "Save Changes"}
               <Save className="ml-2 h-3.5 w-3.5" />
             </Button>
+
           </div>
         </div>
       </CardHeader>
