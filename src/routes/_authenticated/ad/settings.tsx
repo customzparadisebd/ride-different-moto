@@ -30,7 +30,7 @@ import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.share
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
-  validateSearch: (search: Record<string, unknown>): { tab?: string } => {
+  validateSearch: (search: Record<string, unknown>): { tab?: string | undefined } => {
     const tab = search["tab"];
     return { tab: typeof tab === "string" ? tab : undefined };
   },
