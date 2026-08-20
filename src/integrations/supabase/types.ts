@@ -1976,6 +1976,45 @@ export type Database = {
         }
         Relationships: []
       }
+      site_logos: {
+        Row: {
+          category: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          label: string
+          settings: Json | null
+          storage_path: string | null
+          updated_at: string | null
+          updated_by: string | null
+          url: string | null
+        }
+        Insert: {
+          category: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          label: string
+          settings?: Json | null
+          storage_path?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          url?: string | null
+        }
+        Update: {
+          category?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          label?: string
+          settings?: Json | null
+          storage_path?: string | null
+          updated_at?: string | null
+          updated_by?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           address: string | null
