@@ -372,7 +372,7 @@ function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
   });
 
   const [imageMode, setImageMode] = useState<"upload" | "url">(
-    initialData?.image_url?.includes("supabase.co") ? "upload" : "url"
+    initialData?.image_url && !initialData?.image_url.startsWith('http') ? "upload" : "url"
   );
 
   return (
@@ -408,6 +408,28 @@ function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
             </div>
 
             <div className="space-y-4">
+              <div className="rounded-lg bg-primary/5 border border-primary/20 p-3 space-y-2">
+                <div className="flex items-center gap-2 text-primary">
+                  <Info className="h-4 w-4" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Smart Image Recommendation</span>
+                </div>
+                <p className="text-[10px] text-muted-foreground leading-relaxed">
+                  Best for: <strong className="text-foreground">1200x800px (3:2 ratio)</strong>.
+                  Format: <strong className="text-foreground">WebP/AVIF</strong>.
+                  Layout: <strong className="text-foreground">Centered subject with padding</strong>.
+                </p>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div className="text-[9px] bg-background/50 p-1.5 rounded border border-border/50">
+                    <span className="block text-muted-foreground uppercase mb-0.5">Performance</span>
+                    <span className="text-emerald-500 font-medium">95+ Score Target</span>
+                  </div>
+                  <div className="text-[9px] bg-background/50 p-1.5 rounded border border-border/50">
+                    <span className="block text-muted-foreground uppercase mb-0.5">SEO</span>
+                    <span className="text-cyan-500 font-medium">Alt Text Required</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex items-center justify-between mb-1">
                 <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Model Image</Label>
                 <div className="flex gap-1 p-0.5 rounded-md bg-accent/40 border border-border">
@@ -425,7 +447,34 @@ function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
                   guideline="1200x800 (3:2) recommended"
                 />
               ) : (
-                <Input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} placeholder="Image URL" />
+                <div className="space-y-2">
+                  <Input 
+                    value={formData.image_url} 
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} 
+                    placeholder="https://example.com/bike.jpg" 
+                    className={cn(formData.image_url && !formData.image_url.startsWith('http') && "border-destructive")}
+                  />
+                  {formData.image_url && !formData.image_url.startsWith('http') && (
+                    <p className="text-[9px] text-destructive font-bold uppercase tracking-tight">Invalid URL format</p>
+                  )}
+                </div>
+              )}
+              
+              {formData.image_url && (
+                <div className="relative aspect-[3/2] w-full overflow-hidden rounded-md border border-border bg-muted mt-2">
+                  <img 
+                    src={formData.image_url} 
+                    alt="Preview" 
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "/placeholder-bike.jpg";
+                      toast.error("Failed to load image from URL");
+                    }}
+                  />
+                  <div className="absolute top-2 right-2">
+                    <Badge className="bg-black/60 backdrop-blur-sm text-[9px] border-white/10">Preview</Badge>
+                  </div>
+                </div>
               )}
               
               <div className="space-y-2">
