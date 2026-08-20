@@ -25,6 +25,8 @@ import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/i18n";
 import { logNotFound } from "@/lib/analytics.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { listLogos } from "@/lib/logos.functions";
+
 import errorGif from "@/assets/404-error.gif.asset.json";
 import { SmoothCursor } from "@/components/SmoothCursor";
 import { type SiteSettings } from "@/lib/settings.shared";
@@ -122,12 +124,19 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async ({ context }) => {
-    const siteSettings = await context.queryClient.ensureQueryData({
-      queryKey: ["site-settings"],
-      queryFn: () => getSiteSettings(),
-    });
-    return { siteSettings };
+    const [siteSettings, logos] = await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-settings"],
+        queryFn: () => getSiteSettings(),
+      }),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-logos"],
+        queryFn: () => listLogos(),
+      }),
+    ]);
+    return { siteSettings, logos };
   },
+
   head: ({ loaderData }) => {
     const settings = (loaderData?.siteSettings as SiteSettings) || site;
     const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
