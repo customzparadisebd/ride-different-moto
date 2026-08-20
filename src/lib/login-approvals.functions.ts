@@ -13,7 +13,7 @@ export const createLoginApproval = createServerFn({ method: "POST" })
     const meta = requestMeta();
 
     // Admins and Super Admins don't need approval
-    if (actor.isSuperAdmin || actor.roles.includes("admin")) {
+    if (actor.isSuperAdmin || actor.primaryRole === "admin") {
       return { status: "approved" as const };
     }
 
@@ -59,7 +59,7 @@ export const createLoginApproval = createServerFn({ method: "POST" })
     return { requestId: (request as any).id as string, status: "pending" as const };
   });
 
-export const getLoginApprovalStatus = createServerFn({ method: "GET" })
+export const getLoginApprovalStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((id: unknown) => z.string().uuid().parse(id))
   .handler(async ({ data: requestId, context }) => {
