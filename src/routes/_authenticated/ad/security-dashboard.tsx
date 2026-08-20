@@ -379,9 +379,7 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-Configure a CDN with optimized caching for product and bike model images, including cache invalidation when images are updated in the Admin Panel.
-
-Add environment-based configuration for server timeouts, keep-alive, and headersTimeout, and display the active values in the Security Dashboard.`}
+Add runtime validation that verifies my environment-based timeout and header values are sane, and surface the effective values plus warnings in the Security Dashboard.`}
               </div>
 
 
