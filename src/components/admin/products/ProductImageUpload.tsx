@@ -391,8 +391,11 @@ export function ProductImageUpload({
           </label>
         )}
       </div>
-
+      
+      <ProductImageSpec multiple={multiple} />
+      
       <div className="rounded-md bg-muted/30 border border-border/50 p-3">
+
         <div className="flex items-start gap-2">
           <AlertCircle className="h-3.5 w-3.5 text-cyan-500 mt-0.5" />
           <div className="space-y-1">
