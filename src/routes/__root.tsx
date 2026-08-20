@@ -171,6 +171,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { name: "description", content: businessDescription },
         { property: "og:title", content: `${businessName} — ${businessTagline}` },
         { property: "og:description", content: businessDescription },
+        { property: "og:image", content: ogLogo },
+        { name: "twitter:image", content: ogLogo },
+
         { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
         { name: "generator", content: "CZP-Secure-Engine" },
         { property: "og:site_name", content: businessName },
@@ -185,7 +188,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
-        { rel: "icon", href: "/favicon.png", type: "image/png" },
+        { rel: "icon", href: favicon, type: favicon.endsWith(".png") ? "image/png" : "image/x-icon" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         {
@@ -202,7 +205,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "@type": "Organization",
             name: businessName,
             url: siteUrl,
-            logo: `${siteUrl}/logo-main.png`,
+            logo: mainLogo,
             contactPoint: {
               "@type": "ContactPoint",
               telephone: businessPhone,
@@ -219,7 +222,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: businessName,
-            image: `${siteUrl}/logo-main.png`,
+            image: mainLogo,
             "@id": siteUrl,
             url: siteUrl,
             telephone: businessPhone,
