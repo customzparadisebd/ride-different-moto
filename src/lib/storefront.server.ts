@@ -107,7 +107,7 @@ function toProduct(
 export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   const supabase = publicClient();
   const [products, colors, images] = await Promise.all([
-    supabase.from("products").select(PRODUCT_FIELDS).eq("is_active", true).is("deleted_at", null),
+    supabase.from("products").select(PRODUCT_FIELDS).eq("is_active", true).is("deleted_at", null).order("sort_order", { ascending: true, nullsFirst: false }).order("created_at", { ascending: false }),
     supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
     supabase.from("product_360_images").select("product_id, image_url").order("display_order"),
   ]);

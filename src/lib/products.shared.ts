@@ -254,6 +254,12 @@ export function productToRow(data: ReturnType<typeof productInput.parse>) {
   };
 }
 
+export const reorderProductsInput = z.object({
+  ids: z.array(z.string().uuid()).min(1).max(500),
+});
+
+export const PRODUCT_ORDER_COLUMNS = "id, name, sku, image_url, category, sort_order, is_active";
+
 export const bulkProductImageInput = z.object({
   ids: z.array(z.string().uuid()).min(1).max(100),
   imageUrl: z.string().trim().min(1).max(600).optional(),
