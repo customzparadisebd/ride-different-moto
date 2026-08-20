@@ -379,74 +379,9 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-\`\`\`javascript
-const server = http.createServer((req, res) => {
-  // Handle client disconnections
-  req.on('aborted', () => {
-    console.warn('Client aborted the request');
-    // Stop processing if request was aborted
-  });
-  req.on('close', () => {
-    if (!res.writableEnded) {
-      console.warn('Connection closed before response sent');
-    }
-  });
-  // Your request handling code...
-});
+Configure a CDN with optimized caching for product and bike model images, including cache invalidation when images are updated in the Admin Panel.
 
-server.on('clientError', (err, socket) => {
-  console.error('Client error:', err.message);
-  if (err.code === 'ECONNRESET' || !socket.writable) {
-    return;
-  }
-  socket.end('HTTP/1.1 400 Bad Request\\r\\n\\r\\n');
-});
-
-const server = http.createServer(app);
-server.timeout = 120000; // 2 minutes
-server.keepAliveTimeout = 30000; // 30 seconds
-server.headersTimeout = 60000; // 60 seconds
-
-app.use((err, req, res, next) => {
-  if (err.code === 'ECONNRESET' || err.code === 'EPIPE') {
-    console.warn('Connection closed by client');
-    return;
-  }
-  res.status(500).send('Internal Server Error');
-});
-
-app.use((req, res, next) => {
-  req.on('aborted', () => {
-    res.aborted = true;
-  });
-  const originalSend = res.send;
-  res.send = function(...args) {
-    if (res.aborted) {
-      console.warn('Request aborted, skipping response');
-      return;
-    }
-    originalSend.apply(this, args);
-  };
-  next();
-});
-
-process.on('SIGTERM', () => {
-  server.close(() => {
-    process.exit(0);
-  });
-  setTimeout(() => {
-    process.exit(1);
-  }, 10000);
-});
-
-process.on('uncaughtException', (err) => {
-  if (err.code === 'ECONNRESET' || err.message.includes('aborted')) {
-    console.warn('Ignoring aborted connection error');
-    return;
-  }
-  process.exit(1);
-});
-\`\`\``}
+Add environment-based configuration for server timeouts, keep-alive, and headersTimeout, and display the active values in the Security Dashboard.`}
               </div>
 
 
