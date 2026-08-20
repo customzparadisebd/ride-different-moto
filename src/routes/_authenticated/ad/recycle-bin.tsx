@@ -48,7 +48,7 @@ function RecycleBin() {
 
   const [tab, setTab] = useState<Tab>("products");
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({ data: undefined }) });
   const isSuperAdmin = accessQuery.data?.isSuperAdmin ?? false;
   const canManageProducts = accessQuery.data?.permissions.includes("products.manage") ?? false;
   const canManageOrders = accessQuery.data?.permissions.includes("orders.manage") ?? false;
