@@ -476,10 +476,12 @@ export const saveProduct360Image = createServerFn({ method: "POST" })
 export const saveProduct360Sequence = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) =>
-    z.object({
-      productId: z.string().uuid(),
-      images: z.array(z.string().url()),
-    }).parse(input)
+    z
+      .object({
+        productId: z.string().uuid(),
+        images: z.array(z.string().url()),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
@@ -501,9 +503,7 @@ export const saveProduct360Sequence = createServerFn({ method: "POST" })
       display_order: index,
     }));
 
-    const { error: insertError } = await context.supabase
-      .from("product_360_images")
-      .insert(rows);
+    const { error: insertError } = await context.supabase.from("product_360_images").insert(rows);
 
     if (insertError) throw new Error("Could not save the new 360° sequence.");
 
@@ -526,10 +526,7 @@ export const deleteProduct360Image = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase
-      .from("product_360_images")
-      .delete()
-      .eq("id", data.id);
+    const { error } = await context.supabase.from("product_360_images").delete().eq("id", data.id);
 
     if (error) throw new Error("Could not delete the 360° image.");
 
@@ -540,31 +537,6 @@ export const deleteProduct360Image = createServerFn({ method: "POST" })
       targetLabel: "360 Image Deleted",
     });
 
-    return { ok: true };
-  });
-      items: z.array(z.object({ imageUrl: z.string().url() })),
-    }).parse(input)
-  )
-  .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
-    const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.productsManage);
-
-    await context.supabase.from("product_360_images").delete().eq("product_id", data.productId);
-    const rows = data.items.map((item, index) => ({
-      product_id: data.productId,
-      image_url: item.imageUrl,
-      display_order: index,
-    }));
-    const { error } = await context.supabase.from("product_360_images").insert(rows);
-    if (error) throw new Error("Could not bulk update sequence.");
-
-    await auditFromActor(actor, {
-      action: AUDIT_ACTIONS.productUpdated,
-      targetType: "product_360_image",
-      targetId: data.productId,
-      newValue: { count: rows.length },
-    });
     return { ok: true };
   });
 
