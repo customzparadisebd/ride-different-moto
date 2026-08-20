@@ -26,21 +26,38 @@ import { formatBDT } from "@/lib/format";
 import { placeOrder } from "@/lib/orders.functions";
 import { checkoutSubmitInput, newIdempotencyKey } from "@/lib/orders.shared";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { listLogos } from "@/lib/logos.functions";
 import { type SiteSettings } from "@/lib/settings.shared";
+
 
 export const Route = createFileRoute("/checkout")({
   loader: async ({ context }) => {
-    return {
-      siteSettings: await context.queryClient.ensureQueryData({
+    const [siteSettings, logos] = await Promise.all([
+      context.queryClient.ensureQueryData({
         queryKey: ["site-settings"],
         queryFn: () => getSiteSettings(),
-      })
-    };
+      }),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-logos"],
+        queryFn: () => listLogos(),
+      }),
+    ]);
+    return { siteSettings, logos };
   },
+
   head: ({ loaderData }) => {
     const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const siteLogos = loaderData?.logos as any[];
     const productionDomain = (settings as SiteSettings).productionDomain || (settings as any).url?.replace("https://", "");
     const siteUrl = productionDomain ? `https://${productionDomain}` : site.url;
+
+    const getLogo = (category: string, fallback: string) => {
+      const found = siteLogos?.find(l => l.category === category && l.is_active);
+      return found?.url || fallback;
+    };
+
+    const ogLogo = getLogo("og_image", `${siteUrl}/logo-main.png`);
+
     const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
 
     return {
@@ -61,7 +78,7 @@ export const Route = createFileRoute("/checkout")({
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: `Checkout — ${businessName}` },
         { name: "twitter:description", content: "Securely place your order for premium motorcycle modification parts." },
-        { property: "og:image", content: `${siteUrl}/logo-main.png` },
+        { property: "og:image", content: ogLogo },
         { name: "robots", content: "noindex" },
       ],
     };
