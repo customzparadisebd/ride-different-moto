@@ -5,8 +5,20 @@ import { PERMISSIONS } from "./admin.shared";
 
 export const getHeroSlides = createServerFn({ method: "GET" })
   .validator((d: any) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
-  .handler(async ({ data: { admin } }) => {
+  .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { resolveActor } = await import("./admin.server");
+    
+    // SECURITY: Determine admin status from server-side session only
+    let isAdmin = false;
+    if (context.userId) {
+      try {
+        const actor = await resolveActor(context.userId, context.claims as never);
+        isAdmin = actor.isStaff && actor.status === "approved";
+      } catch {
+        isAdmin = false;
+      }
+    }
     
     // Join with bike_models to get name and slug if linked
     const query = supabaseAdmin
@@ -16,15 +28,16 @@ export const getHeroSlides = createServerFn({ method: "GET" })
         bike_model:bike_models(id, name, slug, image_url)
       `);
 
-    if (!admin) {
+    // SECURITY: Use server-resolved isAdmin flag, never the client-supplied one.
+    if (!isAdmin) {
       query.eq("is_active", true);
     }
 
-    const { data, error } = await query.order("sort_order", { ascending: true });
+    const { data: slides, error } = await query.order("sort_order", { ascending: true });
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map((slide) => {
+    return (slides || []).map((slide) => {
       const bikeModel = (slide as any).bike_model;
       return {
         id: slide.id,
