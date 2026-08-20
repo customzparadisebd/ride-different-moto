@@ -151,6 +151,15 @@ function SectionCard({
             <Button
               size="sm"
               variant="outline"
+              onClick={() => setIsPreviewing(true)}
+              className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
+              title="Preview homepage section"
+            >
+              <Monitor className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
               onClick={handleReset}
               className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
               title="Reset to original defaults"
@@ -171,6 +180,7 @@ function SectionCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-0">
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Basic Info */}
           <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
