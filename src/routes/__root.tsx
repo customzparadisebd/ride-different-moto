@@ -132,7 +132,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: ({ loaderData }) => {
     const settings = (loaderData?.siteSettings as SiteSettings | null) || site;
     const siteLogos = (loaderData?.logos as any[] | null) || [];
-    const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+    const siteUrl = (settings as any).productionDomain ? `https://${(settings as any).productionDomain}` : site.url;
 
     const getLogo = (category: string, fallback: string) => {
       const found = siteLogos?.find(l => l.category === category && l.is_active);
