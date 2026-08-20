@@ -68,7 +68,7 @@ export function Header() {
 
         {/* CENTER: Main navigation */}
         <nav
-          className="hidden flex-1 items-center justify-center gap-1 xl:gap-2 absolute left-1/2 -translate-x-1/2"
+          className="hidden lg:flex flex-1 items-center justify-center gap-1 xl:gap-2 absolute left-1/2 -translate-x-1/2"
           aria-label="Main"
         >
           {navLinks.map((link) => (
