@@ -5,18 +5,19 @@ import { PERMISSIONS } from "./admin.shared";
 
 export const getHeroSlides = createServerFn({ method: "GET" })
   .validator((d: any) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data: { admin }, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { resolveActor } = await import("./admin.server");
     
     // SECURITY: Determine admin status from server-side session only
     let isAdmin = false;
-    const userId = context?.userId;
-    const claims = context?.claims;
+    const ctx = context as any;
+    const userId = ctx?.userId;
+    const claims = ctx?.claims;
 
     if (userId) {
       try {
-        const actor = await resolveActor(userId, claims as never);
+        const actor = await resolveActor(userId, claims);
         isAdmin = actor.isStaff && actor.status === "approved";
       } catch {
         isAdmin = false;
