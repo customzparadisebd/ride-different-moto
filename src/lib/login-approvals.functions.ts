@@ -59,7 +59,7 @@ export const createLoginApproval = createServerFn({ method: "POST" })
     return { requestId: (request as any).id as string, status: "pending" as const };
   });
 
-export const getLoginApprovalStatus = createServerFn({ method: "GET" })
+export const getLoginApprovalStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((id: unknown) => z.string().uuid().parse(id))
   .handler(async ({ data: requestId, context }) => {
