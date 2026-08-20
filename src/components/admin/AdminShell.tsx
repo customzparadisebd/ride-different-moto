@@ -101,7 +101,32 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   return (
     <SidebarProvider>
       <div className="flex min-h-svh w-full flex-col bg-background">
-        {/* Header removed */}
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <SidebarTrigger />
+          <div className="flex flex-1 items-center justify-between">
+            <h1 className="text-sm font-bold tracking-widest uppercase">CUSTOMER PARADISE ADMIN PANEL</h1>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1.5">
+                  {access.email} {access.mfaSatisfied && <ShieldCheck className="h-3 w-3 text-emerald-500" />}
+                </span>
+                <StaffAvatar avatarUrl={access.avatarUrl} fallbackSeed={access.email} className="h-6 w-6 rounded-full" />
+              </div>
+              <div className="flex items-center gap-3 border-l pl-4">
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  {formattedTime} (Dhaka)
+                </div>
+                <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
+                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleSignOut} className="h-8 px-3 text-sm font-bold uppercase">
+                  Sign Out
+                </Button>
+              </div>
+            </div>
+          </div>
+        </header>
         <div className="flex flex-1 overflow-hidden">
           <AdminSidebar access={access} permissions={access.permissions} />
           <SidebarInset className="flex min-h-svh flex-col overflow-visible">
