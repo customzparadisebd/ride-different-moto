@@ -385,6 +385,11 @@ function AdminSettings() {
                 </div>
               )}
 
+              {/* TAB: GALLERY */}
+              {search.tab === "gallery" && (
+                <GalleryPanel />
+              )}
+
               {/* TAB: AI TOOLS */}
               {search.tab === "ai" && (
                 <div className="space-y-8">
