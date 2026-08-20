@@ -375,10 +375,7 @@ function SecurityDashboardPage() {
           <CardHeader>
             <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-600" />
-              '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
-                                        
-                                            
-                                            Load the security issues from the scan results and fix the selected issues.
+              Security Alerts
 
 
             </CardTitle>
