@@ -234,7 +234,7 @@ function AdminHeroSlides() {
     <div className="mx-auto max-w-5xl space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Homepage Visuals</h1>
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-foreground dark:text-white">Homepage Visuals</h1>
           <p className="text-sm text-muted-foreground">
             Manage the Hero Slider banners and Bike Model Explorer cards.
           </p>
@@ -464,7 +464,7 @@ function AdminHeroSlides() {
                     onDragEnd={handleSort}
                     onDragOver={(e) => e.preventDefault()}
                     className={`group relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                      slide.active ? "border-border bg-card shadow-sm" : "border-dashed border-muted-foreground/30 bg-muted/5 opacity-80"
+                      slide.active ? "border-border bg-card shadow-sm dark:bg-card dark:border-white/5" : "border-dashed border-muted-foreground/30 bg-muted/5 opacity-80"
                     } ${editingId === slide.id ? "ring-2 ring-primary shadow-2xl scale-[1.01]" : "hover:border-primary/50"} ${!editingId ? "cursor-move" : ""}`}
                   >
                     {editingId === slide.id ? (
@@ -612,7 +612,7 @@ function AdminHeroSlides() {
                                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary border border-primary/20">
                                   {index + 1}
                                 </span>
-                                <h3 className="font-display text-xl font-bold uppercase tracking-wide">
+                                <h3 className="font-display text-xl font-bold uppercase tracking-wide text-foreground dark:text-white">
                                   {slide.bikeName}
                                 </h3>
                               </div>
@@ -655,15 +655,15 @@ function AdminHeroSlides() {
         </TabsContent>
 
         <TabsContent value="models" className="mt-6 animate-in fade-in duration-500">
-          <Card className="border-border bg-card/50">
+          <Card className="border-border bg-card dark:bg-card/50">
             <CardHeader>
-              <CardTitle className="font-display text-lg font-bold uppercase">Bike Explorer Controls</CardTitle>
+              <CardTitle className="font-display text-lg font-bold uppercase text-foreground dark:text-white">Bike Explorer Controls</CardTitle>
               <CardDescription>Select which bike models appear in the homepage explorer carousel.</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-4">
                 {bikeModels.map((model: any) => (
-                  <div key={model.id} className="flex flex-col gap-4 rounded-lg border bg-muted/30 p-4 transition-colors hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
+                  <div key={model.id} className="flex flex-col gap-4 rounded-lg border border-border bg-accent/30 dark:bg-muted/30 p-4 transition-colors hover:bg-accent/50 dark:hover:bg-muted/50 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
                       <div className="h-12 w-20 shrink-0 overflow-hidden rounded bg-black/20">
                         {model.image_url ? (
@@ -673,7 +673,7 @@ function AdminHeroSlides() {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <p className="font-display font-bold uppercase tracking-wide">{model.name}</p>
+                        <p className="font-display font-bold uppercase tracking-wide text-foreground dark:text-white">{model.name}</p>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{model.slug}</p>
                       </div>
                     </div>
