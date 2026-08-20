@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
-import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, Link2, Layout, Settings2, GripVertical } from "lucide-react";
+import { Plus, Trash2, Edit2, Save, X, Upload, Loader2, Link2, Layout, Settings2, GripVertical, Monitor } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
