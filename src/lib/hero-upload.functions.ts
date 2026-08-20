@@ -5,7 +5,8 @@ import { PERMISSIONS } from "./admin.shared";
 
 export const uploadHeroBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ request, context }) => {
+  .validator((d: any) => d)
+  .handler(async ({ data: formData, context }) => {
     const ctx = context as any;
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(ctx.userId, ctx.claims as never);
