@@ -107,7 +107,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
         <div className="flex flex-1 overflow-hidden">
           <AdminSidebar access={access} permissions={access.permissions} />
           <SidebarInset className="flex min-h-svh flex-col overflow-visible">
-            <header className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card px-4 py-3 shadow-sm">
+            <header className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-card/95 px-4 py-3 shadow-sm backdrop-blur-sm">
               <div className="flex items-center gap-2">
                 <SidebarTrigger />
                 <div className="flex items-center gap-3">
