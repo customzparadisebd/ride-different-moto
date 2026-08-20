@@ -249,7 +249,7 @@ function AdminOrderDetail() {
                     <div className="z-10 mt-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary ring-4 ring-background">
                       <div className="h-2 w-2 rounded-full bg-white animate-pulse" />
                     </div>
-                    <div className="flex-1 rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="flex-1 rounded-lg border border-primary/20 bg-primary/10 dark:bg-primary/5 p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold uppercase text-primary">
                           Live: {statusLabel(trackingQuery.data.latest.status)}
