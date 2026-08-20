@@ -95,10 +95,12 @@ function SectionCard({
   isSaving: boolean;
 }) {
   const [formData, setFormData] = React.useState<SectionSetting>(section);
+  const [isPreviewing, setIsPreviewing] = React.useState(false);
 
   const handleChange = (field: keyof SectionSetting, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
 
   const handleReset = () => {
     const defaults = SECTION_DEFAULTS[section.id];
