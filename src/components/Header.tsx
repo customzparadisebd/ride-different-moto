@@ -66,7 +66,7 @@ export function Header() {
           </Link>
         </div>
 
-        {/* CENTER: Navigation */}
+        {/* CENTER: Navigation (Desktop) */}
         <nav className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -78,6 +78,33 @@ export function Header() {
             </Link>
           ))}
         </nav>
+
+        {/* MOBILE/TABLET: Menu Button */}
+        <div className="flex lg:hidden shrink-0">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <Menu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+              <SheetTitle className="sr-only">Menu</SheetTitle>
+              <nav className="mt-8 flex flex-col gap-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between py-2 text-lg font-bold uppercase tracking-widest text-foreground transition-colors hover:text-primary"
+                  >
+                    {link.label}
+                    <ChevronRight className="h-5 w-5 opacity-50" />
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
         <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
