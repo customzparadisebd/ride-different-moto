@@ -66,42 +66,54 @@ export function Header() {
           </Link>
         </div>
 
-        {/* CENTER: Navigation (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-6">
+        {/* CENTER: Navigation (Desktop/Tab) */}
+        <nav className="hidden md:flex items-center gap-4 lg:gap-8">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="text-[13px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
+              className="text-[11px] lg:text-[13px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary whitespace-nowrap"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        {/* MOBILE/TABLET: Menu Button */}
-        <div className="flex lg:hidden shrink-0">
+        {/* MOBILE: Menu Button */}
+        <div className="flex md:hidden shrink-0">
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="h-9 w-9">
                 <Menu />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-[300px] sm:w-[400px]">
-              <SheetTitle className="sr-only">Menu</SheetTitle>
-              <nav className="mt-8 flex flex-col gap-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-between py-2 text-lg font-bold uppercase tracking-widest text-foreground transition-colors hover:text-primary"
-                  >
-                    {link.label}
-                    <ChevronRight className="h-5 w-5 opacity-50" />
-                  </Link>
-                ))}
-              </nav>
+            <SheetContent side="left" className="w-[280px] bg-background border-r border-border p-0">
+              <div className="flex flex-col h-full">
+                <div className="p-6 border-b border-border">
+                  <Logo category="header" className="h-8 w-auto" />
+                </div>
+                <nav className="flex-1 overflow-y-auto py-6">
+                  {navLinks.map((link) => {
+                    const Icon = NAV_ICONS[link.to] || Home;
+                    return (
+                      <Link
+                        key={link.to}
+                        to={link.to}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-4 px-6 py-4 text-sm font-bold uppercase tracking-[0.2em] text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary active:bg-primary/10"
+                      >
+                        <Icon className="h-5 w-5" />
+                        {link.label}
+                      </Link>
+                    );
+                  })}
+                </nav>
+                <div className="p-6 border-t border-border bg-muted/20">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    © {new Date().getFullYear()} {businessName}
+                  </p>
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
