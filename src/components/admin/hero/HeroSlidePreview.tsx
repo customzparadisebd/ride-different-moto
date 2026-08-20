@@ -14,23 +14,45 @@ interface SlidePreviewProps {
     mobileImage?: string | null;
     bikeSlug?: string | null;
     isFullBanner?: boolean;
-  };
+  } | Array<{
+    bikeName: string;
+    label?: string | null;
+    image: string;
+    mobileImage?: string | null;
+    bikeSlug?: string | null;
+    isFullBanner?: boolean;
+  }>;
+
 }
 
 export function HeroSlidePreview({ open, onOpenChange, slide }: SlidePreviewProps) {
-  // Transform form data to match HeroSlide structure strictly
-  const previewSlides: HeroSlide[] = [{
-    id: 'preview',
-    bikeName: slide.bikeName || "Slide Preview",
-    label: slide.label || null,
-    image: slide.image || "",
-    mobileImage: slide.mobileImage || null,
-    alt: slide.bikeName || "Hero Slide",
-    bikeSlug: slide.bikeSlug || "all-products",
-    order: 0,
-    active: true,
-    isFullBanner: slide.isFullBanner || false
-  }];
+  // Use all provided slides if available, otherwise just the single one
+  const previewSlides: HeroSlide[] = Array.isArray(slide) 
+    ? slide.map((s, i) => ({
+        id: `preview-${i}`,
+        bikeName: s.bikeName || "Slide Preview",
+        label: s.label || null,
+        image: s.image || "",
+        mobileImage: s.mobileImage || null,
+        alt: s.bikeName || "Hero Slide",
+        bikeSlug: s.bikeSlug || "all-products",
+        order: i,
+        active: true,
+        isFullBanner: s.isFullBanner || false
+      }))
+    : [{
+        id: 'preview',
+        bikeName: slide.bikeName || "Slide Preview",
+        label: slide.label || null,
+        image: slide.image || "",
+        mobileImage: slide.mobileImage || null,
+        alt: slide.bikeName || "Hero Slide",
+        bikeSlug: slide.bikeSlug || "all-products",
+        order: 0,
+        active: true,
+        isFullBanner: slide.isFullBanner || false
+      }];
+
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

@@ -19,7 +19,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { GripVertical, Save, Trash2, Package } from "lucide-react";
+import { GripVertical, Save, Trash2, Package, Monitor } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -29,7 +29,11 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { listProducts, updateFeaturedProducts } from "@/lib/products.functions";
+import { getSectionSettings } from "@/lib/sections.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
+import { SectionPreviewDialog } from "@/components/admin/settings/SectionPreviewDialog";
+
+
 
 export const Route = createFileRoute("/_authenticated/ad/featured")({
   component: FeaturedAdminPage,
@@ -123,6 +127,15 @@ function FeaturedAdminPage() {
 
   const [localItems, setLocalItems] = useState<any[]>([]);
   const [isDirty, setIsDirty] = useState(false);
+  const [previewSection, setPreviewSection] = useState<any | null>(null);
+
+  const fetchSectionSettings = useServerFn(getSectionSettings);
+  const { data: sectionSettings = [] } = useQuery({
+    queryKey: ["section-settings"],
+    queryFn: () => fetchSectionSettings(),
+  });
+
+
 
   useEffect(() => {
     if (productsData?.rows) {
@@ -204,8 +217,27 @@ function FeaturedAdminPage() {
               <Save className="size-4" /> Save Order
             </Button>
           )}
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => {
+              const setting = sectionSettings.find((s: any) => s.id === "featured_deals");
+              if (setting) setPreviewSection(setting);
+            }}
+          >
+            <Monitor className="size-4" /> Preview Section
+          </Button>
         </div>
       </div>
+
+      {previewSection && (
+        <SectionPreviewDialog
+          open={!!previewSection}
+          onOpenChange={(open) => !open && setPreviewSection(null)}
+          section={previewSection}
+        />
+      )}
+
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">

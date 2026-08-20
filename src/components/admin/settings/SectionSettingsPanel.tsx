@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag, AlertCircle, RotateCcw } from "lucide-react";
+import { Save, Settings2, Eye, EyeOff, LayoutGrid, Sliders, Hash, Type, Link as LinkIcon, ListOrdered, Tag, AlertCircle, RotateCcw, Monitor } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,8 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
 import { SECTION_DEFAULTS, type SectionSetting } from "@/lib/sections.shared";
 import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
+import { SectionPreviewDialog } from "./SectionPreviewDialog";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 export function SectionSettingsPanel() {
   const queryClient = useQueryClient();
@@ -95,10 +97,12 @@ function SectionCard({
   isSaving: boolean;
 }) {
   const [formData, setFormData] = React.useState<SectionSetting>(section);
+  const [isPreviewing, setIsPreviewing] = React.useState(false);
 
   const handleChange = (field: keyof SectionSetting, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
+
 
   const handleReset = () => {
     const defaults = SECTION_DEFAULTS[section.id];
@@ -111,9 +115,10 @@ function SectionCard({
 
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(section);
 
-
   return (
-    <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
+    <>
+      <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
+
       <div className={`h-1 w-full transition-colors ${formData.enabled ? 'bg-primary' : 'bg-muted'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
@@ -148,6 +153,15 @@ function SectionCard({
             <Button
               size="sm"
               variant="outline"
+              onClick={() => setIsPreviewing(true)}
+              className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
+              title="Preview homepage section"
+            >
+              <Monitor className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
               onClick={handleReset}
               className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
               title="Reset to original defaults"
@@ -168,6 +182,7 @@ function SectionCard({
         </div>
       </CardHeader>
       <CardContent className="space-y-6 pt-0">
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Basic Info */}
           <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
@@ -307,5 +322,14 @@ function SectionCard({
         </div>
       </CardContent>
     </Card>
+
+    <SectionPreviewDialog 
+      open={isPreviewing} 
+      onOpenChange={setIsPreviewing} 
+      section={formData} 
+    />
+    </>
   );
 }
+
+
