@@ -37,7 +37,7 @@ export function LogoSettingsPanel({ canManage }: { canManage: boolean }) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: update,
+    mutationFn: (data: any) => update({ data }),
     onSuccess: () => {
       toast.success("Logo settings updated");
       void queryClient.invalidateQueries({ queryKey: ["site-logos"] });
@@ -46,7 +46,7 @@ export function LogoSettingsPanel({ canManage }: { canManage: boolean }) {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: upload,
+    mutationFn: (data: any) => upload({ data }),
     onSuccess: () => {
       toast.success("Logo uploaded successfully");
       void queryClient.invalidateQueries({ queryKey: ["site-logos"] });
@@ -55,13 +55,14 @@ export function LogoSettingsPanel({ canManage }: { canManage: boolean }) {
   });
 
   const resetMutation = useMutation({
-    mutationFn: reset,
+    mutationFn: (data: any) => reset({ data }),
     onSuccess: () => {
       toast.success("Logo reset to default");
       void queryClient.invalidateQueries({ queryKey: ["site-logos"] });
     },
     onError: (err: any) => toast.error(err.message || "Failed to reset logo"),
   });
+
 
   if (isLoading) return <div className="py-10 text-center text-muted-foreground animate-pulse">Loading logos...</div>;
 
