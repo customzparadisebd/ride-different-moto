@@ -735,6 +735,93 @@ export type Database = {
         }
         Relationships: []
       }
+      flash_sale_products: {
+        Row: {
+          created_at: string
+          flash_sale_id: string
+          id: string
+          product_id: string
+        }
+        Insert: {
+          created_at?: string
+          flash_sale_id: string
+          id?: string
+          product_id: string
+        }
+        Update: {
+          created_at?: string
+          flash_sale_id?: string
+          id?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sale_products_flash_sale_id_fkey"
+            columns: ["flash_sale_id"]
+            isOneToOne: false
+            referencedRelation: "flash_sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "flash_sale_products_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      flash_sales: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          discount_type: string
+          discount_value: number
+          end_date: string | null
+          end_time: string | null
+          id: string
+          is_active: boolean
+          name: string
+          priority: number
+          start_date: string | null
+          start_time: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          end_date?: string | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          priority?: number
+          start_date?: string | null
+          start_time?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          discount_type?: string
+          discount_value?: number
+          end_date?: string | null
+          end_time?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          priority?: number
+          start_date?: string | null
+          start_time?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       hero_slides: {
         Row: {
           bike_model_id: string | null
