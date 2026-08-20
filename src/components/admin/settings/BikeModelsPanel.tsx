@@ -372,7 +372,7 @@ function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
   });
 
   const [imageMode, setImageMode] = useState<"upload" | "url">(
-    initialData?.image_url?.includes("supabase.co") ? "upload" : "url"
+    initialData?.image_url && !initialData?.image_url.startsWith('http') ? "upload" : "url"
   );
 
   return (
