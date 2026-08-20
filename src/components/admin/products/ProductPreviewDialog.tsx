@@ -33,11 +33,9 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
         <div className="lg:col-span-7 xl:col-span-8">
           <ProductGallery
             images={product.gallery}
-            name={product.name}
-            badge={product.badgeText || undefined}
-            has360={product.has360View}
-            product360Images={product.product360Images}
+            productName={product.name}
           />
+
         </div>
 
         {/* Right: Info */}
