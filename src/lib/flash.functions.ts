@@ -1,12 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { supabase } from "@/integrations/supabase/client";
+import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { flashSaleInput, type FlashSale } from "./flash.shared";
 import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 export const getFlashSales = createServerFn({ method: "GET" }).handler(async (): Promise<FlashSale[]> => {
-  const { data, error } = await (supabase as any)
+    const admin = await supabaseAdmin();
+    const { data, error } = await admin
+    .select("*, flash_sale_products(product_id)")
     .from("flash_sales")
     .select("*, flash_sale_products(product_id)")
     .order("priority", { ascending: false });
