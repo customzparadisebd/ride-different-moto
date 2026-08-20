@@ -196,7 +196,7 @@ export function ManualOrderForm({
     <form className="mt-6 space-y-6" onSubmit={handleSubmit}>
       {/* ---- AI Organizer (Visible only when enabled) ---- */}
       {aiEnabled && (
-        <fieldset className="rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-sm">
+        <fieldset className="rounded-xl border border-primary/30 bg-primary/5 dark:bg-primary/5 p-4 shadow-sm">
           <legend className="flex items-center gap-2 px-1 font-display text-sm font-bold uppercase text-primary">
             <Sparkles className="h-4 w-4" />
             Organize with AI
@@ -206,7 +206,7 @@ export function ManualOrderForm({
               placeholder="Paste messy customer info here (e.g. name, phone, address, product, quantity...)"
               value={aiInput}
               onChange={(e) => setAiInput(e.target.value)}
-              className="min-h-[100px] border-primary/20 bg-background/50 focus:border-primary"
+              className="min-h-[100px] border-primary/20 bg-background dark:bg-background/50 focus:border-primary"
             />
             <div className="flex justify-end">
               <Button
@@ -233,7 +233,7 @@ export function ManualOrderForm({
       )}
 
       {/* ---- Customer ---- */}
-      <fieldset className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <fieldset className="rounded-xl border border-border bg-card dark:bg-card p-4 shadow-card">
         <legend className="px-1 font-display text-sm font-bold uppercase">Customer</legend>
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label="Full name" htmlFor="manual-customer-name">
@@ -291,7 +291,7 @@ export function ManualOrderForm({
       </fieldset>
 
       {/* ---- Items ---- */}
-      <fieldset className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <fieldset className="rounded-xl border border-border bg-card dark:bg-card p-4 shadow-card">
         <legend className="px-1 font-display text-sm font-bold uppercase">Products</legend>
         <div className="space-y-3">
           {items.map((line, index) => (
@@ -380,7 +380,7 @@ export function ManualOrderForm({
       </fieldset>
 
       {/* ---- Payment & pricing ---- */}
-      <fieldset className="rounded-xl border border-border bg-card p-4 shadow-card">
+      <fieldset className="rounded-xl border border-border bg-card dark:bg-card p-4 shadow-card">
         <legend className="px-1 font-display text-sm font-bold uppercase">Payment & pricing</legend>
         <div className="grid gap-3 sm:grid-cols-3">
           <Field label="Discount (৳)">

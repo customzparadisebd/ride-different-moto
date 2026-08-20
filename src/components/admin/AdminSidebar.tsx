@@ -173,7 +173,7 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
 
   return (
     <Sidebar collapsible="icon" className="sticky top-0 h-svh">
-      <SidebarHeader className="border-b border-border/50 pb-2">
+      <SidebarHeader className="border-b border-sidebar-border/50 pb-2">
         <div className="flex items-center gap-3 px-2 pt-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <img
             src={czpLogoAsset.url}
