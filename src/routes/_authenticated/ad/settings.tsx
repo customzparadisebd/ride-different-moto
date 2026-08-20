@@ -22,6 +22,7 @@ import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { SectionSettingsPanel } from "@/components/admin/settings/SectionSettingsPanel";
 import { LogoSettingsPanel } from "@/components/admin/settings/LogoSettingsPanel";
 import { BikeModelsPanel } from "@/components/admin/settings/BikeModelsPanel";
+import { GalleryPanel } from "@/components/admin/settings/GalleryPanel";
 import { Button } from "@/components/ui/button";
 
 
@@ -137,6 +138,11 @@ function AdminSettings() {
               active={location.pathname === "/ad/settings" && search.tab === "bike-models"}
               onClick={() => navigate({ to: "/ad/settings", search: { tab: "bike-models" } })}
               label="Bike Models"
+            />
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && search.tab === "gallery"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "gallery" } })}
+              label="Gallery"
             />
             <SettingsTabButton
               active={location.pathname === "/ad/settings" && search.tab === "ai"}
@@ -377,6 +383,11 @@ function AdminSettings() {
                   </div>
                   <SectionSettingsPanel />
                 </div>
+              )}
+
+              {/* TAB: GALLERY */}
+              {search.tab === "gallery" && (
+                <GalleryPanel />
               )}
 
               {/* TAB: AI TOOLS */}
