@@ -319,7 +319,7 @@ function RootComponent() {
               >
                 Skip to main content
               </a>
-              {isPrivateArea ? null : <Header />}
+              {pathname.startsWith("/ad") ? null : <Header />}
               <main
                 id="main-content"
                 tabIndex={-1}
