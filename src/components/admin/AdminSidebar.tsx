@@ -7,6 +7,8 @@
 //          every server function re-checks the permission.
 // ============================================================
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useSiteLogos } from "@/hooks/use-site-logos";
+
 import {
   ClipboardList,
   LayoutDashboard,
@@ -150,8 +152,6 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
   const renderGroup = (label: string, items: NavItem[]) => {
     const visible = items.filter(allowed);
     if (!visible.length) return null;
-  const { getLogo } = useSiteLogos();
-  const logoUrl = getLogo("admin_sidebar");
 
   return (
 
