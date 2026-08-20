@@ -109,8 +109,8 @@ function AdminSettings() {
               label="General"
             />
             <SettingsTabButton
-              active={location.pathname.includes("/invoice")}
-              onClick={() => navigate({ to: "/ad/settings/invoice" })}
+              active={location.pathname === "/ad/settings" && search.tab === "invoice"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "invoice" } })}
               label="Invoice"
             />
             <SettingsTabButton
