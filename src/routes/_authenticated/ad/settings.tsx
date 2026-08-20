@@ -31,7 +31,8 @@ import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functi
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
   validateSearch: (search: Record<string, unknown>): { tab?: string } => {
-    return { tab: typeof search.tab === "string" ? search.tab : undefined };
+    const tab = search["tab"];
+    return { tab: typeof tab === "string" ? tab : undefined };
   },
   head: () => ({
     meta: [
@@ -45,6 +46,7 @@ export const Route = createFileRoute("/_authenticated/ad/settings")({
 
 function AdminSettings() {
   const queryClient = useQueryClient();
+  const search = Route.useSearch();
   const load = useServerFn(getStoreSettings);
   const save = useServerFn(saveStoreSettings);
   const access = useServerFn(getMyAccess);
@@ -98,8 +100,8 @@ function AdminSettings() {
         <aside className="w-full shrink-0 md:w-56">
           <nav className="flex gap-1 overflow-x-auto pb-2 md:flex-col md:overflow-visible md:pb-0">
             <SettingsTabButton
-              active={location.pathname === "/ad/settings" && !location.search}
-              onClick={() => navigate({ to: "/ad/settings", search: {} as any })}
+              active={location.pathname === "/ad/settings" && (!search.tab || search.tab === "general")}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "general" } })}
               label="General"
             />
             <SettingsTabButton
@@ -108,23 +110,23 @@ function AdminSettings() {
               label="Invoice"
             />
             <SettingsTabButton
-              active={location.pathname === "/ad/settings" && location.search.includes("tab=delivery")}
-              onClick={() => navigate({ to: "/ad/settings", search: { tab: "delivery" } as any })}
+              active={location.pathname === "/ad/settings" && search.tab === "delivery"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "delivery" } })}
               label="Delivery Zones"
             />
             <SettingsTabButton
-              active={location.pathname === "/ad/settings" && location.search.includes("tab=couriers")}
-              onClick={() => navigate({ to: "/ad/settings", search: { tab: "couriers" } as any })}
+              active={location.pathname === "/ad/settings" && search.tab === "couriers"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "couriers" } })}
               label="SteadFast"
             />
             <SettingsTabButton
-              active={location.pathname === "/ad/settings" && location.search.includes("tab=homepage")}
-              onClick={() => navigate({ to: "/ad/settings", search: { tab: "homepage" } as any })}
+              active={location.pathname === "/ad/settings" && search.tab === "homepage"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "homepage" } })}
               label="Homepage"
             />
             <SettingsTabButton
-              active={location.pathname === "/ad/settings" && location.search.includes("tab=ai")}
-              onClick={() => navigate({ to: "/ad/settings", search: { tab: "ai" } as any })}
+              active={location.pathname === "/ad/settings" && search.tab === "ai"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "ai" } })}
               label="AI Tools"
             />
           </nav>
@@ -137,7 +139,7 @@ function AdminSettings() {
           {location.pathname === "/ad/settings" && (
             <>
               {/* TAB: GENERAL */}
-              {(!location.search || location.search.includes("tab=general") || !location.search.includes("tab=")) && (
+              {(!search.tab || search.tab === "general") && (
                 <div className="space-y-8">
                   <div>
                     <h1 className="font-display text-3xl font-bold uppercase tracking-wide">General Settings</h1>
@@ -317,7 +319,7 @@ function AdminSettings() {
               )}
 
               {/* TAB: DELIVERY ZONES */}
-              {location.search.includes("tab=delivery") && (
+              {search.tab === "delivery" && (
                 <div className="space-y-8">
                   <div>
                     <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Delivery Zones</h1>
@@ -338,7 +340,7 @@ function AdminSettings() {
               )}
 
               {/* TAB: STEADFAST */}
-              {location.search.includes("tab=couriers") && (
+              {search.tab === "couriers" && (
                 <div className="space-y-8">
                   <div>
                     <h1 className="font-display text-3xl font-bold uppercase tracking-wide">SteadFast API</h1>
@@ -351,7 +353,7 @@ function AdminSettings() {
               )}
 
               {/* TAB: HOMEPAGE */}
-              {location.search.includes("tab=homepage") && (
+              {search.tab === "homepage" && (
                 <div className="space-y-8">
                   <div>
                     <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Homepage Sections</h1>
@@ -364,7 +366,7 @@ function AdminSettings() {
               )}
 
               {/* TAB: AI TOOLS */}
-              {location.search.includes("tab=ai") && (
+              {search.tab === "ai" && (
                 <div className="space-y-8">
                   <div>
                     <h1 className="font-display text-3xl font-bold uppercase tracking-wide">AI Engine</h1>
