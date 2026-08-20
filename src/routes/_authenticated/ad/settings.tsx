@@ -112,6 +112,12 @@ function AdminSettings() {
               label="Invoice"
             />
             <SettingsTabButton
+              active={location.pathname === "/ad/settings" && search.tab === "logos"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "logos" } })}
+              label="Logos"
+            />
+            <SettingsTabButton
+
               active={location.pathname === "/ad/settings" && search.tab === "delivery"}
               onClick={() => navigate({ to: "/ad/settings", search: { tab: "delivery" } })}
               label="Delivery Zones"
