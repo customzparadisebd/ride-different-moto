@@ -236,7 +236,7 @@ export const updateBikeModelImage = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        imageUrl: z.string().url(),
+        imageUrl: z.string(),
       })
       .parse(d),
   )
