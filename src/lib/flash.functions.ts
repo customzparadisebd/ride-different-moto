@@ -6,9 +6,7 @@ import { flashSaleInput, type FlashSale } from "./flash.shared";
 import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 
 export const getFlashSales = createServerFn({ method: "GET" }).handler(async (): Promise<FlashSale[]> => {
-    const admin = await supabaseAdmin();
-    const { data, error } = await admin
-    .select("*, flash_sale_products(product_id)")
+  const { data, error } = await supabaseAdmin
     .from("flash_sales")
     .select("*, flash_sale_products(product_id)")
     .order("priority", { ascending: false });
