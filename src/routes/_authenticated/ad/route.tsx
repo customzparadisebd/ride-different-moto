@@ -26,9 +26,10 @@ export const Route = createFileRoute("/_authenticated/ad")({
 
     // 1. MFA Verification (Identity Check)
     // Every staff user must use 2FA for account security.
-    if (access.mfaRequired && !access.mfaSatisfied && !import.meta.env.VITE_DEV_BYPASS_MFA) {
+    if (access.mfaRequired && !access.mfaSatisfied && !import.meta.env["VITE_DEV_BYPASS_MFA"]) {
       throw redirect({ to: "/ad/mfa" });
     }
+
 
 
     // 2. Staff Status Check (Permanent Account Approval)
