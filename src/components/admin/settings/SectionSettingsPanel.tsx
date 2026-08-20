@@ -15,8 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { getSectionSettings, saveSectionSetting } from "@/lib/sections.functions";
 import { SECTION_DEFAULTS, type SectionSetting } from "@/lib/sections.shared";
 import { PRODUCT_CATEGORIES, categoryLabel } from "@/lib/products.shared";
+import { SectionPreviewDialog } from "./SectionPreviewDialog";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 export function SectionSettingsPanel() {
   const queryClient = useQueryClient();
