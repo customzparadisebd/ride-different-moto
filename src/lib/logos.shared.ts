@@ -30,7 +30,7 @@ export const logoUpdateInput = z.object({
   category: z.enum(LOGO_CATEGORIES),
   url: z.string().url().nullable().optional(),
   storagePath: z.string().nullable().optional(),
-  settings: z.record(z.any()).optional(),
+  settings: z.record(z.string(), z.any()).optional(),
   isActive: z.boolean().optional(),
 });
 

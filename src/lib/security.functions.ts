@@ -14,7 +14,7 @@ export const secureAuditLog = createServerFn({ method: "POST" })
         action: z.string(),
         targetType: z.string().nullable().optional(),
         targetId: z.string().nullable().optional(),
-        metadata: z.record(z.any()).optional(),
+        metadata: z.record(z.string(), z.any()).optional(),
       })
       .parse(input),
   )

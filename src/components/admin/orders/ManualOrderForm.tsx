@@ -78,7 +78,7 @@ export function ManualOrderForm({
     queryFn: () => fetchAISettings({ data: undefined }),
   });
 
-  const aiEnabled = aiSettingsQuery.data?.enabled ?? false;
+  const aiEnabled = (aiSettingsQuery.data as any)?.enabled ?? false;
   const [aiInput, setAiInput] = useState("");
   const [isAiProcessing, setIsAiProcessing] = useState(false);
 
