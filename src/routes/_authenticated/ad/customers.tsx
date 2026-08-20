@@ -56,7 +56,7 @@ function AdminCustomers() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openPhone, setOpenPhone] = useState<string | null>(null);
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({ data: undefined }) });
   const canManage = accessQuery.data?.permissions.includes("customers.manage") ?? false;
 
   const query = useQuery({

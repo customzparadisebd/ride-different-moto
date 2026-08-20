@@ -11,6 +11,7 @@ import type { AdminOrderListRow } from "./orders.functions";
  * to fulfill the requirement for a real Excel export based on filters.
  */
 export const getOrdersForExport = createServerFn({ method: "POST" })
+
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => orderFilterInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {

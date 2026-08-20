@@ -48,22 +48,24 @@ function RecycleBin() {
 
   const [tab, setTab] = useState<Tab>("products");
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({ data: undefined }) });
   const isSuperAdmin = accessQuery.data?.isSuperAdmin ?? false;
   const canManageProducts = accessQuery.data?.permissions.includes("products.manage") ?? false;
   const canManageOrders = accessQuery.data?.permissions.includes("orders.manage") ?? false;
 
   const productsQuery = useQuery({
     queryKey: ["admin-recycle-bin", "products"],
-    queryFn: () => fetchProducts({ data: { deleted: true, pageSize: 500 } as never }),
+    queryFn: () => fetchProducts({ data: { deleted: true, pageSize: 500 } } as never),
+
   });
   const ordersQuery = useQuery({
     queryKey: ["admin-recycle-bin", "orders"],
-    queryFn: () => fetchOrders({ data: { deleted: true, pageSize: 500 } as never }),
+    queryFn: () => fetchOrders({ data: { deleted: true, pageSize: 500 } } as never),
+
   });
   const customersQuery = useQuery({
     queryKey: ["admin-recycle-bin", "customers"],
-    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 500 } as any }),
+    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 500 } } as never),
   });
 
   const refresh = () => {

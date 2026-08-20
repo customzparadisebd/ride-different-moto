@@ -18,7 +18,7 @@ export function SiteSettingsPanel({ canManage }: { canManage: boolean }) {
 
   const { data: current, isLoading } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: () => load(),
+    queryFn: () => load({ data: undefined }),
   });
 
   const [draft, setDraft] = useState<SiteSettings>(DEFAULT_SITE_SETTINGS);

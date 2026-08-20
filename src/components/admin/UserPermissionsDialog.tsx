@@ -58,7 +58,7 @@ export function UserPermissionsDialog({
     if (!userId) return;
     setBusy(true);
     try {
-      await setStaffPermissions({ data: { userId, permissions: selected } });
+      await setStaffPermissions({ data: { userId, permissions: selected } } as never);
       toast.success("Permissions updated successfully.");
       await queryClient.invalidateQueries({ queryKey: ["admin-staff"] });
       onOpenChange(false);

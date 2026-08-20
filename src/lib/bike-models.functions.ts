@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-export const getStorefrontBikeModel = createServerFn({ method: "GET" })
+export const getStorefrontBikeModel = createServerFn({ method: "POST" })
   .validator((input: unknown) => z.object({ slug: z.string() }).parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -27,7 +27,7 @@ export const getStorefrontBikeModel = createServerFn({ method: "GET" })
     };
   });
 
-export const getStorefrontBikeModels = createServerFn({ method: "GET" })
+export const getStorefrontBikeModels = createServerFn({ method: "POST" })
   .handler(async () => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin

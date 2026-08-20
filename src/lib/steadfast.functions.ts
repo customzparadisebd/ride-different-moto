@@ -43,7 +43,7 @@ function secretUpdate(value: string | undefined) {
 // ------------------------------------------------------------
 // SETTINGS — read
 // ------------------------------------------------------------
-export const getSteadfastSettings = createServerFn({ method: "GET" })
+export const getSteadfastSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SteadfastSettings> => {
     const { resolveActor } = await import("./admin.server");
@@ -170,7 +170,7 @@ export const testSteadfastConnection = createServerFn({ method: "POST" })
     return testCourierConnection({ data: { courierId: courier.id } });
   });
 
-export const getSteadfastLogs = createServerFn({ method: "GET" })
+export const getSteadfastLogs = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<SteadfastApiLog[]> => {
     const { resolveActor } = await import("./admin.server");

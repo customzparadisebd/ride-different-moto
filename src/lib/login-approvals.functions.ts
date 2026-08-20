@@ -86,7 +86,8 @@ export const getLoginApprovalStatus = createServerFn({ method: "POST" })
     return { status: record.status as string };
   });
 
-export const listPendingApprovals = createServerFn({ method: "GET" })
+export const listPendingApprovals = createServerFn({ method: "POST" })
+
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");

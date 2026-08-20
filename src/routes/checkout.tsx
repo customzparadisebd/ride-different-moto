@@ -35,11 +35,11 @@ export const Route = createFileRoute("/checkout")({
     const [siteSettings, logos] = await Promise.all([
       context.queryClient.ensureQueryData({
         queryKey: ["site-settings"],
-        queryFn: () => getSiteSettings(),
+        queryFn: () => getSiteSettings({ data: undefined }),
       }),
       context.queryClient.ensureQueryData({
         queryKey: ["site-logos"],
-        queryFn: () => listLogos(),
+        queryFn: () => listLogos({ data: undefined }),
       }),
     ]);
     return { siteSettings, logos };

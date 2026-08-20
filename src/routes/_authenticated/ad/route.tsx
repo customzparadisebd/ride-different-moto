@@ -18,7 +18,7 @@ export const Route = createFileRoute("/_authenticated/ad")({
   beforeLoad: async () => {
     let access: Awaited<ReturnType<typeof getMyAccess>>;
     try {
-      access = await getMyAccess({});
+      access = await getMyAccess({ data: undefined });
     } catch {
       throw redirect({ to: "/ad/denied" });
     }

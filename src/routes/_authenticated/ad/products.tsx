@@ -152,9 +152,9 @@ function AdminProducts() {
   // PRODUCT 360 MANAGEMENT
   const [view360For, setView360For] = useState<ProductRow | null>(null);
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({ data: undefined }) });
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
-  const settingsQuery = useQuery({ queryKey: ["store-settings"], queryFn: () => fetchSettings() });
+  const settingsQuery = useQuery({ queryKey: ["store-settings"], queryFn: () => fetchSettings({ data: undefined }) });
   const lowThreshold = settingsQuery.data?.lowStockThreshold ?? 3;
 
   const listQuery = useQuery({

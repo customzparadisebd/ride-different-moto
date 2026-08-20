@@ -8,10 +8,12 @@ import {
 } from "./logos.server";
 import { logoUpdateInput, LOGO_CATEGORIES } from "./logos.shared";
 
-export const listLogos = createServerFn({ method: "GET" })
+export const listLogos = createServerFn({ method: "POST" })
+
   .handler(async () => {
     return getSiteLogos();
   });
+
 
 export const updateLogo = createServerFn({ method: "POST" })
   .validator((data: unknown) => logoUpdateInput.parse(data))

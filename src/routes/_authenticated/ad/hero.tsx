@@ -60,12 +60,12 @@ function AdminHeroSlides() {
 
   const { data: slides = [], isLoading: slidesLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
-    queryFn: () => fetchSlides({ data: { admin: true } }),
+    queryFn: () => fetchSlides({ data: { admin: true } } as never),
   });
 
   const { data: bikeModels = [], isLoading: modelsLoading } = useQuery({
     queryKey: ["bike-models-admin"],
-    queryFn: () => fetchBikeModels(),
+    queryFn: () => fetchBikeModels({ data: undefined } as never),
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -171,7 +171,7 @@ function AdminHeroSlides() {
       is_active: formData.get("is_active") === "on",
       bike_model_id: bikeModelId === "none" ? null : (bikeModelId || null),
     };
-    updateMutation.mutate({ data: { id, updates: data } });
+    updateMutation.mutate({ data: { id, updates: data } } as never);
   };
 
   const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
@@ -188,7 +188,7 @@ function AdminHeroSlides() {
       is_active: true,
       bike_model_id: bikeModelId === "none" ? null : (bikeModelId || null),
     };
-    addMutation.mutate({ data });
+    addMutation.mutate({ data } as never);
   };
 
   const reorderMutation = useMutation({
@@ -223,7 +223,7 @@ function AdminHeroSlides() {
 
       dragItem.current = null;
       dragOverItem.current = null;
-      reorderMutation.mutate({ data: { ids: newItems.map((s) => s.id) } });
+      reorderMutation.mutate({ data: { ids: newItems.map((s) => s.id) } } as never);
     }
   };
 

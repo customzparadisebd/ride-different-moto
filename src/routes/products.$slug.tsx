@@ -58,7 +58,7 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
   const fetchFlashSales = useServerFn(getFlashSales);
   const { data: sales = [] } = useQuery({
     queryKey: ["flash-sales"],
-    queryFn: () => fetchFlashSales(),
+    queryFn: () => fetchFlashSales({ data: undefined }),
     staleTime: 60000,
   });
 

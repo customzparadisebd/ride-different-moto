@@ -416,6 +416,7 @@ export const listOrders = createServerFn({ method: "POST" })
 // Security: Requires orders.view; counts run as the signed-in user.
 // ============================================================
 export const getOrderTabCounts = createServerFn({ method: "POST" })
+
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor } = await import("./admin.server");

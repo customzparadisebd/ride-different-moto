@@ -33,7 +33,7 @@ export function LogoSettingsPanel({ canManage }: { canManage: boolean }) {
 
   const { data: logos, isLoading } = useQuery({
     queryKey: ["site-logos"],
-    queryFn: () => list(),
+    queryFn: () => list({ data: undefined }),
   });
 
   const updateMutation = useMutation({

@@ -77,7 +77,7 @@ function StaffPage() {
 
   const staff = useQuery({
     queryKey: ["admin-staff"],
-    queryFn: () => listStaff({}),
+    queryFn: () => listStaff({ data: undefined } as never),
   });
 
   // Security: Staff users redirected to dashboard

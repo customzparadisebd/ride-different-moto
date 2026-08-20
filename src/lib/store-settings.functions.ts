@@ -41,7 +41,8 @@ function getEffectiveClient() {
   });
 }
 
-export const getStoreSettings = createServerFn({ method: "GET" }).handler(
+export const getStoreSettings = createServerFn({ method: "POST" }).handler(
+
   async (): Promise<StoreSettings> => {
     const { data, error } = await getEffectiveClient()
       .from("store_settings")

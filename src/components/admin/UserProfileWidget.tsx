@@ -124,7 +124,7 @@ export function UserProfileWidget({ access }: UserProfileWidgetProps) {
   const handleUpdateProfile = async (updates: { avatarUrl: string }) => {
     setIsUpdating(true);
     try {
-      await updateAdminProfile({ data: updates });
+      await updateAdminProfile({ data: updates } as never);
       await queryClient.invalidateQueries({ queryKey: ["admin-context"] });
       setPreviewUrl(null);
       toast.success("Profile updated successfully");

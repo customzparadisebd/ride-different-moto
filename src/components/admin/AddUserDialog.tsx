@@ -75,8 +75,9 @@ export function AddUserDialog({ onSuccess, isSuperAdmin, callerRole }: AddUserDi
         data: {
           ...values,
           phoneNumber: values.phoneNumber || undefined,
-        },
+        } as never,
       });
+
       toast.success("User created successfully");
       form.reset();
       setOpen(false);

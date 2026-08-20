@@ -5,7 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabase } from "@/integrations/supabase/client";
 import { PERMISSIONS } from "./admin.shared";
 
-export const getSectionSettings = createServerFn({ method: "GET" }).handler(async () => {
+export const getSectionSettings = createServerFn({ method: "POST" }).handler(async () => {
   const { data, error } = await supabase.from("section_settings").select("*");
   if (error) throw new Error(error.message);
   return data.map((s: any) => ({

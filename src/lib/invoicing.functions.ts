@@ -15,7 +15,7 @@ import {
 } from "./invoicing.shared";
 
 /** Admin: Fetches current invoice prefix and starting number. */
-export const getInvoiceSettings = createServerFn({ method: "GET" })
+export const getInvoiceSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<InvoiceSettings & { currentNumber: number; nextNumber: number }> => {
     const { resolveActor, assertAccess } = await import("./admin.server");
