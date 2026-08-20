@@ -518,27 +518,6 @@ export const saveProduct360Sequence = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const deleteProduct360Image = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .validator((input: unknown) => product360DeleteInput.parse(input))
-  .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
-    const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.productsManage);
-
-    const { error } = await context.supabase.from("product_360_images").delete().eq("id", data.id);
-
-    if (error) throw new Error("Could not delete the 360° image.");
-
-    await auditFromActor(actor, {
-      action: AUDIT_ACTIONS.productUpdated,
-      targetType: "product_360_image",
-      targetId: data.id,
-      targetLabel: "360 Image Deleted",
-    });
-
-    return { ok: true };
-  });
 
 export const deleteProduct360Image = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
