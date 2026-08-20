@@ -64,12 +64,9 @@ export const softDeleteCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => customerDeleteInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-
-    // Only Admin and Super Admin can delete
-    const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
-    if (!isPrivileged) throw new Error("Only Admin and Super Admin can delete customer records.");
+    assertAccess(actor, PERMISSIONS.customersManage);
 
     const ids = data.ids || (data.id ? [data.id] : []);
     if (ids.length === 0) throw new Error("No customer IDs provided.");
