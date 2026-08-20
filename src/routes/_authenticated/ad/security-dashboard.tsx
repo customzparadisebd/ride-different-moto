@@ -383,10 +383,28 @@ For the code present, I get the error below.
 
 Please think step-by-step in order to resolve it.
 \`\`\`
+# Error number 1:
+#################
+
+The app returned 500 while handling POST /_serverFn/eyJmaWxlIjoiL3NyYy9saWIvcHJvZHVjdHMuZnVuY3Rpb25zLnRzP3Rzcy1zZXJ2ZXJmbi1zcGxpdCIsImV4cG9ydCI6Imxpc3RQcm9kdWN0c19jcmVhdGVTZXJ2ZXJGbl9oYW5kbGVyIn0. The error was handled by a route or error boundary, so no stack was captured — check the failing loader/route code and the dev server output.
+
+{
+  "timestamp": 1787224043930,
+  "error_type": "RUNTIME_ERROR",
+  "filename": "Unknown file",
+  "lineno": 0,
+  "colno": 0,
+  "stack": "Unavailable",
+  "has_blank_screen": true
+}
+
+# Error number 2:
+#################
+
 Error: aborted
 
 {
-  "timestamp": 1787223991174,
+  "timestamp": 1787224044128,
   "error_type": "RUNTIME_ERROR",
   "filename": "Unknown file",
   "lineno": 0,
