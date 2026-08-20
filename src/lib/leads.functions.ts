@@ -38,7 +38,7 @@ export const submitLead = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-export const getLeads = createServerFn({ method: "GET" })
+export const getLeads = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
