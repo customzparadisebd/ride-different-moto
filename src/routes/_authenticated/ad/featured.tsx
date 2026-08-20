@@ -129,10 +129,12 @@ function FeaturedAdminPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [previewSection, setPreviewSection] = useState<any | null>(null);
 
+  const fetchSectionSettings = useServerFn(getSectionSettings);
   const { data: sectionSettings = [] } = useQuery({
     queryKey: ["section-settings"],
-    queryFn: () => useServerFn(getSectionSettings)(),
+    queryFn: () => fetchSectionSettings(),
   });
+
 
 
   useEffect(() => {
