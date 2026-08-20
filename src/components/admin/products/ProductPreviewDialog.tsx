@@ -7,12 +7,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { X, ArrowRight, ShoppingCart, ShieldCheck, Truck, RefreshCw } from "lucide-react";
-import { ProductGallery } from "@/components/product/ProductGallery";
-import { Badge } from "@/components/ui/badge";
-import { formatBDT } from "@/lib/format";
-import { Separator } from "@/components/ui/separator";
+import { ProductDetail } from "@/routes/products.$slug";
+import { X } from "lucide-react";
+
 
 
 interface ProductPreviewDialogProps {
