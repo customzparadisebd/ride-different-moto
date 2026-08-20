@@ -141,6 +141,7 @@ function AdminProducts() {
   const [category, setCategory] = useState("all");
   const [stockFilter, setStockFilter] = useState<(typeof STOCK_FILTERS)[number]>("all");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [editing, setEditing] = useState<ProductRow | null>(null);
   const [creating, setCreating] = useState(false);
   const [previewing, setPreviewing] = useState<ProductFormValue | null>(null);
@@ -161,7 +162,7 @@ function AdminProducts() {
     queryFn: async () => {
       try {
         return await fetchProducts({
-          data: { search, category, stock: stockFilter, page, pageSize: 25 } as never,
+          data: { search, category, stock: stockFilter, page, pageSize } as never,
         });
       } catch (err: any) {
         toast.error("Invalid pagination or filter parameters", {
@@ -246,7 +247,7 @@ function AdminProducts() {
 
   const rows = (listQuery.data?.rows ?? []) as unknown as ProductRow[];
   const total = listQuery.data?.total ?? 0;
-  const pageCount = Math.max(Math.ceil(total / 25), 1);
+  const pageCount = Math.max(Math.ceil(total / pageSize), 1);
 
   const toggleAll = () => {
     if (selectedIds.length === rows.length) {
@@ -405,6 +406,48 @@ function AdminProducts() {
           <option value="in_stock">In stock</option>
           <option value="out_of_stock">Out of stock</option>
         </select>
+      </div>
+
+      {/* ---- Pagination Controls ---- */}
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 px-1">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>Rows per page</span>
+          <select
+            value={pageSize}
+            onChange={(event) => {
+              setPageSize(Number(event.target.value));
+              setPage(1);
+            }}
+            className="h-9 rounded-md border border-input bg-background px-2 text-sm"
+          >
+            {[10, 25, 50, 100, 200, 500].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="steel"
+            size="sm"
+            disabled={page <= 1 || listQuery.isFetching}
+            onClick={() => setPage((current) => Math.max(current - 1, 1))}
+          >
+            Previous
+          </Button>
+          <span className="text-xs text-muted-foreground">
+            Page {page} of {pageCount}
+          </span>
+          <Button
+            variant="steel"
+            size="sm"
+            disabled={page >= pageCount || listQuery.isFetching}
+            onClick={() => setPage((current) => Math.min(current + 1, pageCount))}
+          >
+            Next
+          </Button>
+        </div>
       </div>
 
       {/* ---- Table ---- */}
