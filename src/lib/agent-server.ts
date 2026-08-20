@@ -1,14 +1,13 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { z } from "zod";
 
 /**
  * CZP Agent Server
  * Provides tools for AI agents to interact with the Customz Paradise BD platform.
+ * This is a conceptual implementation of an MCP server.
  */
 export function createAgentServer() {
   const server = new Server(
@@ -49,16 +48,6 @@ export function createAgentServer() {
             required: ["productId"],
           },
         },
-        {
-          name: "list_recent_orders",
-          description: "List recent orders (requires admin context)",
-          inputSchema: {
-            type: "object",
-            properties: {
-              limit: { type: "number", default: 10 },
-            },
-          },
-        },
       ],
     };
   });
@@ -67,9 +56,6 @@ export function createAgentServer() {
   server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
 
-    // In a real implementation, we would import server-only logic here
-    // based on the tool name. For now, we provide placeholders.
-    
     switch (name) {
       case "get_product_info": {
         const { slug } = args as { slug: string };
@@ -103,14 +89,3 @@ export function createAgentServer() {
   return server;
 }
 
-/**
- * Helper to handle the SSE endpoint
- */
-export async function handleAgentRequest(req: Request) {
-  const server = createAgentServer();
-  const transport = new SSEServerTransport("/api/public/agent/message", new Response());
-  
-  // This is a conceptual bridge for TanStack Start server routes
-  // The actual implementation would pipe the request to the transport
-  return new Response("Agent endpoint initialized", { status: 200 });
-}
