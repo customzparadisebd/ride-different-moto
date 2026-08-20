@@ -41,8 +41,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   const handleResetTo01 = () => {
     if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
       mutation.mutate({
-          ...draft,
-          nextNumber: 1,
+          data: {
+            ...draft,
+            nextNumber: 1,
+          }
         });
     }
   };
@@ -56,8 +58,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
 
     if (confirm(`Set starting number to ${num}? The next order will be ${draft.prefix}-${num.toString().padStart(2, '0')}.`)) {
       mutation.mutate({
-          ...draft,
-          nextNumber: num,
+          data: {
+            ...draft,
+            nextNumber: num,
+          }
         });
       setManualStart("");
     }
@@ -177,7 +181,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
                 className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
                 disabled={!canManage || mutation.isPending || draft.prefix === current?.prefix}
                 onClick={() => {
-                  mutation.mutate({ ...draft, nextNumber: undefined });
+                  mutation.mutate({ data: { ...draft, nextNumber: undefined } });
                 }}
               >
                 Update Prefix
