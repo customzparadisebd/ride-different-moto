@@ -57,9 +57,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       .eq("id", "default")
       .maybeSingle();
 
+    // If nextNumber is provided, we adjust current_number so the trigger picks up the correct next value.
+    // The trigger logic uses: GREATEST(start_number, current_number + 1)
+    // To force NEXT to be X, we set current_number to X - 1 and start_number to 1.
     const updates = {
       prefix: data.prefix,
-      start_number: data.startNumber,
+      start_number: 1, // Always allow sequence to start from where we set it
       current_number: data.nextNumber !== undefined ? data.nextNumber - 1 : data.currentNumber,
       updated_at: new Date().toISOString(),
       updated_by: actor.userId,
