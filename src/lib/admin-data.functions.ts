@@ -83,9 +83,10 @@ export const getDashboardMetrics = createServerFn({ method: "POST" })
         .is("deleted_at", null),
       context.supabase.from("orders").select("status").is("deleted_at", null),
       context.supabase
-        .from("steadfast_stats" as any)
+        .from("steadfast_stats")
         .select("successful_submissions_count, last_success_at, last_order_id, last_invoice_no")
-        .maybeSingle(),
+        .maybeSingle()
+        .then(res => ({ data: res.data || null })),
       // Fetch successful SteadFast submissions in the specified window
       context.supabase
         .from("courier_shipments")
