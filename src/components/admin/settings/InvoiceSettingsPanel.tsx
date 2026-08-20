@@ -98,7 +98,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
             Current Invoice Number
           </span>
           <p className="font-mono text-2xl font-bold">
-            {current?.prefix}-{current?.currentNumber.toString().padStart(2, "0")}
+            {current?.prefix}-{current?.currentNumber < 10 && current?.currentNumber > 0 ? current?.currentNumber.toString().padStart(2, "0") : current?.currentNumber}
           </p>
           <p className="text-[10px] text-muted-foreground italic">
             Last order was assigned serial {current?.currentNumber}.
