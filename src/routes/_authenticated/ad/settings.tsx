@@ -141,6 +141,11 @@ function AdminSettings() {
               label="Bike Models"
             />
             <SettingsTabButton
+              active={location.pathname === "/ad/settings" && search.tab === "product-order"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "product-order" } })}
+              label="Product Order"
+            />
+            <SettingsTabButton
               active={location.pathname === "/ad/settings" && search.tab === "gallery"}
               onClick={() => navigate({ to: "/ad/settings", search: { tab: "gallery" } })}
               label="Gallery"

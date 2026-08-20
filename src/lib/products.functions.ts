@@ -79,6 +79,11 @@ export const listProducts = createServerFn({ method: "POST" })
     if (data.stock === "in_stock") query = query.gt("stock_qty", 0);
 
     const from = (data.page - 1) * data.pageSize;
+    const {
+      data: rows,
+      count,
+      error,
+    } = await query
       .order("sort_order", { ascending: true, nullsFirst: false })
       .order("updated_at", { ascending: false })
       .range(from, from + data.pageSize - 1);
