@@ -31,3 +31,31 @@ export function parseSectionSettingRow(row: any): SectionSetting {
     productCategory: row.product_category,
   };
 }
+
+export const SECTION_DEFAULTS: Record<string, Partial<SectionSetting>> = {
+  featured_deals: {
+    name: "Featured & Deals",
+    enabled: true,
+    displayLimit: 6,
+    showSeeAll: true,
+    buttonText: "Explore All Deals",
+    buttonLink: "/shop?filter=featured",
+    sortOrder: 1,
+    isSlider: false,
+    sliderItems: 4,
+    productCategory: null,
+  },
+  all_products: {
+    name: "All Products",
+    enabled: true,
+    displayLimit: 8,
+    showSeeAll: true,
+    buttonText: "See All Products",
+    buttonLink: "/shop",
+    sortOrder: 2,
+    isSlider: false,
+    sliderItems: 4,
+    productCategory: null,
+  },
+};
+
