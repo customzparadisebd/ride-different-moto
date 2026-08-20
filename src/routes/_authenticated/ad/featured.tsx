@@ -28,9 +28,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { listProducts, updateFeaturedProducts, getSectionSettings } from "@/lib/products.functions";
+import { listProducts, updateFeaturedProducts } from "@/lib/products.functions";
+import { getSectionSettings } from "@/lib/sections.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { SectionPreviewDialog } from "@/components/admin/settings/SectionPreviewDialog";
+
 
 
 export const Route = createFileRoute("/_authenticated/ad/featured")({
