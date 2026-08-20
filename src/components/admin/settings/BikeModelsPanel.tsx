@@ -220,7 +220,7 @@ export function BikeModelsPanel() {
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Bike Model Management</h2>
         <div className="flex gap-2">
-          {isDirty && <Button onClick={saveOrder} variant="primary">Save Order</Button>}
+          {isDirty && <Button onClick={saveOrder} variant="onyx">Save Order</Button>}
           <Button onClick={() => setIsAdding(true)} variant="red">Add Model</Button>
         </div>
       </div>
