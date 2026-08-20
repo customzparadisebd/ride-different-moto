@@ -393,7 +393,7 @@ Error: aborted{"\n"}
   "filename": "Unknown file",{"\n"}
   "lineno": 0,{"\n"}
   "colno": 0,{"\n"}
-  "stack": "Error: aborted\n    at abortIncoming (node:_http_server:838:17)\n    at socketOnClose (node:_http_server:832:3)\n    at Socket.emit (node:events:531:35)\n    at TCP.<anonymous> (node:net:346:12)\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",{"\n"}
+                  "stack": "Error: aborted\n    at abortIncoming (node:_http_server:838:17)\n    at socketOnClose (node:_http_server:832:3)\n    at Socket.emit (node:events:531:35)\n    at TCP.<anonymous> (node:net:346:12)\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",{"\n"}
   "has_blank_screen": true{"\n"}
 {"}"}{"\n"}
 ```
