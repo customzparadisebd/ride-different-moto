@@ -86,7 +86,7 @@ export function Header() {
         </nav>
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
-        <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3">
+        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
           <button
             onClick={toggleLanguage}
             className="group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
