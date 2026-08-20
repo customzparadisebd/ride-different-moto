@@ -11,6 +11,6 @@ import { listStorefrontProducts } from "./storefront.functions";
 export const storefrontProductsQuery = () =>
   queryOptions({
     queryKey: ["storefront-products"],
-    queryFn: () => listStorefrontProducts(),
+    queryFn: () => listStorefrontProducts({ data: undefined }),
     staleTime: 60_000,
   });

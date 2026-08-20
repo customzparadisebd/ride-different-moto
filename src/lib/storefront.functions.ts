@@ -10,12 +10,12 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { productSlugInput } from "./storefront.shared";
 
-export const listStorefrontProducts = createServerFn({ method: "GET" }).handler(async () => {
+export const listStorefrontProducts = createServerFn({ method: "POST" }).handler(async () => {
   const { fetchActiveProducts } = await import("./storefront.server");
   return fetchActiveProducts();
 });
 
-export const getStorefrontProduct = createServerFn({ method: "GET" })
+export const getStorefrontProduct = createServerFn({ method: "POST" })
   .validator((input: unknown) => productSlugInput.parse(input))
   .handler(async ({ data }) => {
     const { fetchProductBySlug } = await import("./storefront.server");
