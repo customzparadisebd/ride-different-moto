@@ -79,7 +79,8 @@ export function SingleImageUpload({
       onChange(publicUrl);
       toast.success("Optimized image uploaded successfully");
     } catch (err: any) {
-      toast.error(err.message || "Upload failed");
+      console.error("Upload error details:", err);
+      toast.error("Could not upload image. Please ensure your file is a valid image and try again.");
     } finally {
       setUploading(false);
       setProgress(0);

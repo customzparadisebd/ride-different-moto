@@ -432,16 +432,34 @@ function ModelForm({
                     guideline="1200x800px (3:2) WebP recommended."
                   />
                 ) : (
-                  <div className="space-y-2">
-                    <Input
-                      value={formData.image_url}
-                      onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                      placeholder="Paste image URL here"
-                      className="h-11 font-mono text-xs"
-                    />
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        Image URL
+                      </Label>
+                      <Input
+                        value={formData.image_url}
+                        onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                        placeholder="Paste image URL here"
+                        className="h-11 font-mono text-xs"
+                      />
+                    </div>
                     {formData.image_url && (
-                      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg border border-border bg-muted">
-                        <img src={formData.image_url} className="h-full w-full object-cover" />
+                      <div className="space-y-3">
+                        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-lg border border-border bg-muted">
+                          <img 
+                            src={formData.image_url} 
+                            className="h-full w-full object-cover" 
+                            onError={() => {
+                              toast.error("The provided image URL is invalid or the image could not be loaded. Please check the link.");
+                            }}
+                            alt="External preview"
+                          />
+                        </div>
+                        <p className="text-[10px] text-muted-foreground italic flex items-center gap-1.5">
+                          <AlertCircle className="h-3 w-3 text-amber-500" />
+                          If you don't see a preview above, the URL might be incorrect or protected.
+                        </p>
                       </div>
                     )}
                   </div>
