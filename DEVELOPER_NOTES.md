@@ -51,3 +51,11 @@ Author: Rafi Gazi (Rabbee) Apps
 - Use JSDoc for complex server functions and components.
 - Maintain strict RBAC (Super Admin/Admin/Staff).
 - All orders must follow the verified server-side pricing logic.
+
+### Gallery Management (2026-08-20)
+- Implemented `gallery_items` table in Supabase with RLS policies.
+- Created `src/lib/gallery.functions.ts` with POST-based server functions (CRUD + reordering).
+- Added `src/components/admin/settings/GalleryPanel.tsx` for Admin UI (DndContext for reordering, SingleImageUpload).
+- Integrated Gallery tab in `src/routes/_authenticated/ad/settings.tsx`.
+- Refactored `src/routes/gallery.tsx` to fetch dynamic data from `gallery_items` table.
+- Added support for "Hidden" state (is_active) to allow hiding builds without deleting them.
