@@ -14,7 +14,7 @@ import { site } from "@/data/site";
 import { formatBDT } from "@/lib/format";
 import { getOrder, markOrdersPrinted } from "@/lib/orders.functions";
 import { deliveryZoneLabel, paymentMethodLabel } from "@/lib/orders.shared";
-import logoDark from "@/assets/logo-dark-bg.png.asset.json";
+import { useSiteLogos } from "@/hooks/use-site-logos";
 
 export const Route = createFileRoute("/_authenticated/ad/invoice/$id")({
   head: () => ({
@@ -99,7 +99,7 @@ function InvoicePage() {
         <header className="flex flex-col items-center gap-6 border-b border-dashed border-neutral-700 pb-8 text-center sm:flex-row sm:text-left">
           <div className="w-[120px] shrink-0">
             <img
-              src={logoDark.url}
+              src={invoiceLogo}
               alt={site.name}
               className="h-auto w-full max-w-[120px] object-contain"
             />
