@@ -320,5 +320,7 @@ function SectionCard({
         </div>
       </CardContent>
     </Card>
+    </>
   );
 }
+
