@@ -113,9 +113,10 @@ function SectionCard({
 
   const hasChanges = JSON.stringify(formData) !== JSON.stringify(section);
 
-
   return (
-    <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
+    <>
+      <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
+
       <div className={`h-1 w-full transition-colors ${formData.enabled ? 'bg-primary' : 'bg-muted'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
