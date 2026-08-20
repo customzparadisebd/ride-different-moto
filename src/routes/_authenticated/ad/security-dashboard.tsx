@@ -155,12 +155,12 @@ function SecurityDashboardPage() {
     <div className="flex flex-col gap-6 p-6 max-w-7xl mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="font-display text-3xl font-black uppercase tracking-tighter text-white flex items-center gap-3">
+          <h1 className="font-display text-3xl font-black uppercase tracking-tighter text-foreground dark:text-white flex items-center gap-3">
             <Shield className="h-8 w-8 text-primary" />
             Security Monitoring
             <Badge
               variant="outline"
-              className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse"
+              className="bg-green-500/10 text-green-500 border-green-500/20 dark:bg-green-500/10 dark:text-green-500 dark:border-green-500/20 text-[10px] tracking-widest uppercase flex items-center gap-1.5 animate-pulse"
             >
               <Radio className="h-3 w-3" />
               Live
@@ -173,7 +173,7 @@ function SecurityDashboardPage() {
         <button
           onClick={refreshAll}
           disabled={isRefreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-md text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-accent/50 hover:bg-accent dark:bg-white/5 dark:hover:bg-white/10 border border-border dark:border-white/10 rounded-md text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
           Refresh Data
@@ -182,14 +182,14 @@ function SecurityDashboardPage() {
 
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-black/40 border-white/5 hover:border-red-500/30 transition-all group">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 hover:border-red-500/30 transition-all group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                   Auth Failures
                 </p>
-                <h3 className="text-2xl font-black text-white group-hover:text-red-500 transition-colors">
+                <h3 className="text-2xl font-black text-foreground dark:text-white group-hover:text-red-500 transition-colors">
                   {stats.authFailures}
                 </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">Last 24 hours</p>
@@ -201,14 +201,14 @@ function SecurityDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-black/40 border-white/5 hover:border-amber-500/30 transition-all group">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 hover:border-amber-500/30 transition-all group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                   Rate Limits
                 </p>
-                <h3 className="text-2xl font-black text-white group-hover:text-amber-500 transition-colors">
+                <h3 className="text-2xl font-black text-foreground dark:text-white group-hover:text-amber-500 transition-colors">
                   {stats.rateLimits}
                 </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">
@@ -222,14 +222,14 @@ function SecurityDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-black/40 border-white/5 hover:border-blue-500/30 transition-all group">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 hover:border-blue-500/30 transition-all group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                   Suspicious IPs
                 </p>
-                <h3 className="text-2xl font-black text-white group-hover:text-blue-500 transition-colors">
+                <h3 className="text-2xl font-black text-foreground dark:text-white group-hover:text-blue-500 transition-colors">
                   {stats.suspiciousIPs}
                 </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">
@@ -243,14 +243,14 @@ function SecurityDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-black/40 border-white/5 hover:border-green-500/30 transition-all group">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 hover:border-green-500/30 transition-all group">
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">
                   Total Events
                 </p>
-                <h3 className="text-2xl font-black text-white group-hover:text-green-500 transition-colors">
+                <h3 className="text-2xl font-black text-foreground dark:text-white group-hover:text-green-500 transition-colors">
                   {stats.totalEvents}
                 </h3>
                 <p className="text-[10px] text-muted-foreground mt-1 font-medium">System wide</p>
@@ -265,7 +265,7 @@ function SecurityDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Event Chart */}
-        <Card className="lg:col-span-2 bg-black/40 border-white/5">
+        <Card className="lg:col-span-2 bg-card dark:bg-black/40 border-border dark:border-white/5">
           <CardHeader>
             <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
               <Activity className="h-4 w-4 text-primary" />
@@ -285,26 +285,26 @@ function SecurityDashboardPage() {
                       <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" opacity={0.1} vertical={false} />
                   <XAxis
                     dataKey="time"
-                    stroke="#ffffff40"
+                    stroke="currentColor"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "#ffffff40", fontWeight: "bold" }}
+                    tick={{ fill: "currentColor", fontWeight: "bold", opacity: 0.4 }}
                   />
                   <YAxis
-                    stroke="#ffffff40"
+                    stroke="currentColor"
                     fontSize={10}
                     tickLine={false}
                     axisLine={false}
-                    tick={{ fill: "#ffffff40", fontWeight: "bold" }}
+                    tick={{ fill: "currentColor", fontWeight: "bold", opacity: 0.4 }}
                   />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: "#121212",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      backgroundColor: "var(--color-popover)",
+                      border: "1px solid var(--color-border)",
                       borderRadius: "8px",
                     }}
                     itemStyle={{ color: "#ef4444", fontSize: "12px", fontWeight: "bold" }}
@@ -324,7 +324,7 @@ function SecurityDashboardPage() {
         </Card>
 
         {/* Suspicious IPs */}
-        <Card className="bg-black/40 border-white/5">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5">
           <CardHeader>
             <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-amber-500" />
@@ -344,12 +344,12 @@ function SecurityDashboardPage() {
                 suspiciousIPs.map((ip) => (
                   <div
                     key={ip.ip}
-                    className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/5"
+                    className="flex items-center justify-between p-3 rounded-lg bg-accent/30 dark:bg-white/5 border border-border dark:border-white/5"
                   >
                     <div className="flex items-center gap-3">
                       <Globe className="h-4 w-4 text-muted-foreground" />
                       <div>
-                        <p className="text-xs font-mono font-bold text-white/90">{ip.ip}</p>
+                        <p className="text-xs font-mono font-bold text-foreground dark:text-white/90">{ip.ip}</p>
                         <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
                           {ip.failures} Failures · {ip.limits} Limits
                         </p>
@@ -371,7 +371,7 @@ function SecurityDashboardPage() {
 
       {/* Security Alerts & Invoice Collisions */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-black/40 border-white/5 border-l-4 border-l-red-600">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 border-l-4 border-l-red-600">
           <CardHeader>
             <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
               <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -393,14 +393,14 @@ function SecurityDashboardPage() {
                     key={alert.id} 
                     className={cn(
                       "p-3 rounded-lg border transition-all",
-                      alert.is_read ? "bg-white/5 border-white/5 opacity-60" : "bg-red-950/20 border-red-900/30"
+                      alert.is_read ? "bg-accent/30 dark:bg-white/5 border-border dark:border-white/5 opacity-60" : "bg-red-500/5 dark:bg-red-950/20 border-red-200 dark:border-red-900/30"
                     )}
                   >
                     <div className="flex justify-between items-start mb-1">
-                      <p className="text-xs font-black text-white uppercase tracking-tight">{alert.title}</p>
+                      <p className="text-xs font-black text-foreground dark:text-white uppercase tracking-tight">{alert.title}</p>
                       <span className="text-[9px] font-bold text-muted-foreground uppercase">{format(new Date(alert.created_at), "HH:mm:ss")}</span>
                     </div>
-                    <p className="text-[11px] text-white/70 leading-relaxed mb-2">{alert.message}</p>
+                    <p className="text-[11px] text-foreground/70 dark:text-white/70 leading-relaxed mb-2">{alert.message}</p>
                     {!alert.is_read && (
                       <button 
                         onClick={() => markNotificationRead(alert.id)}
@@ -416,7 +416,7 @@ function SecurityDashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-black/40 border-white/5 border-l-4 border-l-amber-500">
+        <Card className="bg-card dark:bg-black/40 border-border dark:border-white/5 border-l-4 border-l-amber-500">
           <CardHeader>
             <CardTitle className="text-sm font-bold uppercase tracking-widest flex items-center gap-2">
               <Activity className="h-4 w-4 text-amber-500" />
