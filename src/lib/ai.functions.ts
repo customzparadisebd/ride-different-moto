@@ -3,7 +3,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { aiSettingsSchema, DEFAULT_AI_SETTINGS, type AISettings } from "./ai.shared";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 
-export const getAISettings = createServerFn({ method: "GET" })
+export const getAISettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<AISettings> => {
     const { resolveActor, assertAccess } = await import("./admin.server");

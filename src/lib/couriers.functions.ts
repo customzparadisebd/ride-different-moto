@@ -32,7 +32,7 @@ function secretUpdate(value: string | undefined) {
   return value === CLEAR_SECRET ? null : value;
 }
 
-export const listCouriers = createServerFn({ method: "GET" })
+export const listCouriers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ couriers: CourierSummary[] }> => {
     const { resolveActor, assertAccess } = await import("./admin.server");

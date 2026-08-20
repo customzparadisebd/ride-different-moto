@@ -9,7 +9,6 @@ import {
 import { logoUpdateInput, LOGO_CATEGORIES } from "./logos.shared";
 
 export const listLogos = createServerFn({ method: "POST" })
-
   .handler(async () => {
     return getSiteLogos();
   });

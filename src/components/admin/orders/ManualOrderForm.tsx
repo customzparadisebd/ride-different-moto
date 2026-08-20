@@ -75,7 +75,7 @@ export function ManualOrderForm({
 
   const aiSettingsQuery = useQuery({
     queryKey: ["admin-ai-settings-compact"],
-    queryFn: () => fetchAISettings({}),
+    queryFn: () => fetchAISettings({ data: undefined }),
   });
 
   const aiEnabled = aiSettingsQuery.data?.enabled ?? false;

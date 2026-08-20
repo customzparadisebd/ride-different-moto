@@ -45,7 +45,7 @@ export function CourierPanel({
   const [courierId, setCourierId] = useState("");
   const [note, setNote] = useState("");
 
-  const couriers = useQuery({ queryKey: ["admin-couriers"], queryFn: () => couriersFn({}) });
+  const couriers = useQuery({ queryKey: ["admin-couriers"], queryFn: () => couriersFn({ data: undefined }) });
   const active = (couriers.data?.couriers ?? []).filter((courier) => courier.isActive);
   const selected = active.find((courier) => courier.id === (courierId || active[0]?.id));
 

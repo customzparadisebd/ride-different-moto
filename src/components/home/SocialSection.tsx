@@ -16,7 +16,7 @@ const icons: Record<string, { Icon: ComponentType<{ className?: string }>; color
 export function SocialSection() {
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: () => getSiteSettings(),
+    queryFn: () => getSiteSettings({ data: undefined }),
   });
 
   const settings = (siteSettings as SiteSettings) || site;

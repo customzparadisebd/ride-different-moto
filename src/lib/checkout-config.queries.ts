@@ -6,6 +6,6 @@ import { getCheckoutConfig } from "./checkout-config.functions";
 export const checkoutConfigQuery = () =>
   queryOptions({
     queryKey: ["checkout-config"],
-    queryFn: () => getCheckoutConfig(),
+    queryFn: () => getCheckoutConfig({ data: undefined }),
     staleTime: 60_000,
   });

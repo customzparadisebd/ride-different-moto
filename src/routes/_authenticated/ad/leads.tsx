@@ -66,7 +66,7 @@ function LeadsPage() {
 
   const { data: leads = [], isLoading } = useQuery({
     queryKey: ["admin", "leads"],
-    queryFn: () => fetchLeads({}),
+    queryFn: () => fetchLeads({ data: undefined }),
   });
 
   const updateMutation = useMutation({

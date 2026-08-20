@@ -20,7 +20,7 @@ import {
   type DeliveryZoneOption,
 } from "./checkout-config.shared";
 
-export const getCheckoutConfig = createServerFn({ method: "GET" }).handler(
+export const getCheckoutConfig = createServerFn({ method: "POST" }).handler(
   async (): Promise<CheckoutConfig> => {
     const { fetchCheckoutConfig } = await import("./checkout-config.server");
     return fetchCheckoutConfig();
@@ -28,7 +28,7 @@ export const getCheckoutConfig = createServerFn({ method: "GET" }).handler(
 );
 
 /** Admin view: every city and zone, including the disabled ones. */
-export const listCheckoutConfig = createServerFn({ method: "GET" })
+export const listCheckoutConfig = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<{ cities: City[]; zones: DeliveryZoneOption[] }> => {
     const { resolveActor, assertAccess } = await import("./admin.server");

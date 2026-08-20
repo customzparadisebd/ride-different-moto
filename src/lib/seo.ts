@@ -13,7 +13,7 @@ import { getSiteSettings } from "./site-settings.functions";
  */
 export async function getBaseUrl(settings?: any) {
   try {
-    const s = settings || await getSiteSettings();
+    const s = settings || await getSiteSettings({ data: undefined });
     if (s?.productionDomain) {
       return `https://${s.productionDomain}`;
     }

@@ -7,7 +7,7 @@ export const Route = createFileRoute("/api/public/sitemap/xml")({
   server: {
     handlers: {
       GET: async () => {
-        const settings = await getSiteSettings();
+        const settings = await getSiteSettings({ data: undefined });
         const siteUrl = await getBaseUrl(settings);
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         

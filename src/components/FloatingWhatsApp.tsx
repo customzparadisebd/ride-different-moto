@@ -12,13 +12,13 @@ export function FloatingWhatsApp() {
   const loadStore = useServerFn(getStoreSettings);
   const { data: storeSettings } = useQuery({
     queryKey: ["store-settings"],
-    queryFn: () => loadStore(),
+    queryFn: () => loadStore({ data: undefined }),
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: () => getSiteSettings(),
+    queryFn: () => getSiteSettings({ data: undefined }),
   });
 
   const [isVisible, setIsVisible] = useState(false);

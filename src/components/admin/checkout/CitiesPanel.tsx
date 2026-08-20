@@ -29,7 +29,7 @@ export function CitiesPanel({ canManage }: { canManage: boolean }) {
   const remove = useServerFn(deleteCity);
   const reorder = useServerFn(reorderCities);
 
-  const configQuery = useQuery({ queryKey: ["checkout-admin-config"], queryFn: () => load() });
+  const configQuery = useQuery({ queryKey: ["checkout-admin-config"], queryFn: () => load({ data: undefined }) });
   const cities = configQuery.data?.cities ?? [];
   const [newCity, setNewCity] = useState("");
   const [search, setSearch] = useState("");

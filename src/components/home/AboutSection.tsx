@@ -10,7 +10,7 @@ export function AboutSection() {
   const { t } = useLanguage();
   const { data: siteSettings } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: () => getSiteSettings(),
+    queryFn: () => getSiteSettings({ data: undefined }),
   });
 
   const settings = siteSettings || site;

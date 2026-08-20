@@ -60,12 +60,12 @@ function AdminHeroSlides() {
 
   const { data: slides = [], isLoading: slidesLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
-    queryFn: () => fetchSlides({ data: { admin: true } } as never),
+    queryFn: () => fetchSlides({ data: { admin: true } }),
   });
 
   const { data: bikeModels = [], isLoading: modelsLoading } = useQuery({
     queryKey: ["bike-models-admin"],
-    queryFn: () => fetchBikeModels({ data: undefined } as never),
+    queryFn: () => fetchBikeModels({ data: undefined }),
   });
 
   const [editingId, setEditingId] = useState<string | null>(null);

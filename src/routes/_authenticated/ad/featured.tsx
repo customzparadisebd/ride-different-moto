@@ -132,7 +132,7 @@ function FeaturedAdminPage() {
   const fetchSectionSettings = useServerFn(getSectionSettings);
   const { data: sectionSettings = [] } = useQuery({
     queryKey: ["section-settings"],
-    queryFn: () => fetchSectionSettings(),
+    queryFn: () => fetchSectionSettings({ data: undefined }),
   });
 
 
