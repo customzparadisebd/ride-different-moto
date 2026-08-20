@@ -379,99 +379,22 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-Critical Issue: Settings Menu Works in Lovable but Not in Production
+For the code present, I get the error below.
 
-I have confirmed the issue with screenshots.
+Please think step-by-step in order to resolve it.
+\`\`\`
+Error: aborted
 
-When I access the Admin Panel inside the Lovable environment, the Settings sidebar correctly displays all of these options:
-
-General
-Invoice
-Logos
-Delivery Zones
-StreadFast
-Homepage
-Bike Models
-AI Tools
-
-However, when I access the same Admin Panel from the external/production website, outside Lovable, these Settings options are missing and only the General Settings section is available.
-
-This is NOT the expected behavior.
-
-The same authorized Admin/Super Admin should have the same Settings functionality in production as in the Lovable environment.
-
-The previous attempt to fix this did not resolve the problem.
-
-Do NOT simply add the missing menu items
-
-I need you to identify why the production environment is hiding/not loading these Settings sections.
-
-Please investigate the actual production runtime and compare it against the Lovable environment.
-
-Check specifically:
-
-Production frontend build/version
-Lovable preview build/version
-Environment variables
-Supabase project URL and configuration
-Database connection
-Authentication/session
-Admin/Super Admin role detection
-Permission logic
-RLS policies
-Feature flags
-Conditional rendering logic
-Route guards
-Production runtime errors
-Failed API/database requests
-Browser console errors
-Cached JavaScript/CSS bundles
-CDN/browser cache
-Whether production is running an outdated build
-Whether the latest Settings code was actually deployed
-
-Important Test
-
-Please reproduce the problem yourself:
-
-Test A: Open Admin Panel through Lovable → Settings → verify all sections appear.
-
-Test B: Open the deployed production website in a fresh/private browser session → login with the same authorized Admin/Super Admin account → Settings → verify which sections appear.
-
-Then compare the actual runtime state between Test A and Test B.
-
-Required Fix
-
-Find the root cause and fix it properly.
-
-Do not create a hardcoded workaround just to display:
-
-General / Invoice / Logos / Delivery Zones / StreadFast / Homepage / Bike Models / AI Tools.
-
-The existing permission, authentication, database, and Settings architecture must remain correct.
-
-If production is using an outdated build, deploy the correct build.
-
-If the issue is caused by environment variables, permissions, database configuration, RLS, feature flags, caching, or runtime errors, fix that actual cause.
-
-Final Verification
-
-After fixing the issue, verify from a completely fresh/private browser session on the external production website that:
-
-Settings → General
-Settings → Invoice
-Settings → Logos
-Settings → Delivery Zones
-Settings → StreadFast
-Settings → Homepage
-Settings → Bike Models
-Settings → AI Tools
-
-are all visible and functional for the authorized Admin/Super Admin.
-
-Do not mark this task as fixed until the issue is actually verified on the external production website.
-
-Finally, tell me the exact root cause and what was changed to fix it.`}
+{
+  "timestamp": 1787225793449,
+  "error_type": "RUNTIME_ERROR",
+  "filename": "Unknown file",
+  "lineno": 0,
+  "colno": 0,
+  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
+  "has_blank_screen": true
+}
+\`\`\``}
               </div>
 
 
