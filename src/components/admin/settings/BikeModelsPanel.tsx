@@ -242,11 +242,11 @@ export function BikeModelsPanel() {
         </SortableContext>
       </DndContext>
       
-      {isAdding && <ModelForm onSave={(d) => addMutation.mutate(d)} onCancel={() => setIsAdding(false)} isSaving={addMutation.isPending} />}
+      {isAdding && <ModelForm onSave={(d: any) => addMutation.mutate(d)} onCancel={() => setIsAdding(false)} isSaving={addMutation.isPending} />}
       {editingId && (
         <ModelForm 
           initialData={models.find(m => m.id === editingId)} 
-          onSave={(updates) => updateMutation.mutate({ id: editingId, updates })} 
+          onSave={(updates: any) => updateMutation.mutate({ id: editingId, updates })} 
           onCancel={() => setEditingId(null)} 
           isSaving={updateMutation.isPending} 
         />
