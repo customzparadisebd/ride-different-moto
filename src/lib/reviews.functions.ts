@@ -7,7 +7,7 @@ import { PERMISSIONS, AUDIT_ACTIONS } from "./admin.shared";
 // @ts-ignore - Tables might not be in types yet
 const TABLE_REVIEWS = "reviews";
 
-export const getReviews = createServerFn({ method: "GET" })
+export const getReviews = createServerFn({ method: "POST" })
   .validator((d) => z.object({ admin: z.boolean().optional() }).parse(d || {}))
   .handler(async ({ data: { admin } }) => {
     const query = supabase.from(TABLE_REVIEWS as any).select("*");
