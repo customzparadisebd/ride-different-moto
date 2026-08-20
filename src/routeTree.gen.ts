@@ -14,7 +14,6 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as ContactRouteImport } from './routes/contact'
-import { Route as DebugInvoiceRouteImport } from './routes/debug-invoice'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as NewArrivalsRouteImport } from './routes/new-arrivals'
 import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
@@ -83,11 +82,6 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DebugInvoiceRoute = DebugInvoiceRouteImport.update({
-  id: '/debug-invoice',
-  path: '/debug-invoice',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -329,7 +323,6 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/debug-invoice': typeof DebugInvoiceRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -381,7 +374,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/debug-invoice': typeof DebugInvoiceRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -434,7 +426,6 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
-  '/debug-invoice': typeof DebugInvoiceRoute
   '/gallery': typeof GalleryRoute
   '/new-arrivals': typeof NewArrivalsRoute
   '/privacy-policy': typeof PrivacyPolicyRoute
@@ -488,7 +479,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/checkout'
     | '/contact'
-    | '/debug-invoice'
     | '/gallery'
     | '/new-arrivals'
     | '/privacy-policy'
@@ -540,7 +530,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/checkout'
     | '/contact'
-    | '/debug-invoice'
     | '/gallery'
     | '/new-arrivals'
     | '/privacy-policy'
@@ -592,7 +581,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/checkout'
     | '/contact'
-    | '/debug-invoice'
     | '/gallery'
     | '/new-arrivals'
     | '/privacy-policy'
@@ -646,7 +634,6 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
-  DebugInvoiceRoute: typeof DebugInvoiceRoute
   GalleryRoute: typeof GalleryRoute
   NewArrivalsRoute: typeof NewArrivalsRoute
   PrivacyPolicyRoute: typeof PrivacyPolicyRoute
@@ -707,13 +694,6 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/debug-invoice': {
-      id: '/debug-invoice'
-      path: '/debug-invoice'
-      fullPath: '/debug-invoice'
-      preLoaderRoute: typeof DebugInvoiceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -1102,7 +1082,6 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
-  DebugInvoiceRoute: DebugInvoiceRoute,
   GalleryRoute: GalleryRoute,
   NewArrivalsRoute: NewArrivalsRoute,
   PrivacyPolicyRoute: PrivacyPolicyRoute,
