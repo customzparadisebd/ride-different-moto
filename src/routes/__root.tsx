@@ -139,7 +139,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
   head: ({ loaderData }) => {
     const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const siteLogos = loaderData?.logos as any[];
     const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+
+    const getLogo = (category: string, fallback: string) => {
+      const found = siteLogos?.find(l => l.category === category && l.is_active);
+      return found?.url || fallback;
+    };
+
+    const ogLogo = getLogo("og_image", `${siteUrl}/logo-main.png`);
+    const favicon = getLogo("favicon", "/favicon.png");
+    const mainLogo = getLogo("main", `${siteUrl}/logo-main.png`);
+
     
     // Explicitly handle fields that might be missing in one type vs another
     const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
