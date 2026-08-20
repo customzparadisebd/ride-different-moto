@@ -21,6 +21,7 @@ import { SiteSettingsPanel } from "@/components/admin/settings/SiteSettingsPanel
 import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { SectionSettingsPanel } from "@/components/admin/settings/SectionSettingsPanel";
 import { LogoSettingsPanel } from "@/components/admin/settings/LogoSettingsPanel";
+import { ProductOrderPanel } from "@/components/admin/settings/ProductOrderPanel";
 import { BikeModelsPanel } from "@/components/admin/settings/BikeModelsPanel";
 import { GalleryPanel } from "@/components/admin/settings/GalleryPanel";
 import { Button } from "@/components/ui/button";

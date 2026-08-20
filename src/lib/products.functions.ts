@@ -30,6 +30,7 @@ import {
   productColorListInput,
   productColorDeleteInput,
   productColorReorderInput,
+  reorderProductsInput,
   PRODUCT_COLOR_COLUMNS,
   productColorToRow,
   product360ImageInput,
@@ -37,6 +38,7 @@ import {
   product360DeleteInput,
   product360ReorderInput,
   PRODUCT_360_COLUMNS,
+  PRODUCT_ORDER_COLUMNS,
   product360ToRow,
   PRODUCT_COLUMNS,
   PRODUCT_TOGGLE_COLUMNS,
@@ -77,11 +79,9 @@ export const listProducts = createServerFn({ method: "POST" })
     if (data.stock === "in_stock") query = query.gt("stock_qty", 0);
 
     const from = (data.page - 1) * data.pageSize;
-    const {
-      data: rows,
-      count,
-      error,
-    } = await query.order("updated_at", { ascending: false }).range(from, from + data.pageSize - 1);
+      .order("sort_order", { ascending: true, nullsFirst: false })
+      .order("updated_at", { ascending: false })
+      .range(from, from + data.pageSize - 1);
     if (error) throw new Error("Could not load products.");
 
     return { rows: rows ?? [], total: count ?? 0, page: data.page, pageSize: data.pageSize };
@@ -669,5 +669,37 @@ export const bulkUpdateProductImages = createServerFn({ method: "POST" })
       targetLabel: "Bulk Image Update",
       metadata: { ids: data.ids, imageUrl: data.imageUrl, appendGallery: data.appendGallery },
     });
+    return { ok: true };
+  });
+
+export const reorderProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => reorderProductsInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { ids } = data;
+    
+    // We update sort_order sequentially based on the array index
+    const updates = ids.map((id, index) => 
+      context.supabase
+        .from("products")
+        .update({ sort_order: index + 1 })
+        .eq("id", id)
+    );
+
+    const results = await Promise.all(updates);
+    const firstError = results.find(r => r.error)?.error;
+    if (firstError) throw new Error("Could not update product order.");
+
+    await auditFromActor(actor, {
+      action: AUDIT_ACTIONS.productUpdated,
+      targetType: "product",
+      targetLabel: "Reorder Products",
+      metadata: { ids },
+    });
+
     return { ok: true };
   });
