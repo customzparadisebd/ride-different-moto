@@ -126,15 +126,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   loader: async ({ context }) => {
     const fetcher = async (queryKey: string[], queryFn: () => Promise<any>) => {
       try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
-        const result = await context.queryClient.ensureQueryData({
+        return await context.queryClient.ensureQueryData({
           queryKey,
           queryFn,
-          signal: controller.signal,
         });
-        clearTimeout(timeout);
-        return result;
       } catch (e) {
         console.error(`Root loader ${queryKey[0]} failed:`, e);
         return null;
