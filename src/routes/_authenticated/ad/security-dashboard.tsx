@@ -378,16 +378,25 @@ function SecurityDashboardPage() {
               Security Alerts
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''{"\n"}
-                {"\n"}
-                Query 1 — Bike Model{"\n"}
-                {"\n"}
-                আমি Admin Panel-এ Bike Model Add/Manage করার কোনো option দেখতে পাচ্ছি না।{"\n"}
-                Bike Model add, edit, delete এবং manage করার জন্য কি কোনো আলাদা option/section আছে? যদি না থাকে, তাহলে Admin Panel-এ এমন একটি option যোগ করা সম্ভব কি, যেখান থেকে coding ছাড়াই Bike Model manage করা যাবে?{"\n"}
-                {"\n"}
-                Query 2 — Bike Explore{"\n"}
-                {"\n"}
-                Website-এর Bike Explore section-এ কি নতুন Bike Model add করা যায় না?{"\n"}
-                যদি যায়, তাহলে Admin Panel থেকে Bike Explore-এর জন্য নতুন Bike Model add, edit, remove এবং তার প্রয়োজনীয় image/details manage করার কোনো option আছে কি? যদি না থাকে, তাহলে এই functionality যোগ করা সম্ভব কি?
+                                        {"\n"}
+                                            {"\n"}
+                                            {"\n"}
+                                            For the code present, I get the error below.{"\n"}
+{"\n"}
+Please think step-by-step in order to resolve it.{"\n"}
+```{"\n"}
+Error: aborted{"\n"}
+{"\n"}
+{"{"}{"\n"}
+  "timestamp": 1787222779500,{"\n"}
+  "error_type": "RUNTIME_ERROR",{"\n"}
+  "filename": "Unknown file",{"\n"}
+  "lineno": 0,{"\n"}
+  "colno": 0,{"\n"}
+  "stack": "Error: aborted\n    at abortIncoming (node:_http_server:838:17)\n    at socketOnClose (node:_http_server:832:3)\n    at Socket.emit (node:events:531:35)\n    at TCP.<anonymous> (node:net:346:12)\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",{"\n"}
+  "has_blank_screen": true{"\n"}
+{"}"}{"\n"}
+```
               </div>
 
 
