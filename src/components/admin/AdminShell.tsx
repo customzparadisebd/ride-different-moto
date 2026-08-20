@@ -110,7 +110,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
                 <span className="flex items-center gap-1.5">
                   {access.email} {access.mfaSatisfied && <ShieldCheck className="h-3 w-3 text-emerald-500" />}
                 </span>
-                <StaffAvatar access={access} className="h-6 w-6" />
+                <StaffAvatar avatarUrl={access.avatarUrl} fallbackSeed={access.email} className="h-6 w-6 rounded-full" />
               </div>
               <div className="flex items-center gap-3 border-l pl-4">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
