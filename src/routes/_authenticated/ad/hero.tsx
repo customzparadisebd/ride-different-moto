@@ -261,7 +261,8 @@ function AdminHeroSlides() {
                   mobileImage: s.mobileImage,
                   bikeSlug: s.bikeSlug,
                   isFullBanner: s.isFullBanner
-                }));
+                })) as any;
+
               
               if (activeSlides.length > 0) {
                 // We use the first slide as the "current" one in the dialog state

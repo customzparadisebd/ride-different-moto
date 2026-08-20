@@ -14,7 +14,15 @@ interface SlidePreviewProps {
     mobileImage?: string | null;
     bikeSlug?: string | null;
     isFullBanner?: boolean;
-  };
+  } | Array<{
+    bikeName: string;
+    label?: string | null;
+    image: string;
+    mobileImage?: string | null;
+    bikeSlug?: string | null;
+    isFullBanner?: boolean;
+  }>;
+
 }
 
 export function HeroSlidePreview({ open, onOpenChange, slide }: SlidePreviewProps) {
