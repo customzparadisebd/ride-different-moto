@@ -9,6 +9,8 @@
 //          (permanent delete requires Super Admin) and is written to
 //          the append-only audit log with old/new values.
 // ============================================================
+// Modified: Added bypass for Admin/Super Admin in staff approval gate.
+// ============================================================
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 

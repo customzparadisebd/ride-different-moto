@@ -221,6 +221,7 @@ export const listCustomers = createServerFn({ method: "POST" })
     z.object({ search: z.string().trim().max(120).optional() }).parse(input ?? {}),
   )
   .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // SECURITY: Unapproved staff cannot access customer list (PII)
