@@ -208,8 +208,9 @@ export async function resolveActor(
     isSuperAdmin,
     isStaff: roles.length > 0 && status === "approved",
     // MFA is satisfied when Supabase issued an AAL2 token (password + TOTP).
-    mfaSatisfied: claims?.aal === "aal2" || !!process.env.VITE_DEV_BYPASS_MFA,
-    mfaRequired: !process.env.VITE_DEV_BYPASS_MFA, // Everyone is required to have MFA for admin access, except in dev-bypass mode
+    mfaSatisfied: claims?.aal === "aal2" || !!process.env["VITE_DEV_BYPASS_MFA"],
+    mfaRequired: !process.env["VITE_DEV_BYPASS_MFA"], // Everyone is required to have MFA for admin access, except in dev-bypass mode
+
 
     sessionId,
     sessionRevoked,
