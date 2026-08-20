@@ -124,22 +124,24 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async ({ context }) => {
+    // Basic fetch with error suppression to prevent abort crashes
     const fetcher = async (queryKey: string[], queryFn: () => Promise<any>) => {
       try {
         return await context.queryClient.ensureQueryData({
           queryKey,
           queryFn,
+          staleTime: 5000, // Reduced stale time to ensure fresh data
         });
       } catch (e) {
-        console.error(`Root loader ${queryKey[0]} failed:`, e);
+        console.warn(`Root loader ${queryKey[0]} failed (non-critical):`, e);
         return null;
       }
     };
 
-    const [siteSettings, logos] = await Promise.all([
-      fetcher(["site-settings"], () => getSiteSettings({ data: undefined })),
-      fetcher(["site-logos"], () => listLogos({ data: undefined })),
-    ]);
+    // Sequentially fetch settings and logos to avoid connection resource starvation
+    const siteSettings = await fetcher(["site-settings"], () => getSiteSettings({ data: undefined }));
+    const logos = await fetcher(["site-logos"], () => listLogos({ data: undefined }));
+    
     return { siteSettings, logos };
   },
 
