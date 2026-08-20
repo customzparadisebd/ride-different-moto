@@ -20,7 +20,9 @@ import { getHeroSlides } from "@/lib/hero.functions";
 import { getStorefrontBikeModels } from "@/lib/bike-models.functions";
 import { storefrontProductsQuery } from "@/lib/storefront.queries";
 import { getSectionSettings } from "@/lib/sections.functions";
+import { listLogos } from "@/lib/logos.functions";
 import { site } from "@/data/site";
+
 import { useLanguage } from "@/lib/i18n";
 import { type SiteSettings } from "@/lib/settings.shared";
 import type { SectionSetting } from "@/lib/sections.shared";
@@ -28,7 +30,17 @@ import type { SectionSetting } from "@/lib/sections.shared";
 export const Route = createFileRoute("/")({
   head: ({ loaderData }) => {
     const settings = (loaderData as any)?.siteSettings || site;
+    const siteLogos = (loaderData as any)?.logos as any[];
     const siteUrl = settings?.productionDomain ? `https://${settings.productionDomain}` : site.url;
+
+    const getLogo = (category: string, fallback: string) => {
+      const found = siteLogos?.find(l => l.category === category && l.is_active);
+      return found?.url || fallback;
+    };
+
+    const ogLogo = getLogo("og_image", `${siteUrl}/logo-main.png`);
+    const mainLogo = getLogo("main", `${siteUrl}/logo-main.png`);
+
     const businessName = settings?.businessName || (settings as any).name || site.name;
     const businessTagline = settings?.tagline || (settings as any).tagline || site.tagline;
     const businessDescription = settings?.businessDescription || (settings as any).description || site.description;
@@ -49,11 +61,12 @@ export const Route = createFileRoute("/")({
         { property: "og:type", content: "website" },
         { property: "og:url", content: siteUrl },
         { rel: "canonical", href: siteUrl },
-        { property: "og:image", content: `${siteUrl}/logo-main.png` },
+        { property: "og:image", content: ogLogo },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description },
-        { name: "twitter:image", content: `${siteUrl}/logo-main.png` },
+        { name: "twitter:image", content: ogLogo },
+
       ],
       
       scripts: [
@@ -65,7 +78,7 @@ export const Route = createFileRoute("/")({
               "@type": "Organization",
               "name": businessName,
               "url": siteUrl,
-              "logo": `${siteUrl}/logo-main.png`,
+              "logo": mainLogo,
               "sameAs": site.socials.map((social) => social.href),
               "contactPoint": {
                 "@type": "ContactPoint",
@@ -79,7 +92,7 @@ export const Route = createFileRoute("/")({
               "@context": "https://schema.org",
               "@type": "LocalBusiness",
               "name": businessName,
-              "image": `${siteUrl}/logo-main.png`,
+              "image": mainLogo,
               "@id": siteUrl,
               "url": siteUrl,
               "telephone": businessPhone,
@@ -133,8 +146,16 @@ export const Route = createFileRoute("/")({
     };
   },
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(storefrontProductsQuery());
+    const [_, logos] = await Promise.all([
+      context.queryClient.ensureQueryData(storefrontProductsQuery()),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-logos"],
+        queryFn: () => listLogos(),
+      }),
+    ]);
+    return { logos };
   },
+
   component: Index,
   errorComponent: ({ error }) => (
     <p

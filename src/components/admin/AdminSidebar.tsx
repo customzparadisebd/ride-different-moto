@@ -7,6 +7,8 @@
 //          every server function re-checks the permission.
 // ============================================================
 import { Link, useRouterState } from "@tanstack/react-router";
+import { useSiteLogos } from "@/hooks/use-site-logos";
+
 import {
   ClipboardList,
   LayoutDashboard,
@@ -129,6 +131,9 @@ const ADMINISTRATION: NavItem[] = [
   ];
 
 export function AdminSidebar({ access, permissions }: { access: any; permissions: Permission[] }) {
+  const { getLogo } = useSiteLogos();
+  const logoUrl = getLogo("admin_sidebar");
+
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const isPrivileged = access.primaryRole === "super_admin" || access.primaryRole === "admin";
 
@@ -150,7 +155,9 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
   const renderGroup = (label: string, items: NavItem[]) => {
     const visible = items.filter(allowed);
     if (!visible.length) return null;
-    return (
+
+  return (
+
       <SidebarGroup>
         <SidebarGroupLabel>{label}</SidebarGroupLabel>
         <SidebarGroupContent>
@@ -176,8 +183,9 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
       <SidebarHeader className="border-b border-sidebar-border/50 pb-2">
         <div className="flex items-center gap-3 px-2 pt-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
           <img
-            src={czpLogoAsset.url}
+            src={logoUrl}
             alt="CZP Logo"
+
             className="h-10 w-auto shrink-0 object-contain md:h-16 lg:h-20"
           />
           <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden">

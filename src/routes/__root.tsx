@@ -25,6 +25,8 @@ import { ThemeProvider } from "@/lib/theme";
 import { LanguageProvider } from "@/lib/i18n";
 import { logNotFound } from "@/lib/analytics.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
+import { listLogos } from "@/lib/logos.functions";
+
 import errorGif from "@/assets/404-error.gif.asset.json";
 import { SmoothCursor } from "@/components/SmoothCursor";
 import { type SiteSettings } from "@/lib/settings.shared";
@@ -122,15 +124,33 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async ({ context }) => {
-    const siteSettings = await context.queryClient.ensureQueryData({
-      queryKey: ["site-settings"],
-      queryFn: () => getSiteSettings(),
-    });
-    return { siteSettings };
+    const [siteSettings, logos] = await Promise.all([
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-settings"],
+        queryFn: () => getSiteSettings(),
+      }),
+      context.queryClient.ensureQueryData({
+        queryKey: ["site-logos"],
+        queryFn: () => listLogos(),
+      }),
+    ]);
+    return { siteSettings, logos };
   },
+
   head: ({ loaderData }) => {
     const settings = (loaderData?.siteSettings as SiteSettings) || site;
+    const siteLogos = loaderData?.logos as any[];
     const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+
+    const getLogo = (category: string, fallback: string) => {
+      const found = siteLogos?.find(l => l.category === category && l.is_active);
+      return found?.url || fallback;
+    };
+
+    const ogLogo = getLogo("og_image", `${siteUrl}/logo-main.png`);
+    const favicon = getLogo("favicon", "/favicon.png");
+    const mainLogo = getLogo("main", `${siteUrl}/logo-main.png`);
+
     
     // Explicitly handle fields that might be missing in one type vs another
     const businessName = (settings as SiteSettings).businessName || (settings as any).name || site.name;
@@ -151,6 +171,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         { name: "description", content: businessDescription },
         { property: "og:title", content: `${businessName} — ${businessTagline}` },
         { property: "og:description", content: businessDescription },
+        { property: "og:image", content: ogLogo },
+        { name: "twitter:image", content: ogLogo },
+
         { name: "author", content: "Rafi Gazi (Rabbee) Apps" },
         { name: "generator", content: "CZP-Secure-Engine" },
         { property: "og:site_name", content: businessName },
@@ -165,7 +188,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           rel: "stylesheet",
           href: appCss,
         },
-        { rel: "icon", href: "/favicon.png", type: "image/png" },
+        { rel: "icon", href: favicon, type: favicon.endsWith(".png") ? "image/png" : "image/x-icon" },
         { rel: "preconnect", href: "https://fonts.googleapis.com" },
         { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
         {
@@ -182,7 +205,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "@type": "Organization",
             name: businessName,
             url: siteUrl,
-            logo: `${siteUrl}/logo-main.png`,
+            logo: mainLogo,
             contactPoint: {
               "@type": "ContactPoint",
               telephone: businessPhone,
@@ -199,7 +222,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
             name: businessName,
-            image: `${siteUrl}/logo-main.png`,
+            image: mainLogo,
             "@id": siteUrl,
             url: siteUrl,
             telephone: businessPhone,

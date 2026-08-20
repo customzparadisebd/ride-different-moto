@@ -12,6 +12,8 @@
 // Future: None.
 // ============================================================
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useSiteLogos } from "@/hooks/use-site-logos";
+
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -54,7 +56,11 @@ export const Route = createFileRoute("/ad/log")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { getLogo } = useSiteLogos();
+  const loginLogo = getLogo("admin_login");
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [lockSeconds, setLockSeconds] = useState(0);
@@ -212,7 +218,8 @@ function AuthPage() {
           <div className="w-full max-w-sm space-y-8 text-center">
             <div className="flex flex-col items-center">
               <img 
-                src={logo3dAsset.url} 
+                src={loginLogo} 
+
                 alt={`${site.name} logo`} 
                 className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" 
                 role="img"
@@ -330,7 +337,7 @@ function AuthPage() {
         <div className="w-full max-w-sm space-y-8">
           <div className="flex flex-col items-center">
             <img 
-              src={logo3dAsset.url} 
+              src={loginLogo} 
               alt={`${site.name} logo`} 
               className="h-auto w-full max-w-[200px] sm:max-w-[240px] lg:max-w-[340px] object-contain" 
               role="img"

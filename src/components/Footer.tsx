@@ -47,7 +47,7 @@ export function Footer() {
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_260px]">
           <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div className="min-w-0">
-              <Logo on="dark" className="h-11 w-auto" />
+              <Logo category="footer" className="h-11 w-auto" />
               <p className="mt-4 font-display text-sm uppercase tracking-[0.25em] text-primary">
                 {businessTagline}
               </p>

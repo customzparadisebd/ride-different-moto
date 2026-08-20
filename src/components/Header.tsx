@@ -62,7 +62,7 @@ export function Header() {
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
           <Link to="/" className="min-w-0" aria-label={`${businessName} home`}>
-            <Logo priority className="h-9 w-auto sm:h-12" />
+            <Logo priority category="header" className="h-9 w-auto sm:h-12" />
           </Link>
         </div>
 

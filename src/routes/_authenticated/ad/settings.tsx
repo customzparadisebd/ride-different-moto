@@ -20,7 +20,9 @@ import { InvoiceSettingsPanel } from "@/components/admin/settings/InvoiceSetting
 import { SiteSettingsPanel } from "@/components/admin/settings/SiteSettingsPanel";
 import { AISettingsPanel } from "@/components/admin/settings/AISettingsPanel";
 import { SectionSettingsPanel } from "@/components/admin/settings/SectionSettingsPanel";
+import { LogoSettingsPanel } from "@/components/admin/settings/LogoSettingsPanel";
 import { Button } from "@/components/ui/button";
+
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -110,6 +112,12 @@ function AdminSettings() {
               label="Invoice"
             />
             <SettingsTabButton
+              active={location.pathname === "/ad/settings" && search.tab === "logos"}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "logos" } })}
+              label="Logos"
+            />
+            <SettingsTabButton
+
               active={location.pathname === "/ad/settings" && search.tab === "delivery"}
               onClick={() => navigate({ to: "/ad/settings", search: { tab: "delivery" } })}
               label="Delivery Zones"
@@ -377,7 +385,13 @@ function AdminSettings() {
                   <AISettingsPanel />
                 </div>
               )}
+
+              {/* TAB: LOGOS */}
+              {search.tab === "logos" && (
+                <LogoSettingsPanel canManage={canManage} />
+              )}
             </>
+
           )}
         </div>
       </div>
