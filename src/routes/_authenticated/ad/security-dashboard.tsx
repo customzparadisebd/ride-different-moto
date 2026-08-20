@@ -379,40 +379,17 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-For the code present, I get the error below.
+"Fix the recurring runtime crash caused by Error: aborted at node:_http_server.
 
-Please think step-by-step in order to resolve it.
-\`\`\`
-# Error number 1:
-#################
+Instructions to solve:
 
-The app returned 500 while handling POST /_serverFn/eyJmaWxlIjoiL3NyYy9saWIvcHJvZHVjdHMuZnVuY3Rpb25zLnRzP3Rzcy1zZXJ2ZXJmbi1zcGxpdCIsImV4cG9ydCI6Imxpc3RQcm9kdWN0c19jcmVhdGVTZXJ2ZXJGbl9oYW5kbGVyIn0. The error was handled by a route or error boundary, so no stack was captured — check the failing loader/route code and the dev server output.
+Add Request Abort Handling: Wrap all backend HTTP/API route handlers and asynchronous data fetching logic with proper try-catch blocks and handle connection aborts gracefully without crashing the Node.js process.
 
-{
-  "timestamp": 1787224043930,
-  "error_type": "RUNTIME_ERROR",
-  "filename": "Unknown file",
-  "lineno": 0,
-  "colno": 0,
-  "stack": "Unavailable",
-  "has_blank_screen": true
-}
+Prevent Socket Termination Crashes: Add event listeners for req.on('close') and req.on('aborted') in API endpoints/middleware so early client disconnects do not trigger unhandled exceptions.
 
-# Error number 2:
-#################
+Fix Infinite Re-renders: Check for any React useEffect hook or API-fetching loops that might be spamming requests continuously and causing network sockets to drop.
 
-Error: aborted
-
-{
-  "timestamp": 1787224044128,
-  "error_type": "RUNTIME_ERROR",
-  "filename": "Unknown file",
-  "lineno": 0,
-  "colno": 0,
-  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
-  "has_blank_screen": true
-}
-\`\`\``}
+Add Fallback UI: Ensure the frontend handles lost backend connections with proper error boundaries so has_blank_screen: true doesn't happen."`}
               </div>
 
 
