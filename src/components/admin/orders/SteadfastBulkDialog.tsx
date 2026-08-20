@@ -93,13 +93,13 @@ export function SteadfastBulkDialog({
         onOpenChange(next);
       }}
     >
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-lg border-border bg-card">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <img
               src="https://www.steadfast.com.bd/landing-page/asset/images/logo/logo.svg"
               alt="SteadFast Courier"
-              className="h-8 w-auto"
+              className="h-8 w-auto dark:invert"
             />
             <DialogTitle className="font-display uppercase">Send to SteadFast</DialogTitle>
           </div>
