@@ -56,7 +56,7 @@ export function SectionSettingsPanel() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
           <Settings2 className="h-6 w-6 text-primary" />
           Homepage Section Controls
         </h2>
@@ -65,10 +65,10 @@ export function SectionSettingsPanel() {
         </p>
       </div>
 
-      <Alert className="bg-primary/10 border-primary/20 text-white">
+      <Alert className="bg-primary/5 dark:bg-primary/10 border-primary/20">
         <AlertCircle className="h-4 w-4 text-primary" />
         <AlertTitle className="text-primary font-bold uppercase tracking-widest text-xs">Helpful Hint</AlertTitle>
-        <AlertDescription className="text-sm text-white/80">
+        <AlertDescription className="text-sm text-foreground/80 dark:text-white/80">
           Control limits, "See All" buttons, and categories for each homepage section here.
         </AlertDescription>
       </Alert>
@@ -128,13 +128,13 @@ function SectionCard({
 
   return (
     <>
-      <Card className="border-white/10 bg-black/40 backdrop-blur-sm overflow-hidden group">
+      <Card className="border-border bg-card dark:bg-black/40 backdrop-blur-sm overflow-hidden group">
 
       <div className={`h-1 w-full transition-colors ${formData.enabled ? 'bg-primary' : 'bg-muted'}`} />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-xl flex items-center gap-2 text-white">
+            <CardTitle className="text-xl flex items-center gap-2 text-foreground dark:text-white">
               {formData.name}
               {!formData.enabled && (
                 <Badge variant="outline" className="text-[10px] uppercase tracking-wider border-red-500/50 text-red-500 bg-red-500/5">
@@ -165,7 +165,7 @@ function SectionCard({
               size="sm"
               variant="outline"
               onClick={() => setIsPreviewing(true)}
-              className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
+              className="border-border hover:bg-accent active:scale-95 transition-all h-8"
               title="Preview homepage section"
             >
               <Monitor className="h-3.5 w-3.5" />
@@ -174,7 +174,7 @@ function SectionCard({
               size="sm"
               variant="outline"
               onClick={handleReset}
-              className="border-white/10 hover:bg-white/5 active:scale-95 transition-all h-8"
+              className="border-border hover:bg-accent active:scale-95 transition-all h-8"
               title="Reset to original defaults"
             >
               <RotateCcw className="h-3.5 w-3.5" />
@@ -196,17 +196,17 @@ function SectionCard({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Basic Info */}
-          <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <div className="space-y-4 p-4 rounded-xl bg-accent/30 dark:bg-white/[0.02] border border-border dark:border-white/5">
             <div className="flex items-center gap-2 mb-2">
               <Type className="h-4 w-4 text-primary" />
-              <h4 className="text-sm font-semibold text-white/80">Section Identity</h4>
+              <h4 className="text-sm font-semibold text-foreground/80 dark:text-white/80">Section Identity</h4>
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Display Name</Label>
               <Input
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
-                className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
               />
             </div>
             <div className="space-y-2">
@@ -217,7 +217,7 @@ function SectionCard({
                   type="number"
                   value={formData.sortOrder}
                   onChange={(e) => handleChange("sortOrder", parseInt(e.target.value))}
-                  className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                  className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
                 />
               </div>
             </div>
@@ -229,10 +229,10 @@ function SectionCard({
                   value={formData.productCategory || "all"}
                   onValueChange={(value) => handleChange("productCategory", value === "all" ? null : value)}
                 >
-                  <SelectTrigger className="h-9 bg-black/20 border-white/10 focus:border-primary/50 text-xs">
+                  <SelectTrigger className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50 text-xs">
                     <SelectValue placeholder="All Products (Default)" />
                   </SelectTrigger>
-                  <SelectContent className="bg-zinc-900 border-white/10">
+                  <SelectContent className="bg-popover border-border dark:bg-zinc-900 dark:border-white/10">
                     <SelectItem value="all">All Products (Default)</SelectItem>
                     {PRODUCT_CATEGORIES.map((cat) => (
                       <SelectItem key={cat} value={cat}>
@@ -246,10 +246,10 @@ function SectionCard({
           </div>
 
           {/* Display Limits */}
-          <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <div className="space-y-4 p-4 rounded-xl bg-accent/30 dark:bg-white/[0.02] border border-border dark:border-white/5">
             <div className="flex items-center gap-2 mb-2">
               <LayoutGrid className="h-4 w-4 text-primary" />
-              <h4 className="text-sm font-semibold text-white/80">Content Rules</h4>
+              <h4 className="text-sm font-semibold text-foreground/80 dark:text-white/80">Content Rules</h4>
             </div>
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">Homepage Product Limit</Label>
@@ -259,7 +259,7 @@ function SectionCard({
                   type="number"
                   value={formData.displayLimit}
                   onChange={(e) => handleChange("displayLimit", parseInt(e.target.value))}
-                  className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                  className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
                 />
               </div>
               <p className="text-[10px] text-muted-foreground/60 italic">
@@ -269,7 +269,7 @@ function SectionCard({
             
             <div className="flex items-center justify-between pt-2">
               <div className="space-y-0.5">
-                <Label className="text-xs text-white/80">Enable Slider Mode</Label>
+                <Label className="text-xs text-foreground/80 dark:text-white/80">Enable Slider Mode</Label>
                 <p className="text-[10px] text-muted-foreground/60">Use carousel instead of grid</p>
               </div>
               <Switch
@@ -287,7 +287,7 @@ function SectionCard({
                     type="number"
                     value={formData.sliderItems || 4}
                     onChange={(e) => handleChange("sliderItems", parseInt(e.target.value))}
-                    className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                    className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
                   />
                 </div>
               </div>
@@ -295,11 +295,11 @@ function SectionCard({
           </div>
 
           {/* Navigation */}
-          <div className="space-y-4 p-4 rounded-xl bg-white/[0.02] border border-white/5">
+          <div className="space-y-4 p-4 rounded-xl bg-accent/30 dark:bg-white/[0.02] border border-border dark:border-white/5">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <LinkIcon className="h-4 w-4 text-primary" />
-                <h4 className="text-sm font-semibold text-white/80">"See All" Action</h4>
+                <h4 className="text-sm font-semibold text-foreground/80 dark:text-white/80">"See All" Action</h4>
               </div>
               <Switch
                 checked={formData.showSeeAll}
@@ -314,7 +314,7 @@ function SectionCard({
                   <Input
                     value={formData.buttonText}
                     onChange={(e) => handleChange("buttonText", e.target.value)}
-                    className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                    className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
                     placeholder="e.g. Explore All Products"
                   />
                 </div>
@@ -323,7 +323,7 @@ function SectionCard({
                   <Input
                     value={formData.buttonLink}
                     onChange={(e) => handleChange("buttonLink", e.target.value)}
-                    className="h-9 bg-black/20 border-white/10 focus:border-primary/50"
+                    className="h-9 bg-background dark:bg-black/20 border-border dark:border-white/10 focus:border-primary/50"
                     placeholder="e.g. /shop"
                   />
                 </div>
