@@ -24,7 +24,7 @@ export function AISettingsPanel() {
 
   const { data: settings, isLoading } = useQuery({
     queryKey: ["admin-ai-settings"],
-    queryFn: () => fetchSettings({}),
+    queryFn: () => fetchSettings({ data: undefined }),
   });
 
   const [draft, setDraft] = useState<AISettings>(DEFAULT_AI_SETTINGS);

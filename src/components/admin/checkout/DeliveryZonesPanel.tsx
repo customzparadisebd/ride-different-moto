@@ -20,7 +20,7 @@ export function DeliveryZonesPanel({ canManage }: { canManage: boolean }) {
   const load = useServerFn(listCheckoutConfig);
   const save = useServerFn(saveDeliveryZone);
 
-  const configQuery = useQuery({ queryKey: ["checkout-admin-config"], queryFn: () => load() });
+  const configQuery = useQuery({ queryKey: ["checkout-admin-config"], queryFn: () => load({ data: undefined }) });
   const zones = configQuery.data?.zones ?? [];
 
   const mutation = useMutation({
