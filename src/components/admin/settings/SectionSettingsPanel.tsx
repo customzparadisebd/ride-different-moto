@@ -27,7 +27,7 @@ export function SectionSettingsPanel() {
 
   const { data: sections = [], isLoading } = useQuery({
     queryKey: ["section-settings"],
-    queryFn: () => fetchSettings(),
+    queryFn: () => fetchSettings({ data: undefined }),
   });
 
   const mutation = useMutation({

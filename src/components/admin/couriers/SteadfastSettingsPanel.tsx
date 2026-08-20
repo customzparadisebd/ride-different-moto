@@ -36,13 +36,13 @@ export function SteadfastSettingsPanel() {
 
   const settings = useQuery({
     queryKey: ["steadfast-settings"],
-    queryFn: () => load(),
+    queryFn: () => load({ data: undefined }),
     retry: false,
   });
 
   const logsQuery = useQuery({
     queryKey: ["steadfast-logs"],
-    queryFn: () => loadLogs(),
+    queryFn: () => loadLogs({ data: undefined }),
     enabled: !!settings.data?.configured,
   });
 
