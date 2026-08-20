@@ -124,31 +124,15 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async ({ context }) => {
-    // Basic fetch with error suppression to prevent abort crashes
-    const fetcher = async (queryKey: string[], queryFn: () => Promise<any>) => {
-      try {
-        return await context.queryClient.ensureQueryData({
-          queryKey,
-          queryFn,
-          staleTime: 5000, // Reduced stale time to ensure fresh data
-        });
-      } catch (e) {
-        console.warn(`Root loader ${queryKey[0]} failed (non-critical):`, e);
-        return null;
-      }
-    };
-
-    // Sequentially fetch settings and logos to avoid connection resource starvation
-    const siteSettings = await fetcher(["site-settings"], () => getSiteSettings({ data: undefined }));
-    const logos = await fetcher(["site-logos"], () => listLogos({ data: undefined }));
-    
-    return { siteSettings, logos };
+    // Return empty data initially to prevent loader from blocking/aborts
+    // Data will be fetched via individual useQuery hooks on the client side
+    return { siteSettings: null, logos: null };
   },
 
   head: ({ loaderData }) => {
-    const settings = (loaderData?.siteSettings as SiteSettings) || site;
-    const siteLogos = loaderData?.logos as any[];
-    const siteUrl = settings.productionDomain ? `https://${settings.productionDomain}` : site.url;
+    const settings = (loaderData?.siteSettings as SiteSettings | null) || site;
+    const siteLogos = (loaderData?.logos as any[] | null) || [];
+    const siteUrl = (settings as any).productionDomain ? `https://${(settings as any).productionDomain}` : site.url;
 
     const getLogo = (category: string, fallback: string) => {
       const found = siteLogos?.find(l => l.category === category && l.is_active);
