@@ -41,8 +41,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   const handleResetTo01 = () => {
     if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
       mutation.mutate({
-        ...draft,
-        nextNumber: 1,
+        data: {
+          ...draft,
+          nextNumber: 1,
+        }
       });
     }
   };
