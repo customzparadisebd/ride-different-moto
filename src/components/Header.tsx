@@ -58,7 +58,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:h-20 sm:px-6 md:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 md:px-8">
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
           <Link to="/" className="min-w-0" aria-label={`${businessName} home`}>
