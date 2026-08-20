@@ -6,8 +6,9 @@ import { PERMISSIONS } from "./admin.shared";
 export const uploadHeroBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ request, context }) => {
+    const ctx = context as any;
     const { resolveActor, assertAccess } = await import("./admin.server");
-    const actor = await resolveActor(context.userId, context.claims as never);
+    const actor = await resolveActor(ctx.userId, ctx.claims as never);
     
     // SECURITY: Only Admin/Super Admin can upload banners
     assertAccess(actor, PERMISSIONS.contentManage);

@@ -92,7 +92,7 @@ function AdminHeroSlides() {
     formData.append("type", type);
 
     try {
-      const { url } = await uploadBannerFn({ request: formData });
+      const { url } = (await uploadBannerFn({ data: formData })) as any;
       callback(url);
       toast.success(`${type === "desktop" ? "Desktop" : "Mobile"} banner uploaded`);
     } catch (err: any) {
