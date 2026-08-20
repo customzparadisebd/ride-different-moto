@@ -105,12 +105,9 @@ export const restoreCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => customerRestoreInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-
-    // Only Admin and Super Admin can restore
-    const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
-    if (!isPrivileged) throw new Error("Only Admin and Super Admin can restore customer records.");
+    assertAccess(actor, PERMISSIONS.customersManage);
 
     const before = await context.supabase
       .from("customers")
@@ -138,13 +135,9 @@ export const purgeCustomer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => customerPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-
-    // Only Admin and Super Admin can permanently delete
-    const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
-    if (!isPrivileged)
-      throw new Error("Only Admin and Super Admin can permanently delete records.");
+    assertAccess(actor, PERMISSIONS.securityManage);
 
     const before = await context.supabase
       .from("customers")
@@ -187,13 +180,9 @@ export const getCustomerAuditTrail = createServerFn({ method: "POST" })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { resolveActor } = await import("./admin.server");
+    const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-
-    // Only Admin and Super Admin can view specific audit trails for customers
-    const isPrivileged = actor.isSuperAdmin || actor.roles.includes("admin");
-    if (!isPrivileged)
-      throw new Error("Only Admin and Super Admin can view customer audit trails.");
+    assertAccess(actor, PERMISSIONS.auditView);
 
     let query = context.supabase
       .from("admin_audit_log")
