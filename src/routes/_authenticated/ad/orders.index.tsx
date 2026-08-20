@@ -132,12 +132,12 @@ function AdminOrderList() {
     [filters],
   );
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({ data: undefined }) });
   const countsQuery = useQuery({
     queryKey: ["admin-order-tab-counts"],
-    queryFn: () => fetchCounts({}),
+    queryFn: () => fetchCounts({ data: undefined }),
   });
-  const staffQuery = useQuery({ queryKey: ["admin-order-staff"], queryFn: () => fetchStaff({}) });
+  const staffQuery = useQuery({ queryKey: ["admin-order-staff"], queryFn: () => fetchStaff({ data: undefined }) });
   const ordersQuery = useQuery({
     queryKey: ["admin-orders", activeFilters, tab, page, pageSize, sortBy, sortDir],
     queryFn: () =>
