@@ -55,7 +55,7 @@ function AdminSettings() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({}) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({ data: undefined }) });
 
   // ACCESS CONTROL: Restrict Staff from settings
   useEffect(() => {
@@ -71,7 +71,7 @@ function AdminSettings() {
   const canManage = accessQuery.data?.permissions.includes("products.manage") ?? false;
   const canManageZones = accessQuery.data?.permissions.includes("zones.manage") ?? false;
 
-  const settingsQuery = useQuery({ queryKey: ["store-settings"], queryFn: () => load() });
+  const settingsQuery = useQuery({ queryKey: ["store-settings"], queryFn: () => load({ data: undefined }) });
   const [draft, setDraft] = useState<StoreSettings>(DEFAULT_STORE_SETTINGS);
 
   useEffect(() => {
