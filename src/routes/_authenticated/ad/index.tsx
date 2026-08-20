@@ -61,7 +61,7 @@ function AdminDashboard() {
   const [showSteadfastInfo, setShowSteadfastInfo] = useState(false);
   const query = useQuery({
     queryKey: ["admin-dashboard"],
-    queryFn: () => fetchMetrics({}),
+    queryFn: () => fetchMetrics({ data: undefined }),
     refetchInterval: 30000, // Auto-refresh every 30 seconds for "real-time" updates
   });
 
