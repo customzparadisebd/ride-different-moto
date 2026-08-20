@@ -135,29 +135,39 @@ function InvoicePage() {
               <div className="mt-2 max-w-xs text-xs leading-relaxed text-neutral-600">
                 <p>{order.address_line}</p>
                 <p>{order.city}</p>
-                <p className="mt-1 font-bold text-black italic">Zone: {deliveryZoneLabel(order.delivery_zone)}</p>
+                <p className="mt-2 inline-block rounded bg-neutral-100 px-2 py-0.5 text-[10px] font-bold uppercase italic text-black print:bg-neutral-50">
+                  Zone: {deliveryZoneLabel(order.delivery_zone)}
+                </p>
               </div>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:text-right">
             <div className="space-y-4">
               <div>
-                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Invoice ID</h3>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Invoice Number</h3>
                 <p className="text-sm font-black text-primary">{order.invoice_no}</p>
               </div>
               <div>
                 <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Order ID</h3>
                 <p className="text-[11px] font-mono font-medium">{order.id.slice(0, 8).toUpperCase()}</p>
               </div>
+              <div>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Status</h3>
+                <p className="text-[10px] font-bold uppercase italic">{statusLabel(order.status)}</p>
+              </div>
             </div>
             <div className="space-y-4">
               <div>
-                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Date</h3>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Order Date</h3>
                 <p className="text-sm font-bold">{new Date(order.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</p>
               </div>
               <div>
-                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Payment</h3>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Payment Method</h3>
                 <p className="text-[11px] font-bold uppercase">{paymentMethodLabel(order.payment_method)}</p>
+              </div>
+              <div>
+                <h3 className="text-[9px] font-black uppercase tracking-widest text-neutral-400">Payment Status</h3>
+                <p className="text-[10px] font-bold uppercase italic">{statusLabel(order.payment_status)}</p>
               </div>
             </div>
           </div>
@@ -168,7 +178,8 @@ function InvoicePage() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b-2 border-black text-[10px] font-black uppercase tracking-widest">
-                <th className="py-3">Item Description</th>
+                <th className="py-3 w-16">Item</th>
+                <th className="py-3">Description</th>
                 <th className="py-3 text-center">Qty</th>
                 <th className="py-3 text-right">Unit Price</th>
                 <th className="py-3 text-right">Total</th>
@@ -177,15 +188,30 @@ function InvoicePage() {
             <tbody className="divide-y divide-neutral-100">
               {items.map((item: any) => (
                 <tr key={item.id} className="text-xs">
-                  <td className="py-4">
-                    <p className="font-bold uppercase">{item.product_name}</p>
+                  <td className="py-4 align-top">
+                    <div className="size-12 overflow-hidden rounded border border-neutral-100 bg-neutral-50 print:border-neutral-200">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.product_name}
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex size-full items-center justify-center text-[8px] uppercase text-neutral-300">No Img</div>
+                      )}
+                    </div>
+                  </td>
+                  <td className="py-4 align-top">
+                    <p className="font-bold uppercase leading-tight">{item.product_name}</p>
                     {item.variant && (
-                      <p className="mt-0.5 text-[10px] text-neutral-500 uppercase">Color/Variant: {item.variant}</p>
+                      <p className="mt-1 text-[9px] font-medium uppercase text-neutral-500">
+                        Variant: <span className="text-black">{item.variant}</span>
+                      </p>
                     )}
                   </td>
-                  <td className="py-4 text-center font-medium">{item.quantity}</td>
-                  <td className="py-4 text-right">{formatBDT(Number(item.unit_price))}</td>
-                  <td className="py-4 text-right font-bold">{formatBDT(Number(item.line_total))}</td>
+                  <td className="py-4 align-top text-center font-medium">{item.quantity}</td>
+                  <td className="py-4 align-top text-right">{formatBDT(Number(item.unit_price))}</td>
+                  <td className="py-4 align-top text-right font-bold">{formatBDT(Number(item.line_total))}</td>
                 </tr>
               ))}
             </tbody>
@@ -241,8 +267,8 @@ function InvoicePage() {
 
         {/* Footer */}
         <div className="mt-16 border-t border-neutral-100 pt-8 text-center text-[9px] font-medium uppercase tracking-[0.2em] text-neutral-400">
-          <p>This is a computer generated invoice and does not require a signature.</p>
-          <p className="mt-2">Developed by Rafi Gazi (Rabbee) Apps</p>
+          <p>Important: This is a computer generated invoice and does not require a physical signature.</p>
+          <p className="mt-2">Rafi Gazi (Rabbee) Apps · www.customzparadisebd.com</p>
         </div>
       </div>
       
