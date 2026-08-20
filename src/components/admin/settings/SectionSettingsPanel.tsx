@@ -98,18 +98,29 @@ function SectionCard({
 }) {
   const [formData, setFormData] = React.useState<SectionSetting>(section);
   const [isPreviewing, setIsPreviewing] = React.useState(false);
+  const [lastState, setLastState] = React.useState<SectionSetting | null>(null);
 
   const handleChange = (field: keyof SectionSetting, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-
   const handleReset = () => {
     const defaults = SECTION_DEFAULTS[section.id];
     if (defaults) {
+      const currentState = { ...formData };
       const resetData = { ...formData, ...defaults };
       setFormData(resetData);
-      toast.info(`Resetting ${section.name} to defaults. Click "Save Changes" to apply.`);
+      
+      toast.info(`Resetting ${section.name} to defaults.`, {
+        duration: 5000,
+        action: {
+          label: "Undo",
+          onClick: () => {
+            setFormData(currentState);
+            toast.success("Reset undone");
+          }
+        },
+      });
     }
   };
 
