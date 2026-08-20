@@ -41,11 +41,11 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   const handleResetTo01 = () => {
     if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
       mutation.mutate({
-        data: {
-          ...draft,
-          nextNumber: 1,
-        }
-      });
+          data: {
+            ...draft,
+            nextNumber: 1,
+          }
+        });
     }
   };
 
@@ -58,11 +58,11 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
 
     if (confirm(`Set starting number to ${num}? The next order will be ${draft.prefix}-${num.toString().padStart(2, '0')}.`)) {
       mutation.mutate({
-        data: {
-          ...draft,
-          nextNumber: num,
-        }
-      });
+          data: {
+            ...draft,
+            nextNumber: num,
+          }
+        });
       setManualStart("");
     }
   };

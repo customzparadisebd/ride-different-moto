@@ -80,7 +80,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
 
     const updates = {
       prefix: data.prefix,
-      start_number: 1, // Always allow sequence to start from where we set it
+      start_number: data.nextNumber !== undefined ? data.nextNumber : data.startNumber,
       current_number: data.nextNumber !== undefined ? data.nextNumber - 1 : data.currentNumber,
       updated_at: new Date().toISOString(),
       updated_by: actor.userId,
