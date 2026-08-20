@@ -379,20 +379,22 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-"Add full Admin CRUD (Create, Read, Update, Delete) management and a Live Preview feature for the 'Explore by Bike Model' section on the Admin Panel homepage controls.
+For the code present, I get the error below.
 
-Requirements:
+Please think step-by-step in order to resolve it.
+\`\`\`
+Error: aborted
 
-Management Interface: Create a dedicated admin interface/table under Homepage Settings to list all active 'Explore by Bike Model' items.
-
-Add & Edit Functionality: Allow admins to add new bike models or edit existing ones with fields for Model Name, Brand, Image/Icon upload or URL, Target Link/Category, and Display Order.
-
-Delete Option: Include a clear Delete button (with a confirmation modal) to remove any bike model from the homepage section.
-
-Live Preview Option: Add a 'Preview' toggle or button so admins can visually see how the 'Explore by Bike Model' section will look on the live homepage before saving changes.
-
-Visibility Toggle: Include a simple show/hide switch to easily enable or disable the entire 'Explore by Bike Model' section on the storefront." 
-WITHOUT CODING .`}
+{
+  "timestamp": 1787223991174,
+  "error_type": "RUNTIME_ERROR",
+  "filename": "Unknown file",
+  "lineno": 0,
+  "colno": 0,
+  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
+  "has_blank_screen": true
+}
+\`\`\``}
               </div>
 
 
