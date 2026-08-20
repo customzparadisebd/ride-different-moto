@@ -31,7 +31,7 @@ export function AISettingsPanel() {
 
   useEffect(() => {
     if (settings) {
-      setDraft(settings);
+      setDraft(settings as AISettings);
     }
   }, [settings]);
 

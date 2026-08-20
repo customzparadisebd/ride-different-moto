@@ -39,7 +39,7 @@ function getEffectiveClient() {
 }
 
 export const getSiteSettings = createServerFn({ method: "POST" })
-  .handler(async (): Promise<SiteSettings> => {
+  .handler(async () => {
     const { data, error } = await getEffectiveClient()
       .from("site_settings")
       .select(SITE_SETTINGS_COLUMNS)

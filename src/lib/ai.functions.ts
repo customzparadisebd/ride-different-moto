@@ -5,7 +5,7 @@ import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 
 export const getAISettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<AISettings> => {
+  .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.apiManage);

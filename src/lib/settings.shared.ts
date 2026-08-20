@@ -54,13 +54,13 @@ export const siteSettingsInput = z.object({
   whatsapp: z.string().trim().min(6).max(40).optional().or(z.literal("")),
   email: z.string().trim().email().max(200).optional().or(z.literal("")),
   socialLinks: z.array(z.object({ name: z.string(), href: z.string() })).default([]),
-  businessHours: z.record(z.string()).default({}),
+  businessHours: z.record(z.string(), z.string()).default({}),
   mainBranchInfo: z.string().trim().max(1000).optional().or(z.literal("")),
   branchRelationship: z.string().trim().max(1000).optional().or(z.literal("")),
   defaultMetaTitle: z.string().trim().max(200).optional().or(z.literal("")),
   defaultMetaDescription: z.string().trim().max(400).optional().or(z.literal("")),
-  organizationSchema: z.record(z.any()).default({}),
-  localBusinessSchema: z.record(z.any()).default({}),
+  organizationSchema: z.record(z.string(), z.any()).default({}),
+  localBusinessSchema: z.record(z.string(), z.any()).default({}),
 });
 
 export type SiteSettings = z.infer<typeof siteSettingsInput>;
