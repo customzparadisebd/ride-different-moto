@@ -219,11 +219,17 @@ export const listOrders = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => orderFilterInput.parse(input ?? {}))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
-    assertAccess(
-      await resolveActor(context.userId, context.claims as never),
-      PERMISSIONS.ordersView,
-    );
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // SECURITY: Unapproved staff cannot access orders (customer PII)
+    if (actor.status !== "approved") {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+    
+    if (!actor.permissions.includes(PERMISSIONS.ordersView)) {
+      throw new Error("Unauthorized. Missing orders.view permission.");
+    }
 
     // CUSTOMER ORDER COUNTS
     // Purpose: powers the "Total orders" figure in the customer column and the
@@ -410,11 +416,17 @@ export const listOrders = createServerFn({ method: "POST" })
 export const getOrderTabCounts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { resolveActor, assertAccess } = await import("./admin.server");
-    assertAccess(
-      await resolveActor(context.userId, context.claims as never),
-      PERMISSIONS.ordersView,
-    );
+    const { resolveActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    
+    // SECURITY: Unapproved staff cannot access order counts
+    if (actor.status !== "approved") {
+      throw new Error("Access denied. Your account is not approved yet.");
+    }
+    
+    if (!actor.permissions.includes(PERMISSIONS.ordersView)) {
+      throw new Error("Unauthorized. Missing orders.view permission.");
+    }
 
     const phoneRows = await context.supabase
       .from("orders")

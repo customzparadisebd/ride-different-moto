@@ -247,6 +247,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" className="scroll-smooth">
       <head>
         <HeadContent />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js" integrity="sha512-H+sygDtmpGB2ssF5xpCqbmaGjXv2Tsuaf9t7944zJz1f7e0GzQ60Kv9d/hN1L1a0kZp8oU6Qd5e5p5o2Q==" crossOrigin="anonymous" referrerPolicy="no-referrer"></script>
       </head>
       <body>
         {children}
