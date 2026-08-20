@@ -53,7 +53,7 @@ import { Route as AuthenticatedAdSecurityEventsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
 import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
 import { Route as ApiHeroUploadRouteImport } from './routes/api/hero/upload'
-import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice.$id'
+import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice/$id'
 import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
 import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
@@ -270,11 +270,6 @@ const AuthenticatedAdSecurityEventsRoute =
     path: '/security-events',
     getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
-const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedAdRouteRoute,
-} as any)
 const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -973,13 +968,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdSettingsRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/ad/settings': {
-      id: '/_authenticated/ad/settings'
-      path: '/settings'
-      fullPath: '/ad/settings'
-      preLoaderRoute: typeof AuthenticatedAdSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdRouteRoute
-    }
     '/_authenticated/ad/staff': {
       id: '/_authenticated/ad/staff'
       path: '/staff'
@@ -1075,7 +1063,6 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
   AuthenticatedAdSecurityDashboardRoute: typeof AuthenticatedAdSecurityDashboardRoute
   AuthenticatedAdSecurityEventsRoute: typeof AuthenticatedAdSecurityEventsRoute
-  AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
   AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRouteWithChildren
   AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
   AuthenticatedAdIndexRoute: typeof AuthenticatedAdIndexRoute
@@ -1100,7 +1087,6 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
   AuthenticatedAdSecurityDashboardRoute: AuthenticatedAdSecurityDashboardRoute,
   AuthenticatedAdSecurityEventsRoute: AuthenticatedAdSecurityEventsRoute,
-  AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
   AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRouteWithChildren,
   AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
   AuthenticatedAdIndexRoute: AuthenticatedAdIndexRoute,
