@@ -275,11 +275,6 @@ const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AuthenticatedAdRouteRoute,
 } as any)
-const AuthenticatedAdSettingsRoute = AuthenticatedAdSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AuthenticatedAdRouteRoute,
-} as any)
 const AuthenticatedAdStaffRoute = AuthenticatedAdStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
@@ -973,13 +968,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdSettingsRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
-    '/_authenticated/ad/settings': {
-      id: '/_authenticated/ad/settings'
-      path: '/settings'
-      fullPath: '/ad/settings'
-      preLoaderRoute: typeof AuthenticatedAdSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdRouteRoute
-    }
     '/_authenticated/ad/staff': {
       id: '/_authenticated/ad/staff'
       path: '/staff'
@@ -1075,7 +1063,6 @@ interface AuthenticatedAdRouteRouteChildren {
   AuthenticatedAdSecurityRoute: typeof AuthenticatedAdSecurityRoute
   AuthenticatedAdSecurityDashboardRoute: typeof AuthenticatedAdSecurityDashboardRoute
   AuthenticatedAdSecurityEventsRoute: typeof AuthenticatedAdSecurityEventsRoute
-  AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRoute
   AuthenticatedAdSettingsRoute: typeof AuthenticatedAdSettingsRouteWithChildren
   AuthenticatedAdStaffRoute: typeof AuthenticatedAdStaffRoute
   AuthenticatedAdIndexRoute: typeof AuthenticatedAdIndexRoute
@@ -1100,7 +1087,6 @@ const AuthenticatedAdRouteRouteChildren: AuthenticatedAdRouteRouteChildren = {
   AuthenticatedAdSecurityRoute: AuthenticatedAdSecurityRoute,
   AuthenticatedAdSecurityDashboardRoute: AuthenticatedAdSecurityDashboardRoute,
   AuthenticatedAdSecurityEventsRoute: AuthenticatedAdSecurityEventsRoute,
-  AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRoute,
   AuthenticatedAdSettingsRoute: AuthenticatedAdSettingsRouteWithChildren,
   AuthenticatedAdStaffRoute: AuthenticatedAdStaffRoute,
   AuthenticatedAdIndexRoute: AuthenticatedAdIndexRoute,
