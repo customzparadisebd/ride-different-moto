@@ -11,9 +11,12 @@ export const getHeroSlides = createServerFn({ method: "GET" })
     
     // SECURITY: Determine admin status from server-side session only
     let isAdmin = false;
-    if (context.userId) {
+    const userId = context?.userId;
+    const claims = context?.claims;
+
+    if (userId) {
       try {
-        const actor = await resolveActor(context.userId, context.claims as never);
+        const actor = await resolveActor(userId, claims as never);
         isAdmin = actor.isStaff && actor.status === "approved";
       } catch {
         isAdmin = false;
