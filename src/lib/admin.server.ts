@@ -210,6 +210,9 @@ export async function resolveActor(
     // MFA is satisfied when Supabase issued an AAL2 token (password + TOTP).
     mfaSatisfied: claims?.aal === "aal2",
     mfaRequired: true, // Everyone is required to have MFA for admin access
+
+
+
     sessionId,
     sessionRevoked,
     // Login approval is pending if they are already "approved" as a user

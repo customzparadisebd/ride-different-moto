@@ -30,6 +30,9 @@ export const Route = createFileRoute("/_authenticated/ad")({
       throw redirect({ to: "/ad/mfa" });
     }
 
+
+
+
     // 2. Staff Status Check (Permanent Account Approval)
     // Accounts in 'pending', 'suspended', etc., are blocked even if MFA is passed.
     if (!access.isStaff) {
