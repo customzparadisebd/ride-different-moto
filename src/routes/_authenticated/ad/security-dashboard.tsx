@@ -379,22 +379,23 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-For the code present, I get the error below.
+I want to know whether a proper caching system can be implemented on my existing website to improve loading speed, especially for images and other static assets.
 
-Please think step-by-step in order to resolve it.
-\`\`\`
-Error: aborted
+For example, if a user opens the website on a mobile phone or PC for the first time and the images are downloaded, can those images and static assets be properly cached so that when the same user visits the website again, they can load much faster from the browser cache instead of downloading everything again?
 
-{
-  "timestamp": 1787224695154,
-  "error_type": "RUNTIME_ERROR",
-  "filename": "Unknown file",
-  "lineno": 0,
-  "colno": 0,
-  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
-  "has_blank_screen": true
-}
-\`\`\``}
+Please analyze my existing website and explain:
+- Whether Browser/HTTP Cache should be implemented.
+- Whether CDN caching would be beneficial.
+- Whether Service Worker/PWA caching is actually necessary or not.
+- Which website assets should be cached (images, logos, CSS, JS, fonts, etc.).
+- Which data should not be aggressively cached (stock, prices, orders, etc.).
+- How image updates should work to prevent stale cached images.
+- Whether proper cache versioning/cache-busting should be implemented.
+- Ideal cache duration for different asset types.
+- Potential performance problems or downsides.
+- Compatibility across mobile, desktop, and modern browsers.
+
+Most importantly, do not blindly implement. Analyze the architecture first, then determine the best strategy. The goal is faster repeat visits without compromising data accuracy.`}
               </div>
 
 
