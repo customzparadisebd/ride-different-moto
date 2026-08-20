@@ -66,13 +66,14 @@ export function Header() {
           </Link>
         </div>
 
-        {/* CENTER: Navigation (Desktop/Tab) */}
-        <nav className="hidden md:flex items-center gap-4 lg:gap-8">
+        {/* RIGHT GROUP: Navigation sits directly beside the cart/actions */}
+        <div className="flex min-w-0 items-center justify-end gap-3 lg:gap-6">
+        <nav className="hidden md:flex min-w-0 items-center gap-3 lg:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="text-[11px] lg:text-[13px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary whitespace-nowrap"
+              className="text-[10px] lg:text-[12px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary whitespace-nowrap"
             >
               {link.label}
             </Link>
@@ -118,7 +119,7 @@ export function Header() {
           </Sheet>
         </div>
 
-        {/* RIGHT: Theme/Dark Mode + Language + Cart */}
+        {/* Theme/Dark Mode + Language + Cart */}
         <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
           <button
             onClick={toggleLanguage}
