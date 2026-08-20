@@ -89,240 +89,321 @@ function AdminSettings() {
     }));
 
   return (
-    <section className="mx-auto max-w-3xl">
-      <Outlet />
-      
-      {location.pathname === "/ad/settings" && (
-        <>
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Settings</h1>
-          <p className="text-xs text-muted-foreground">
-            Identity, delivery charges, payment methods and support contact used across the store.
-          </p>
+    <section className="mx-auto max-w-4xl px-4 pb-20">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start">
+        {/* Sub-navigation Sidebar */}
+        <aside className="w-full shrink-0 md:w-56">
+          <nav className="flex gap-1 overflow-x-auto pb-2 md:flex-col md:overflow-visible md:pb-0">
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && !location.search}
+              onClick={() => navigate({ to: "/ad/settings", search: {} as any })}
+              label="General"
+            />
+            <SettingsTabButton
+              active={location.pathname.includes("/invoice")}
+              onClick={() => navigate({ to: "/ad/settings/invoice" })}
+              label="Invoice"
+            />
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && location.search.includes("tab=delivery")}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "delivery" } as any })}
+              label="Delivery Zones"
+            />
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && location.search.includes("tab=couriers")}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "couriers" } as any })}
+              label="SteadFast"
+            />
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && location.search.includes("tab=homepage")}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "homepage" } as any })}
+              label="Homepage"
+            />
+            <SettingsTabButton
+              active={location.pathname === "/ad/settings" && location.search.includes("tab=ai")}
+              onClick={() => navigate({ to: "/ad/settings", search: { tab: "ai" } as any })}
+              label="AI Tools"
+            />
+          </nav>
+        </aside>
 
-          <div className="mt-6">
-            <SiteSettingsPanel canManage={canManage} />
-          </div>
+        {/* Settings Content Area */}
+        <div className="flex-1 space-y-8 animate-in fade-in duration-300">
+          <Outlet />
 
+          {location.pathname === "/ad/settings" && (
+            <>
+              {/* TAB: GENERAL */}
+              {(!location.search || location.search.includes("tab=general") || !location.search.includes("tab=")) && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">General Settings</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Store identity, contact information, and core operational thresholds.
+                    </p>
+                  </div>
 
-          {settingsQuery.isLoading ? (
-            <p className="py-16 text-center text-sm text-muted-foreground">Loading settings…</p>
-          ) : (
-            <form
-              className="mt-6 space-y-6"
-              onSubmit={(event) => {
-                event.preventDefault();
-                mutation.mutate({ data: draft as never });
-              }}
-            >
-              <fieldset
-                disabled={!canManage || mutation.isPending}
-                className="space-y-6 disabled:opacity-70"
-              >
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-                  <h2 className="font-display text-sm font-bold uppercase">Payment methods</h2>
-                  <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    {PAYMENT_METHODS.map((method) => (
-                      <label
-                        key={method.value}
-                        className="flex min-h-11 items-center gap-3 rounded-md border border-border px-3 text-sm"
+                  <SiteSettingsPanel canManage={canManage} />
+
+                  {settingsQuery.isLoading ? (
+                    <p className="py-16 text-center text-sm text-muted-foreground">Loading settings…</p>
+                  ) : (
+                    <form
+                      className="space-y-6"
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        mutation.mutate({ data: draft as never });
+                      }}
+                    >
+                      <fieldset
+                        disabled={!canManage || mutation.isPending}
+                        className="space-y-6 disabled:opacity-70"
                       >
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 accent-[hsl(var(--primary))]"
-                          checked={draft.paymentMethods.includes(method.value)}
-                          onChange={() => togglePayment(method.value)}
-                        />
-                        {method.label}
-                      </label>
-                    ))}
+                        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                          <h2 className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+                            Payment Methods
+                          </h2>
+                          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                            {PAYMENT_METHODS.map((method) => (
+                              <label
+                                key={method.value}
+                                className="flex min-h-12 items-center gap-3 rounded-lg border border-border bg-background/50 px-4 text-sm transition-colors hover:bg-accent/50 cursor-pointer"
+                              >
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded accent-primary"
+                                  checked={draft.paymentMethods.includes(method.value)}
+                                  onChange={() => togglePayment(method.value)}
+                                />
+                                <span className="font-medium">{method.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                          <h2 className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+                            Support & Inventory
+                          </h2>
+                          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Support Phone
+                              </Label>
+                              <Input
+                                className="h-11"
+                                value={draft.supportPhone}
+                                onChange={(event) =>
+                                  setDraft((current) => ({ ...current, supportPhone: event.target.value }))
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Support Email
+                              </Label>
+                              <Input
+                                className="h-11"
+                                type="email"
+                                value={draft.supportEmail ?? ""}
+                                onChange={(event) =>
+                                  setDraft((current) => ({ ...current, supportEmail: event.target.value }))
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Low-Stock Alert
+                              </Label>
+                              <Input
+                                className="h-11"
+                                type="number"
+                                value={String(draft.lowStockThreshold)}
+                                onChange={(event) =>
+                                  setDraft((current) => ({
+                                    ...current,
+                                    lowStockThreshold: Number(event.target.value) || 0,
+                                  }))
+                                }
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="rounded-xl border border-border bg-card p-5 shadow-sm">
+                          <h2 className="font-display text-sm font-bold uppercase tracking-wider text-primary">
+                            WhatsApp Integration
+                          </h2>
+                          <p className="mt-1 text-[11px] text-muted-foreground font-medium">
+                            Configure how WhatsApp support appears at checkout and on pages.
+                          </p>
+                          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Checkout Number
+                              </Label>
+                              <Input
+                                className="h-11"
+                                value={draft.whatsappPhone}
+                                onChange={(event) =>
+                                  setDraft((current) => ({ ...current, whatsappPhone: event.target.value }))
+                                }
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Default Message
+                              </Label>
+                              <Input
+                                className="h-11"
+                                value={draft.whatsappMessage}
+                                onChange={(event) =>
+                                  setDraft((current) => ({ ...current, whatsappMessage: event.target.value }))
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-6 pt-6 border-t border-border/50 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                            <label className="flex items-center gap-3 cursor-pointer">
+                              <input
+                                type="checkbox"
+                                className="h-4 w-4 rounded accent-primary"
+                                checked={draft.whatsappFloatingEnabled}
+                                onChange={(e) =>
+                                  setDraft((c) => ({ ...c, whatsappFloatingEnabled: e.target.checked }))
+                                }
+                              />
+                              <span className="text-sm font-bold uppercase tracking-tight">Show Floating Button</span>
+                            </label>
+
+                            <div className="flex items-center gap-3">
+                              <Label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                                Position
+                              </Label>
+                              <select
+                                className="h-10 rounded-lg border border-input bg-background px-3 text-xs font-bold uppercase tracking-tighter focus:ring-1 focus:ring-primary outline-none"
+                                value={draft.whatsappFloatingPosition}
+                                onChange={(e) =>
+                                  setDraft((c) => ({ ...c, whatsappFloatingPosition: e.target.value as any }))
+                                }
+                              >
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="bottom-left">Bottom Left</option>
+                                <option value="top-right">Top Right</option>
+                                <option value="top-left">Top Left</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                          <Button type="submit" variant="red" size="touch" disabled={mutation.isPending}>
+                            {mutation.isPending ? "Saving…" : "Save all changes"}
+                          </Button>
+                          {!canManage && (
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                              Read-only Access
+                            </p>
+                          )}
+                        </div>
+                      </fieldset>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {/* TAB: DELIVERY ZONES */}
+              {location.search.includes("tab=delivery") && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Delivery Zones</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Manage regions, cities, and associated shipping costs for the checkout flow.
+                    </p>
+                  </div>
+                  <div className="space-y-6">
+                    <DeliveryZonesPanel canManage={canManageZones} />
+                    <CitiesPanel canManage={canManageZones} />
+                    {!canManageZones && (
+                      <p className="text-xs text-muted-foreground italic">
+                        Only accounts with "Manage delivery zones" permission can modify these values.
+                      </p>
+                    )}
                   </div>
                 </div>
+              )}
 
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-                  <h2 className="font-display text-sm font-bold uppercase">Support & stock</h2>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-3">
-                    <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Support phone
-                      </Label>
-                      <Input
-                        className="mt-1.5 h-11"
-                        value={draft.supportPhone}
-                        onChange={(event) =>
-                          setDraft((current) => ({ ...current, supportPhone: event.target.value }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Support email
-                      </Label>
-                      <Input
-                        className="mt-1.5 h-11"
-                        value={draft.supportEmail ?? ""}
-                        onChange={(event) =>
-                          setDraft((current) => ({ ...current, supportEmail: event.target.value }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Low-stock alert at
-                      </Label>
-                      <Input
-                        className="mt-1.5 h-11"
-                        inputMode="numeric"
-                        value={String(draft.lowStockThreshold)}
-                        onChange={(event) =>
-                          setDraft((current) => ({
-                            ...current,
-                            lowStockThreshold: Number(event.target.value) || 0,
-                          }))
-                        }
-                      />
-                    </div>
+              {/* TAB: STEADFAST */}
+              {location.search.includes("tab=couriers") && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">SteadFast API</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Configure automated booking and order tracking via SteadFast courier service.
+                    </p>
                   </div>
+                  <SteadfastSettingsPanel />
                 </div>
+              )}
 
-                {/* WHATSAPP SUPPORT — COMPLETED */}
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-                  <h2 className="font-display text-sm font-bold uppercase">WhatsApp support</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Shown under the Place Order button at checkout.
-                  </p>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        WhatsApp number
-                      </Label>
-                      <Input
-                        className="mt-1.5 h-11"
-                        value={draft.whatsappPhone}
-                        onChange={(event) =>
-                          setDraft((current) => ({ ...current, whatsappPhone: event.target.value }))
-                        }
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Support message
-                      </Label>
-                      <Input
-                        className="mt-1.5 h-11"
-                        value={draft.whatsappMessage}
-                        onChange={(event) =>
-                          setDraft((current) => ({ ...current, whatsappMessage: event.target.value }))
-                        }
-                      />
-                    </div>
+              {/* TAB: HOMEPAGE */}
+              {location.search.includes("tab=homepage") && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Homepage Sections</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Control visibility and product limits for all dynamic storefront sections.
+                    </p>
                   </div>
+                  <SectionSettingsPanel />
                 </div>
+              )}
 
-                {/* FLOATING WHATSAPP CONTROLS */}
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-                  <h2 className="font-display text-sm font-bold uppercase tracking-wide">
-                    Floating WhatsApp Button
-                  </h2>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Control the fixed floating chat button visible across the entire store.
-                  </p>
-
-                  <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        className="h-4 w-4 accent-primary"
-                        checked={draft.whatsappFloatingEnabled}
-                        onChange={(e) =>
-                          setDraft((c) => ({ ...c, whatsappFloatingEnabled: e.target.checked }))
-                        }
-                      />
-                      <span className="text-sm font-medium">Show Floating Button</span>
-                    </label>
-
-                    <div className="flex items-center gap-3">
-                      <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-                        Position
-                      </Label>
-                      <select
-                        className="h-9 rounded-md border border-input bg-background px-3 text-xs focus:ring-1 focus:ring-primary outline-none"
-                        value={draft.whatsappFloatingPosition}
-                        onChange={(e) =>
-                          setDraft((c) => ({ ...c, whatsappFloatingPosition: e.target.value as any }))
-                        }
-                      >
-                        <option value="bottom-right">Bottom Right</option>
-                        <option value="bottom-left">Bottom Left</option>
-                        <option value="top-right">Top Right</option>
-                        <option value="top-left">Top Left</option>
-                      </select>
-                    </div>
+              {/* TAB: AI TOOLS */}
+              {location.search.includes("tab=ai") && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">AI Engine</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Managed AI tools for order extraction and automated processing.
+                    </p>
                   </div>
+                  <AISettingsPanel />
                 </div>
-
-                {/* ---- Couriers moved to their own screen ---- */}
-                <div className="rounded-xl border border-border bg-card p-4 shadow-card">
-                  <h2 className="font-display text-sm font-bold uppercase">Couriers</h2>
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Delivery partners, per-zone charges, COD % and API keys are managed on the Couriers
-                    screen. Keys stay server-side and are never shown here.
-                  </p>
-                </div>
-
-                <Button type="submit" variant="red" size="touch" disabled={mutation.isPending}>
-                  {mutation.isPending ? "Saving…" : "Save settings"}
-                </Button>
-              </fieldset>
-
-              {!canManage ? (
-                <p className="text-xs text-muted-foreground">
-                  You can view these settings but only accounts with the “Manage products & settings”
-                  permission can change them.
-                </p>
-              ) : null}
-            </form>
+              )}
+            </>
           )}
-
-          {/* INVOICE SETTINGS LINK — COMPLETED (Admin / Super Admin only) */}
-          <div className="mt-6 rounded-xl border border-border bg-card p-4 shadow-card">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="font-display text-sm font-bold uppercase tracking-wide">Invoice Numbering</h2>
-                <p className="mt-1 text-xs text-muted-foreground">Manage prefix, sequence and labeling rules.</p>
-              </div>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/ad/settings/invoice" className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold cursor-pointer transition-all duration-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98] border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-9 rounded-full px-4 text-xs">Manage Invoices</Link>
-              </Button>
-            </div>
-          </div>
-
-          {/* AI SETTINGS — ARCHITECTURAL PREP */}
-          <div className="mt-6">
-            <AISettingsPanel />
-          </div>
-
-          {/* HOMEPAGE SECTIONS — COMPLETED */}
-          <div className="mt-6">
-            <SectionSettingsPanel />
-          </div>
-
-          {/* STEADFAST API INTEGRATION — COMPLETED (Admin / Super Admin only) */}
-          <div className="mt-6 space-y-6">
-            <SteadfastSettingsPanel />
-          </div>
-
-          {/* CITY & DELIVERY ZONES — COMPLETED */}
-          <div className="mt-6 space-y-6">
-            <DeliveryZonesPanel canManage={canManageZones} />
-            <CitiesPanel canManage={canManageZones} />
-            {!canManageZones ? (
-              <p className="text-xs text-muted-foreground">
-                Only accounts with the “Manage delivery zones” permission can change cities and zones.
-              </p>
-            ) : null}
-          </div>
-        </>
-      )}
+        </div>
+      </div>
     </section>
+  );
+}
+
+function SettingsTabButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`
+        whitespace-nowrap rounded-lg px-4 py-3 text-left text-xs font-bold uppercase tracking-widest transition-all
+        ${
+          active
+            ? "bg-brand-red text-white shadow-lg shadow-brand-red/20 translate-x-1"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        }
+      `}
+    >
+      {label}
+    </button>
+  );
+}
   );
 }
