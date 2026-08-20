@@ -58,7 +58,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe backdrop-blur-md supports-[backdrop-filter]:bg-background/80 shadow-sm">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-4 px-4 sm:h-20 sm:px-6 md:px-8">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:h-20 sm:px-6 md:px-8">
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
           <Link to="/" className="min-w-0" aria-label={`${businessName} home`}>
@@ -68,7 +68,7 @@ export function Header() {
 
         {/* CENTER: Main navigation */}
         <nav
-          className="hidden flex-1 items-center justify-center gap-1 xl:gap-2 lg:flex"
+          className="hidden flex-1 items-center justify-center gap-1 xl:gap-2 lg:flex absolute left-1/2 -translate-x-1/2"
           aria-label="Main"
         >
           {navLinks.map((link) => (
@@ -86,7 +86,7 @@ export function Header() {
         </nav>
 
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
-        <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3">
+        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
           <button
             onClick={toggleLanguage}
             className="group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
