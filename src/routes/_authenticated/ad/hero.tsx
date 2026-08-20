@@ -29,6 +29,7 @@ import {
   reorderHeroSlides,
   updateBikeModelImage,
 } from "@/lib/hero.functions";
+import { uploadHeroBanner } from "@/lib/hero-upload.functions";
 import { SingleImageUpload } from "@/components/admin/SingleImageUpload";
 import { ImageSpecGuidance } from "@/components/admin/hero/ImageSpecGuidance";
 import { HeroSlidePreview } from "@/components/admin/hero/HeroSlidePreview";
@@ -55,6 +56,7 @@ function AdminHeroSlides() {
   const editBikeModel = useServerFn(updateBikeModel);
   const reorderSlides = useServerFn(reorderHeroSlides);
   const editBikeModelImage = useServerFn(updateBikeModelImage);
+  const uploadBannerFn = useServerFn(uploadHeroBanner);
 
   const { data: slides = [], isLoading: slidesLoading } = useQuery({
     queryKey: ["hero-slides-admin"],
@@ -90,17 +92,7 @@ function AdminHeroSlides() {
     formData.append("type", type);
 
     try {
-      const res = await fetch("/api/hero/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!res.ok) {
-        const error = await res.text();
-        throw new Error(error);
-      }
-
-      const { url } = await res.json();
+      const { url } = await uploadBannerFn({ request: formData });
       callback(url);
       toast.success(`${type === "desktop" ? "Desktop" : "Mobile"} banner uploaded`);
     } catch (err: any) {
