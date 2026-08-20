@@ -53,7 +53,7 @@ import { Route as AuthenticatedAdSecurityEventsRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdSettingsRouteImport } from './routes/_authenticated/ad/settings'
 import { Route as AuthenticatedAdStaffRouteImport } from './routes/_authenticated/ad/staff'
 import { Route as ApiHeroUploadRouteImport } from './routes/api/hero/upload'
-import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice.$id'
+import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenticated/ad/invoice/$id'
 import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
 import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
