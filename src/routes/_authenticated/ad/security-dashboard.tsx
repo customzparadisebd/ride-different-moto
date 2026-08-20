@@ -59,12 +59,12 @@ function SecurityDashboardPage() {
 
   const { data: stats, refetch: refetchStats } = useSuspenseQuery({
     queryKey: ["security-stats"],
-    queryFn: () => getSecurityStats({}),
+    queryFn: () => getSecurityStats({ data: undefined }),
   });
 
   const { data: suspiciousIPs, refetch: refetchSuspicious } = useSuspenseQuery({
     queryKey: ["suspicious-ips"],
-    queryFn: () => getSuspiciousIPs({}),
+    queryFn: () => getSuspiciousIPs({ data: undefined }),
   });
 
   const { data: recentEvents, refetch: refetchEvents } = useSuspenseQuery({
@@ -74,12 +74,12 @@ function SecurityDashboardPage() {
 
   const { data: securityAlerts, refetch: refetchAlerts } = useSuspenseQuery({
     queryKey: ["security-alerts"],
-    queryFn: () => listSecurityAlerts(),
+    queryFn: () => listSecurityAlerts({ data: undefined }),
   });
 
   const { data: collisions, refetch: refetchCollisions } = useSuspenseQuery({
     queryKey: ["invoice-collisions"],
-    queryFn: () => listInvoiceCollisions(),
+    queryFn: () => listInvoiceCollisions({ data: undefined }),
   });
 
   const refreshAll = async () => {
