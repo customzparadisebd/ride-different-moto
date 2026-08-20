@@ -101,9 +101,7 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   return (
     <SidebarProvider>
       <div className="flex min-h-svh w-full flex-col bg-background">
-        <div className="sticky top-0 z-50">
-          <EnvironmentBanner />
-        </div>
+        {/* EnvironmentBanner removed as per user request */}
         <div className="flex flex-1 overflow-hidden">
           <AdminSidebar access={access} permissions={access.permissions} />
           <SidebarInset className="flex min-h-svh flex-col overflow-visible">
