@@ -412,6 +412,18 @@ function AdminSettings() {
               {search.tab === "logos" && (
                 <LogoSettingsPanel canManage={canManage} />
               )}
+              {/* TAB: INVOICE */}
+              {search.tab === "invoice" && (
+                <div className="space-y-8">
+                  <div>
+                    <h1 className="font-display text-3xl font-bold uppercase tracking-wide">Invoice Settings</h1>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Configure sequential numbering, company info, and printable layout rules.
+                    </p>
+                  </div>
+                  <InvoiceSettingsPanel canManage={canManage} />
+                </div>
+              )}
             </>
 
           )}
