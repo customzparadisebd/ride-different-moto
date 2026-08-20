@@ -18,7 +18,9 @@ export const listAdminCustomers = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     
     // SECURITY: Unapproved staff cannot access customer data (PII)
-    if (actor.status !== "approved" && !actor.isSuperAdmin && actor.primaryRole !== "admin") {
+    // Super Admins and Admins bypass the approval gate
+    const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+    if (actor.status !== "approved" && !isPrivileged) {
       throw new Error("Access denied. Your account is not approved yet.");
     }
     
