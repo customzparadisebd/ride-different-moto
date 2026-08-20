@@ -25,7 +25,7 @@ export const getGalleryItems = createServerFn({ method: "POST" })
     }
     
     const query = supabaseAdmin
-      .from("gallery_items")
+      .from("gallery_items" as any)
       .select("*");
 
     if (!isAdmin) {
@@ -36,7 +36,7 @@ export const getGalleryItems = createServerFn({ method: "POST" })
 
     if (error) throw new Error(error.message);
 
-    return (data || []).map((item) => ({
+    return (data || []).map((item: any) => ({
       id: item.id,
       image: item.image_url,
       alt: item.alt_text || "CZP Gallery Image",
@@ -64,7 +64,7 @@ export const updateGalleryItem = createServerFn({ method: "POST" })
     assertAccess(actor, PERMISSIONS.productsManage);
 
     const { error } = await context.supabase
-      .from("gallery_items")
+      .from("gallery_items" as any)
       .update(data.updates as any)
       .eq("id", data.id);
 
@@ -87,7 +87,7 @@ export const createGalleryItem = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase.from("gallery_items").insert(data as any);
+    const { error } = await context.supabase.from("gallery_items" as any).insert(data as any);
 
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -101,7 +101,7 @@ export const deleteGalleryItem = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const { error } = await context.supabase.from("gallery_items").delete().eq("id", id);
+    const { error } = await context.supabase.from("gallery_items" as any).delete().eq("id", id);
 
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -122,7 +122,7 @@ export const reorderGalleryItems = createServerFn({ method: "POST" })
     const { error } = await Promise.all(
       data.ids.map((id, index) =>
         context.supabase
-          .from("gallery_items")
+          .from("gallery_items" as any)
           .update({ sort_order: index } as any)
           .eq("id", id),
       ),
