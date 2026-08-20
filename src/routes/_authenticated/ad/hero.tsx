@@ -249,6 +249,35 @@ function AdminHeroSlides() {
         </div>
         <div className="flex gap-2">
           <Button
+            onClick={() => {
+              // Collect all active slides for a full slider preview
+              const activeSlides = slides
+                .filter(s => s.active)
+                .sort((a, b) => a.order - b.order)
+                .map(s => ({
+                  bikeName: s.bikeName,
+                  label: s.label,
+                  image: s.image,
+                  mobileImage: s.mobileImage,
+                  bikeSlug: s.bikeSlug,
+                  isFullBanner: s.isFullBanner
+                }));
+              
+              if (activeSlides.length > 0) {
+                // We use the first slide as the "current" one in the dialog state
+                // but the dialog renders the whole slider.
+                setPreviewSlide(activeSlides[0]);
+              } else {
+                toast.error("No active slides to preview.");
+              }
+            }}
+            variant="outline"
+            size="sm"
+            className="gap-2"
+          >
+            <Monitor className="h-4 w-4" /> Full Slider Preview
+          </Button>
+          <Button
             onClick={() => restoreMutation.mutate()}
             variant="outline"
             size="sm"
@@ -257,6 +286,7 @@ function AdminHeroSlides() {
             {restoreMutation.isPending ? "Restoring..." : "Restore Defaults"}
           </Button>
         </div>
+
       </div>
 
       <Tabs defaultValue="hero" className="w-full">
