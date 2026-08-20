@@ -379,34 +379,20 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-For the code present, I get the error below.
+"Add full Admin CRUD (Create, Read, Update, Delete) management and a Live Preview feature for the 'Explore by Bike Model' section on the Admin Panel homepage controls.
 
-Please think step-by-step in order to resolve it.
-\`\`\`
-ZodError: [
-  {
-    "code": "too_big",
-    "maximum": 500,
-    "type": "number",
-    "inclusive": true,
-    "exact": false,
-    "message": "Number must be less than or equal to 500",
-    "path": [
-      "pageSize"
-    ]
-  }
-]
+Requirements:
 
-{
-  "timestamp": 1787223858642,
-  "error_type": "RUNTIME_ERROR",
-  "filename": "http://localhost:8080/_serverFn/eyJmaWxlIjoiL3NyYy9saWIvcHJvZHVjdHMuZnVuY3Rpb25zLnRzP3Rzcy1zZXJ2ZXJmbi1zcGxpdCIsImV4cG9ydCI6Imxpc3RQcm9kdWN0c19jcmVhdGVTZXJ2ZXJGbl9oYW5kbGVyIn0",
-  "lineno": 0,
-  "colno": 0,
-  "stack": "ZodError: [\\n  {\\n    \\"code\\": \\"too_big\\",\\n    \\"maximum\\": 500,\\n    \\"type\\": \\"number\\",\\n    \\"inclusive\\": true,\\n    \\"exact\\": false,\\n    \\"message\\": \\"Number must be less than or equal to 500\\",\\n    \\"path\\": [\\n      \\"pageSize\\"\\n    ]\\n  }\\n]\\n    at get error (file:///dev-server/node_modules/zod/v3/types.js:39:31)\\n    at ZodObject.parse (file:///dev-server/node_modules/zod/v3/types.js:114:22)\\n    at validator (/dev-server/src/lib/products.functions.ts:51:51)\\n    at execValidator (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:911:12)\\n    at callNextMiddleware (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:273:26)\\n    at userNext (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:312:32)\\n    at eval (/dev-server/src/integrations/supabase/auth-middleware.ts:98:14)\\n    at async callNextMiddleware (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:322:24)\\n    at async AsyncFunction.__executeServer (/dev-server/node_modules/@tanstack/start-client-core/src/createServerFn.ts:212:20)\\n    at async eval (/dev-server/node_modules/@tanstack/start-server-core/src/server-functions-handler.ts:159:16)",
-  "has_blank_screen": true
-}
-\`\`\``}
+Management Interface: Create a dedicated admin interface/table under Homepage Settings to list all active 'Explore by Bike Model' items.
+
+Add & Edit Functionality: Allow admins to add new bike models or edit existing ones with fields for Model Name, Brand, Image/Icon upload or URL, Target Link/Category, and Display Order.
+
+Delete Option: Include a clear Delete button (with a confirmation modal) to remove any bike model from the homepage section.
+
+Live Preview Option: Add a 'Preview' toggle or button so admins can visually see how the 'Explore by Bike Model' section will look on the live homepage before saving changes.
+
+Visibility Toggle: Include a simple show/hide switch to easily enable or disable the entire 'Explore by Bike Model' section on the storefront." 
+WITHOUT CODING .`}
               </div>
 
 
