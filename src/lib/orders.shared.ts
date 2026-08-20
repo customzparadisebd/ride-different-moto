@@ -194,7 +194,7 @@ export const orderFilterInput = z.object({
     .default("all"),
   /** Pagination (1-based page number). */
   page: z.coerce.number().int().min(1).max(10_000).default(1),
-  pageSize: z.coerce.number().int().min(1).max(200).default(25),
+  pageSize: z.coerce.number().int().min(1).max(500).default(25),
   sortBy: z.enum(["created_at", "total", "invoice_no"]).default("created_at"),
   sortDir: z.enum(["asc", "desc"]).default("desc"),
   /** Recycle Bin view: when true, only soft-deleted orders are returned. */

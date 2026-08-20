@@ -767,7 +767,7 @@ function AdminOrderList() {
             }}
             className="h-9 rounded-md border border-input bg-background px-2 text-sm"
           >
-            {[10, 25, 50, 100].map((size) => (
+            {[10, 25, 50, 100, 200, 500].map((size) => (
               <option key={size} value={size}>
                 {size}
               </option>

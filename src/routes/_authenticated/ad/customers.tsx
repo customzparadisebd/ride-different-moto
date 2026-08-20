@@ -52,6 +52,7 @@ function AdminCustomers() {
   });
   const [status, setStatus] = useState<"all" | "active" | "fraud">("all");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [openPhone, setOpenPhone] = useState<string | null>(null);
 
@@ -60,7 +61,7 @@ function AdminCustomers() {
 
   const query = useQuery({
     queryKey: ["admin-customers", filters, status, page],
-    queryFn: () => fetchCustomers({ data: { ...filters, status, page } }),
+    queryFn: () => fetchCustomers({ data: { ...filters, status, page, pageSize } }),
     placeholderData: (previous) => previous,
   });
 
@@ -325,7 +326,11 @@ function AdminCustomers() {
       <Pagination
         currentPage={page}
         totalCount={query.data?.total ?? 0}
-        pageSize={query.data?.pageSize ?? 25}
+        pageSize={pageSize}
+        onPageSizeChange={(size) => {
+          setPageSize(size);
+          setPage(1);
+        }}
         onPageChange={setPage}
       />
     </section>
@@ -336,21 +341,39 @@ function Pagination({
   currentPage,
   totalCount,
   pageSize,
+  onPageSizeChange,
   onPageChange,
 }: {
   currentPage: number;
   totalCount: number;
   pageSize: number;
+  onPageSizeChange: (size: number) => void;
   onPageChange: (page: number) => void;
 }) {
   const totalPages = Math.ceil(totalCount / pageSize);
   if (totalPages <= 1) return null;
 
   return (
-    <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
-      <div className="text-xs text-muted-foreground">
-        Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)} to{" "}
-        {Math.min(currentPage * pageSize, totalCount)} of {totalCount} customers
+    <div className="mt-6 flex flex-wrap items-center justify-between border-t border-border pt-4 gap-4">
+      <div className="flex items-center gap-4">
+        <div className="text-xs text-muted-foreground">
+          Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)} to{" "}
+          {Math.min(currentPage * pageSize, totalCount)} of {totalCount} customers
+        </div>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <span>Rows per page</span>
+          <select
+            value={pageSize}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            className="h-8 rounded border border-input bg-background px-1 text-[11px]"
+          >
+            {[10, 25, 50, 100, 200, 500].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Button
