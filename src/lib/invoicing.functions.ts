@@ -60,6 +60,20 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     // If nextNumber is provided, we adjust current_number so the trigger picks up the correct next value.
     // The trigger logic uses: GREATEST(start_number, current_number + 1)
     // To force NEXT to be X, we set current_number to X - 1 and start_number to 1.
+    // We also verify that the new invoice ID will not conflict with an existing one.
+    const nextVal = data.nextNumber !== undefined ? data.nextNumber : data.currentNumber + 1;
+    const testInvoiceNo = `${data.prefix}-${nextVal < 10 ? nextVal.toString().padStart(2, '0') : nextVal}`;
+    
+    const { data: exists } = await context.supabase
+      .from("orders")
+      .select("id")
+      .eq("invoice_no", testInvoiceNo)
+      .maybeSingle();
+
+    if (exists) {
+      throw new Error(`Conflict: Invoice ${testInvoiceNo} already exists. Please choose a different starting number.`);
+    }
+
     const updates = {
       prefix: data.prefix,
       start_number: 1, // Always allow sequence to start from where we set it
