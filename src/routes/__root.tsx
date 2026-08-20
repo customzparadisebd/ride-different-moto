@@ -124,17 +124,22 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: async ({ context }) => {
-    const [siteSettings, logos] = await Promise.all([
-      context.queryClient.ensureQueryData({
-        queryKey: ["site-settings"],
-        queryFn: () => getSiteSettings({ data: undefined }),
-      }),
-      context.queryClient.ensureQueryData({
-        queryKey: ["site-logos"],
-        queryFn: () => listLogos({ data: undefined }),
-      }),
-    ]);
-    return { siteSettings, logos };
+    try {
+      const [siteSettings, logos] = await Promise.all([
+        context.queryClient.ensureQueryData({
+          queryKey: ["site-settings"],
+          queryFn: () => getSiteSettings({ data: undefined }),
+        }),
+        context.queryClient.ensureQueryData({
+          queryKey: ["site-logos"],
+          queryFn: () => listLogos({ data: undefined }),
+        }),
+      ]);
+      return { siteSettings, logos };
+    } catch (e) {
+      console.error("Root loader failed:", e);
+      return { siteSettings: null, logos: null };
+    }
   },
 
   head: ({ loaderData }) => {
