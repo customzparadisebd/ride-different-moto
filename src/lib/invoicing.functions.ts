@@ -61,6 +61,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     // The trigger logic uses: GREATEST(start_number, current_number + 1)
     // To force NEXT to be X, we set current_number to X - 1 and start_number to 1.
     // We also verify that the new invoice ID will not conflict with an existing one.
+    console.log("Saving invoice settings, nextNumber:", data.nextNumber);
     const nextVal = data.nextNumber !== undefined ? data.nextNumber : data.currentNumber + 1;
     const testInvoiceNo = `${data.prefix}-${nextVal < 10 ? nextVal.toString().padStart(2, '0') : nextVal}`;
     
@@ -82,10 +83,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       updated_by: actor.userId,
     };
 
+    console.log("Updating invoice settings with data:", updates);
     const { error } = await context.supabase
       .from("invoice_settings")
       .update(updates)
       .eq("id", "default");
+    console.log("Update error:", error);
 
     if (error) throw new Error("Could not save invoice settings.");
 
