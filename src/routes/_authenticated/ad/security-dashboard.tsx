@@ -379,37 +379,7 @@ function SecurityDashboardPage() {
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
                 {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
 
-I want to know whether a proper caching system can be implemented on my existing website to improve loading speed, especially for images and other static assets.
-
-For example, if a user opens the website on a mobile phone or PC for the first time and the images are downloaded, can those images and static assets be properly cached so that when the same user visits the website again, they can load much faster from the browser cache instead of downloading everything again?
-
-Please analyze my existing website and explain:
-
-Whether Browser/HTTP Cache should be implemented.
-
-Whether CDN caching would be beneficial.
-
-Whether Service Worker/PWA caching is actually necessary or not.
-
-Which website assets should be cached, such as product images, bike model images, logos, CSS, JavaScript, fonts, etc.
-
-Which data should not be aggressively cached, such as product stock, prices, orders, or other dynamic data.
-
-How image updates should work so that users do not continue seeing an old cached image after I replace an image from the Admin Panel.
-
-Whether proper cache versioning/cache-busting should be implemented.
-
-How long different types of assets should ideally remain cached.
-
-Whether implementing caching could ever make my website slower or create any performance problems.
-
-Whether this caching strategy will work properly across different mobile devices, desktop PCs, and modern browsers.
-
-Most importantly, do not blindly implement a caching system. First analyze my existing website architecture, image loading system, frontend, backend, and deployment setup, then determine the best caching strategy for this specific website.
-
-The goal is to make repeat visits significantly faster while ensuring that updated products, images, prices, stock, and other dynamic information remain accurate.
-
-If caching is recommended, explain exactly what should be cached, what should not be cached, and why, before making any changes.`}
+Configure Browser/HTTP cache-control rules for CSS, JavaScript, fonts, and logos so repeat visits load faster without breaking updates.`}
               </div>
 
 
