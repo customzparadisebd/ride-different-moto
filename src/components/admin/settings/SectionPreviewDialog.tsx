@@ -22,7 +22,7 @@ export function SectionPreviewDialog({ open, onOpenChange, section }: SectionPre
       let query = supabase
         .from("products")
         .select("*")
-        .eq("status", "active")
+        .eq("is_active", true)
         .order("created_at", { ascending: false })
         .limit(section.displayLimit);
 
