@@ -58,7 +58,6 @@ export const getAdminBikeModels = createServerFn({ method: "POST" })
   .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    // Either productsManage or contentManage can handle bike models
     try {
       assertAccess(actor, PERMISSIONS.productsManage);
     } catch {
@@ -90,9 +89,9 @@ export const createBikeModel = createServerFn({ method: "POST" })
       .object({
         name: z.string().min(1),
         slug: z.string().min(1),
-        label: z.string().optional().nullable(),
-        image_url: z.string().url().optional().nullable(),
-        alt_text: z.string().optional().nullable(),
+        label: z.string().nullish(),
+        image_url: z.string().url().nullish(),
+        alt_text: z.string().nullish(),
         sort_order: z.number().int().default(0),
         is_active: z.boolean().default(true),
       })
@@ -107,7 +106,17 @@ export const createBikeModel = createServerFn({ method: "POST" })
       assertAccess(actor, PERMISSIONS.contentManage);
     }
 
-    const { error } = await context.supabase.from("bike_models").insert(data);
+    const insertData: any = {
+      name: data.name,
+      slug: data.slug,
+      label: data.label ?? null,
+      image_url: data.image_url ?? null,
+      alt_text: data.alt_text ?? null,
+      sort_order: data.sort_order,
+      is_active: data.is_active,
+    };
+
+    const { error } = await context.supabase.from("bike_models").insert(insertData);
     if (error) throw new Error(error.message);
     return { success: true };
   });
@@ -121,9 +130,9 @@ export const updateBikeModel = createServerFn({ method: "POST" })
         updates: z.object({
           name: z.string().min(1).optional(),
           slug: z.string().min(1).optional(),
-          label: z.string().optional().nullable(),
-          image_url: z.string().url().optional().nullable(),
-          alt_text: z.string().optional().nullable(),
+          label: z.string().nullish(),
+          image_url: z.string().url().nullish(),
+          alt_text: z.string().nullish(),
           sort_order: z.number().int().optional(),
           is_active: z.boolean().optional(),
         }),
@@ -139,9 +148,18 @@ export const updateBikeModel = createServerFn({ method: "POST" })
       assertAccess(actor, PERMISSIONS.contentManage);
     }
 
+    const updates: any = {};
+    if (data.updates.name !== undefined) updates.name = data.updates.name;
+    if (data.updates.slug !== undefined) updates.slug = data.updates.slug;
+    if (data.updates.label !== undefined) updates.label = data.updates.label ?? null;
+    if (data.updates.image_url !== undefined) updates.image_url = data.updates.image_url ?? null;
+    if (data.updates.alt_text !== undefined) updates.alt_text = data.updates.alt_text ?? null;
+    if (data.updates.sort_order !== undefined) updates.sort_order = data.updates.sort_order;
+    if (data.updates.is_active !== undefined) updates.is_active = data.updates.is_active;
+
     const { error } = await context.supabase
       .from("bike_models")
-      .update(data.updates)
+      .update(updates)
       .eq("id", data.id);
 
     if (error) throw new Error(error.message);
