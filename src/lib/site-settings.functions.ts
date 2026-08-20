@@ -38,8 +38,8 @@ function getEffectiveClient() {
   });
 }
 
-export const getSiteSettings = createServerFn({ method: "POST" }).handler(
-  async (): Promise<SiteSettings> => {
+export const getSiteSettings = createServerFn({ method: "POST" })
+  .handler(async (): Promise<SiteSettings> => {
     const { data, error } = await getEffectiveClient()
       .from("site_settings")
       .select(SITE_SETTINGS_COLUMNS)
