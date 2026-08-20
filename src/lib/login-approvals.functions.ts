@@ -13,7 +13,7 @@ export const createLoginApproval = createServerFn({ method: "POST" })
     const meta = requestMeta();
 
     // Admins and Super Admins don't need approval
-    if (actor.isSuperAdmin || actor.roles.includes("admin")) {
+    if (actor.isSuperAdmin || actor.primaryRole === "admin") {
       return { status: "approved" as const };
     }
 

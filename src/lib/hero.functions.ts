@@ -18,7 +18,8 @@ export const getHeroSlides = createServerFn({ method: "GET" })
     if (userId) {
       try {
         const actor = await resolveActor(userId, claims);
-        isAdmin = actor.status === "approved" && (actor.isSuperAdmin || actor.roles.includes("admin") || actor.permissions.includes(PERMISSIONS.contentManage));
+        const isPrivileged = actor.isSuperAdmin || actor.primaryRole === "admin";
+        isAdmin = (actor.status === "approved" || isPrivileged) && (isPrivileged || actor.permissions.includes(PERMISSIONS.contentManage));
       } catch {
         isAdmin = false;
       }
