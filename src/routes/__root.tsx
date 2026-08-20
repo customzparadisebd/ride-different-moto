@@ -289,7 +289,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   // Admin/staff area keeps its own bare chrome — no store header, nav or footer.
-  const isPrivateArea = pathname === "/ad" || pathname.startsWith("/ad/");
+  const isPrivateArea = pathname.startsWith("/ad");
 
   // Source Protection: Discourage casual inspection
   useEffect(() => {
