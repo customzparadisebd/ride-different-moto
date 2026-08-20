@@ -66,6 +66,19 @@ export function Header() {
           </Link>
         </div>
 
+        {/* CENTER: Navigation */}
+        <nav className="hidden lg:flex items-center gap-6">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className="text-[13px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
         {/* RIGHT: Theme/Dark Mode + Language + Cart */}
         <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
           <button
