@@ -55,17 +55,17 @@ function RecycleBin() {
 
   const productsQuery = useQuery({
     queryKey: ["admin-recycle-bin", "products"],
-    queryFn: () => fetchProducts({ data: { deleted: true, pageSize: 500 } as never }),
+    queryFn: () => fetchProducts({ data: { deleted: true, pageSize: 500 } } as never),
 
   });
   const ordersQuery = useQuery({
     queryKey: ["admin-recycle-bin", "orders"],
-    queryFn: () => fetchOrders({ data: { deleted: true, pageSize: 500 } as never }),
+    queryFn: () => fetchOrders({ data: { deleted: true, pageSize: 500 } } as never),
 
   });
   const customersQuery = useQuery({
     queryKey: ["admin-recycle-bin", "customers"],
-    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 500 } as never }),
+    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 500 } } as never),
   });
 
   const refresh = () => {
