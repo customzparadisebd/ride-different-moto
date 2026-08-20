@@ -322,7 +322,14 @@ function SectionCard({
         </div>
       </CardContent>
     </Card>
+
+    <SectionPreviewDialog 
+      open={isPreviewing} 
+      onOpenChange={setIsPreviewing} 
+      section={formData} 
+    />
     </>
   );
 }
+
 
