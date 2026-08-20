@@ -26,7 +26,7 @@ export function UserActivityDialog({
 }: UserActivityDialogProps) {
   const { data: activities, isLoading } = useQuery({
     queryKey: ["staff-activity", userId],
-    queryFn: () => (userId ? getStaffActivity({ data: { userId: userId as string } }) : null),
+    queryFn: () => (userId ? getStaffActivity({ data: { userId: userId as string } } as never) : null),
     enabled: !!userId && open,
   });
 

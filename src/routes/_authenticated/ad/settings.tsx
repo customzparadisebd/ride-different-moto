@@ -55,7 +55,7 @@ function AdminSettings() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({ data: undefined }) });
+  const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => access({ data: undefined } as never) });
 
   // ACCESS CONTROL: Restrict Staff from settings
   useEffect(() => {
