@@ -377,26 +377,24 @@ function SecurityDashboardPage() {
               <AlertTriangle className="h-4 w-4 text-red-600" />
               Security Alerts
               <div className="mt-4 text-[10px] font-normal normal-case leading-relaxed text-muted-foreground whitespace-pre-wrap">
-                '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''{"\n"}
-                                        {"\n"}
-                                            {"\n"}
-                                            {"\n"}
-                                            For the code present, I get the error below.{"\n"}
-{"\n"}
-Please think step-by-step in order to resolve it.{"\n"}
-```{"\n"}
-Error: aborted{"\n"}
-{"\n"}
-{"{"}{"\n"}
-  "timestamp": 1787222779500,{"\n"}
-  "error_type": "RUNTIME_ERROR",{"\n"}
-  "filename": "Unknown file",{"\n"}
-  "lineno": 0,{"\n"}
-  "colno": 0,{"\n"}
-                  "stack": "Error: aborted\n    at abortIncoming (node:_http_server:838:17)\n    at socketOnClose (node:_http_server:832:3)\n    at Socket.emit (node:events:531:35)\n    at TCP.<anonymous> (node:net:346:12)\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",{"\n"}
-  "has_blank_screen": true{"\n"}
-{"}"}{"\n"}
-```
+                {`'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+
+For the code present, I get the error below.
+
+Please think step-by-step in order to resolve it.
+\`\`\`
+Error: aborted
+
+{
+  "timestamp": 1787222779500,
+  "error_type": "RUNTIME_ERROR",
+  "filename": "Unknown file",
+  "lineno": 0,
+  "colno": 0,
+  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",
+  "has_blank_screen": true
+}
+\`\`\``}
               </div>
 
 
