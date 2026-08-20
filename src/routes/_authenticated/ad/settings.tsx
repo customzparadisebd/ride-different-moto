@@ -30,6 +30,9 @@ import { DEFAULT_STORE_SETTINGS, type StoreSettings } from "@/lib/settings.share
 import { getStoreSettings, saveStoreSettings } from "@/lib/store-settings.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/settings")({
+  validateSearch: (search: Record<string, unknown>): { tab?: string } => {
+    return { tab: typeof search.tab === "string" ? search.tab : undefined };
+  },
   head: () => ({
     meta: [
       { title: "Settings — CZP Ops" },
