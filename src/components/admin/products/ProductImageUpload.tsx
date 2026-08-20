@@ -35,6 +35,56 @@ interface UploadStatus {
   url?: string;
 }
 
+interface ProductImageSpecProps {
+  multiple: boolean;
+}
+
+export function ProductImageSpec({ multiple }: ProductImageSpecProps) {
+  // Recommended based on 1:1 ProductCard and Gallery aspect ratio
+  // Card: (max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw
+  // Detail Gallery: Main container is 1:1
+  const specs = {
+    res: "1200 × 1200px",
+    ratio: "1:1 (Square)",
+    size: "< 800KB",
+    format: "WebP preferred",
+  };
+
+  return (
+    <div className="mt-2 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3 animate-in fade-in duration-300">
+      <div className="flex items-start gap-3">
+        <div className="p-1.5 rounded-full bg-cyan-500/10">
+          <ImageIcon className="size-3.5 text-cyan-500" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-cyan-500">
+            Recommended for {multiple ? "Product Gallery" : "Main Product Image"}
+          </p>
+          <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[10px] text-muted-foreground">
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-60">Resolution:</span>
+              <strong className="text-foreground">{specs.res}</strong>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-60">Aspect Ratio:</span>
+              <strong className="text-foreground">{specs.ratio}</strong>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-60">Max File Size:</span>
+              <strong className="text-foreground">{specs.size}</strong>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="opacity-60">Preferred Format:</span>
+              <strong className="text-foreground">{specs.format}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 export function ProductImageUpload({
   value,
   onChange,
@@ -341,8 +391,11 @@ export function ProductImageUpload({
           </label>
         )}
       </div>
-
+      
+      <ProductImageSpec multiple={multiple} />
+      
       <div className="rounded-md bg-muted/30 border border-border/50 p-3">
+
         <div className="flex items-start gap-2">
           <AlertCircle className="h-3.5 w-3.5 text-cyan-500 mt-0.5" />
           <div className="space-y-1">
