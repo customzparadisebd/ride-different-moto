@@ -214,7 +214,7 @@ export function BikeModelsPanel() {
                       <div className="flex items-center gap-4 pt-2 border-t border-border/50">
                         <div className="flex items-center gap-2">
                           <Switch
-                            checked={model.is_active}
+                            checked={!!model.is_active}
                             onCheckedChange={(checked) => 
                               updateMutation.mutate({ 
                                 id: model.id, 
