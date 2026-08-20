@@ -58,7 +58,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
 
     if (confirm(`Set starting number to ${num}? The next order will be ${draft.prefix}-${num.toString().padStart(2, '0')}.`)) {
       mutation.mutate({
-          data: {
+        data: {
           ...draft,
           nextNumber: num,
         }
