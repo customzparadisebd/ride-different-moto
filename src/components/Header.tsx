@@ -114,8 +114,93 @@ export function Header() {
                       '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
                                         
                                             
-                                            Test my homepage header on PC, tablet, and mobile breakpoints to confirm it matches the previous responsive layout.
-Implement a smooth mobile navigation (hamburger menu) with correct spacing, tap targets, and no layout shifts.
+                                            Fix and restore the existing customer-facing website navigation bar for tablet and mobile.
+
+IMPORTANT:
+The desktop navigation is already working correctly. Do not modify or redesign the desktop navigation.
+Preserve all existing navigation links, functionality, logo, cart, language switcher, theme controls, and other existing features.
+
+Requirements
+
+Keep the existing desktop navigation exactly as it is.
+
+Fix the navigation specifically for tablet and mobile responsive layouts.
+
+The navigation must remain properly aligned at all supported screen widths.
+
+The navigation order/position must be:
+
+Logo → existing navigation/menu controls → View Cart
+
+The navigation/menu must NOT appear in the middle of or overlap the website logo.
+
+Ensure the View Cart position remains correct and consistent with the intended navigation structure.
+
+Prevent navigation items from overlapping the logo, cart, language switcher, or other header controls.
+
+Make the header spacing and alignment responsive rather than relying on fixed desktop dimensions.
+
+Mobile Menu
+
+When the mobile navigation/menu is opened:
+
+Use a clean, standard-sized mobile navigation area.
+
+Do NOT allow the menu to unnecessarily occupy most of the screen.
+
+Keep the menu compact and appropriately spaced.
+
+Use a proper responsive dropdown/drawer/overlay according to the existing design.
+
+Menu items must remain easy to tap on mobile.
+
+The opened menu must not cover or interfere with important header controls unnecessarily.
+
+Ensure the menu can be closed easily.
+
+Prevent horizontal overflow or unwanted page scrolling.
+
+Tablet
+
+Create a proper intermediate responsive layout for tablet widths.
+
+Do not simply use the desktop layout on tablets if it causes overlap or spacing problems.
+
+Mobile & Tablet Testing
+
+Test the navigation at:
+
+Desktop
+
+Tablet
+
+Small mobile
+
+Large mobile
+
+Verify that:
+
+Logo remains correctly positioned.
+
+Navigation/menu remains correctly positioned.
+
+View Cart remains in its intended position.
+
+No elements overlap.
+
+No horizontal scrolling occurs.
+
+Mobile menu uses a standard amount of screen space.
+
+Existing navigation functionality remains unchanged.
+
+CRITICAL
+
+This is a responsive/layout fix, not a redesign.
+
+Do not delete or replace the existing navigation system.
+
+Preserve the existing desktop version exactly and only fix the tablet/mobile responsiveness and positioning issues.
                     </p>
                   </div>
                 </div>
