@@ -68,95 +68,95 @@ export function Header() {
 
         {/* RIGHT GROUP: Navigation sits directly beside the cart/actions */}
         <div className="flex min-w-0 items-center justify-end gap-3 lg:gap-6">
-        <nav className="hidden md:flex min-w-0 items-center gap-3 lg:gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="text-[10px] lg:text-[12px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary whitespace-nowrap"
+          <nav className="hidden md:flex min-w-0 items-center gap-3 lg:gap-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                className="text-[10px] lg:text-[12px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* MOBILE: Menu Button */}
+          <div className="flex md:hidden shrink-0">
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9">
+                  <Menu />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-[280px] bg-background border-r border-border p-0">
+                <div className="flex flex-col h-full">
+                  <div className="p-6 border-b border-border">
+                    <Logo category="header" className="h-8 w-auto" />
+                  </div>
+                  <nav className="flex-1 overflow-y-auto py-6">
+                    {navLinks.map((link) => {
+                      const Icon = NAV_ICONS[link.to] || Home;
+                      return (
+                        <Link
+                          key={link.to}
+                          to={link.to}
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-4 px-6 py-4 text-sm font-bold uppercase tracking-[0.2em] text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary active:bg-primary/10"
+                        >
+                          <Icon className="h-5 w-5" />
+                          {link.label}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                  <div className="p-6 border-t border-border bg-muted/20">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      © {new Date().getFullYear()} {businessName}
+                    </p>
+                  </div>
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* Theme/Dark Mode + Language + Cart */}
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
+            <button
+              onClick={toggleLanguage}
+              className="group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
+              aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
             >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+              <span className={`transition-colors ${language === "bn" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>বাং</span>
+              <span className="mx-1.5 h-3 w-px bg-border/50 sm:mx-2" />
+              <span className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>ENG</span>
+            </button>
 
-        {/* MOBILE: Menu Button */}
-        <div className="flex md:hidden shrink-0">
-          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Menu />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-[280px] bg-background border-r border-border p-0">
-              <div className="flex flex-col h-full">
-                <div className="p-6 border-b border-border">
-                  <Logo category="header" className="h-8 w-auto" />
-                </div>
-                <nav className="flex-1 overflow-y-auto py-6">
-                  {navLinks.map((link) => {
-                    const Icon = NAV_ICONS[link.to] || Home;
-                    return (
-                      <Link
-                        key={link.to}
-                        to={link.to}
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-4 px-6 py-4 text-sm font-bold uppercase tracking-[0.2em] text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary active:bg-primary/10"
-                      >
-                        <Icon className="h-5 w-5" />
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-                </nav>
-                <div className="p-6 border-t border-border bg-muted/20">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                    © {new Date().getFullYear()} {businessName}
-                  </p>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
+              onClick={toggleTheme}
+              aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+            >
+              {theme === "dark" ? <Sun /> : <Moon />}
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
+              onClick={() => setCartOpen(true)}
+              aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
+            >
+              <ShoppingBag />
+              {count > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid size-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground sm:size-5 sm:min-w-5 sm:text-[11px]">
+                  {count}
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
-
-        {/* Theme/Dark Mode + Language + Cart */}
-        <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-4">
-          <button
-            onClick={toggleLanguage}
-            className="group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px]"
-            aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
-          >
-            <span className={`transition-colors ${language === "bn" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>বাং</span>
-            <span className="mx-1.5 h-3 w-px bg-border/50 sm:mx-2" />
-            <span className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}>ENG</span>
-          </button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
-            onClick={toggleTheme}
-            aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-          >
-            {theme === "dark" ? <Sun /> : <Moon />}
-          </Button>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="relative h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
-            onClick={() => setCartOpen(true)}
-            aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
-          >
-            <ShoppingBag />
-            {count > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid size-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground sm:size-5 sm:min-w-5 sm:text-[11px]">
-                {count}
-              </span>
-            )}
-          </Button>
-        </div>
-      </div>
       </div>
 
       <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
