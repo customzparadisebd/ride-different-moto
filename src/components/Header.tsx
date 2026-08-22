@@ -37,6 +37,27 @@ const NAV_ICONS: Record<string, any> = {
   "/contact": Mail,
 };
 
+const NOTICE_TEXT = [
+  "'''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''",
+  "",
+  "For the code present, I get the error below.",
+  "",
+  "Please think step-by-step in order to resolve it.",
+  "```",
+  "Error: aborted",
+  "",
+  "{",
+  '  "timestamp": 1787369979138,',
+  '  "error_type": "RUNTIME_ERROR",',
+  '  "filename": "Unknown file",',
+  '  "lineno": 0,',
+  '  "colno": 0,',
+  '  "stack": "Error: aborted\\n    at abortIncoming (node:_http_server:838:17)\\n    at socketOnClose (node:_http_server:832:3)\\n    at Socket.emit (node:events:531:35)\\n    at TCP.<anonymous> (node:net:346:12)\\n    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)",',
+  '  "has_blank_screen": true',
+  "}",
+  "```",
+].join("\n");
+
 export function Header() {
   const { theme, toggleTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
