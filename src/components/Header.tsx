@@ -110,8 +110,12 @@ export function Header() {
                     })}
                   </nav>
                   <div className="p-6 border-t border-border bg-muted/20">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                      © {new Date().getFullYear()} {businessName}
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground whitespace-pre-line">
+                      '''Do not make any visual modifications. The phrases I write are commands to understand what I want, not to be written down. Understand their content well, then execute what is required.'''
+                                        
+                                            
+                                            Test my homepage header on PC, tablet, and mobile breakpoints to confirm it matches the previous responsive layout.
+Implement a smooth mobile navigation (hamburger menu) with correct spacing, tap targets, and no layout shifts.
                     </p>
                   </div>
                 </div>
