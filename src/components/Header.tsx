@@ -157,7 +157,7 @@ export function Header() {
           </Button>
         </div>
       </div>
-
+      
       <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
     </header>
   );
