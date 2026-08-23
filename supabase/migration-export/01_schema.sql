@@ -1925,7 +1925,325 @@ CREATE TRIGGER store_settings_touch_updated_at BEFORE UPDATE ON public.store_set
 DROP TRIGGER IF EXISTS suppliers_touch_updated_at ON public.suppliers;
 CREATE TRIGGER suppliers_touch_updated_at BEFORE UPDATE ON public.suppliers FOR EACH ROW EXECUTE FUNCTION touch_updated_at();
 
--- ---- GRANTS: none ----
+-- ---------------- GRANTS ----------------
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_audit_log TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_audit_log TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_audit_log TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_notifications TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_notifications TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_notifications TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_sessions TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_sessions TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.admin_sessions TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.ai_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.ai_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.ai_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.bike_models TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.bike_models TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.bike_models TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.brands TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.brands TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.brands TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.categories TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.categories TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.categories TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.cities TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.cities TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.cities TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_api_logs TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_api_logs TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_api_logs TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_credentials TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_credentials TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_credentials TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_shipments TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_shipments TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_shipments TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_tracking_events TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_tracking_events TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.courier_tracking_events TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.couriers TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.couriers TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.couriers TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customer_fraud_marks TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customer_fraud_marks TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customer_fraud_marks TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customers TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customers TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.customers TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.delivery_zones TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.delivery_zones TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.delivery_zones TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sale_products TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sale_products TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sale_products TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sales TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sales TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.flash_sales TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.gallery_items TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.gallery_items TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.gallery_items TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.hero_slides TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.hero_slides TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.hero_slides TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.inventory_movements TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.inventory_movements TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.inventory_movements TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.leads TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.leads TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.leads TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.login_attempts TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.login_attempts TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.login_attempts TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.mfa_backup_codes TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.mfa_backup_codes TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.mfa_backup_codes TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.nav_items TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.nav_items TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.nav_items TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.not_found_logs TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.not_found_logs TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.not_found_logs TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_damages TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_damages TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_damages TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_events TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_events TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_events TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_items TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_items TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_items TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_returns TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_returns TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_returns TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_stock_deductions TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_stock_deductions TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.order_stock_deductions TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.orders TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.orders TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.orders TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.payments TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.payments TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.payments TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_360_images TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_360_images TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_360_images TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_colors TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_colors TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.product_colors TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.products TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.products TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.products TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.profiles TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.profiles TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.profiles TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.reviews TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.reviews TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.reviews TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.section_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.section_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.section_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.security_events TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.security_events TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.security_events TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_logos TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_logos TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_logos TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.site_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.social_links TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.social_links TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.social_links TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.steadfast_stats TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.steadfast_stats TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.steadfast_stats TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.store_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.store_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.store_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.stress_test_settings TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.stress_test_settings TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.stress_test_settings TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.suppliers TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.suppliers TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.suppliers TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_permissions TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_permissions TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_permissions TO service_role;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_roles TO anon;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_roles TO authenticated;
+
+GRANT DELETE, INSERT, SELECT, UPDATE ON public.user_roles TO service_role;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_number_seq TO anon;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_number_seq TO authenticated;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_number_seq TO service_role;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_seq TO anon;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_seq TO authenticated;
+
+GRANT SELECT, UPDATE, USAGE ON SEQUENCE public.invoice_seq TO service_role;
 
 -- ---------------- ROW LEVEL SECURITY + POLICIES ----------------
 
