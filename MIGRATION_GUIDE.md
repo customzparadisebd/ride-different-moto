@@ -132,10 +132,13 @@ Supabase Auth lives in the `auth` schema, which you must **not** hand-edit.
 
 ## 4. Storage files
 
-Bucket `avatars` (public). Recreate it, then copy the objects:
+Full instructions live in `supabase/migration-export/05_storage.md` — bucket
+creation, RLS policies on `storage.objects`, object copy and URL rewrite.
+
+Short version: recreate the **private** buckets `avatars` and `logos`, then copy
+the objects:
 
 ```bash
-# create the bucket on the new project first (Storage → New bucket → public)
 supabase storage cp -r ss:///avatars ./avatars-backup --project-ref <OLD_REF>
 supabase storage cp -r ./avatars-backup ss:///avatars  --project-ref <NEW_REF>
 ```
