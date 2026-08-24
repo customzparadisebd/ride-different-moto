@@ -35,6 +35,8 @@ require rewriting auth, MFA, RLS, and every server function.
 5. Freeze order intake for the migration window (30–60 minutes) so no new rows
    are written to the old database after the dump.
 
+---
+
 ## 1b. The generated migration package
 
 Everything you need was generated from the live database and lives in
@@ -67,7 +69,7 @@ supabase/migration-export/04_post_migration.sql
 
 Notes:
 
-- Create the auth users (section 3) **before** `03_auth_views_users.sql` — it
+- Create the auth users (section 3) **before** `03_auth_users.sql` — it
   needs their real UUIDs pasted into the placeholders.
 - `04_post_migration.sql` is the step that prevents duplicate invoice numbers.
   Do not skip it, and read its verification output.
