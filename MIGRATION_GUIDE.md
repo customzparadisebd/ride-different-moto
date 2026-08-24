@@ -35,67 +35,59 @@ require rewriting auth, MFA, RLS, and every server function.
 5. Freeze order intake for the migration window (30–60 minutes) so no new rows
    are written to the old database after the dump.
 
-> Note on the current (Lovable Cloud) database: the direct database password
-> and `service_role` key of the Lovable-managed project are not retrievable
-> from inside Lovable Cloud. Ask me to generate SQL export files
-> (`supabase/exports/schema.sql` + per-table `INSERT` data files) directly from
-> the live database — I can read every table and write them into the repo, and
-> you then replay them against your new project. That is the supported path
-> for a clean, lossless move.
+## 1b. The generated migration package
+
+Everything you need was generated from the live database and lives in
+`supabase/migration-export/`:
+
+| File                    | Purpose                                                                | Run order |
+| ----------------------- | ---------------------------------------------------------------------- | --------- |
+| `01_schema.sql`         | Enums, sequences, 51 tables, 13 functions, triggers, 159 GRANTs, 120 RLS policies | 1 |
+| `02_data.sql`           | 532 rows across 32 tables, FK-safe order, `ON CONFLICT DO NOTHING`     | 2         |
+| `03_auth_users.sql`     | Links newly created auth accounts to imported profiles/roles           | 3         |
+| `04_post_migration.sql` | Invoice sequence re-alignment, session cleanup, verification queries   | 4         |
+| `05_storage.md`         | Bucket recreation (`avatars`, `logos`), object copy, URL rewrite       | manual    |
+| `ENV_TEMPLATE.md`       | Every environment variable, with which are secret                      | manual    |
+
+Also at the repo root: `netlify.toml` (build command, publish dir, security and
+cache headers, `no-store` + `noindex` on the admin panel).
 
 ---
 
 ## 2. Database migration (schema + data, zero data loss)
 
-### Option A — replay the repo migrations (cleanest)
+Open the new project's **SQL editor** and run, in this exact order:
+
+```
+supabase/migration-export/01_schema.sql
+supabase/migration-export/02_data.sql
+supabase/migration-export/03_auth_users.sql     (after creating the auth users)
+supabase/migration-export/04_post_migration.sql
+```
+
+Notes:
+
+- Create the auth users (section 3) **before** `03_auth_views_users.sql` — it
+  needs their real UUIDs pasted into the placeholders.
+- `04_post_migration.sql` is the step that prevents duplicate invoice numbers.
+  Do not skip it, and read its verification output.
+
+### Alternative — replay the repo migrations
 
 ```bash
 supabase login
 supabase link --project-ref <YOUR_NEW_PROJECT_REF>
-supabase db push          # replays every file in supabase/migrations in order
-```
-
-This recreates: all 35+ public tables, the `app_role` enum, invoice sequences,
-every trigger (`touch_updated_at`, `tr_orders_invoice_no`, …), every function
-(`has_role`, `has_permission`, `is_staff`, `is_super_admin`,
-`generate_next_invoice_no`, `increment_steadfast_count`, …), all GRANTs and all
-RLS policies. Nothing needs to be re-authored.
-
-### Option B — full dump/restore (if you have the old DB URL)
-
-```bash
-pg_dump "$OLD_DB_URL" --schema=public --no-owner --no-privileges -Fc -f czp_public.dump
-pg_dump "$OLD_DB_URL" --schema=auth   --no-owner --no-privileges -Fc -f czp_auth.dump   # users
-pg_restore -d "$NEW_DB_URL" --no-owner --no-privileges czp_public.dump
-```
-
-### Then load the data
-
-```bash
-psql "$NEW_DB_URL" -f supabase/exports/data.sql   # generated INSERTs, FK-safe order
-```
-
-Load order matters: `profiles` → `user_roles` → `user_permissions` →
-`brands`/`categories`/`cities`/`delivery_zones`/`couriers` → `products` →
-`product_colors` → `customers` → `orders` → `order_items` →
-`courier_shipments` → `admin_audit_log` / `security_events` / `leads` /
-`reviews` / `hero_slides` / `store_settings` / `invoice_settings` /
-`steadfast_stats`.
-
-### Reset the sequences (critical — prevents duplicate invoice numbers)
-
-```sql
-SELECT setval('public.invoice_number_seq', (SELECT COALESCE(MAX(current_number),1) FROM public.invoice_settings));
-SELECT setval('public.invoice_seq',        (SELECT COUNT(*)+1 FROM public.orders));
--- verify
-SELECT prefix, current_number FROM public.invoice_settings WHERE id='default';
-SELECT COUNT(*) FROM public.orders;   -- must equal the old count
+supabase db push          # replays supabase/migrations in order
+psql "$NEW_DB_URL" -f supabase/migration-export/02_data.sql
+psql "$NEW_DB_URL" -f supabase/migration-export/04_post_migration.sql
 ```
 
 ### Verify
 
-Row-count every table on both sides and compare. Do not go live until the
-counts match, including `admin_audit_log` (append-only history).
+Row-count every table on both sides and compare (query 3c in
+`04_post_migration.sql` prints the main ones). Do not go live until the counts
+match, including `admin_audit_log` (append-only history).
+
 
 ---
 
