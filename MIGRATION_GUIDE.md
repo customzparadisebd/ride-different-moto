@@ -265,7 +265,21 @@ Runtime requirements:
   `nitro`) rather than deleting it.
 - Routing needs no `_redirects`/`vercel.json` rewrites — the Nitro server
   handles every route, including `/order-confirmed/$id` and the admin panel at
-  `/ad`.
+  `/czp-ops-9f2c`.
+
+### Netlify
+
+`netlify.toml` at the repo root is already configured:
+
+- build `npm run build`, publish `dist/client`, Node 22
+- security headers (HSTS, nosniff, frame options, referrer + permissions policy)
+- `Cache-Control: no-store` and `X-Robots-Tag: noindex, nofollow` on
+  `/czp-ops-9f2c/*` and `/ad/*`, `no-store` on `/api/*`
+- immutable long cache on `/assets/*`
+
+Steps: connect the repo in Netlify → add the environment variables from
+`ENV_TEMPLATE.md` → deploy. Never enable Netlify's asset CDN caching for the
+admin paths.
 
 ---
 
