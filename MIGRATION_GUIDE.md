@@ -189,7 +189,9 @@ else is gated behind `is_staff()` / `has_permission()`.
 
 ## 6. Environment variables
 
-Set these in your new host's dashboard. Never commit them.
+The authoritative list, with which values are secret, is
+`supabase/migration-export/ENV_TEMPLATE.md`. Set them in your host's dashboard
+(Netlify → Site configuration → Environment variables). Never commit them.
 
 **Server-only (secret)**
 
