@@ -59,3 +59,18 @@ Author: Rafi Gazi (Rabbee) Apps
 - Integrated Gallery tab in `src/routes/_authenticated/ad/settings.tsx`.
 - Refactored `src/routes/gallery.tsx` to fetch dynamic data from `gallery_items` table.
 - Added support for "Hidden" state (is_active) to allow hiding builds without deleting them.
+
+## Migration-readiness audit (final Lovable-side task)
+
+Status: COMPLETED. Full report: `MIGRATION_AUDIT.md`.
+
+Fixed seven blockers: corrupt FUNCTIONS section and missing `private` schema in
+`01_schema.sql`, invalid `EXCEPTION` syntax in 113 constraint blocks, stale
+`auth.users` FK values in `02_data.sql`, Cloudflare-only build target
+(`vite.config.ts` now honours `DEPLOY_PRESET`), wrong Netlify publish dir, and an
+incomplete storage guide (6 buckets, not 2). `supabase/migration-export/` is
+authoritative; `supabase/exports/` is marked superseded.
+
+Next steps (owner, outside Lovable): create the Supabase project, run steps 1-4,
+create auth users + re-enrol MFA, create the six storage buckets, set Netlify env
+vars including `SUPABASE_SERVICE_ROLE_KEY`.
