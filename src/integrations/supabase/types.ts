@@ -1634,6 +1634,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_active: boolean
+          linked_product_id: string | null
           name: string
           price_delta: number
           product_id: string
@@ -1646,6 +1647,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          linked_product_id?: string | null
           name: string
           price_delta?: number
           product_id: string
@@ -1658,6 +1660,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_active?: boolean
+          linked_product_id?: string | null
           name?: string
           price_delta?: number
           product_id?: string
@@ -1666,6 +1669,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "product_colors_linked_product_id_fkey"
+            columns: ["linked_product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "product_colors_product_id_fkey"
             columns: ["product_id"]
