@@ -19,6 +19,8 @@ import { getActiveSaleForProduct, calculateFlashPrice } from "@/lib/flash-utils"
 import { FlashSaleBanner } from "@/components/admin/flash/FlashSaleBanner";
 import { ProductGallery } from "@/components/product/ProductGallery";
 import { ProductVideo } from "@/components/product/ProductVideo";
+import { SafeHtml } from "@/components/product/SafeHtml";
+
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -333,14 +335,11 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
 
             <section className="space-y-6">
               <h2 className="text-2xl font-display font-black uppercase tracking-tighter text-white">Product Description</h2>
-              <div 
+              <SafeHtml
                 className="prose prose-invert max-w-none text-white/70 text-lg leading-relaxed"
-                dangerouslySetInnerHTML={{ 
-                  __html: (typeof window !== 'undefined' && (window as any).DOMPurify)
-                    ? (window as any).DOMPurify.sanitize(product.description || "No description available.")
-                    : (product.description || "No description available.") 
-                }}
+                html={product.description || "No description available."}
               />
+
             </section>
           </div>
           
