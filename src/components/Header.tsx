@@ -61,7 +61,8 @@ export function Header() {
 
   // Close the drawer whenever the viewport grows into desktop layout.
   useEffect(() => {
-    const mql = window.matchMedia("(min-width: 1024px)");
+    const mql = window.matchMedia("(min-width: 768px)");
+
     const onChange = () => {
       if (mql.matches) setMenuOpen(false);
     };
@@ -105,17 +106,18 @@ export function Header() {
         </div>
 
         {/* DESKTOP: Main navigation */}
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-4 lg:flex xl:gap-6">
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 md:flex lg:gap-4 xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="whitespace-nowrap text-[11px] font-bold uppercase tracking-widest text-foreground/80 transition-colors hover:text-primary xl:text-[12px]"
+              className="whitespace-nowrap text-[9px] font-bold uppercase tracking-wide text-foreground/80 transition-colors hover:text-primary lg:text-[11px] lg:tracking-widest xl:text-[12px]"
             >
               {link.label}
             </Link>
           ))}
         </nav>
+
 
         {/* RIGHT: Controls — Language, Theme, Cart, Hamburger */}
         <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
@@ -147,7 +149,7 @@ export function Header() {
           </Button>
 
           {/* MOBILE / TABLET: Hamburger + right drawer */}
-          <div className="flex shrink-0 lg:hidden">
+          <div className="flex shrink-0 md:hidden">
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
