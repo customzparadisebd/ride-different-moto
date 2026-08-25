@@ -67,6 +67,23 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
   const [color, setColor] = useState<ProductColor | null>(
     (product?.colors && product.colors.length > 0) ? (product.colors[0] as ProductColor) : null
   );
+
+  // Keep the selected colour in sync with the product that finished loading.
+  useEffect(() => {
+    const colors = (product?.colors ?? []) as ProductColor[];
+    setColor((current) => {
+      if (colors.length === 0) return null;
+      const match = current ? colors.find((c) => c.id === current.id) : undefined;
+      return match ?? (colors[0] as ProductColor);
+    });
+  }, [product?.id, product?.colors]);
+
+  const selectColor = (next: ProductColor) => {
+    setColor(next);
+    if (!manualProduct && next.linkedProductSlug && next.linkedProductSlug !== product?.slug) {
+      void navigate({ to: "/products/$slug", params: { slug: next.linkedProductSlug } });
+    }
+  };
   const [qty, setQty] = useState(1);
 
   if (!product) return null;
@@ -210,7 +227,7 @@ export function ProductDetail({ product: manualProduct }: { product?: Storefront
                       {product.colors.map((c) => (
                         <button
                           key={c.id}
-                          onClick={() => setColor(c)}
+                          onClick={() => selectColor(c)}
                           className={cn(
                             "group relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all",
                             color?.id === c.id 
