@@ -364,8 +364,9 @@ function GalleryItemForm({ initialData, onSave, onCancel, isSaving, nextSortOrde
     image_url: initialData?.image || "",
     alt_text: initialData?.alt || "",
     is_active: initialData?.active ?? true,
-    // Append new images to the end of the saved gallery order.
-    sort_order: initialData?.sort_order ?? nextSortOrder,
+    // Append new images to the end of the saved gallery order; keep the existing position when editing.
+    sort_order: initialData?.order ?? nextSortOrder,
+
   });
 
 
