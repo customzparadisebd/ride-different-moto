@@ -39,6 +39,12 @@ Admin → Settings → Couriers → Test connection.
 | `RATE_LIMIT_MAX`       | `100`   | max requests per window          |
 | `RATE_LIMIT_WINDOW_MS` | `60000` | window size in ms (1 minute)     |
 
+## 3b. Required — build target (Netlify)
+
+| Key             | Scope      | Secret? | Value     | Notes                                                                 |
+| --------------- | ---------- | ------- | --------- | --------------------------------------------------------------------- |
+| `DEPLOY_PRESET` | Build only | No      | `netlify` | Already set in `netlify.toml`. Without it the build emits a Cloudflare Worker and Netlify serves no SSR: every page, `/ad/*` and all server functions 404. |
+
 ## 4. Manual settings that are not environment variables
 
 1. **Auth → URL configuration**: Site URL `https://customzparadisebd.com`,
@@ -46,8 +52,9 @@ Admin → Settings → Couriers → Test connection.
 2. **Auth → Providers**: enable Google, add
    `https://<new-ref>.supabase.co/auth/v1/callback` to the Google Cloud OAuth
    client. Keep anonymous sign-ups **disabled**.
-3. **Storage**: create the `avatars` and `logos` buckets (private) — see
-   `05_storage.md`.
+3. **Storage**: create all six buckets — `avatars` and `logos` private,
+   `products`, `hero`, `hero-banners` and `bike-models` public — then apply the
+   policies. See `05_storage.md`.
 
 ## Example `.env`
 
@@ -63,6 +70,9 @@ SUPABASE_SERVICE_ROLE_KEY="your-service-role-secret"
 
 RATE_LIMIT_MAX=100
 RATE_LIMIT_WINDOW_MS=60000
+
+# Netlify build target (set in netlify.toml; only needed if you build elsewhere)
+DEPLOY_PRESET="netlify"
 ```
 
 Reminder: `VITE_*` values are inlined at build time — after changing them you
