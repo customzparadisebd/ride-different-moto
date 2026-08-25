@@ -16,7 +16,7 @@ import {
 } from "@/lib/ai.shared";
 import { getAISettings, saveAISettings, testAIConnection } from "@/lib/ai.functions";
 
-export function AISettingsPanel() {
+export function AISettingsPanel({ canManage = true }: { canManage?: boolean }) {
   const queryClient = useQueryClient();
   const fetchSettings = useServerFn(getAISettings);
   const saveSettingsFn = useServerFn(saveAISettings);
@@ -142,7 +142,7 @@ export function AISettingsPanel() {
               size="sm"
               className="flex-1 sm:flex-initial"
               onClick={() => testMutation.mutate(draft)}
-              disabled={testMutation.isPending}
+              disabled={!canManage || testMutation.isPending}
             >
               {testMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -156,7 +156,7 @@ export function AISettingsPanel() {
               size="sm"
               className="flex-1 sm:flex-initial"
               onClick={() => saveMutation.mutate(draft)}
-              disabled={saveMutation.isPending}
+              disabled={!canManage || saveMutation.isPending}
             >
               {saveMutation.isPending ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -331,10 +331,12 @@ export function GalleryPanel() {
       
       {isAdding && (
         <GalleryItemForm 
+          nextSortOrder={items.length}
           onSave={(d: any) => addMutation.mutate(d)} 
           onCancel={() => setIsAdding(false)} 
           isSaving={addMutation.isPending} 
         />
+
       )}
       
       {editingId && (
@@ -357,12 +359,16 @@ export function GalleryPanel() {
   );
 }
 
-function GalleryItemForm({ initialData, onSave, onCancel, isSaving }: any) {
+function GalleryItemForm({ initialData, onSave, onCancel, isSaving, nextSortOrder = 0 }: any) {
   const [formData, setFormData] = useState({
     image_url: initialData?.image || "",
     alt_text: initialData?.alt || "",
     is_active: initialData?.active ?? true,
+    // Append new images to the end of the saved gallery order; keep the existing position when editing.
+    sort_order: initialData?.order ?? nextSortOrder,
+
   });
+
 
   const [imageMode, setImageMode] = useState<"upload" | "url">(
     initialData?.image?.includes("supabase.co") ? "upload" : "url"

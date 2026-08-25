@@ -334,10 +334,12 @@ export function BikeModelsPanel() {
       
       {isAdding && (
         <ModelForm 
+          nextSortOrder={models.length}
           onSave={(d: any) => addMutation.mutate(d)} 
           onCancel={() => setIsAdding(false)} 
           isSaving={addMutation.isPending} 
         />
+
       )}
       
       {editingId && (
@@ -360,16 +362,18 @@ export function BikeModelsPanel() {
   );
 }
 
-function ModelForm({ initialData, onSave, onCancel, isSaving }: any) {
+function ModelForm({ initialData, onSave, onCancel, isSaving, nextSortOrder = 0 }: any) {
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
     slug: initialData?.slug || "",
     label: initialData?.label || "Modification Parts",
     image_url: initialData?.image_url || "",
     alt_text: initialData?.alt_text || "",
-    sort_order: initialData?.sort_order || 0,
+    // New models append to the end of the manual order instead of jumping to the front.
+    sort_order: initialData?.sort_order ?? nextSortOrder,
     is_active: initialData?.is_active ?? true,
   });
+
 
   const [imageMode, setImageMode] = useState<"upload" | "url">(
     initialData?.image_url && !initialData?.image_url.startsWith('http') ? "upload" : "url"
