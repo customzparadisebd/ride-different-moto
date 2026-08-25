@@ -14,6 +14,8 @@ export type StorefrontColor = {
   swatch: string;
   priceDelta: number;
   image: string | null;
+  linkedProductId: string | null;
+  linkedProductSlug: string | null;
 };
 
 export type ProductColor = StorefrontColor;
