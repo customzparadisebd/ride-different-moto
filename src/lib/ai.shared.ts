@@ -6,10 +6,21 @@ export type AIProviderType = (typeof AI_PROVIDERS)[number];
 export const aiSettingsSchema = z.object({
   enabled: z.boolean().default(false),
   provider: z.enum(AI_PROVIDERS).default("gemini"),
-  modelName: z.string().trim().min(1, "Model name is required").max(100),
-  apiKey: z.string().trim().min(1, "API Key is required").max(500),
+  modelName: z.string().trim().max(100).default(""),
+  apiKey: z.string().trim().max(500).default(""),
   credentials: z.record(z.string(), z.any()).default({}),
+}).superRefine((value, ctx) => {
+  // Model + key are only mandatory once AI is switched on, so an
+  // "off / not yet configured" state can still be saved.
+  if (!value.enabled) return;
+  if (!value.modelName) {
+    ctx.addIssue({ code: "custom", path: ["modelName"], message: "Model name is required" });
+  }
+  if (!value.apiKey) {
+    ctx.addIssue({ code: "custom", path: ["apiKey"], message: "API Key is required" });
+  }
 });
+
 
 export type AISettings = z.infer<typeof aiSettingsSchema>;
 
