@@ -59,7 +59,7 @@ export function Header() {
     ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`
     : site.whatsappHref;
 
-  // Close the drawer whenever the viewport grows into desktop layout.
+  // Close the drawer whenever the viewport leaves the true mobile layout.
   useEffect(() => {
     const mql = window.matchMedia("(min-width: 768px)");
 
@@ -78,7 +78,7 @@ export function Header() {
   const languageSwitcher = (extraClass = "") => (
     <button
       onClick={toggleLanguage}
-      className={`group flex h-9 items-center rounded-full bg-secondary/50 px-3 font-display text-[11px] font-bold tracking-wider transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-11 sm:px-5 sm:text-[13px] ${extraClass}`}
+      className={`group flex h-9 items-center rounded-full bg-secondary/50 px-2.5 font-display text-[10px] font-bold transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:px-3 sm:text-[11px] min-[1100px]:h-11 min-[1100px]:px-5 min-[1100px]:text-[13px] ${extraClass}`}
       aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
     >
       <span
@@ -86,7 +86,7 @@ export function Header() {
       >
         বাং
       </span>
-      <span className="mx-1.5 h-3 w-px bg-border/50 sm:mx-2" />
+      <span className="mx-1 h-3 w-px bg-border/50 min-[1100px]:mx-2" />
       <span
         className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}
       >
@@ -97,21 +97,21 @@ export function Header() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:h-20 sm:px-6 md:px-8">
+      <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 sm:h-18 sm:px-4 min-[900px]:gap-3 min-[900px]:px-5 min-[1100px]:h-20 min-[1100px]:px-6 xl:px-8">
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
           <Link to="/" className="min-w-0" aria-label={`${businessName} home`}>
-            <Logo priority category="header" className="h-9 w-auto sm:h-12" />
+            <Logo priority category="header" className="h-9 w-auto sm:h-10 min-[768px]:h-8 min-[900px]:h-9 min-[1100px]:h-11 xl:h-12" />
           </Link>
         </div>
 
-        {/* DESKTOP: Main navigation */}
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-2 md:flex lg:gap-4 xl:gap-6">
+        {/* TABLET / DESKTOP: Main navigation */}
+        <nav className="hidden min-w-0 items-center justify-center gap-1 overflow-visible min-[768px]:flex min-[900px]:gap-1.5 min-[1100px]:gap-3 xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="whitespace-nowrap text-[9px] font-bold uppercase tracking-wide text-foreground/80 transition-colors hover:text-primary lg:text-[11px] lg:tracking-widest xl:text-[12px]"
+              className="min-w-0 whitespace-nowrap px-0.5 font-display text-[8px] font-bold uppercase leading-none text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[8.5px] min-[900px]:text-[9px] min-[1100px]:px-1 min-[1100px]:text-[11px] xl:text-[12px]"
             >
               {link.label}
             </Link>
@@ -120,13 +120,13 @@ export function Header() {
 
 
         {/* RIGHT: Controls — Language, Theme, Cart, Hamburger */}
-        <div className="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2 min-[1100px]:gap-3">
           {languageSwitcher()}
 
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
+            className="h-9 w-9 sm:h-10 sm:w-10 min-[1100px]:h-11 min-[1100px]:w-11 [&_svg]:size-4.5 min-[1100px]:[&_svg]:size-5.5"
             onClick={toggleTheme}
             aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
           >
@@ -136,7 +136,7 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="relative h-9 w-9 sm:h-11 sm:w-11 [&_svg]:size-4.5 sm:[&_svg]:size-5.5"
+            className="relative h-9 w-9 sm:h-10 sm:w-10 min-[1100px]:h-11 min-[1100px]:w-11 [&_svg]:size-4.5 min-[1100px]:[&_svg]:size-5.5"
             onClick={() => setCartOpen(true)}
             aria-label={`Open cart, ${count} item${count === 1 ? "" : "s"}`}
           >
@@ -148,8 +148,8 @@ export function Header() {
             )}
           </Button>
 
-          {/* MOBILE / TABLET: Hamburger + right drawer */}
-          <div className="flex shrink-0 md:hidden">
+          {/* MOBILE: Hamburger + right drawer */}
+          <div className="flex shrink-0 min-[768px]:hidden">
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button
