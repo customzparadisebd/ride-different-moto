@@ -734,1073 +734,911 @@ CREATE TABLE IF NOT EXISTS public.user_roles (
   created_at timestamp with time zone DEFAULT now() NOT NULL
 );
 
--- ---------------- FUNCTIONS ----------------
+-- ---------------- SCHEMAS + FUNCTIONS ----------------
+-- The `private` schema holds the security-definer role/permission helpers that
+-- several RLS policies call. It MUST exist before the policy section runs.
 
-CREATE OR REPLACE FUNCTION public.alert_on_invoice_collision();
+CREATE SCHEMA IF NOT EXISTS private;
+GRANT USAGE ON SCHEMA private TO anon, authenticated, service_role;
 
- RETURNS trigger;
+-- private.has_permission(uuid,text)
+CREATE OR REPLACE FUNCTION private.has_permission(_user_id uuid, _permission text)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public', 'private'
+AS $function$
+DECLARE
+    user_role public.app_role;
+    user_perms text[];
+    is_approved boolean;
+BEGIN
+    -- Get user role and status
+    SELECT role INTO user_role FROM public.user_roles WHERE user_id = _user_id LIMIT 1;
+    
+    -- Check if user is approved (staff status check)
+    -- This is a simplified version, usually we'd join with a staff table
+    -- For now, if they have a role, we check permissions.
+    
+    IF user_role = 'super_admin' THEN
+        RETURN TRUE;
+    END IF;
 
- LANGUAGE plpgsql;
+    -- Basic role check
+    IF user_role = 'admin' AND _permission != 'security.manage' THEN
+        RETURN TRUE;
+    END IF;
 
- SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-BEGIN;
-
-    -- Create notification for all admins;
-
-    INSERT INTO public.admin_notifications (user_id, title, message, type, metadata);
-
-    SELECT ;
-
-        ur.user_id,;
-
-        'DUPLICATE INVOICE DETECTED',;
-
-        'Collision detected for invoice ' || NEW.invoice_no || '. Security event logged.',;
-
-        'security',;
-
-        jsonb_build_object(;
-
-            'invoice_no', NEW.invoice_no,;
-
-            'collision_id', NEW.id,;
-
-            'timestamp', NEW.detected_at;
-
-        );
-
-    FROM public.user_roles ur;
-
-    WHERE ur.role IN ('admin', 'user'); ;
-
-    ;
-
-    RETURN NEW;;
-
-END;;
-
+    RETURN FALSE; -- Default
+END;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.generate_next_invoice_no();
+-- private.has_role(uuid,app_role)
+CREATE OR REPLACE FUNCTION private.has_role(_user_id uuid, _role app_role)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public', 'private'
+AS $function$
+  SELECT EXISTS (
+    SELECT 1
+    from public.user_roles
+    where user_id = _user_id
+      and role = _role
+  )
+$function$;
 
- RETURNS text;
+-- alert_on_invoice_collision()
+CREATE OR REPLACE FUNCTION public.alert_on_invoice_collision()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+    -- Create notification for all admins
+    INSERT INTO public.admin_notifications (user_id, title, message, type, metadata)
+    SELECT 
+        ur.user_id,
+        'DUPLICATE INVOICE DETECTED',
+        'Collision detected for invoice ' || NEW.invoice_no || '. Security event logged.',
+        'security',
+        jsonb_build_object(
+            'invoice_no', NEW.invoice_no,
+            'collision_id', NEW.id,
+            'timestamp', NEW.detected_at
+        )
+    FROM public.user_roles ur
+    WHERE ur.role IN ('admin', 'user'); 
+    
+    RETURN NEW;
+END;
+$function$;
 
- LANGUAGE plpgsql;
+-- generate_next_invoice_no()
+CREATE OR REPLACE FUNCTION public.generate_next_invoice_no()
+ RETURNS text
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+    v_prefix TEXT;
+    v_num INTEGER;
+    v_invoice_no TEXT;
+    v_exists BOOLEAN;
+BEGIN
+    -- Acquire an exclusive row-level lock on the settings row.
+    -- This forces concurrent calls to wait in line, ensuring each receives a unique number.
+    SELECT prefix, GREATEST(start_number, current_number + 1)
+    INTO v_prefix, v_num
+    FROM public.invoice_settings
+    WHERE id = 'default'
+    FOR UPDATE;
 
- SECURITY DEFINER;
+    LOOP
+        -- Format example: CZP-01, CZP-02
+        v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');
+        
+        -- Check both active and soft-deleted orders to prevent overlap.
+        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no)
+        INTO v_exists;
+        
+        EXIT WHEN NOT v_exists;
+        v_num := v_num + 1;
+    END LOOP;
 
- SET search_path TO 'public';
-
-AS $function$;
-
-DECLARE;
-
-    v_prefix TEXT;;
-
-    v_num INTEGER;;
-
-    v_invoice_no TEXT;;
-
-    v_exists BOOLEAN;;
-
-BEGIN;
-
-    -- Acquire an exclusive row-level lock on the settings row.;
-
-    -- This forces concurrent calls to wait in line, ensuring each receives a unique number.;
-
-    SELECT prefix, GREATEST(start_number, current_number + 1);
-
-    INTO v_prefix, v_num;
-
-    FROM public.invoice_settings;
-
+    -- Persist the incremented number.
+    UPDATE public.invoice_settings
+    SET current_number = v_num,
+        updated_at = NOW()
     WHERE id = 'default';
 
-    FOR UPDATE;;
-
-    LOOP;
-
-        -- Format example: CZP-01, CZP-02;
-
-        v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');;
-
-        ;
-
-        -- Check both active and soft-deleted orders to prevent overlap.;
-
-        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no);
-
-        INTO v_exists;;
-
-        ;
-
-        EXIT WHEN NOT v_exists;;
-
-        v_num := v_num + 1;;
-
-    END LOOP;;
-
-    -- Persist the incremented number.;
-
-    UPDATE public.invoice_settings;
-
-    SET current_number = v_num,;
-
-        updated_at = NOW();
-
-    WHERE id = 'default';;
-
-    RETURN v_invoice_no;;
-
-END;;
-
+    RETURN v_invoice_no;
+END;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.generate_next_invoice_no(is_test boolean DEFAULT false);
+-- generate_next_invoice_no(boolean)
+CREATE OR REPLACE FUNCTION public.generate_next_invoice_no(is_test boolean DEFAULT false)
+ RETURNS text
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+DECLARE
+    v_prefix TEXT;
+    v_num INTEGER;
+    v_invoice_no TEXT;
+    v_exists BOOLEAN;
+BEGIN
+    -- Acquire lock and get settings
+    IF is_test THEN
+        SELECT 'TEST', GREATEST(1, current_number + 1)
+        INTO v_prefix, v_num
+        FROM public.stress_test_settings
+        WHERE id = 'default'
+        FOR UPDATE;
+    ELSE
+        SELECT prefix, GREATEST(start_number, current_number + 1)
+        INTO v_prefix, v_num
+        FROM public.invoice_settings
+        WHERE id = 'default'
+        FOR UPDATE;
+    END IF;
 
- RETURNS text;
+    -- Ensure we find a unique invoice number by incrementing until one is available
+    LOOP
+        -- Format logic: 01-09, then 10, 11, 100 etc.
+        IF v_num < 10 THEN
+            v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');
+        ELSE
+            v_invoice_no := v_prefix || '-' || v_num::TEXT;
+        END IF;
+        
+        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no)
+        INTO v_exists;
+        
+        EXIT WHEN NOT v_exists;
+        v_num := v_num + 1;
+    END LOOP;
 
- LANGUAGE plpgsql;
-
- SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-DECLARE;
-
-    v_prefix TEXT;;
-
-    v_num INTEGER;;
-
-    v_invoice_no TEXT;;
-
-    v_exists BOOLEAN;;
-
-BEGIN;
-
-    -- Acquire lock and get settings;
-
-    IF is_test THEN;
-
-        SELECT 'TEST', GREATEST(1, current_number + 1);
-
-        INTO v_prefix, v_num;
-
-        FROM public.stress_test_settings;
-
+    -- Update the sequence record
+    IF is_test THEN
+        UPDATE public.stress_test_settings
+        SET current_number = v_num, updated_at = NOW()
         WHERE id = 'default';
-
-        FOR UPDATE;;
-
-    ELSE;
-
-        SELECT prefix, GREATEST(start_number, current_number + 1);
-
-        INTO v_prefix, v_num;
-
-        FROM public.invoice_settings;
-
+    ELSE
+        UPDATE public.invoice_settings
+        SET current_number = v_num, updated_at = NOW()
         WHERE id = 'default';
+    END IF;
 
-        FOR UPDATE;;
-
-    END IF;;
-
-    -- Ensure we find a unique invoice number by incrementing until one is available;
-
-    LOOP;
-
-        -- Format logic: 01-09, then 10, 11, 100 etc.;
-
-        IF v_num < 10 THEN;
-
-            v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');;
-
-        ELSE;
-
-            v_invoice_no := v_prefix || '-' || v_num::TEXT;;
-
-        END IF;;
-
-        ;
-
-        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no);
-
-        INTO v_exists;;
-
-        ;
-
-        EXIT WHEN NOT v_exists;;
-
-        v_num := v_num + 1;;
-
-    END LOOP;;
-
-    -- Update the sequence record;
-
-    IF is_test THEN;
-
-        UPDATE public.stress_test_settings;
-
-        SET current_number = v_num, updated_at = NOW();
-
-        WHERE id = 'default';;
-
-    ELSE;
-
-        UPDATE public.invoice_settings;
-
-        SET current_number = v_num, updated_at = NOW();
-
-        WHERE id = 'default';;
-
-    END IF;;
-
-    RETURN v_invoice_no;;
-
-END;;
-
+    RETURN v_invoice_no;
+END;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.handle_updated_at();
-
- RETURNS trigger;
-
- LANGUAGE plpgsql;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-begin;
-
-  new.updated_at = now();;
-
-  return new;;
-
-end;;
-
+-- handle_updated_at()
+CREATE OR REPLACE FUNCTION public.handle_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SET search_path TO 'public'
+AS $function$
+begin
+  new.updated_at = now();
+  return new;
+end;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.has_permission(_user_id uuid, _permission text);
-
- RETURNS boolean;
-
- LANGUAGE sql;
-
- STABLE SECURITY DEFINER;
-
- SET search_path TO 'public', 'private';
-
-AS $function$;
-
-  SELECT public.is_super_admin(_user_id) OR EXISTS (;
-
-    SELECT 1 FROM public.user_permissions up;
-
-    JOIN public.profiles p ON p.id = up.user_id;
-
-    WHERE up.user_id = _user_id AND up.permission = _permission AND p.access_status = 'approved';
-
-  );;
-
+-- has_permission(uuid,text)
+CREATE OR REPLACE FUNCTION public.has_permission(_user_id uuid, _permission text)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public', 'private'
+AS $function$
+  SELECT public.is_super_admin(_user_id) OR EXISTS (
+    SELECT 1 FROM public.user_permissions up
+    JOIN public.profiles p ON p.id = up.user_id
+    WHERE up.user_id = _user_id AND up.permission = _permission AND p.access_status = 'approved'
+  );
 $function$;
 
-CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role app_role);
-
- RETURNS boolean;
-
- LANGUAGE sql;
-
- STABLE SECURITY DEFINER;
-
- SET search_path TO 'public', 'private';
-
-AS $function$;
-
-  SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = _role);;
-
+-- has_role(uuid,app_role)
+CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role app_role)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public', 'private'
+AS $function$
+  SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = _role);
 $function$;
 
-CREATE OR REPLACE FUNCTION public.increment_steadfast_count(order_id uuid, invoice_no text);
-
- RETURNS void;
-
- LANGUAGE plpgsql;
-
- SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-BEGIN;
-
-    INSERT INTO public.steadfast_stats (id, successful_submissions_count, last_success_at, last_order_id, last_invoice_no, updated_at);
-
-    VALUES ('00000000-0000-0000-0000-000000000001', 1, NOW(), order_id, invoice_no, NOW());
-
-    ON CONFLICT (id) DO UPDATE SET;
-
-        successful_submissions_count = steadfast_stats.successful_submissions_count + 1,;
-
-        last_success_at = EXCLUDED.last_success_at,;
-
-        last_order_id = EXCLUDED.last_order_id,;
-
-        last_invoice_no = EXCLUDED.last_invoice_no,;
-
-        updated_at = EXCLUDED.updated_at;;
-
-END;;
-
+-- increment_steadfast_count(uuid,text)
+CREATE OR REPLACE FUNCTION public.increment_steadfast_count(order_id uuid, invoice_no text)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+    INSERT INTO public.steadfast_stats (id, successful_submissions_count, last_success_at, last_order_id, last_invoice_no, updated_at)
+    VALUES ('00000000-0000-0000-0000-000000000001', 1, NOW(), order_id, invoice_no, NOW())
+    ON CONFLICT (id) DO UPDATE SET
+        successful_submissions_count = steadfast_stats.successful_submissions_count + 1,
+        last_success_at = EXCLUDED.last_success_at,
+        last_order_id = EXCLUDED.last_order_id,
+        last_invoice_no = EXCLUDED.last_invoice_no,
+        updated_at = EXCLUDED.updated_at;
+END;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.is_staff(_user_id uuid);
-
- RETURNS boolean;
-
- LANGUAGE sql;
-
- STABLE SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-  SELECT EXISTS (;
-
-    SELECT 1 FROM public.user_roles r;
-
-    JOIN public.profiles p ON p.id = r.user_id;
-
-    WHERE r.user_id = _user_id;
-
-      AND r.role IN ('super_admin','admin','manager','staff');
-
-      AND p.access_status = 'approved';
-
-  );;
-
+-- is_staff(uuid)
+CREATE OR REPLACE FUNCTION public.is_staff(_user_id uuid)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT EXISTS (
+    SELECT 1 FROM public.user_roles r
+    JOIN public.profiles p ON p.id = r.user_id
+    WHERE r.user_id = _user_id
+      AND r.role IN ('super_admin','admin','manager','staff')
+      AND p.access_status = 'approved'
+  );
 $function$;
 
-CREATE OR REPLACE FUNCTION public.is_super_admin(_user_id uuid);
-
- RETURNS boolean;
-
- LANGUAGE sql;
-
- STABLE SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-  SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = 'super_admin');;
-
+-- is_super_admin(uuid)
+CREATE OR REPLACE FUNCTION public.is_super_admin(_user_id uuid)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = 'super_admin');
 $function$;
 
-CREATE OR REPLACE FUNCTION public.next_invoice_no();
-
- RETURNS text;
-
- LANGUAGE sql;
-
- SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-  SELECT 'CZP-' || to_char(now(), 'YYMM') || '-' || lpad(nextval('public.invoice_seq')::text, 4, '0');;
-
+-- next_invoice_no()
+CREATE OR REPLACE FUNCTION public.next_invoice_no()
+ RETURNS text
+ LANGUAGE sql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+  SELECT 'CZP-' || to_char(now(), 'YYMM') || '-' || lpad(nextval('public.invoice_seq')::text, 4, '0');
 $function$;
 
-CREATE OR REPLACE FUNCTION public.prevent_profile_privilege_escalation();
+-- prevent_profile_privilege_escalation()
+CREATE OR REPLACE FUNCTION public.prevent_profile_privilege_escalation()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+declare
+  is_privileged boolean;
+begin
+  if auth.uid() is null then
+    return new;
+  end if;
 
- RETURNS trigger;
+  is_privileged := public.has_role(auth.uid(), 'admin'::app_role)
+                or public.has_role(auth.uid(), 'super_admin'::app_role);
 
- LANGUAGE plpgsql;
+  if is_privileged then
+    return new;
+  end if;
 
- SECURITY DEFINER;
+  if tg_op = 'INSERT' then
+    new.access_status := 'pending';
+    new.mfa_required := false;
+    new.approved_by := null;
+    new.approved_at := null;
+    return new;
+  end if;
 
- SET search_path TO 'public';
-
-AS $function$;
-
-declare;
-
-  is_privileged boolean;;
-
-begin;
-
-  if auth.uid() is null then;
-
-    return new;;
-
-  end if;;
-
-  is_privileged := public.has_role(auth.uid(), 'admin'::app_role);
-
-                or public.has_role(auth.uid(), 'super_admin'::app_role);;
-
-  if is_privileged then;
-
-    return new;;
-
-  end if;;
-
-  if tg_op = 'INSERT' then;
-
-    new.access_status := 'pending';;
-
-    new.mfa_required := false;;
-
-    new.approved_by := null;;
-
-    new.approved_at := null;;
-
-    return new;;
-
-  end if;;
-
-  new.access_status := old.access_status;;
-
-  new.mfa_required := old.mfa_required;;
-
-  new.approved_by := old.approved_by;;
-
-  new.approved_at := old.approved_at;;
-
-  return new;;
-
-end;;
-
+  new.access_status := old.access_status;
+  new.mfa_required := old.mfa_required;
+  new.approved_by := old.approved_by;
+  new.approved_at := old.approved_at;
+  return new;
+end;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.touch_updated_at();
-
- RETURNS trigger;
-
- LANGUAGE plpgsql;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-BEGIN;
-
-  NEW.updated_at = now();;
-
-  RETURN NEW;;
-
-END;;
-
+-- touch_updated_at()
+CREATE OR REPLACE FUNCTION public.touch_updated_at()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
 $function$;
 
-CREATE OR REPLACE FUNCTION public.tr_orders_assign_invoice_no();
-
- RETURNS trigger;
-
- LANGUAGE plpgsql;
-
- SECURITY DEFINER;
-
- SET search_path TO 'public';
-
-AS $function$;
-
-BEGIN;
-
-    -- ALWAYS use the generator if the invoice_no is null, empty, or 'AUTO';
-
-    -- This ensures the DB is the source of truth;
-
-    IF NEW.invoice_no IS NULL OR NEW.invoice_no = '' OR NEW.invoice_no = 'AUTO' THEN;
-
-        NEW.invoice_no := public.generate_next_invoice_no(false);;
-
-    END IF;;
-
-    RETURN NEW;;
-
-END;;
-
+-- tr_orders_assign_invoice_no()
+CREATE OR REPLACE FUNCTION public.tr_orders_assign_invoice_no()
+ RETURNS trigger
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$
+BEGIN
+    -- ALWAYS use the generator if the invoice_no is null, empty, or 'AUTO'
+    -- This ensures the DB is the source of truth
+    IF NEW.invoice_no IS NULL OR NEW.invoice_no = '' OR NEW.invoice_no = 'AUTO' THEN
+        NEW.invoice_no := public.generate_next_invoice_no(false);
+    END IF;
+    RETURN NEW;
+END;
 $function$;
 
 -- ---------------- CONSTRAINTS (PK, UNIQUE, CHECK, FK) ----------------
 
 DO $$ BEGIN
   ALTER TABLE public.admin_audit_log ADD CONSTRAINT admin_audit_log_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.admin_notifications ADD CONSTRAINT admin_notifications_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.admin_sessions ADD CONSTRAINT admin_sessions_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.ai_settings ADD CONSTRAINT ai_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.bike_models ADD CONSTRAINT bike_models_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.brands ADD CONSTRAINT brands_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.categories ADD CONSTRAINT categories_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.cities ADD CONSTRAINT cities_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_api_logs ADD CONSTRAINT courier_api_logs_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_credentials ADD CONSTRAINT courier_credentials_pkey PRIMARY KEY (courier_id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_shipments ADD CONSTRAINT courier_shipments_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_tracking_events ADD CONSTRAINT courier_tracking_events_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.couriers ADD CONSTRAINT couriers_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.customer_fraud_marks ADD CONSTRAINT customer_fraud_marks_pkey PRIMARY KEY (phone_number);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.customers ADD CONSTRAINT customers_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.delivery_zones ADD CONSTRAINT delivery_zones_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.flash_sale_products ADD CONSTRAINT flash_sale_products_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.flash_sales ADD CONSTRAINT flash_sales_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.gallery_items ADD CONSTRAINT gallery_items_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.hero_slides ADD CONSTRAINT hero_slides_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.inventory_movements ADD CONSTRAINT inventory_movements_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.invoice_collisions ADD CONSTRAINT invoice_collisions_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.invoice_settings ADD CONSTRAINT invoice_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.leads ADD CONSTRAINT leads_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.login_attempts ADD CONSTRAINT login_attempts_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.mfa_backup_codes ADD CONSTRAINT mfa_backup_codes_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.nav_items ADD CONSTRAINT nav_items_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.not_found_logs ADD CONSTRAINT not_found_logs_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_damages ADD CONSTRAINT order_damages_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_events ADD CONSTRAINT order_events_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_items ADD CONSTRAINT order_items_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_returns ADD CONSTRAINT order_returns_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_stock_deductions ADD CONSTRAINT order_stock_deductions_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.orders ADD CONSTRAINT orders_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.payments ADD CONSTRAINT payments_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.product_360_images ADD CONSTRAINT product_360_images_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.product_colors ADD CONSTRAINT product_colors_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.profiles ADD CONSTRAINT profiles_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.reviews ADD CONSTRAINT reviews_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.section_settings ADD CONSTRAINT section_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.security_events ADD CONSTRAINT security_events_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.site_logos ADD CONSTRAINT site_logos_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.site_settings ADD CONSTRAINT site_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.social_links ADD CONSTRAINT social_links_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.steadfast_stats ADD CONSTRAINT steadfast_stats_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.store_settings ADD CONSTRAINT store_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.stress_test_settings ADD CONSTRAINT stress_test_settings_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.suppliers ADD CONSTRAINT suppliers_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.user_permissions ADD CONSTRAINT user_permissions_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.user_roles ADD CONSTRAINT user_roles_pkey PRIMARY KEY (id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.admin_sessions ADD CONSTRAINT admin_sessions_session_id_key UNIQUE (session_id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.bike_models ADD CONSTRAINT bike_models_slug_key UNIQUE (slug);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.brands ADD CONSTRAINT brands_slug_key UNIQUE (slug);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.categories ADD CONSTRAINT categories_slug_key UNIQUE (slug);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.couriers ADD CONSTRAINT couriers_slug_key UNIQUE (slug);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.customers ADD CONSTRAINT customers_phone_key UNIQUE (phone);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.delivery_zones ADD CONSTRAINT delivery_zones_slug_key UNIQUE (slug);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.flash_sale_products ADD CONSTRAINT flash_sale_products_flash_sale_id_product_id_key UNIQUE (flash_sale_id, product_id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_stock_deductions ADD CONSTRAINT order_stock_deductions_order_item_id_key UNIQUE (order_item_id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.orders ADD CONSTRAINT orders_idempotency_key_key UNIQUE (idempotency_key);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.orders ADD CONSTRAINT orders_invoice_no_key UNIQUE (invoice_no);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.product_colors ADD CONSTRAINT product_colors_product_id_name_key UNIQUE (product_id, name);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.site_logos ADD CONSTRAINT site_logos_category_key UNIQUE (category);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.user_permissions ADD CONSTRAINT user_permissions_user_id_permission_key UNIQUE (user_id, permission);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.user_roles ADD CONSTRAINT user_roles_user_id_role_key UNIQUE (user_id, role);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.ai_settings ADD CONSTRAINT ai_settings_provider_check CHECK ((provider = ANY (ARRAY['gemini'::text, 'openai'::text, 'custom'::text])));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.ai_settings ADD CONSTRAINT single_row CHECK ((id = 'default'::text));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.invoice_settings ADD CONSTRAINT only_one_row CHECK ((id = 'default'::text));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_items ADD CONSTRAINT order_items_quantity_check CHECK ((quantity > 0));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_video_platform_check CHECK ((video_platform = ANY (ARRAY['youtube'::text, 'facebook'::text, 'instagram'::text, 'tiktok'::text])));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.profiles ADD CONSTRAINT profiles_access_status_check CHECK ((access_status = ANY (ARRAY['pending'::text, 'approved'::text, 'suspended'::text, 'revoked'::text])));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.store_settings ADD CONSTRAINT store_settings_single_row CHECK ((id = 'default'::text));
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.admin_notifications ADD CONSTRAINT admin_notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.ai_settings ADD CONSTRAINT ai_settings_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.categories ADD CONSTRAINT categories_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_api_logs ADD CONSTRAINT courier_api_logs_courier_id_fkey FOREIGN KEY (courier_id) REFERENCES couriers(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_api_logs ADD CONSTRAINT courier_api_logs_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_credentials ADD CONSTRAINT courier_credentials_courier_id_fkey FOREIGN KEY (courier_id) REFERENCES couriers(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_shipments ADD CONSTRAINT courier_shipments_courier_id_fkey FOREIGN KEY (courier_id) REFERENCES couriers(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_shipments ADD CONSTRAINT courier_shipments_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_tracking_events ADD CONSTRAINT courier_tracking_events_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.courier_tracking_events ADD CONSTRAINT courier_tracking_events_shipment_id_fkey FOREIGN KEY (shipment_id) REFERENCES courier_shipments(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.customer_fraud_marks ADD CONSTRAINT customer_fraud_marks_marked_by_fkey FOREIGN KEY (marked_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.customers ADD CONSTRAINT customers_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.flash_sale_products ADD CONSTRAINT flash_sale_products_flash_sale_id_fkey FOREIGN KEY (flash_sale_id) REFERENCES flash_sales(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.flash_sale_products ADD CONSTRAINT flash_sale_products_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.hero_slides ADD CONSTRAINT hero_slides_bike_model_id_fkey FOREIGN KEY (bike_model_id) REFERENCES bike_models(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.inventory_movements ADD CONSTRAINT inventory_movements_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.invoice_collisions ADD CONSTRAINT invoice_collisions_existing_order_id_fkey FOREIGN KEY (existing_order_id) REFERENCES orders(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.invoice_settings ADD CONSTRAINT invoice_settings_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.leads ADD CONSTRAINT leads_deleted_by_fkey FOREIGN KEY (deleted_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.not_found_logs ADD CONSTRAINT not_found_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_damages ADD CONSTRAINT order_damages_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_damages ADD CONSTRAINT order_damages_processed_by_fkey FOREIGN KEY (processed_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_damages ADD CONSTRAINT order_damages_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_events ADD CONSTRAINT order_events_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_items ADD CONSTRAINT order_items_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_returns ADD CONSTRAINT order_returns_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_returns ADD CONSTRAINT order_returns_processed_by_fkey FOREIGN KEY (processed_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_returns ADD CONSTRAINT order_returns_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_stock_deductions ADD CONSTRAINT order_stock_deductions_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_stock_deductions ADD CONSTRAINT order_stock_deductions_order_item_id_fkey FOREIGN KEY (order_item_id) REFERENCES order_items(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.order_stock_deductions ADD CONSTRAINT order_stock_deductions_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.orders ADD CONSTRAINT orders_courier_id_fkey FOREIGN KEY (courier_id) REFERENCES couriers(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.payments ADD CONSTRAINT payments_order_id_fkey FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.product_360_images ADD CONSTRAINT product_360_images_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.product_colors ADD CONSTRAINT product_colors_product_id_fkey FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_category_id_fkey FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_supplier_id_fkey FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.site_logos ADD CONSTRAINT site_logos_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES auth.users(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 DO $$ BEGIN
   ALTER TABLE public.steadfast_stats ADD CONSTRAINT steadfast_stats_last_order_id_fkey FOREIGN KEY (last_order_id) REFERENCES orders(id);
-EXCEPTION WHEN duplicate_table THEN NULL WHEN duplicate_object THEN NULL WHEN invalid_table_definition THEN NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
 -- ---------------- INDEXES ----------------
