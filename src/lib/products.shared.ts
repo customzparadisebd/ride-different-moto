@@ -74,6 +74,7 @@ export const productColorInput = z.object({
     .regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a hex colour like #1D3F8F"),
   priceDelta: z.number().finite().min(-1_000_000).max(1_000_000).default(0),
   imageUrl: blankable(600),
+  linkedProductId: z.string().uuid().nullish(),
   isActive: z.boolean().default(true),
   sortOrder: z.number().int().min(0).max(999).default(0),
 });
@@ -87,7 +88,7 @@ export const productColorReorderInput = z.object({
 });
 
 export const PRODUCT_COLOR_COLUMNS =
-  "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
+  "id, product_id, name, swatch, price_delta, image_url, linked_product_id, is_active, sort_order";
 
 // PRODUCT 360 VIEWER (admin contracts)
 // Purpose: Manage 360° image sequences per product.
@@ -123,6 +124,7 @@ export function productColorToRow(data: ReturnType<typeof productColorInput.pars
     swatch: data.swatch,
     price_delta: data.priceDelta,
     image_url: data.imageUrl || null,
+    linked_product_id: data.linkedProductId || null,
     is_active: data.isActive,
     sort_order: data.sortOrder,
   };

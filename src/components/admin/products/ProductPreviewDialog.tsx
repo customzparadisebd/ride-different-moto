@@ -68,6 +68,9 @@ export function ProductPreviewDialog({ value, productId, onClose }: ProductPrevi
       swatch: c.swatch,
       priceDelta: Number(c.price_delta),
       image: c.image_url,
+      linkedProductId: c.linked_product_id ?? null,
+      linkedProductSlug: null,
+
     })),
     has360View: value.has360View,
     product360Images: (images360Query.data?.rows ?? []).map((img: any) => img.image_url),

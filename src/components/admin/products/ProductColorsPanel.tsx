@@ -16,11 +16,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatBDT } from "@/lib/format";
+import { ProductImageUpload } from "@/components/admin/products/ProductImageUpload";
 import {
   deleteProductColor,
   listProductColors,
   reorderProductColors,
   saveProductColor,
+  listProducts,
 } from "@/lib/products.functions";
 
 type ColorRow = {
@@ -29,6 +31,7 @@ type ColorRow = {
   swatch: string;
   price_delta: number | string;
   image_url: string | null;
+  linked_product_id: string | null;
   is_active: boolean;
   sort_order: number;
 };
@@ -39,6 +42,7 @@ type Draft = {
   swatch: string;
   priceDelta: string;
   imageUrl: string;
+  linkedProductId: string;
   isActive: boolean;
 };
 
@@ -47,6 +51,7 @@ const emptyDraft: Draft = {
   swatch: "#c62828",
   priceDelta: "0",
   imageUrl: "",
+  linkedProductId: "",
   isActive: true,
 };
 
@@ -68,7 +73,18 @@ export function ProductColorsPanel({
   const save = useServerFn(saveProductColor);
   const remove = useServerFn(deleteProductColor);
   const reorder = useServerFn(reorderProductColors);
+  const fetchProducts = useServerFn(listProducts);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
+
+  const productsQuery = useQuery({
+    queryKey: ["admin-color-link-products"],
+    queryFn: () => fetchProducts({ data: { page: 1, pageSize: 500, activeOnly: true } as never }),
+    staleTime: 60_000,
+  });
+  const productOptions = ((productsQuery.data?.rows ?? []) as any[])
+    .filter((row) => row.id !== productId)
+    .map((row) => ({ id: String(row.id), name: String(row.name) }));
+  const productNameById = new Map(productOptions.map((row) => [row.id, row.name]));
 
   const colorsQuery = useQuery({
     queryKey: ["admin-product-colors", productId],
@@ -110,6 +126,7 @@ export function ProductColorsPanel({
         swatch: draft.swatch,
         priceDelta: Number(draft.priceDelta) || 0,
         imageUrl: draft.imageUrl.trim(),
+        linkedProductId: draft.linkedProductId || null,
         isActive: draft.isActive,
         sortOrder: rows.length,
       } as never,
@@ -152,6 +169,7 @@ export function ProductColorsPanel({
               <th className="py-2">Colour</th>
               <th className="py-2 text-right">Price difference</th>
               <th className="py-2 text-right">Customer pays</th>
+              <th className="py-2">Linked product</th>
               <th className="py-2">Status</th>
               <th className="py-2 text-right">Actions</th>
             </tr>
@@ -159,14 +177,14 @@ export function ProductColorsPanel({
           <tbody>
             {colorsQuery.isLoading ? (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-muted-foreground">
+                <td colSpan={6} className="py-4 text-center text-muted-foreground">
                   Loading colours…
                 </td>
               </tr>
             ) : null}
             {!colorsQuery.isLoading && rows.length === 0 ? (
               <tr>
-                <td colSpan={5} className="py-4 text-center text-muted-foreground">
+                <td colSpan={6} className="py-4 text-center text-muted-foreground">
                   No colour options yet — this product is sold in a single finish.
                 </td>
               </tr>
@@ -186,6 +204,11 @@ export function ProductColorsPanel({
                 <td className="py-2 text-right">{formatBDT(Number(row.price_delta))}</td>
                 <td className="py-2 text-right font-semibold">
                   {formatBDT(Math.max(0, basePrice + Number(row.price_delta)))}
+                </td>
+                <td className="py-2 text-xs text-muted-foreground">
+                  {row.linked_product_id
+                    ? (productNameById.get(row.linked_product_id) ?? "Linked product")
+                    : "— this product"}
                 </td>
                 <td className="py-2">{row.is_active ? "Active" : "Inactive"}</td>
                 <td className="py-2">
@@ -223,6 +246,7 @@ export function ProductColorsPanel({
                             swatch: row.swatch,
                             priceDelta: Number(row.price_delta),
                             imageUrl: row.image_url ?? "",
+                            linkedProductId: row.linked_product_id ?? null,
                             isActive: !row.is_active,
                             sortOrder: row.sort_order,
                           } as never,
@@ -242,6 +266,7 @@ export function ProductColorsPanel({
                           swatch: row.swatch,
                           priceDelta: String(Number(row.price_delta)),
                           imageUrl: row.image_url ?? "",
+                          linkedProductId: row.linked_product_id ?? "",
                           isActive: row.is_active,
                         })
                       }
@@ -314,12 +339,32 @@ export function ProductColorsPanel({
           </div>
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">
-              Colour image URL (optional)
+              Link to another product (optional)
             </Label>
-            <Input
-              className="mt-1.5 h-11"
+            <select
+              className="mt-1.5 h-11 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              value={draft.linkedProductId}
+              onChange={(event) => setDraft({ ...draft, linkedProductId: event.target.value })}
+            >
+              <option value="">Same product (show this colour's image)</option>
+              {productOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              When set, customers picking this colour are taken to that product page.
+            </p>
+          </div>
+          <div className="sm:col-span-2">
+            <ProductImageUpload
+              label="Colour image"
+              guideline="Shown in the gallery when the customer picks this colour."
               value={draft.imageUrl}
-              onChange={(event) => setDraft({ ...draft, imageUrl: event.target.value })}
+              onChange={(value) =>
+                setDraft({ ...draft, imageUrl: Array.isArray(value) ? (value[0] ?? "") : value })
+              }
             />
           </div>
           <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
