@@ -1,15 +1,19 @@
 [build]
   command = "npm run build"
-  publish = "dist/client"
+  # nitro's netlify preset writes static assets to dist/ and the SSR function to
+  # .netlify/functions-internal/server. Netlify picks the function up automatically.
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
   NPM_FLAGS = "--legacy-peer-deps"
+  # Read by vite.config.ts -> nitro preset. Without this the build emits a
+  # Cloudflare Worker and Netlify serves only static files (SSR + /ad + server
+  # functions all 404).
+  DEPLOY_PRESET = "netlify"
 
-# TanStack Start ships a server bundle; Netlify serves it through the
-# Nitro-generated function. Static client assets come from publish above.
-[functions]
-  node_bundler = "esbuild"
+# No [[redirects]] block is needed: the SSR function is mounted at /* with
+# preferStatic, so static assets win and every other path is server-rendered.
 
 [[headers]]
   for = "/*"
