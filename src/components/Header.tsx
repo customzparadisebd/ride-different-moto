@@ -166,7 +166,7 @@ export function Header() {
                 className="w-[300px] border-l border-border bg-background p-0 [&>button]:hidden"
               >
                 <div className="flex h-full flex-col">
-                  <div className="flex items-center justify-between gap-3 border-b border-border p-5 pt-safe">
+                  <div className="flex items-center justify-between gap-3 border-b border-border p-4 pt-safe">
                     <SheetTitle asChild>
                       <span className="sr-only">Menu</span>
                     </SheetTitle>
@@ -175,7 +175,7 @@ export function Header() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 shrink-0 rounded-full bg-secondary/50 [&_svg]:size-5"
+                        className="h-12 w-12 shrink-0 rounded-full bg-secondary text-foreground transition-all hover:bg-primary hover:text-primary-foreground [&_svg]:size-6"
                         aria-label="Close menu"
                       >
                         <X />
