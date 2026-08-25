@@ -387,7 +387,7 @@ function AdminSettings() {
                       Control visibility and product limits for all dynamic storefront sections.
                     </p>
                   </div>
-                  <SectionSettingsPanel />
+                  <SectionSettingsPanel canManage={canManage} />
                 </div>
               )}
 
@@ -405,7 +405,7 @@ function AdminSettings() {
                       Managed AI tools for order extraction and automated processing.
                     </p>
                   </div>
-                  <AISettingsPanel />
+                  <AISettingsPanel canManage={accessQuery.data?.permissions.includes("api.manage") ?? false} />
                 </div>
               )}
               {/* TAB: PRODUCT ORDER */}

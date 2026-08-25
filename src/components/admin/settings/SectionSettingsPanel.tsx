@@ -20,7 +20,7 @@ import { SectionPreviewDialog } from "./SectionPreviewDialog";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
-export function SectionSettingsPanel() {
+export function SectionSettingsPanel({ canManage = true }: { canManage?: boolean }) {
   const queryClient = useQueryClient();
   const fetchSettings = useServerFn(getSectionSettings);
   const updateSettingFn = useServerFn(saveSectionSetting);
@@ -78,6 +78,7 @@ export function SectionSettingsPanel() {
           <SectionCard
             key={section.id}
             section={section}
+            canManage={canManage}
             onSave={(data) => mutation.mutate(data)}
             isSaving={mutation.isPending && mutation.variables?.id === section.id}
           />
@@ -91,7 +92,9 @@ function SectionCard({
   section,
   onSave,
   isSaving,
+  canManage = true,
 }: {
+  canManage?: boolean;
   section: SectionSetting;
   onSave: (data: SectionSetting) => void;
   isSaving: boolean;
@@ -181,7 +184,7 @@ function SectionCard({
             </Button>
             <Button
               size="sm"
-              disabled={!hasChanges || isSaving}
+              disabled={!canManage || !hasChanges || isSaving}
               onClick={() => onSave(formData)}
               className="shadow-3d-primary active:translate-y-[2px] transition-all"
             >
