@@ -316,13 +316,13 @@ ON CONFLICT DO NOTHING;
 
 -- public.customer_fraud_marks: 1 row(s)
 INSERT INTO public.customer_fraud_marks (phone_number, mark_type, label, note, marked_at, marked_by, marked_by_label, updated_at) VALUES
-  ('01365440000', 'fraud', '100', 'nothing', '2026-08-14T05:48:57.542812+00:00', 'fa99f95e-092e-42c5-9b64-0b1c3a1dacee', 'Daddy Rixon', '2026-08-14T05:48:57.476+00:00')
+  ('01365440000', 'fraud', '100', 'nothing', '2026-08-14T05:48:57.542812+00:00', NULL, 'Daddy Rixon', '2026-08-14T05:48:57.476+00:00')
 ON CONFLICT DO NOTHING;
 
 -- public.customers: 2 row(s)
 INSERT INTO public.customers (id, name, phone, alt_phone, email, address, area, district, notes, tags, is_favorite, is_blacklisted, is_fraud, total_orders, lifetime_value, created_at, updated_at, deleted_at, deleted_by, delete_reason) VALUES
   ('5359706b-1f06-4aac-8bdf-dd6f030771ec', 'Rafi', '01305231011', NULL, NULL, 'Uttara sector 10', 'Dhaka Uttara sector 10', NULL, NULL, ARRAY[]::text[], false, false, false, 1, 2270.0, '2026-08-09T13:16:05.530507+00:00', '2026-08-10T07:54:34.240077+00:00', NULL, NULL, NULL),
-  ('76b5d1b2-3bd5-4f31-a941-be6a6b128732', 'fsd', '01365440000', NULL, NULL, 'gfgkjkfjkjk', 'Dhaka Uttara sector 10', NULL, NULL, ARRAY[]::text[], false, false, false, 1, 7370.0, '2026-08-10T06:49:17.870203+00:00', '2026-08-15T07:45:01.919305+00:00', '2026-08-15T07:45:01.782+00:00', '5778eed7-4c59-4ccb-9c68-055014db40f3', NULL)
+  ('76b5d1b2-3bd5-4f31-a941-be6a6b128732', 'fsd', '01365440000', NULL, NULL, 'gfgkjkfjkjk', 'Dhaka Uttara sector 10', NULL, NULL, ARRAY[]::text[], false, false, false, 1, 7370.0, '2026-08-10T06:49:17.870203+00:00', '2026-08-15T07:45:01.919305+00:00', '2026-08-15T07:45:01.782+00:00', NULL, NULL)
 ON CONFLICT DO NOTHING;
 
 -- public.delivery_zones: 3 row(s)
