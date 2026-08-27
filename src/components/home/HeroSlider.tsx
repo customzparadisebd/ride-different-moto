@@ -183,7 +183,7 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
               aria-selected={selected === index}
               aria-label={`Show ${slide.bikeName || 'Slide ' + (index + 1)}`}
               onClick={() => {
-                setPaused(true);
+                pauseThenResume();
                 embla?.scrollTo(index);
               }}
               className={cn(
