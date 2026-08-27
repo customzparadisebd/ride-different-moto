@@ -143,7 +143,7 @@ export function OrderFilterBar({
   isLoading?: boolean;
   staff?: { id: string; label: string }[];
   couriers?: string[];
-  counts?: Record<string, number>;
+  counts?: Record<string, number> | undefined;
 }) {
   const [open, setOpen] = useState(false);
   const set = (field: keyof OrderFilters) => (next: string) =>
