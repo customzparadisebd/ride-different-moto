@@ -68,6 +68,61 @@ const ORDER_SOURCES = [
   { value: "page", label: "Page" },
 ];
 
+/** Subtle, professional accent colours for each status pill (visual only). */
+const STATUS_TABS: { value: string; label: string; accent: string }[] = [
+  { value: "all", label: "All", accent: "" },
+  {
+    value: "confirmed",
+    label: "Confirmed",
+    accent: "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    value: "pending",
+    label: "Pending",
+    accent: "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+  },
+  {
+    value: "processing",
+    label: "Processing",
+    accent: "border-sky-500/30 bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  },
+  {
+    value: "shipped",
+    label: "Shipped",
+    accent: "border-violet-500/30 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+  },
+  {
+    value: "delivered",
+    label: "Delivered",
+    accent: "border-teal-500/30 bg-teal-500/10 text-teal-600 dark:text-teal-400",
+  },
+  {
+    value: "completed",
+    label: "Completed",
+    accent: "border-green-600/30 bg-green-600/10 text-green-700 dark:text-green-400",
+  },
+  {
+    value: "cancelled",
+    label: "Cancelled",
+    accent: "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400",
+  },
+  {
+    value: "returned",
+    label: "Returned",
+    accent: "border-orange-700/30 bg-orange-700/10 text-orange-700 dark:text-orange-400",
+  },
+  {
+    value: "new",
+    label: "New",
+    accent: "border-indigo-500/30 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
+  },
+  {
+    value: "duplicate",
+    label: "Duplicate",
+    accent: "border-pink-500/30 bg-pink-500/10 text-pink-600 dark:text-pink-400",
+  },
+];
+
 /** Filter bar for the admin order list. Values are applied server-side. */
 export function OrderFilterBar({
   value,
@@ -78,6 +133,7 @@ export function OrderFilterBar({
   isLoading,
   staff = [],
   couriers = [],
+  counts,
 }: {
   value: OrderFilters;
   onChange: (next: OrderFilters) => void;
@@ -87,6 +143,7 @@ export function OrderFilterBar({
   isLoading?: boolean;
   staff?: { id: string; label: string }[];
   couriers?: string[];
+  counts?: Record<string, number>;
 }) {
   const [open, setOpen] = useState(false);
   const set = (field: keyof OrderFilters) => (next: string) =>
@@ -100,64 +157,67 @@ export function OrderFilterBar({
     { value: "today_shift", label: "Today 8AM - 8PM" },
   ];
 
-
   return (
-    <div className="mt-3 flex flex-col gap-2 rounded-xl border border-border bg-card p-3 shadow-sm">
-      {/* QUICK FILTERS */}
-      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+    <div className="mt-3 flex flex-col gap-3 rounded-xl border border-border bg-card p-3.5 shadow-sm">
+      {/* STATUS TABS — modern pills with live counts */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+        <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Status Tabs:
         </span>
-        {[
-          { value: "all", label: "All" },
-          { value: "confirmed", label: "Confirmed" },
-          { value: "pending", label: "Pending" },
-          { value: "processing", label: "Processing" },
-          { value: "shipped", label: "Shipped" },
-          { value: "delivered", label: "Delivered" },
-          { value: "completed", label: "Completed" },
-          { value: "cancelled", label: "Cancelled" },
-          { value: "returned", label: "Returned" },
-          { value: "new", label: "New" },
-          { value: "duplicate", label: "Duplicate" },
-        ].map((tab) => (
-          <Button
-            key={tab.value}
-            variant={activeTab === tab.value ? "red" : "steel"}
-            size="sm"
-            className="h-7 px-2.5 text-[10px] font-bold uppercase"
-            onClick={() => onTabChange?.(tab.value as any)}
-          >
-            {tab.label}
-          </Button>
-        ))}
+        {STATUS_TABS.map((tab) => {
+          const active = activeTab === tab.value;
+          const count = counts?.[tab.value] ?? 0;
+          return (
+            <button
+              key={tab.value}
+              type="button"
+              onClick={() => onTabChange?.(tab.value as any)}
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide transition-colors ${
+                active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : `${tab.accent || "border-border bg-muted/40 text-muted-foreground"} hover:brightness-110`
+              }`}
+            >
+              <span>{tab.label}</span>
+              <span
+                className={`rounded-full px-1.5 py-[1px] text-[10px] font-bold tabular-nums ${
+                  active ? "bg-primary-foreground/20 text-primary-foreground" : "bg-background/70"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
-      <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border/50">
-        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mr-2">
+      {/* DATE FILTERS */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-3">
+        <span className="mr-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
           Date Filters:
         </span>
         {QUICK_FILTERS.map((q) => (
-          <Button
+          <button
             key={q.value}
-            variant={activeTab === q.value ? "red" : "steel"}
-            size="sm"
-            className="h-7 px-2.5 text-[10px] font-bold uppercase"
+            type="button"
             onClick={() => onTabChange?.(q.value as any)}
+            className={`rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide transition-colors ${
+              activeTab === q.value
+                ? "border-primary bg-primary text-primary-foreground"
+                : "border-border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground"
+            }`}
           >
             {q.label}
-          </Button>
+          </button>
         ))}
-        <Button
-          variant="steel"
-          size="sm"
-          className="h-7 px-2.5 text-[10px] font-bold uppercase ml-auto"
+        <button
+          type="button"
           onClick={onReset}
+          className="ml-auto rounded-full border border-border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
         >
           Reset All
-        </Button>
+        </button>
       </div>
-
 
       <div className="flex flex-wrap items-center gap-2">
         {/* SEARCH AREA */}
@@ -167,7 +227,7 @@ export function OrderFilterBar({
             value={value.search}
             onChange={(e) => set("search")(e.target.value)}
             placeholder="Ex: name, number, invoice"
-            className="h-9 pl-9 text-sm"
+            className="h-10 rounded-full border-border/80 pl-9 text-sm shadow-sm transition-colors focus-visible:border-primary/60"
             aria-label="Search orders"
           />
         </div>
@@ -178,7 +238,7 @@ export function OrderFilterBar({
             onChange={set("sortDir")}
             placeholder="Sort"
             allowEmpty={false}
-            className="h-9 w-[120px]"
+            className="h-10 w-[130px] rounded-full px-4"
           >
             <option value="desc">Latest first</option>
             <option value="asc">Oldest first</option>
@@ -188,7 +248,7 @@ export function OrderFilterBar({
             type="button"
             variant={open ? "red" : "secondary"}
             size="sm"
-            className="h-9 border border-border"
+            className="h-10 rounded-full border border-border px-4"
             onClick={() => setOpen((current) => !current)}
           >
             <SlidersHorizontal className="mr-2 size-3.5" />
@@ -196,6 +256,7 @@ export function OrderFilterBar({
           </Button>
         </div>
       </div>
+
 
 
       {/* ADVANCED FILTERS */}
