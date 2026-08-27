@@ -10,21 +10,27 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useSiteLogos } from "@/hooks/use-site-logos";
 
 import {
-  ClipboardList,
+  Activity,
+  BadgePercent,
+  FileText,
+  Flame,
+  Gauge,
+  Images,
+  KeyRound,
   LayoutDashboard,
+  MessageSquare,
   Package,
+  Receipt,
   RotateCcw,
   ScrollText,
   Settings,
   ShieldCheck,
+  Sparkles,
+  Star,
+  Trash2,
   Truck,
   Users,
   UsersRound,
-  MessageSquare,
-  Star,
-  Activity,
-  KeyRound,
-  Flame,
 } from "lucide-react";
 
 
@@ -53,13 +59,13 @@ type NavItem = {
 };
 
 const OPERATIONS: NavItem[] = [
-  { to: "/ad", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/ad/orders", label: "Orders", icon: ClipboardList, permission: PERMISSIONS.ordersView },
+  { to: "/ad", label: "Dashboard", icon: Gauge, exact: true },
+  { to: "/ad/orders", label: "Orders", icon: Receipt, permission: PERMISSIONS.ordersView },
   { to: "/ad/products", label: "Products", icon: Package, permission: PERMISSIONS.ordersView },
   {
     to: "/ad/featured",
     label: "Featured & Deals",
-    icon: LayoutDashboard,
+    icon: BadgePercent,
     permission: PERMISSIONS.productsManage,
   },
   {
@@ -72,7 +78,7 @@ const OPERATIONS: NavItem[] = [
     to: "/ad/hero",
 
     label: "Hero Slider",
-    icon: LayoutDashboard,
+    icon: Images,
     permission: PERMISSIONS.productsManage,
   },
 
@@ -83,7 +89,7 @@ const OPERATIONS: NavItem[] = [
   {
     to: "/ad/recycle-bin",
     label: "Recycle Bin",
-    icon: RotateCcw,
+    icon: Trash2,
     permission: PERMISSIONS.ordersView,
   },
 ];
@@ -100,7 +106,7 @@ const ADMINISTRATION: NavItem[] = [
   {
     to: "/ad/settings/invoice",
     label: "Invoice settings",
-    icon: ScrollText,
+    icon: FileText,
     permission: PERMISSIONS.ordersView,
   },
   { to: "/ad/security", label: "Security", icon: ShieldCheck },
@@ -166,7 +172,7 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
                 <SidebarMenuItem key={item.to} className="focus-within:ring-2 focus-within:ring-primary rounded-md focus-within:ring-offset-2">
                   <SidebarMenuButton asChild isActive={isActive(item)} tooltip={item.label}>
                   <Link to={item.to}>
-                    <item.icon className="h-4 w-4" />
+                    <item.icon className="h-4 w-4" strokeWidth={1.75} />
                     <span>{item.label}</span>
                   </Link>
                 </SidebarMenuButton>
