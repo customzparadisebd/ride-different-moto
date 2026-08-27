@@ -75,15 +75,18 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = time.toLocaleString("en-US", {
+  const formattedDate = time.toLocaleDateString("en-US", {
+    timeZone: "Asia/Dhaka",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const formattedClock = time.toLocaleTimeString("en-US", {
     timeZone: "Asia/Dhaka",
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
   });
 
   const handleSignOut = async () => {
