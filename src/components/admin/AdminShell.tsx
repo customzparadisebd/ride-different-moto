@@ -13,7 +13,16 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
-import { Moon, Sun, Clock, AlertCircle, ShieldCheck, AlertTriangle } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Clock,
+  AlertCircle,
+  ShieldCheck,
+  AlertTriangle,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
