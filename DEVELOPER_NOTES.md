@@ -77,3 +77,9 @@ authoritative; `supabase/exports/` is marked superseded.
 Next steps (owner, outside Lovable): create the Supabase project, run steps 1-4,
 create auth users + re-enrol MFA, create the six storage buckets, set Netlify env
 vars including `SUPABASE_SERVICE_ROLE_KEY`.
+
+## 2026-08-27 — Orders Recycle Bin fix
+- Bulk "Recycle Bin" action on /ad/orders now soft-deletes (bulkRecycleOrders) instead of only setting status=cancelled, so orders appear in the Recycle Bin.
+- Permanent delete now runs through service-role hardDeleteOrders() (orders has no staff DELETE policy) and removes dependent rows (items, events, payments, courier/stock records) first.
+- Permanent delete allowed for Admin + Super Admin; per-order confirm by invoice no, plus "Empty orders bin" with typed DELETE. All actions audited.
+- Next: consider same admin-level purge for products/customers if requested.
