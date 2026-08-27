@@ -197,7 +197,34 @@ function LogoItem({
                   <span className="font-bold text-green-500 uppercase">Required (PNG/WebP)</span>
                 </div>
               )}
+              {rec.recommended_size_kb && (
+                <div className="text-[10px]">
+                  <span className="text-muted-foreground block uppercase font-medium">File Size</span>
+                  <span className="font-bold">
+                    Under {rec.recommended_size_kb} KB
+                    <span className="font-medium text-muted-foreground"> (max {LOGO_MAX_SIZE_KB} KB)</span>
+                  </span>
+                </div>
+              )}
             </div>
+            <p className="text-[10px] font-medium text-muted-foreground">
+              Tip: save as WebP or optimised PNG to keep pages loading fast.
+            </p>
+            {selectedFile && (
+              <p
+                className={cn(
+                  "text-[10px] font-bold",
+                  rec.recommended_size_kb && selectedFile.kb > rec.recommended_size_kb
+                    ? "text-yellow-500"
+                    : "text-green-500",
+                )}
+              >
+                Selected: {selectedFile.name} — {selectedFile.kb} KB
+                {rec.recommended_size_kb && selectedFile.kb > rec.recommended_size_kb
+                  ? ` (larger than the recommended ${rec.recommended_size_kb} KB — it may slow loading)`
+                  : " (good size)"}
+              </p>
+            )}
           </div>
         </div>
 
