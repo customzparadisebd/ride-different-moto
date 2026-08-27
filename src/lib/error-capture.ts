@@ -52,8 +52,21 @@ function isErrorLike(value: unknown): value is Error {
 // Wrap console.error so errors logged by any layer — including h3's internal
 // unhandled-error logging, which this file cannot hook directly — are both
 // recorded for consumeLastCapturedError and expanded before serialization.
+// A browser that navigates away / reloads mid-request closes the socket and
+// Node's http server emits `Error: aborted` from abortIncoming(). Nobody is
+// listening on that connection, so it is noise — never an app failure. Drop it
+// so it neither logs nor triggers the runtime-error / blank-screen overlay.
+function isClientAbort(value: unknown): boolean {
+  if (!isErrorLike(value)) return false;
+  const code = (value as { code?: unknown }).code;
+  if (code === "ECONNRESET" || code === "ECONNABORTED") return true;
+  if (value.name === "AbortError") return true;
+  return value.message === "aborted" || value.message === "request aborted";
+}
+
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
+  if (args.some(isClientAbort)) return;
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
@@ -63,11 +76,18 @@ console.error = (...args: unknown[]) => {
 };
 
 if (typeof globalThis.addEventListener === "function") {
-  globalThis.addEventListener("error", (event) => record((event as ErrorEvent).error ?? event));
-  globalThis.addEventListener("unhandledrejection", (event) =>
-    record((event as PromiseRejectionEvent).reason),
-  );
+  globalThis.addEventListener("error", (event) => {
+    const error = (event as ErrorEvent).error ?? event;
+    if (isClientAbort(error)) return;
+    record(error);
+  });
+  globalThis.addEventListener("unhandledrejection", (event) => {
+    const reason = (event as PromiseRejectionEvent).reason;
+    if (isClientAbort(reason)) return;
+    record(reason);
+  });
 }
+
 
 export function consumeLastCapturedError(): unknown {
   if (!lastCapturedError) return undefined;
