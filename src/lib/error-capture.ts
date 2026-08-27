@@ -56,7 +56,7 @@ function isErrorLike(value: unknown): value is Error {
 // Node's http server emits `Error: aborted` from abortIncoming(). Nobody is
 // listening on that connection, so it is noise — never an app failure. Drop it
 // so it neither logs nor triggers the runtime-error / blank-screen overlay.
-function isClientAbort(value: unknown): boolean {
+export function isClientAbort(value: unknown): boolean {
   if (!isErrorLike(value)) return false;
   const code = (value as { code?: unknown }).code;
   if (code === "ECONNRESET" || code === "ECONNABORTED") return true;
@@ -66,7 +66,13 @@ function isClientAbort(value: unknown): boolean {
 
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
-  if (args.some(isClientAbort)) return;
+  // Still record it (server.ts turns a captured abort into a silent 499) but
+  // never print: it is not an app failure.
+  if (args.some(isClientAbort)) {
+    const aborted = args.find(isClientAbort);
+    record(aborted);
+    return;
+  }
   const expanded = args.map((arg) => {
     if (!isErrorLike(arg)) return arg;
     record(arg);
@@ -77,14 +83,10 @@ console.error = (...args: unknown[]) => {
 
 if (typeof globalThis.addEventListener === "function") {
   globalThis.addEventListener("error", (event) => {
-    const error = (event as ErrorEvent).error ?? event;
-    if (isClientAbort(error)) return;
-    record(error);
+    record((event as ErrorEvent).error ?? event);
   });
   globalThis.addEventListener("unhandledrejection", (event) => {
-    const reason = (event as PromiseRejectionEvent).reason;
-    if (isClientAbort(reason)) return;
-    record(reason);
+    record((event as PromiseRejectionEvent).reason);
   });
 }
 
