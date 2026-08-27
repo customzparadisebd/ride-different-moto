@@ -51,6 +51,14 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      // Client went away mid-request (reload/navigation): not an app error.
+      const message =
+        error != null && typeof error === "object" && typeof (error as Error).message === "string"
+          ? (error as Error).message
+          : "";
+      if (message.includes("aborted") || (error as { code?: string })?.code === "ECONNRESET") {
+        return new Response(null, { status: 499 });
+      }
       console.error(error);
       return new Response(renderErrorPage(), {
         status: 500,
