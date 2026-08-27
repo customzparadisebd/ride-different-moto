@@ -16,32 +16,6 @@ import {
 
 type Client = { from: (t: string) => any };
 
-/**
- * Resolves the invoice number the NEXT order will actually receive.
- * Mirrors the database generator: start from GREATEST(start, current+1)
- * and skip any serial already used by an order (including soft-deleted).
- */
-async function resolveNextInvoiceNo(
-  supabase: Client,
-  prefix: string,
-  candidate: number,
-): Promise<{ nextNumber: number; nextInvoiceNo: string }> {
-  const { data } = await supabase
-    .from("orders")
-    .select("invoice_no")
-    .like("invoice_no", `${prefix}-%`);
-
-  const used = new Set<string>(
-    ((data ?? []) as { invoice_no: string | null }[])
-      .map((r) => r.invoice_no)
-      .filter((v): v is string => Boolean(v)),
-  );
-
-  let num = Math.max(1, candidate);
-  while (used.has(formatInvoiceNo(prefix, num))) num += 1;
-  return { nextNumber: num, nextInvoiceNo: formatInvoiceNo(prefix, num) };
-}
-
 async function readState(supabase: Client): Promise<InvoiceSettingsState> {
   const { data } = await supabase
     .from("invoice_settings")
@@ -53,11 +27,8 @@ async function readState(supabase: Client): Promise<InvoiceSettingsState> {
   const startNumber = data?.start_number ?? DEFAULT_INVOICE_SETTINGS.startNumber;
   const currentNumber = data?.current_number ?? 0;
 
-  const { nextNumber, nextInvoiceNo } = await resolveNextInvoiceNo(
-    supabase,
-    prefix,
-    Math.max(startNumber, currentNumber + 1),
-  );
+  const nextNumber = Math.max(startNumber, currentNumber + 1);
+  const nextInvoiceNo = formatInvoiceNo(prefix, nextNumber);
 
   const { data: last } = await supabase
     .from("orders")
@@ -116,11 +87,10 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     };
 
     if (data.nextNumber !== undefined) {
-      // Requested serial may already be taken (history stays intact), so roll
-      // forward to the first free serial instead of failing the save.
-      const { nextNumber } = await resolveNextInvoiceNo(supabase, prefix, data.nextNumber);
-      updates["start_number"] = nextNumber;
-      updates["current_number"] = nextNumber - 1;
+      // An explicit reset is authoritative. Historical invoice labels may be
+      // reused; the order UUID remains the permanent unique identity.
+      updates["start_number"] = data.nextNumber;
+      updates["current_number"] = data.nextNumber - 1;
     }
 
 

@@ -138,15 +138,6 @@ export async function createOrder(
       }
     }
 
-    // Check for duplicate invoice_no error (23505)
-    if (inserted.error.code === "23505" && inserted.error.message.includes("invoice_no")) {
-       // Log collision
-       await supabaseAdmin.from("invoice_collisions").insert({
-         invoice_no: "AUTO-GENERATED-COLLISION",
-         attempted_order_payload: { ...raw, source: options.source } as any
-       });
-       throw new Error(`DUPLICATE INVOICE DETECTED. Please refresh and try again.`);
-    }
     throw new Error("Could not save the order. Please try again.");
   }
 

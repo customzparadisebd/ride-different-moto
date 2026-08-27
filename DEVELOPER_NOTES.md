@@ -46,6 +46,7 @@ Author: Rafi Gazi (Rabbee) Apps
 - [x] **RBAC & Gate Alignment:** Synchronized `getMyAccess` and `AdminAccess` types to ensure full profile metadata (fullName, avatarUrl, gender) is available to all Admin Panel components and guards. (Aug 15, 2026).
 - [x] **Automatic Image Optimization Pipeline:** Implemented an on-demand regeneration system for missing AVIF/WebP variants. Updated `SafeImage` to trigger a backend check via `regenerateMissingVariants` whenever a variant fails to load, ensuring future requests benefit from modern image formats automatically (Aug 16, 2026).
 - [x] **Tablet Navigation Fix:** Kept full storefront navigation visible from 768px upward, tightened tablet logo/control/link sizing, and verified desktop/tablet/mobile behavior at 1440, 1366, 1180, 1112, 1080, 1024, 1023, 900, 820, 800, 768, 767, 430, and 390px. Mobile hamburger behavior remains unchanged (Aug 25, 2026).
+- [x] **Authoritative Invoice Reset:** Admin reset/manual starting numbers now apply exactly to the next storefront or manual order, even when that display number exists in history. Historical orders remain unchanged and order UUIDs remain the permanent unique identity (Aug 27, 2026).
 
 ## Documentation Strategy
 

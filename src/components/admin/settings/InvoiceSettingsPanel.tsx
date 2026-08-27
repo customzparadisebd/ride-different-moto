@@ -61,7 +61,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   });
 
   const handleResetTo01 = () => {
-    if (confirm(`Reset invoice sequence to 01? The next order will be ${draft.prefix}-01.`)) {
+    if (confirm(`Reset invoice sequence to 01? The next order will be ${draft.prefix}-01, even if that invoice number exists in history. Historical orders will not change.`)) {
       mutation.mutate({ data: { ...draft, nextNumber: 1 } });
     }
   };
@@ -73,7 +73,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       return;
     }
 
-    if (confirm(`Set starting number to ${num}? The next order will be ${formatInvoiceNo(draft.prefix, num)}.`)) {
+    if (confirm(`Set starting number to ${num}? The next order will be ${formatInvoiceNo(draft.prefix, num)}, even if that invoice number exists in history. Historical orders will not change.`)) {
       mutation.mutate({ data: { ...draft, nextNumber: num } });
       setManualStart("");
     }
@@ -148,7 +148,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Example: Entering 500 will make the next order {draft.prefix}-500.
+              The next order uses exactly this number. Historical invoice labels may repeat.
             </p>
           </div>
 
@@ -163,7 +163,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               Reset to 01
             </Button>
             <p className="mt-2 text-center text-[10px] text-muted-foreground">
-              Resets the sequence so the next order starts from {draft.prefix}-01.
+              The next order starts from {draft.prefix}-01 without changing invoice history.
             </p>
           </div>
         </div>
