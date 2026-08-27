@@ -82,10 +82,12 @@ if (typeof globalThis.addEventListener === "function") {
     record(error);
   });
   globalThis.addEventListener("unhandledrejection", (event) => {
-
-    record((event as PromiseRejectionEvent).reason),
-  );
+    const reason = (event as PromiseRejectionEvent).reason;
+    if (isClientAbort(reason)) return;
+    record(reason);
+  });
 }
+
 
 export function consumeLastCapturedError(): unknown {
   if (!lastCapturedError) return undefined;
