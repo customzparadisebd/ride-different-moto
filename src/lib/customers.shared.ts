@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { purgeConfirmToken, recycleIdsInput, recyclePurgeIdsInput } from "./recycle.shared";
+
 export const customerListInput = z.object({
   search: z.string().trim().max(120).optional(),
   customerName: z.string().trim().max(120).optional(),
@@ -24,8 +26,11 @@ export const customerRestoreInput = z.object({
 
 export const customerPurgeInput = z.object({
   id: z.string().uuid(),
-  confirmPhone: z.string().trim().min(1).max(40),
+  confirm: purgeConfirmToken,
 });
+
+export const customerBulkRestoreInput = recycleIdsInput;
+export const customerBulkPurgeInput = recyclePurgeIdsInput;
 
 export const customerUpdateInput = z.object({
   id: z.string().uuid(),

@@ -6,6 +6,8 @@ import {
   customerListInput,
   customerDeleteInput,
   customerRestoreInput,
+  customerBulkPurgeInput,
+  customerBulkRestoreInput,
   customerPurgeInput,
   customerUpdateInput,
 } from "./customers.shared";
@@ -148,10 +150,6 @@ export const purgeCustomer = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!before.data) throw new Error("Customer not found.");
 
-    if (before.data.phone !== data.confirmPhone) {
-      throw new Error("The typed phone number does not match.");
-    }
-
     if (!(before.data as any).deleted_at) {
       throw new Error("Move the customer to the Recycle Bin before deleting permanently.");
     }
@@ -251,4 +249,66 @@ export const updateAdminCustomer = createServerFn({ method: "POST" })
     });
 
     return { ok: true };
+  });
+
+// ============================================================
+// BULK RECYCLE BIN ACTIONS (restore / permanent delete)
+// ============================================================
+export const bulkRestoreCustomers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => customerBulkRestoreInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.customersManage);
+
+    const { error } = await context.supabase
+      .from("customers")
+      .update({ deleted_at: null, deleted_by: null, delete_reason: null } as any)
+      .in("id", data.ids);
+    if (error) throw new Error("Could not restore the selected customers.");
+
+    for (const id of data.ids) {
+      await auditFromActor(actor, {
+        action: "customer.restored",
+        targetType: "customer",
+        targetId: id,
+      });
+    }
+    return { restored: data.ids.length };
+  });
+
+export const bulkPurgeCustomers = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => customerBulkPurgeInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.securityManage);
+
+    const { data: rows, error: readError } = await context.supabase
+      .from("customers")
+      .select("*")
+      .in("id", data.ids)
+      .not("deleted_at", "is", null);
+    if (readError) throw new Error("Could not read the Recycle Bin customers.");
+    const targets = rows ?? [];
+    if (targets.length === 0) throw new Error("No matching customers found in the Recycle Bin.");
+
+    const { error } = await context.supabase
+      .from("customers")
+      .delete()
+      .in("id", targets.map((row) => row.id));
+    if (error) throw new Error("Could not permanently delete the selected customers.");
+
+    for (const row of targets) {
+      await auditFromActor(actor, {
+        action: "customer.purged",
+        targetType: "customer",
+        targetId: row.id,
+        targetLabel: row.name,
+        oldValue: row,
+      });
+    }
+    return { purged: targets.length };
   });

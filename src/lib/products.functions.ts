@@ -21,6 +21,8 @@ import {
   productDeleteInput,
   productInput,
   productListInput,
+  productBulkPurgeInput,
+  productBulkRestoreInput,
   productPurgeInput,
   productRestoreInput,
   productStockInput,
@@ -291,9 +293,6 @@ export const purgeProduct = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (!before.data) throw new Error("Product not found.");
-    if (before.data.name.trim() !== data.confirmName.trim()) {
-      throw new Error("The typed product name does not match.");
-    }
     if (!before.data.deleted_at) {
       throw new Error("Move the product to the Recycle Bin before deleting it permanently.");
     }
@@ -707,4 +706,68 @@ export const reorderProducts = createServerFn({ method: "POST" })
     });
 
     return { ok: true };
+  });
+
+// ============================================================
+// BULK RECYCLE BIN ACTIONS (restore / permanent delete)
+// ============================================================
+export const bulkRestoreProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => productBulkRestoreInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.productsManage);
+
+    const { error } = await context.supabase
+      .from("products")
+      .update({ deleted_at: null, deleted_by: null, delete_reason: null })
+      .in("id", data.ids);
+    if (error) throw new Error("Could not restore the selected products.");
+
+    for (const id of data.ids) {
+      await auditFromActor(actor, {
+        action: AUDIT_ACTIONS.productRestored,
+        targetType: "product",
+        targetId: id,
+      });
+    }
+    return { restored: data.ids.length };
+  });
+
+export const bulkPurgeProducts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => productBulkPurgeInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, auditFromActor } = await import("./admin.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only an Admin or Super Admin can permanently delete products.");
+    }
+
+    const { data: rows, error: readError } = await context.supabase
+      .from("products")
+      .select(PRODUCT_COLUMNS)
+      .in("id", data.ids)
+      .not("deleted_at", "is", null);
+    if (readError) throw new Error("Could not read the Recycle Bin products.");
+    const targets = rows ?? [];
+    if (targets.length === 0) throw new Error("No matching products found in the Recycle Bin.");
+
+    const { error } = await context.supabase
+      .from("products")
+      .delete()
+      .in("id", targets.map((row) => row.id));
+    if (error) throw new Error("Could not permanently delete the selected products.");
+
+    for (const row of targets) {
+      await auditFromActor(actor, {
+        action: AUDIT_ACTIONS.productPurged,
+        targetType: "product",
+        targetId: row.id,
+        targetLabel: row.name,
+        oldValue: row,
+      });
+    }
+    return { purged: targets.length };
   });
