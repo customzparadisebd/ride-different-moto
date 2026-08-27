@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.save_invoice_settings(text, integer);

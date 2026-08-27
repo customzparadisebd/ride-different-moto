@@ -53,7 +53,9 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       // invoice screen sees the new number immediately.
       queryClient.setQueryData(["invoice-settings"], state);
       toast.success(`Saved. Next invoice will be ${state.nextInvoiceNo}`);
-      void queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
+      // Do not immediately refetch and overwrite the mutation response with a
+      // stale in-flight read. The returned state is the committed DB value.
+      void queryClient.cancelQueries({ queryKey: ["invoice-settings"] });
       void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
       void queryClient.invalidateQueries({ queryKey: ["dashboard-metrics"] });
     },

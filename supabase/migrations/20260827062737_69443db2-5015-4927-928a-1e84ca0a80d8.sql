@@ -1,0 +1,1 @@
+ALTER FUNCTION public.save_invoice_settings(text, integer) SECURITY INVOKER;
