@@ -137,8 +137,8 @@ export const purgeOrder = createServerFn({ method: "POST" })
 // BULK RECYCLE / BULK PERMANENT DELETE
 // ============================================================
 export const bulkRecycleOrders = createServerFn({ method: "POST" })
-  .validator((input: unknown) => orderBulkRecycleInput.parse(input))
   .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => orderBulkRecycleInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const { logOrderEvent } = await import("./orders.server");
@@ -182,8 +182,8 @@ export const bulkRecycleOrders = createServerFn({ method: "POST" })
   });
 
 export const bulkPurgeOrders = createServerFn({ method: "POST" })
-  .validator((input: unknown) => orderBulkPurgeInput.parse(input))
   .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => orderBulkPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
     const { resolveActor, auditFromActor } = await import("./admin.server");
     const { hardDeleteOrders } = await import("./orders-recycle.server");
