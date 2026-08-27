@@ -39,7 +39,7 @@ function sanitizeAttrs(tag: string, rawAttrs: string): string {
   const attrRe = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*("([^"]*)"|'([^']*)'|([^\s"'>]+))/g;
   let match: RegExpExecArray | null;
   while ((match = attrRe.exec(rawAttrs)) !== null) {
-    const name = match[1].toLowerCase();
+    const name = (match[1] ?? "").toLowerCase();
     const value = match[3] ?? match[4] ?? match[5] ?? "";
     if (!allowed.has(name)) continue;
     if ((name === "href" || name === "src") && !isSafeUrl(value)) continue;
