@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
-import { getDashboardMetrics } from "@/lib/admin-data.functions";
+import { getDashboardMetrics } from "@/lib/admin-dashboard.functions";
 
 export const Route = createFileRoute("/_authenticated/ad/")({
   head: () => ({
