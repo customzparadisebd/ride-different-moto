@@ -73,9 +73,12 @@ describe('Invoice Sequence Regression Tests', () => {
       current_number: 0
     }).eq('id', 'default');
     
-    // We expect the next generated to match prefix-\d{2,} (e.g. REG-SEQ-01 or next available)
+    // Historical labels do not move the configured sequence forward.
     const { data: nextInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
-    expect(nextInv).toMatch(new RegExp(`^${TEST_PREFIX}-\\d{2,}$`));
+    expect(nextInv).toBe(`${TEST_PREFIX}-01`);
+
+    const { data: followInv } = await testSupabase.rpc('generate_next_invoice_no', { is_test: false });
+    expect(followInv).toBe(`${TEST_PREFIX}-02`);
   });
 
   it('should NEVER change invoice numbers of existing orders', async () => {

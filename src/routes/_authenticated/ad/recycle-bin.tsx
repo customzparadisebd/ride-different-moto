@@ -65,7 +65,7 @@ function RecycleBin() {
   });
   const customersQuery = useQuery({
     queryKey: ["admin-recycle-bin", "customers"],
-    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 500 } } as never),
+    queryFn: () => fetchCustomers({ data: { deleted: true, pageSize: 100 } } as never),
   });
 
   const refresh = () => {

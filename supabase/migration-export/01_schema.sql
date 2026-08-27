@@ -826,7 +826,6 @@ DECLARE
     v_prefix TEXT;
     v_num INTEGER;
     v_invoice_no TEXT;
-    v_exists BOOLEAN;
 BEGIN
     -- Acquire an exclusive row-level lock on the settings row.
     -- This forces concurrent calls to wait in line, ensuring each receives a unique number.
@@ -836,17 +835,10 @@ BEGIN
     WHERE id = 'default'
     FOR UPDATE;
 
-    LOOP
-        -- Format example: CZP-01, CZP-02
-        v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');
-        
-        -- Check both active and soft-deleted orders to prevent overlap.
-        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no)
-        INTO v_exists;
-        
-        EXIT WHEN NOT v_exists;
-        v_num := v_num + 1;
-    END LOOP;
+    v_invoice_no := v_prefix || '-' || CASE
+        WHEN v_num < 10 THEN LPAD(v_num::TEXT, 2, '0')
+        ELSE v_num::TEXT
+    END;
 
     -- Persist the incremented number.
     UPDATE public.invoice_settings
@@ -869,7 +861,6 @@ DECLARE
     v_prefix TEXT;
     v_num INTEGER;
     v_invoice_no TEXT;
-    v_exists BOOLEAN;
 BEGIN
     -- Acquire lock and get settings
     IF is_test THEN
@@ -886,21 +877,10 @@ BEGIN
         FOR UPDATE;
     END IF;
 
-    -- Ensure we find a unique invoice number by incrementing until one is available
-    LOOP
-        -- Format logic: 01-09, then 10, 11, 100 etc.
-        IF v_num < 10 THEN
-            v_invoice_no := v_prefix || '-' || LPAD(v_num::TEXT, 2, '0');
-        ELSE
-            v_invoice_no := v_prefix || '-' || v_num::TEXT;
-        END IF;
-        
-        SELECT EXISTS (SELECT 1 FROM public.orders WHERE invoice_no = v_invoice_no)
-        INTO v_exists;
-        
-        EXIT WHEN NOT v_exists;
-        v_num := v_num + 1;
-    END LOOP;
+    v_invoice_no := v_prefix || '-' || CASE
+        WHEN v_num < 10 THEN LPAD(v_num::TEXT, 2, '0')
+        ELSE v_num::TEXT
+    END;
 
     -- Update the sequence record
     IF is_test THEN
@@ -1382,7 +1362,6 @@ EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition T
 END $$;
 
 DO $$ BEGIN
-  ALTER TABLE public.orders ADD CONSTRAINT orders_invoice_no_key UNIQUE (invoice_no);
 EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
 
@@ -1673,7 +1652,7 @@ CREATE INDEX IF NOT EXISTS orders_assigned_idx ON public.orders USING btree (ass
 
 CREATE INDEX IF NOT EXISTS orders_created_at_idx ON public.orders USING btree (created_at DESC);
 
-CREATE UNIQUE INDEX IF NOT EXISTS orders_invoice_no_uidx ON public.orders USING btree (invoice_no) WHERE (deleted_at IS NULL);
+CREATE INDEX IF NOT EXISTS orders_invoice_no_idx ON public.orders USING btree (invoice_no);
 
 CREATE INDEX IF NOT EXISTS orders_payment_status_idx ON public.orders USING btree (payment_status);
 
