@@ -46,12 +46,21 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     // PostgREST sends this as one UPDATE statement, so the requested start and
     // its matching previous counter are committed atomically.
     const updates = buildInvoiceSettingsUpdate(prefix, actor.userId, data.nextNumber);
-    const { error } = await supabase
+    // `.select()` proves the row was really written. Without it a permission
+    // rule that blocks the update returns success with zero rows changed, and
+    // the panel would claim "Saved" while the serial stayed the same.
+    const { data: written, error } = await supabase
       .from("invoice_settings")
       .update(updates)
-      .eq("id", "default");
+      .eq("id", "default")
+      .select("id, prefix, start_number, current_number");
 
     if (error) throw new Error("Could not save invoice settings.");
+    if (!written || written.length === 0) {
+      throw new Error(
+        "Invoice settings were not saved: your account is not allowed to change them.",
+      );
+    }
 
     const state = await readInvoiceSettingsState(supabase);
 
