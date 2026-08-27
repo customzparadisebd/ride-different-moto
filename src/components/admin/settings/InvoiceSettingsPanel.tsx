@@ -1,6 +1,6 @@
 // ============================================================
 // INVOICE SETTINGS PANEL
-// Purpose: Manage invoice prefix and starting number.
+// Purpose: Manage invoice prefix and the next serial number.
 // Security: Requires Admin/Super Admin access.
 // ============================================================
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +12,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { getInvoiceSettings, saveInvoiceSettings } from "@/lib/invoicing.functions";
-import { DEFAULT_INVOICE_SETTINGS, type InvoiceSettings } from "@/lib/invoicing.shared";
+import {
+  DEFAULT_INVOICE_SETTINGS,
+  formatInvoiceNo,
+  type InvoiceSettings,
+  type InvoiceSettingsState,
+} from "@/lib/invoicing.shared";
 
 export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   const queryClient = useQueryClient();
@@ -22,6 +27,10 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
   const { data: current, isLoading } = useQuery({
     queryKey: ["invoice-settings"],
     queryFn: () => load(),
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const [draft, setDraft] = useState<InvoiceSettings>(DEFAULT_INVOICE_SETTINGS);
@@ -33,48 +42,42 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
         prefix: current.prefix,
         startNumber: current.startNumber,
         currentNumber: current.currentNumber,
-        nextNumber: current.nextNumber,
       });
     }
   }, [current]);
 
+  const mutation = useMutation({
+    mutationFn: save,
+    onSuccess: (state: InvoiceSettingsState) => {
+      // Write the authoritative state straight into the cache so every
+      // invoice screen sees the new number immediately.
+      queryClient.setQueryData(["invoice-settings"], state);
+      toast.success(`Saved. Next invoice will be ${state.nextInvoiceNo}`);
+      void queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
+      void queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+      void queryClient.invalidateQueries({ queryKey: ["dashboard-metrics"] });
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not save settings."),
+  });
+
   const handleResetTo01 = () => {
-    if (confirm("Reset invoice sequence to 01? The next order will be CZP-01.")) {
-      mutation.mutate({
-          data: {
-            ...draft,
-            nextNumber: 1,
-          }
-        });
+    if (confirm(`Reset invoice sequence to 01? The next order will be ${draft.prefix}-01.`)) {
+      mutation.mutate({ data: { ...draft, nextNumber: 1 } });
     }
   };
 
   const handleSetStartingNumber = () => {
-    const num = parseInt(manualStart);
+    const num = parseInt(manualStart, 10);
     if (isNaN(num) || num < 1) {
       toast.error("Please enter a valid starting number.");
       return;
     }
 
-    if (confirm(`Set starting number to ${num}? The next order will be ${draft.prefix}-${num.toString().padStart(2, '0')}.`)) {
-      mutation.mutate({
-          data: {
-            ...draft,
-            nextNumber: num,
-          }
-        });
+    if (confirm(`Set starting number to ${num}? The next order will be ${formatInvoiceNo(draft.prefix, num)}.`)) {
+      mutation.mutate({ data: { ...draft, nextNumber: num } });
       setManualStart("");
     }
   };
-
-  const mutation = useMutation({
-    mutationFn: save,
-    onSuccess: () => {
-      toast.success("Invoice settings saved");
-      void queryClient.invalidateQueries({ queryKey: ["invoice-settings"] });
-    },
-    onError: (error: Error) => toast.error(error.message || "Could not save settings."),
-  });
 
   if (isLoading) return null;
 
@@ -92,17 +95,26 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
       </div>
 
       <div className="mt-6 space-y-6">
-        {/* Current Info */}
-        <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-primary/10 dark:bg-primary/5 p-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
-            Current Invoice Number
-          </span>
-          <p className="font-mono text-2xl font-bold">
-            {current?.prefix}-{(current?.currentNumber ?? 0) < 10 && (current?.currentNumber ?? 0) > 0 ? (current?.currentNumber ?? 0).toString().padStart(2, "0") : (current?.currentNumber ?? 0)}
-          </p>
-          <p className="text-[10px] text-muted-foreground italic">
-            Last order was assigned serial {current?.currentNumber}.
-          </p>
+        {/* Live state */}
+        <div className="grid gap-3 sm:grid-cols-2">
+          <div className="flex flex-col gap-1 rounded-lg border border-primary/20 bg-primary/10 p-4 dark:bg-primary/5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
+              Current Active Invoice Number
+            </span>
+            <p className="font-mono text-2xl font-bold">{current?.nextInvoiceNo ?? "—"}</p>
+            <p className="text-[10px] italic text-muted-foreground">
+              The next order created anywhere will use this number.
+            </p>
+          </div>
+          <div className="flex flex-col gap-1 rounded-lg border border-border bg-muted/40 p-4">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Last Issued Invoice
+            </span>
+            <p className="font-mono text-2xl font-bold">{current?.lastInvoiceNo ?? "—"}</p>
+            <p className="text-[10px] italic text-muted-foreground">
+              Existing orders keep their original invoice numbers.
+            </p>
+          </div>
         </div>
 
         {/* Manual Sequence Control */}
@@ -128,7 +140,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               <Button
                 type="button"
                 variant="red"
-                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0 focus-visible:ring-offset-2"
+                className="h-10 shrink-0 px-4 text-[11px] font-bold uppercase tracking-wider focus-visible:ring-offset-2"
                 disabled={!canManage || mutation.isPending || !manualStart}
                 onClick={() => handleSetStartingNumber()}
               >
@@ -136,7 +148,7 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               </Button>
             </div>
             <p className="text-[10px] text-muted-foreground">
-              Example: Entering 500 will make the next order CZP-500.
+              Example: Entering 500 will make the next order {draft.prefix}-500.
             </p>
           </div>
 
@@ -144,20 +156,20 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-10 border-red-500/50 text-red-500 hover:bg-red-500/10 uppercase font-bold text-[11px] tracking-wider focus-visible:ring-offset-2"
+              className="h-10 w-full border-red-500/50 text-[11px] font-bold uppercase tracking-wider text-red-500 hover:bg-red-500/10 focus-visible:ring-offset-2"
               disabled={!canManage || mutation.isPending}
               onClick={() => handleResetTo01()}
             >
               Reset to 01
             </Button>
             <p className="mt-2 text-center text-[10px] text-muted-foreground">
-              Resets the sequence so the next order starts from CZP-01.
+              Resets the sequence so the next order starts from {draft.prefix}-01.
             </p>
           </div>
         </div>
 
         {/* Prefix Setting (Secondary) */}
-        <div className="pt-4 border-t border-border/50">
+        <div className="border-t border-border/50 pt-4">
           <div className="space-y-1.5">
             <Label
               htmlFor="prefix"
@@ -178,15 +190,16 @@ export function InvoiceSettingsPanel({ canManage }: { canManage: boolean }) {
               <Button
                 type="button"
                 variant="secondary"
-                className="h-10 px-4 uppercase font-bold text-[11px] tracking-wider shrink-0"
+                className="h-10 shrink-0 px-4 text-[11px] font-bold uppercase tracking-wider"
                 disabled={!canManage || mutation.isPending || draft.prefix === current?.prefix}
-                onClick={() => {
-                  mutation.mutate({ data: { ...draft, nextNumber: undefined } });
-                }}
+                onClick={() => mutation.mutate({ data: { ...draft } })}
               >
                 Update Prefix
               </Button>
             </div>
+            <p className="text-[10px] text-muted-foreground">
+              Changing the prefix applies to new orders only; the counter is kept as-is.
+            </p>
           </div>
         </div>
       </div>
