@@ -31,7 +31,25 @@ import { StaffAvatar } from "@/components/admin/StaffAvatar";
 import { getEnvironment } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+
+/** Monochrome sidebar toggle that mirrors the current open/collapsed state. */
+function AdminHeaderToggle() {
+  const { state, toggleSidebar, isMobile } = useSidebar();
+  const collapsed = !isMobile && state === "collapsed";
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggleSidebar}
+      className="h-8 w-8 shrink-0 rounded-md text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+    >
+      {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+    </Button>
+  );
+}
 import { supabase } from "@/integrations/supabase/client";
 import { recordSignOut } from "@/lib/admin.functions";
 import { useTheme } from "@/lib/theme";
