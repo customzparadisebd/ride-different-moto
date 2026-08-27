@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { listLogos, resetLogo, updateLogo, uploadLogoFile } from "@/lib/logos.functions";
 import { 
   LOGO_CATEGORY_LABELS, 
+  LOGO_MAX_SIZE_KB,
   LOGO_RECOMMENDATIONS, 
   SiteLogo, 
   LogoCategory 
