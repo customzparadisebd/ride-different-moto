@@ -7,45 +7,8 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
-import {
-  DEFAULT_INVOICE_SETTINGS,
-  formatInvoiceNo,
-  invoiceSettingsInput,
-  type InvoiceSettingsState,
-} from "./invoicing.shared";
-
-type Client = { from: (t: string) => any };
-
-async function readState(supabase: Client): Promise<InvoiceSettingsState> {
-  const { data } = await supabase
-    .from("invoice_settings")
-    .select("prefix, start_number, current_number")
-    .eq("id", "default")
-    .maybeSingle();
-
-  const prefix = data?.prefix ?? DEFAULT_INVOICE_SETTINGS.prefix;
-  const startNumber = data?.start_number ?? DEFAULT_INVOICE_SETTINGS.startNumber;
-  const currentNumber = data?.current_number ?? 0;
-
-  const nextNumber = Math.max(startNumber, currentNumber + 1);
-  const nextInvoiceNo = formatInvoiceNo(prefix, nextNumber);
-
-  const { data: last } = await supabase
-    .from("orders")
-    .select("invoice_no")
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  return {
-    prefix,
-    startNumber,
-    currentNumber,
-    nextNumber,
-    nextInvoiceNo,
-    lastInvoiceNo: (last as { invoice_no: string | null } | null)?.invoice_no ?? null,
-  };
-}
+import { invoiceSettingsInput, type InvoiceSettingsState } from "./invoicing.shared";
+import { readInvoiceSettingsState } from "./invoicing.server";
 
 /** Admin: Fetches current invoice prefix, sequence state and the next invoice number. */
 export const getInvoiceSettings = createServerFn({ method: "POST" })
@@ -55,7 +18,7 @@ export const getInvoiceSettings = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersView);
 
-    return readState(context.supabase as never);
+    return readInvoiceSettingsState(context.supabase as never);
   });
 
 /** Admin: Updates the invoice prefix and/or the next serial, effective immediately. */
@@ -69,7 +32,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     // REQUIRE ADMIN FOR RESETTING SERIALS
     assertAccess(actor, PERMISSIONS.ordersManage);
 
-    const supabase = context.supabase as never as Client;
+    const supabase = context.supabase;
     const { data: before } = await supabase
       .from("invoice_settings")
       .select("*")
@@ -101,7 +64,7 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
 
     if (error) throw new Error("Could not save invoice settings.");
 
-    const state = await readState(supabase);
+    const state = await readInvoiceSettingsState(supabase);
 
     await auditFromActor(actor, {
       action: AUDIT_ACTIONS.invoiceSettingsUpdated,

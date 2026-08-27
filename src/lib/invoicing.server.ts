@@ -1,30 +1,38 @@
-import { formatInvoiceNo, type InvoiceSettingsState } from "./invoicing.shared";
+import {
+  DEFAULT_INVOICE_SETTINGS,
+  formatInvoiceNo,
+  type InvoiceSettingsState,
+} from "./invoicing.shared";
 
 type InvoiceSettingsClient = { from: (table: string) => any };
 
 export async function readInvoiceSettingsState(
   supabase: InvoiceSettingsClient,
 ): Promise<InvoiceSettingsState> {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("invoice_settings")
-    .select("prefix, start_number, current_number, updated_at")
+    .select("prefix, start_number, current_number")
     .eq("id", "default")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) throw new Error(error?.message ?? "Invoice settings missing");
-
-  const prefix = String(data.prefix);
-  const startNumber = Number(data.start_number);
-  const currentNumber = Number(data.current_number);
+  const prefix = data?.prefix ?? DEFAULT_INVOICE_SETTINGS.prefix;
+  const startNumber = data?.start_number ?? DEFAULT_INVOICE_SETTINGS.startNumber;
+  const currentNumber = data?.current_number ?? DEFAULT_INVOICE_SETTINGS.currentNumber;
   const nextNumber = Math.max(startNumber, currentNumber + 1);
+
+  const { data: last } = await supabase
+    .from("orders")
+    .select("invoice_no")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
 
   return {
     prefix,
     startNumber,
     currentNumber,
-    currentInvoiceNo: currentNumber > 0 ? formatInvoiceNo(prefix, currentNumber) : null,
     nextNumber,
     nextInvoiceNo: formatInvoiceNo(prefix, nextNumber),
-    updatedAt: String(data.updated_at),
+    lastInvoiceNo: (last as { invoice_no: string | null } | null)?.invoice_no ?? null,
   };
 }
