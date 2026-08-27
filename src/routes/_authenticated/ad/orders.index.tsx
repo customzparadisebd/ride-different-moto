@@ -349,7 +349,9 @@ function AdminOrderList() {
         isLoading={ordersQuery.isFetching}
         staff={staffQuery.data ?? []}
         couriers={courierOptions}
+        counts={countsQuery.data as Record<string, number> | undefined}
       />
+
 
       {canSelect && selected.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center gap-2 rounded border border-primary/20 bg-card p-2 shadow-sm">
