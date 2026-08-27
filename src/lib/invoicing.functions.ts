@@ -45,10 +45,11 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     // value could rewind the sequence and reuse an invoice number).
     // Keep reset/manual saves atomic at the database boundary. A historical
     // counter can never be combined with the newly requested start number.
-    const { error } = await supabase.rpc("save_invoice_settings", {
-      p_prefix: prefix,
-      p_next_number: data.nextNumber,
-    });
+    const rpcArgs =
+      data.nextNumber === undefined
+        ? { p_prefix: prefix }
+        : { p_prefix: prefix, p_next_number: data.nextNumber };
+    const { error } = await supabase.rpc("save_invoice_settings", rpcArgs);
 
     if (error) throw new Error("Could not save invoice settings.");
 
