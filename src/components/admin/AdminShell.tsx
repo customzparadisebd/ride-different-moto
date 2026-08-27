@@ -13,7 +13,16 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
-import { Moon, Sun, Clock, AlertCircle, ShieldCheck, AlertTriangle } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Clock,
+  AlertCircle,
+  ShieldCheck,
+  AlertTriangle,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
@@ -22,7 +31,25 @@ import { StaffAvatar } from "@/components/admin/StaffAvatar";
 import { getEnvironment } from "@/lib/env";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider, useSidebar } from "@/components/ui/sidebar";
+
+/** Monochrome sidebar toggle that mirrors the current open/collapsed state. */
+function AdminHeaderToggle() {
+  const { state, toggleSidebar, isMobile } = useSidebar();
+  const collapsed = !isMobile && state === "collapsed";
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={toggleSidebar}
+      className="h-8 w-8 shrink-0 rounded-md text-muted-foreground transition-colors duration-200 hover:bg-muted hover:text-foreground"
+      aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+    >
+      {collapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+    </Button>
+  );
+}
 import { supabase } from "@/integrations/supabase/client";
 import { recordSignOut } from "@/lib/admin.functions";
 import { useTheme } from "@/lib/theme";
@@ -75,15 +102,18 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
     return () => clearInterval(timer);
   }, []);
 
-  const formattedTime = time.toLocaleString("en-US", {
+  const formattedDate = time.toLocaleDateString("en-US", {
+    timeZone: "Asia/Dhaka",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const formattedClock = time.toLocaleTimeString("en-US", {
     timeZone: "Asia/Dhaka",
     hour: "numeric",
     minute: "2-digit",
     second: "2-digit",
     hour12: true,
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
   });
 
   const handleSignOut = async () => {
@@ -101,29 +131,73 @@ export function AdminShell({ access, children }: { access: AdminAccess; children
   return (
     <SidebarProvider>
       <div className="flex min-h-svh w-full flex-col bg-background">
-        <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <SidebarTrigger />
-          <div className="flex flex-1 items-center justify-between">
-            <h1 className="text-sm font-bold tracking-widest uppercase">CUSTOMER PARADISE ADMIN PANEL</h1>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  {access.email} {access.mfaSatisfied && <ShieldCheck className="h-3 w-3 text-emerald-500" />}
-                </span>
-                <StaffAvatar avatarUrl={access.avatarUrl} fallbackSeed={access.email} className="h-6 w-6 rounded-full" />
-              </div>
-              <div className="flex items-center gap-3 border-l pl-4">
-                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <Clock className="h-3 w-3" />
-                  {formattedTime} (Dhaka)
+        <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-3 backdrop-blur supports-[backdrop-filter]:bg-background/70 sm:px-5 md:gap-4 md:px-6">
+          <AdminHeaderToggle />
+          <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+            <h1 className="truncate font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground sm:text-xs md:text-sm md:tracking-[0.2em]">
+              Customer Paradise <span className="text-primary">Admin Panel</span>
+            </h1>
+            <div className="flex shrink-0 items-center gap-2 md:gap-3">
+              {/* Admin identity */}
+              <div className="hidden items-center gap-2.5 sm:flex">
+                <StaffAvatar
+                  avatarUrl={access.avatarUrl}
+                  fallbackSeed={access.email}
+                  className="h-7 w-7 rounded-full ring-1 ring-border"
+                />
+                <div className="min-w-0 leading-tight">
+                  <div className="flex items-center gap-1.5">
+                    <span className="max-w-[180px] truncate text-xs font-medium text-foreground/80">
+                      {access.email}
+                    </span>
+                    {access.mfaSatisfied && (
+                      <ShieldCheck className="h-3 w-3 shrink-0 text-emerald-500" />
+                    )}
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    {access.primaryRole ? ROLE_LABELS[access.primaryRole] : "Staff"}
+                  </span>
                 </div>
-                <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8">
-                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-                </Button>
-                <Button variant="outline" size="sm" onClick={handleSignOut} className="h-8 px-3 text-sm font-bold uppercase">
-                  Sign Out
-                </Button>
               </div>
+
+              <span className="hidden h-7 w-px bg-border/60 lg:block" aria-hidden="true" />
+
+              {/* Dhaka clock */}
+              <div className="hidden items-center gap-1.5 lg:flex">
+                <Clock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+                    {formattedDate}
+                  </div>
+                  <div className="text-xs font-semibold tabular-nums text-foreground/90">
+                    {formattedClock}
+                    <span className="ml-1 font-normal text-muted-foreground">· Dhaka</span>
+                  </div>
+                </div>
+              </div>
+
+              <span className="hidden h-7 w-px bg-border/60 sm:block" aria-hidden="true" />
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="h-8 w-8 rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
+
+              <span className="hidden h-7 w-px bg-border/60 sm:block" aria-hidden="true" />
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleSignOut}
+                className="h-8 rounded-md border-border/70 px-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-foreground/80 transition-colors hover:border-primary/40 hover:bg-primary/5 hover:text-primary"
+              >
+                Sign Out
+              </Button>
             </div>
           </div>
         </header>

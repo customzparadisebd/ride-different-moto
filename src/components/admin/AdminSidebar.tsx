@@ -180,20 +180,19 @@ export function AdminSidebar({ access, permissions }: { access: any; permissions
 
   return (
     <Sidebar collapsible="icon" className="sticky top-0 h-svh">
-      <SidebarHeader className="border-b border-sidebar-border/50 pb-2">
-        <div className="flex items-center gap-3 px-2 pt-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+      <SidebarHeader className="border-b border-sidebar-border/50 pb-4">
+        <div className="flex flex-col items-center gap-3 px-2 pt-5 pb-1 group-data-[collapsible=icon]:gap-0 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:pt-2">
           <img
             src={logoUrl}
             alt="CZP Logo"
-
-            className="h-10 w-auto shrink-0 object-contain md:h-16 lg:h-20"
+            className="h-14 w-auto shrink-0 object-contain md:h-16 lg:h-20 group-data-[collapsible=icon]:h-8"
           />
-          <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
-            <p className="font-display text-sm font-bold uppercase tracking-tight text-primary">
-              CZP Admin
+          <div className="min-w-0 text-center leading-tight group-data-[collapsible=icon]:hidden">
+            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground">
+              Customz Paradise
             </p>
-            <p className="truncate text-[10px] font-medium text-muted-foreground">
-              Customer Paradise Admin Panel
+            <p className="mt-1 font-display text-xs font-bold uppercase tracking-[0.18em] text-foreground">
+              Admin <span className="text-primary">Panel</span>
             </p>
           </div>
         </div>
