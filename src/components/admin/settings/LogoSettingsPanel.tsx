@@ -121,6 +121,7 @@ function LogoItem({
   onReset: () => void;
 }) {
   const [urlInput, setUrlInput] = useState(logo.url || "");
+  const [selectedFile, setSelectedFile] = useState<{ name: string; kb: number } | null>(null);
   const rec = LOGO_RECOMMENDATIONS[logo.category];
   const activeUrl = logo.url;
 
