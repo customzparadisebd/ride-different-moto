@@ -2377,6 +2377,14 @@ export type Database = {
       is_staff: { Args: { _user_id: string }; Returns: boolean }
       is_super_admin: { Args: { _user_id: string }; Returns: boolean }
       next_invoice_no: { Args: never; Returns: string }
+      save_invoice_settings: {
+        Args: { p_next_number?: number; p_prefix: string }
+        Returns: {
+          current_number: number
+          prefix: string
+          start_number: number
+        }[]
+      }
     }
     Enums: {
       app_role: "admin" | "manager" | "staff" | "super_admin"
