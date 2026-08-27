@@ -345,10 +345,10 @@ function AdminOrderList() {
             variant="destructive"
             size="sm"
             className="h-7 px-2 text-[10px] uppercase font-bold"
-            disabled={bulkMutation.isPending}
+            disabled={bulkRecycleMutation.isPending}
             onClick={() => {
-              if (confirm(`Move ${selected.length} orders to Recycle Bin?`)) {
-                bulkMutation.mutate({ data: { orderIds: selected, status: "cancelled" } });
+              if (confirm(`Move ${selected.length} order(s) to the Recycle Bin?`)) {
+                bulkRecycleMutation.mutate({ data: { orderIds: selected } });
               }
             }}
           >
