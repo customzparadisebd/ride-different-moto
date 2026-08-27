@@ -14,6 +14,7 @@ import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import {
   orderBulkPurgeInput,
   orderBulkRecycleInput,
+  orderBulkRestoreInput,
   orderPurgeInput,
   orderRecycleInput,
   orderRestoreInput,
@@ -115,9 +116,6 @@ export const purgeOrder = createServerFn({ method: "POST" })
       .not("deleted_at", "is", null)
       .maybeSingle();
     if (!existing) throw new Error("Order not found in the Recycle Bin.");
-    if (existing.invoice_no !== data.confirmInvoiceNo) {
-      throw new Error("The invoice number you typed does not match.");
-    }
 
     const removed = await hardDeleteOrders([data.id]);
     if (removed === 0) throw new Error("Could not permanently delete the order.");
@@ -212,4 +210,44 @@ export const bulkPurgeOrders = createServerFn({ method: "POST" })
       });
     }
     return { purged: removed };
+  });
+
+export const bulkRestoreOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input: unknown) => orderBulkRestoreInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { logOrderEvent } = await import("./orders.server");
+    const actor = await resolveActor(context.userId, context.claims as never);
+    assertAccess(actor, PERMISSIONS.ordersManage);
+
+    const { data: rows, error: readError } = await context.supabase
+      .from("orders")
+      .select("id, invoice_no")
+      .in("id", data.orderIds)
+      .not("deleted_at", "is", null);
+    if (readError) throw new Error("Could not read the selected orders.");
+    const targets = rows ?? [];
+    if (targets.length === 0) return { restored: 0 };
+
+    const { error } = await context.supabase
+      .from("orders")
+      .update({ deleted_at: null, deleted_by: null, delete_reason: null })
+      .in("id", targets.map((row) => row.id));
+    if (error) throw new Error("Could not restore the selected orders.");
+
+    for (const row of targets) {
+      await logOrderEvent(row.id, {
+        eventType: "restored",
+        message: "Restored from Recycle Bin",
+        actorLabel: actor.email ?? "staff",
+      });
+      await auditFromActor(actor, {
+        action: AUDIT_ACTIONS.orderRestored,
+        targetType: "order",
+        targetId: row.id,
+        targetLabel: row.invoice_no,
+      });
+    }
+    return { restored: targets.length };
   });
