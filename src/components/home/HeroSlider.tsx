@@ -1,13 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { SafeImage } from "@/components/SafeImage";
 import type { HeroSlide } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 const AUTOPLAY_MS = 2500;
+const RESUME_MS = 2500;
 
 export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   const [emblaRef, embla] = useEmblaCarousel({
@@ -21,20 +22,35 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   });
   const [selected, setSelected] = useState(0);
   const [paused, setPaused] = useState(false);
+  const resumeTimer = useRef<number | null>(null);
+
+  // Pause briefly on manual interaction, then always resume autoplay.
+  const pauseThenResume = useCallback(() => {
+    setPaused(true);
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => setPaused(false), RESUME_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    };
+  }, []);
 
   useEffect(() => {
     if (!embla) return;
     const onSelect = () => setSelected(embla.selectedScrollSnap());
     onSelect();
     embla.on("select", onSelect);
-    embla.on("pointerDown", () => setPaused(true));
+    const onPointerDown = () => pauseThenResume();
+    embla.on("pointerDown", onPointerDown);
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "ArrowLeft") {
-        setPaused(true);
+        pauseThenResume();
         embla.scrollPrev();
       } else if (e.key === "ArrowRight") {
-        setPaused(true);
+        pauseThenResume();
         embla.scrollNext();
       }
     };
@@ -44,9 +60,10 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
 
     return () => {
       embla.off("select", onSelect);
+      embla.off("pointerDown", onPointerDown);
       node.removeEventListener("keydown", onKeyDown);
     };
-  }, [embla]);
+  }, [embla, pauseThenResume]);
 
   useEffect(() => {
     if (!embla || paused || slides.length < 2) return;
@@ -56,14 +73,14 @@ export function HeroSlider({ slides }: { slides: HeroSlide[] }) {
   }, [embla, paused, slides.length]);
 
   const scrollPrev = useCallback(() => {
-    setPaused(true);
+    pauseThenResume();
     embla?.scrollPrev();
-  }, [embla]);
+  }, [embla, pauseThenResume]);
 
   const scrollNext = useCallback(() => {
-    setPaused(true);
+    pauseThenResume();
     embla?.scrollNext();
-  }, [embla]);
+  }, [embla, pauseThenResume]);
 
   if (!slides.length) return null;
 
