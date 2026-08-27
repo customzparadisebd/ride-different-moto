@@ -24,6 +24,21 @@ export const DEFAULT_INVOICE_SETTINGS: InvoiceSettings = {
   currentNumber: 0,
 };
 
+/** Mirrors the database formatting rules: 01..09 padded, 10+ plain. */
+export function formatInvoiceNo(prefix: string, num: number): string {
+  return `${prefix}-${num < 10 ? num.toString().padStart(2, "0") : num}`;
+}
+
+/** Full server payload for the admin invoice panel. */
+export type InvoiceSettingsState = InvoiceSettings & {
+  currentNumber: number;
+  nextNumber: number;
+  /** The invoice number the next created order will receive. */
+  nextInvoiceNo: string;
+  /** The invoice number of the most recently created order (history, unchanged). */
+  lastInvoiceNo: string | null;
+};
+
 export type InvoiceSettingsRow = {
   prefix: string;
   start_number: number;
