@@ -461,7 +461,13 @@ export const getOrderTabCounts = createServerFn({ method: "POST" })
       page: base().eq("order_source", "page"),
       new: base().eq("status", "pending").eq("print_count", 0),
       duplicate: base().eq("is_duplicate", true),
+      // Display-only counters for the status pills in the admin toolbar.
+      processing: base().eq("status", "processing"),
+      shipped: base().eq("status", "shipped"),
+      delivered: base().eq("status", "delivered"),
+      returned: base().eq("status", "returned"),
     };
+
 
     const entries = await Promise.all(
       Object.entries(counters).map(async ([tab, promise]) => {
