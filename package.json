@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run src/lib/tests/concurrency.test.ts",
+    "test": "vitest run src/lib/tests/concurrency.test.ts src/lib/tests/invoice-reset-regression.test.ts",
     "test:watch": "vitest",
     "format": "prettier --write .",
     "test:a11y": "npx playwright test tests/accessibility/audit.spec.ts",

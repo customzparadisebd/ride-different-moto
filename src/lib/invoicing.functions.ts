@@ -43,30 +43,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
 
     // Prefix-only save: never touch the live counter (otherwise a stale form
     // value could rewind the sequence and reuse an invoice number).
-    const updates: {
-      prefix: string;
-      updated_at: string;
-      updated_by: string;
-      start_number?: number;
-      current_number?: number;
-    } = {
-      prefix,
-      updated_at: new Date().toISOString(),
-      updated_by: actor.userId,
-    };
-
-    if (data.nextNumber !== undefined) {
-      // An explicit reset is authoritative. Historical invoice labels may be
-      // reused; the order UUID remains the permanent unique identity.
-      updates["start_number"] = data.nextNumber;
-      updates["current_number"] = data.nextNumber - 1;
-    }
-
-
-    const { error } = await supabase
-      .from("invoice_settings")
-      .update(updates)
-      .eq("id", "default");
+    // Keep reset/manual saves atomic at the database boundary. A historical
+    // counter can never be combined with the newly requested start number.
+    const { error } = await supabase.rpc("save_invoice_settings", {
+      p_prefix: prefix,
+      p_next_number: data.nextNumber,
+    });
 
     if (error) throw new Error("Could not save invoice settings.");
 
@@ -78,7 +60,12 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
       targetId: "default",
       targetLabel: "Invoice Settings",
       oldValue: (before ?? null) as never,
-      newValue: { ...updates, nextInvoiceNo: state.nextInvoiceNo } as never,
+      newValue: {
+        prefix: state.prefix,
+        start_number: state.startNumber,
+        current_number: state.currentNumber,
+        nextInvoiceNo: state.nextInvoiceNo,
+      } as never,
     });
 
     // Fresh state is returned so the admin UI updates instantly, no refetch race.
