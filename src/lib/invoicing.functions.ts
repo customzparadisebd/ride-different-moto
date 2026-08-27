@@ -43,7 +43,13 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
 
     // Prefix-only save: never touch the live counter (otherwise a stale form
     // value could rewind the sequence and reuse an invoice number).
-    const updates: Record<string, unknown> = {
+    const updates: {
+      prefix: string;
+      updated_at: string;
+      updated_by: string;
+      start_number?: number;
+      current_number?: number;
+    } = {
       prefix,
       updated_at: new Date().toISOString(),
       updated_by: actor.userId,
