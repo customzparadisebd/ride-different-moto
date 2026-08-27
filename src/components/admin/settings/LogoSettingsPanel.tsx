@@ -244,7 +244,20 @@ function LogoItem({
                   disabled={!canManage || isUpdating}
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    if (file) onUpload(file);
+                    if (!file) return;
+                    const kb = Math.round(file.size / 1024);
+                    setSelectedFile({ name: file.name, kb });
+                    if (kb > LOGO_MAX_SIZE_KB) {
+                      toast.error(`File is ${kb} KB — the maximum allowed is ${LOGO_MAX_SIZE_KB} KB.`);
+                      e.target.value = "";
+                      return;
+                    }
+                    if (rec.recommended_size_kb && kb > rec.recommended_size_kb) {
+                      toast.warning(
+                        `Uploading ${kb} KB — recommended is under ${rec.recommended_size_kb} KB for faster loading.`,
+                      );
+                    }
+                    onUpload(file);
                   }}
                   className="text-xs h-10 file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-bold file:uppercase file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                 />
