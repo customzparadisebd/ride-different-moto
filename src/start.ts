@@ -3,12 +3,30 @@ import { createStart, createCsrfMiddleware, createMiddleware } from "@tanstack/r
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
+// A client that navigates away / reloads mid-SSR aborts the socket. Node throws
+// `Error: aborted` from node:_http_server — it is not an app bug, so don't log
+// it or render an error page for a connection nobody is listening on.
+function isClientAbort(error: unknown): boolean {
+  if (error == null || typeof error !== "object") return false;
+  const err = error as { message?: unknown; code?: unknown; name?: unknown };
+  const message = typeof err.message === "string" ? err.message : "";
+  return (
+    err.code === "ECONNRESET" ||
+    err.name === "AbortError" ||
+    message === "aborted" ||
+    message.includes("aborted")
+  );
+}
+
 const errorMiddleware = createMiddleware().server(async ({ next }) => {
   try {
     return await next();
   } catch (error) {
     if (error != null && typeof error === "object" && "statusCode" in error) {
       throw error;
+    }
+    if (isClientAbort(error)) {
+      return new Response(null, { status: 499 });
     }
     console.error(error);
     return new Response(renderErrorPage(), {
