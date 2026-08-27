@@ -106,12 +106,12 @@ export function Header() {
         </div>
 
         {/* TABLET / DESKTOP: Main navigation */}
-        <nav className="hidden min-w-0 items-center justify-center gap-1 overflow-visible min-[768px]:flex min-[900px]:gap-1.5 min-[1100px]:gap-3 xl:gap-6">
+        <nav className="hidden min-w-0 items-center justify-center gap-3 overflow-visible min-[768px]:flex min-[900px]:gap-4 min-[1100px]:gap-5 xl:gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.to}
               to={link.to}
-              className="min-w-0 whitespace-nowrap px-0.5 font-display text-[8px] font-bold uppercase leading-none text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[8.5px] min-[900px]:text-[9px] min-[1100px]:px-1 min-[1100px]:text-[11px] xl:text-[12px]"
+              className="min-w-0 whitespace-nowrap px-1 font-display text-[10px] font-bold uppercase leading-tight tracking-wide text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[11px] min-[900px]:text-[12px] min-[1100px]:px-1.5 min-[1100px]:text-[13px] xl:text-[14px]"
             >
               {link.label}
             </Link>
