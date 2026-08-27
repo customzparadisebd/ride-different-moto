@@ -116,21 +116,13 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
     };
 
     if (data.nextNumber !== undefined) {
-      // Force the NEXT order to use exactly this serial.
-      const target = formatInvoiceNo(prefix, data.nextNumber);
-      const { data: exists } = await supabase
-        .from("orders")
-        .select("id")
-        .eq("invoice_no", target)
-        .maybeSingle();
-      if (exists) {
-        throw new Error(
-          `Conflict: Invoice ${target} already exists. Please choose a different starting number.`,
-        );
-      }
-      updates["start_number"] = data.nextNumber;
-      updates["current_number"] = data.nextNumber - 1;
+      // Requested serial may already be taken (history stays intact), so roll
+      // forward to the first free serial instead of failing the save.
+      const { nextNumber } = await resolveNextInvoiceNo(supabase, prefix, data.nextNumber);
+      updates["start_number"] = nextNumber;
+      updates["current_number"] = nextNumber - 1;
     }
+
 
     const { error } = await supabase
       .from("invoice_settings")
