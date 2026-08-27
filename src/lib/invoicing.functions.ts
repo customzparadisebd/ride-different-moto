@@ -8,7 +8,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
 import { invoiceSettingsInput, type InvoiceSettingsState } from "./invoicing.shared";
-import { readInvoiceSettingsState } from "./invoicing.server";
+import { buildInvoiceSettingsUpdate, readInvoiceSettingsState } from "./invoicing.server";
 
 /** Admin: Fetches current invoice prefix, sequence state and the next invoice number. */
 export const getInvoiceSettings = createServerFn({ method: "POST" })
@@ -43,13 +43,13 @@ export const saveInvoiceSettings = createServerFn({ method: "POST" })
 
     // Prefix-only save: never touch the live counter (otherwise a stale form
     // value could rewind the sequence and reuse an invoice number).
-    // Keep reset/manual saves atomic at the database boundary. A historical
-    // counter can never be combined with the newly requested start number.
-    const rpcArgs =
-      data.nextNumber === undefined
-        ? { p_prefix: prefix }
-        : { p_prefix: prefix, p_next_number: data.nextNumber };
-    const { error } = await supabase.rpc("save_invoice_settings", rpcArgs);
+    // PostgREST sends this as one UPDATE statement, so the requested start and
+    // its matching previous counter are committed atomically.
+    const updates = buildInvoiceSettingsUpdate(prefix, actor.userId, data.nextNumber);
+    const { error } = await supabase
+      .from("invoice_settings")
+      .update(updates)
+      .eq("id", "default");
 
     if (error) throw new Error("Could not save invoice settings.");
 

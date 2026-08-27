@@ -2,7 +2,7 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import type { Database } from "@/integrations/supabase/types";
-import { readInvoiceSettingsState } from "@/lib/invoicing.server";
+import { buildInvoiceSettingsUpdate, readInvoiceSettingsState } from "@/lib/invoicing.server";
 
 const backendUrl = process.env["SUPABASE_URL"] ?? process.env["VITE_SUPABASE_URL"];
 const serviceKey = process.env["SUPABASE_SERVICE_ROLE_KEY"];
@@ -149,5 +149,26 @@ integrationDescribe.sequential("authoritative invoice reset", () => {
 
     const advancedState = await readInvoiceSettingsState(getClient());
     expect(advancedState.nextInvoiceNo).toBe(`${testPrefix}-26`);
+  });
+});
+
+describe("invoice settings save payload", () => {
+  it("rewinds the previous counter when reset/manual next number is supplied", () => {
+    expect(buildInvoiceSettingsUpdate("CZP", "actor-id", 1)).toMatchObject({
+      prefix: "CZP",
+      start_number: 1,
+      current_number: 0,
+      updated_by: "actor-id",
+    });
+    expect(buildInvoiceSettingsUpdate("CZP", "actor-id", 25)).toMatchObject({
+      start_number: 25,
+      current_number: 24,
+    });
+  });
+
+  it("does not rewind the counter for a prefix-only change", () => {
+    const update = buildInvoiceSettingsUpdate("NEW", "actor-id");
+    expect(update).not.toHaveProperty("start_number");
+    expect(update).not.toHaveProperty("current_number");
   });
 });

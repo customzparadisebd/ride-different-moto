@@ -6,6 +6,21 @@ import {
 
 type InvoiceSettingsClient = { from: (table: string) => any };
 
+export function buildInvoiceSettingsUpdate(
+  prefix: string,
+  actorId: string,
+  nextNumber?: number,
+) {
+  return {
+    prefix,
+    updated_at: new Date().toISOString(),
+    updated_by: actorId,
+    ...(nextNumber === undefined
+      ? {}
+      : { start_number: nextNumber, current_number: nextNumber - 1 }),
+  };
+}
+
 export async function readInvoiceSettingsState(
   supabase: InvoiceSettingsClient,
 ): Promise<InvoiceSettingsState> {
