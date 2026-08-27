@@ -256,6 +256,17 @@ export const orderPurgeInput = z.object({
   confirmInvoiceNo: z.string().trim().min(1).max(60),
 });
 
+/** Bulk Recycle Bin actions on orders. */
+export const orderBulkRecycleInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(200),
+  reason: z.string().trim().max(300).optional(),
+});
+
+export const orderBulkPurgeInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(200),
+  confirm: z.literal("DELETE"),
+});
+
 /** Bulk order-status change from the list screen. */
 export const orderBulkStatusInput = z.object({
   orderIds: z.array(z.string().uuid()).min(1).max(100),

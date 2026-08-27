@@ -52,6 +52,7 @@ import {
 import { formatBDT } from "@/lib/format";
 import { exportOrdersCsv, exportOrdersXlsx, printOrders } from "@/lib/orders-export";
 import { getOrdersForExport } from "@/lib/orders-export.functions";
+import { bulkRecycleOrders } from "@/lib/orders-recycle.functions";
 import {
   assignOrders,
   bulkUpdateOrderStatus,
@@ -95,6 +96,7 @@ function AdminOrderList() {
   const fetchOrders = useServerFn(listOrders);
   const access = useServerFn(getMyAccess);
   const bulkUpdate = useServerFn(bulkUpdateOrderStatus);
+  const bulkRecycle = useServerFn(bulkRecycleOrders);
   const fetchCounts = useServerFn(getOrderTabCounts);
   const fetchStaff = useServerFn(listOrderStaff);
   const assign = useServerFn(assignOrders);
@@ -159,6 +161,17 @@ function AdminOrderList() {
       refreshOrders();
     },
     onError: (error: Error) => toast.error(error.message || "Could not update the orders."),
+  });
+
+  const bulkRecycleMutation = useMutation({
+    mutationFn: bulkRecycle,
+    onSuccess: (result) => {
+      toast.success(`${result.recycled} order(s) moved to the Recycle Bin`);
+      setSelected([]);
+      refreshOrders();
+      void queryClient.invalidateQueries({ queryKey: ["admin-recycle-bin"] });
+    },
+    onError: (error: Error) => toast.error(error.message || "Could not recycle the orders."),
   });
 
   // BULK ASSIGN USER
@@ -345,10 +358,10 @@ function AdminOrderList() {
             variant="destructive"
             size="sm"
             className="h-7 px-2 text-[10px] uppercase font-bold"
-            disabled={bulkMutation.isPending}
+            disabled={bulkRecycleMutation.isPending}
             onClick={() => {
-              if (confirm(`Move ${selected.length} orders to Recycle Bin?`)) {
-                bulkMutation.mutate({ data: { orderIds: selected, status: "cancelled" } });
+              if (confirm(`Move ${selected.length} order(s) to the Recycle Bin?`)) {
+                bulkRecycleMutation.mutate({ data: { orderIds: selected } });
               }
             }}
           >

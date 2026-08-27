@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatBDT } from "@/lib/format";
 import { getMyAccess, listOrders } from "@/lib/orders.functions";
-import { purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
+import { bulkPurgeOrders, purgeOrder, restoreOrder } from "@/lib/orders-recycle.functions";
 import { listProducts, purgeProduct, restoreProduct } from "@/lib/products.functions";
 import { listAdminCustomers, restoreCustomer, purgeCustomer } from "@/lib/customers.functions";
 
@@ -42,6 +42,7 @@ function RecycleBin() {
   const purgeProductFn = useServerFn(purgeProduct);
   const restoreOrderFn = useServerFn(restoreOrder);
   const purgeOrderFn = useServerFn(purgeOrder);
+  const bulkPurgeOrdersFn = useServerFn(bulkPurgeOrders);
   const fetchCustomers = useServerFn(listAdminCustomers);
   const restoreCustomerFn = useServerFn(restoreCustomer);
   const purgeCustomerFn = useServerFn(purgeCustomer);
@@ -50,6 +51,8 @@ function RecycleBin() {
 
   const accessQuery = useQuery({ queryKey: ["admin-access"], queryFn: () => fetchAccess({ data: undefined }) });
   const isSuperAdmin = accessQuery.data?.isSuperAdmin ?? false;
+  // Permanent deletion is allowed for Admin and Super Admin only.
+  const canPurge = isSuperAdmin || (accessQuery.data?.roles ?? []).includes("admin");
   const canManageProducts = accessQuery.data?.permissions.includes("products.manage") ?? false;
   const canManageOrders = accessQuery.data?.permissions.includes("orders.manage") ?? false;
 
@@ -104,6 +107,14 @@ function RecycleBin() {
     mutationFn: purgeOrderFn,
     onSuccess: () => {
       toast.success("Order permanently deleted");
+      refresh();
+    },
+    onError,
+  });
+  const bulkPurgeOrdersMutation = useMutation({
+    mutationFn: bulkPurgeOrdersFn,
+    onSuccess: (result) => {
+      toast.success(`${result.purged} order(s) permanently deleted`);
       refresh();
     },
     onError,
@@ -238,6 +249,28 @@ function RecycleBin() {
           </table>
         </div>
       ) : tab === "orders" ? (
+        <>
+        {canPurge && orderRows.length > 0 ? (
+          <div className="mt-4 flex justify-end">
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={bulkPurgeOrdersMutation.isPending}
+              onClick={() => {
+                const typed = window.prompt(
+                  `This permanently deletes all ${orderRows.length} order(s) in the Recycle Bin and cannot be undone.\nType DELETE to confirm:`,
+                  "",
+                );
+                if (typed !== "DELETE") return;
+                bulkPurgeOrdersMutation.mutate({
+                  data: { orderIds: orderRows.map((row) => row.id), confirm: "DELETE" },
+                });
+              }}
+            >
+              Empty orders bin ({orderRows.length})
+            </Button>
+          </div>
+        ) : null}
         <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
           <table className="w-full min-w-[720px] text-sm">
             <thead className="border-b border-border bg-secondary text-left text-xs uppercase tracking-wider">
@@ -287,7 +320,7 @@ function RecycleBin() {
                       <Button
                         variant="destructive"
                         size="sm"
-                        disabled={!isSuperAdmin || purgeOrderMutation.isPending}
+                        disabled={!canPurge || purgeOrderMutation.isPending}
                         onClick={() => {
                           const typed = window.prompt(
                             `Permanent delete cannot be undone. Type the invoice number to confirm:\n${row.invoice_no}`,
@@ -308,6 +341,7 @@ function RecycleBin() {
             </tbody>
           </table>
         </div>
+        </>
       ) : (
         <div className="mt-4 overflow-x-auto rounded-xl border border-border bg-card shadow-card">
           <table className="w-full min-w-[720px] text-sm">
@@ -381,11 +415,11 @@ function RecycleBin() {
         </div>
       )}
 
-      {!isSuperAdmin ? (
-        <p className="mt-3 text-xs text-muted-foreground">
-          Permanent deletion is limited to the Super Admin account.
-        </p>
-      ) : null}
+      <p className="mt-3 text-xs text-muted-foreground">
+        {canPurge
+          ? "You are an Admin/Super Admin: permanent deletion is available and every action is written to the audit log."
+          : "Permanent deletion is limited to Admin and Super Admin accounts."}
+      </p>
     </section>
   );
 }
