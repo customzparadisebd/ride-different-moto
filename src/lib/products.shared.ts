@@ -8,6 +8,8 @@
 // ============================================================
 import { z } from "zod";
 
+import { purgeConfirmToken, recycleIdsInput, recyclePurgeIdsInput } from "./recycle.shared";
+
 export const PRODUCT_CATEGORIES = [
   "graphics",
   "lighting",
@@ -151,8 +153,11 @@ export const productRestoreInput = z.object({ id: z.string().uuid() });
 
 export const productPurgeInput = z.object({
   id: z.string().uuid(),
-  confirmName: z.string().trim().min(1).max(200),
+  confirm: purgeConfirmToken,
 });
+
+export const productBulkRestoreInput = recycleIdsInput;
+export const productBulkPurgeInput = recyclePurgeIdsInput;
 
 export const productStockInput = z.object({
   id: z.string().uuid(),

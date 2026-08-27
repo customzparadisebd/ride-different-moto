@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { purgeConfirmToken } from "./recycle.shared";
+
 /** Shapes shared by the storefront checkout and the admin panel. Client-safe. */
 
 export const ORDER_STATUSES = [
@@ -253,7 +255,11 @@ export const orderRestoreInput = z.object({ id: z.string().uuid() });
 
 export const orderPurgeInput = z.object({
   id: z.string().uuid(),
-  confirmInvoiceNo: z.string().trim().min(1).max(60),
+  confirm: purgeConfirmToken,
+});
+
+export const orderBulkRestoreInput = z.object({
+  orderIds: z.array(z.string().uuid()).min(1).max(200),
 });
 
 /** Bulk Recycle Bin actions on orders. */
@@ -264,7 +270,7 @@ export const orderBulkRecycleInput = z.object({
 
 export const orderBulkPurgeInput = z.object({
   orderIds: z.array(z.string().uuid()).min(1).max(200),
-  confirm: z.literal("DELETE"),
+  confirm: purgeConfirmToken,
 });
 
 /** Bulk order-status change from the list screen. */
