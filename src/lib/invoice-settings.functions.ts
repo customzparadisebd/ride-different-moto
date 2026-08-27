@@ -7,13 +7,13 @@ import { createServerFn } from "@tanstack/react-start";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { AUDIT_ACTIONS, PERMISSIONS } from "./admin.shared";
-import { invoiceSettingsInput, type InvoiceSettingsState } from "./invoicing.shared";
+import { invoiceSettingsInput } from "./invoicing.shared";
 import { buildInvoiceSettingsUpdate, readInvoiceSettingsState } from "./invoicing.server";
 
 /** Admin: Fetches current invoice prefix, sequence state and the next invoice number. */
 export const getInvoiceSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }): Promise<InvoiceSettingsState> => {
+  .handler(async ({ context }) => {
     const { resolveActor, assertAccess } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.ordersView);
@@ -25,7 +25,7 @@ export const getInvoiceSettings = createServerFn({ method: "POST" })
 export const saveInvoiceSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => invoiceSettingsInput.parse(input))
-  .handler(async ({ data, context }): Promise<InvoiceSettingsState> => {
+  .handler(async ({ data, context }) => {
     const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
 

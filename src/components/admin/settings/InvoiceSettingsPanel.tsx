@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { getInvoiceSettings, saveInvoiceSettings } from "@/lib/invoicing.functions";
+import { getInvoiceSettings, saveInvoiceSettings } from "@/lib/invoice-settings.functions";
 import {
   DEFAULT_INVOICE_SETTINGS,
   formatInvoiceNo,
