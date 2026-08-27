@@ -56,6 +56,9 @@ export interface SiteLogo {
   updated_at: string;
 }
 
+/** Hard upload ceiling shown in the admin UI (2 MB). */
+export const LOGO_MAX_SIZE_KB = 2048;
+
 export const LOGO_RECOMMENDATIONS: Record<LogoCategory, SiteLogo["settings"]> = {
   main: {
     recommended_width: 512,
@@ -63,21 +66,25 @@ export const LOGO_RECOMMENDATIONS: Record<LogoCategory, SiteLogo["settings"]> = 
     recommended_format: ["PNG", "WebP", "SVG"],
     transparency_required: true,
     aspect_ratio: "1:1",
+    recommended_size_kb: 150,
   },
   header: {
     recommended_height: 80,
     recommended_format: ["PNG", "WebP", "SVG"],
     transparency_required: true,
+    recommended_size_kb: 80,
   },
   footer: {
     recommended_height: 80,
     recommended_format: ["PNG", "WebP", "SVG"],
     transparency_required: true,
+    recommended_size_kb: 80,
   },
   mobile: {
     recommended_height: 60,
     recommended_format: ["PNG", "WebP", "SVG"],
     transparency_required: true,
+    recommended_size_kb: 60,
   },
   admin_login: {
     recommended_width: 800,
@@ -85,11 +92,13 @@ export const LOGO_RECOMMENDATIONS: Record<LogoCategory, SiteLogo["settings"]> = 
     recommended_format: ["PNG", "WebP"],
     transparency_required: true,
     aspect_ratio: "1:1",
+    recommended_size_kb: 200,
   },
   admin_sidebar: {
     recommended_height: 48,
     recommended_format: ["PNG", "WebP", "SVG"],
     transparency_required: true,
+    recommended_size_kb: 60,
   },
   invoice: {
     recommended_height: 120,
@@ -101,12 +110,13 @@ export const LOGO_RECOMMENDATIONS: Record<LogoCategory, SiteLogo["settings"]> = 
     recommended_height: 32,
     recommended_format: ["ICO", "PNG"],
     aspect_ratio: "1:1",
+    recommended_size_kb: 20,
   },
   og_image: {
     recommended_width: 1200,
     recommended_height: 630,
     recommended_format: ["JPG", "PNG"],
     aspect_ratio: "1.91:1",
-    recommended_size_kb: 500,
+    recommended_size_kb: 300,
   },
 };
