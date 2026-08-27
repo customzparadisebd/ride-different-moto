@@ -113,12 +113,26 @@ export function SafeImage({
 
   const canRetry = attempt < MAX_RETRIES;
 
+  // A responsive `aspect-*` utility in containerClassName (e.g. the hero's
+  // aspect-[3/4] sm:aspect-21/9) must win over the intrinsic width/height
+  // ratio — an inline style would otherwise beat every breakpoint class and
+  // crop portrait mobile art to 16:9.
+  const hasAspectClass = /(^|\s)(sm:|md:|lg:|xl:|2xl:|min-\[[^\]]+\]:)?aspect-/.test(
+    containerClassName ?? "",
+  );
+  const inlineAspectRatio =
+    fixedAspectRatio && !hasAspectClass
+      ? aspectRatio || (width && height ? `${width} / ${height}` : "1/1")
+      : aspectRatio && !hasAspectClass
+        ? aspectRatio
+        : undefined;
+
   return (
     <div
       className={cn("relative overflow-hidden bg-muted", containerClassName)}
       style={{
-        aspectRatio: fixedAspectRatio ? (aspectRatio || (width && height ? `${width} / ${height}` : "1/1")) : undefined,
-        height: fixedAspectRatio ? "auto" : undefined,
+        aspectRatio: inlineAspectRatio,
+        height: fixedAspectRatio && !hasAspectClass ? "auto" : undefined,
       }}
     >
       {/* 4. Blur-up placeholder effect */}
