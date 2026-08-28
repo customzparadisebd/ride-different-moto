@@ -2354,7 +2354,8 @@ DROP POLICY IF EXISTS "Admins can view collisions" ON public.invoice_collisions;
 CREATE POLICY "Admins can view collisions" ON public.invoice_collisions FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 
 DROP POLICY IF EXISTS "Admins can update invoice settings" ON public.invoice_settings;
-CREATE POLICY "Admins can update invoice settings" ON public.invoice_settings FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Admins can manage invoice settings" ON public.invoice_settings;
+CREATE POLICY "Admins can manage invoice settings" ON public.invoice_settings FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role) OR is_super_admin(auth.uid())) WITH CHECK (has_role(auth.uid(), 'admin'::app_role) OR is_super_admin(auth.uid()));
 
 DROP POLICY IF EXISTS "Staff can read invoice settings" ON public.invoice_settings;
 CREATE POLICY "Staff can read invoice settings" ON public.invoice_settings FOR SELECT TO authenticated USING (is_staff(auth.uid()));
