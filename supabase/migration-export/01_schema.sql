@@ -835,6 +835,10 @@ BEGIN
     WHERE id = 'default'
     FOR UPDATE;
 
+    IF v_prefix IS NULL OR v_num IS NULL THEN
+        RAISE EXCEPTION 'Invoice settings are not configured';
+    END IF;
+
     v_invoice_no := v_prefix || '-' || CASE
         WHEN v_num < 10 THEN LPAD(v_num::TEXT, 2, '0')
         ELSE v_num::TEXT
