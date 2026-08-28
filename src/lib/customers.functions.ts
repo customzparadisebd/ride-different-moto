@@ -282,9 +282,11 @@ export const bulkPurgeCustomers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input: unknown) => customerBulkPurgeInput.parse(input))
   .handler(async ({ data, context }) => {
-    const { resolveActor, assertAccess, auditFromActor } = await import("./admin.server");
+    const { resolveActor, auditFromActor } = await import("./admin.server");
     const actor = await resolveActor(context.userId, context.claims as never);
-    assertAccess(actor, PERMISSIONS.securityManage);
+    if (!actor.isSuperAdmin && actor.primaryRole !== "admin") {
+      throw new Error("Only an Admin or Super Admin can permanently delete customers.");
+    }
 
     const { data: rows, error: readError } = await context.supabase
       .from("customers")
