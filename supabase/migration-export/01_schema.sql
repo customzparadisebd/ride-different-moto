@@ -1884,11 +1884,16 @@ GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO authenticat
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO service_role;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO anon;
+-- invoice_settings is admin-only: no anon grant (matches live project, 2026-08-27).
+GRANT SELECT, INSERT, UPDATE ON public.invoice_settings TO authenticated;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO authenticated;
+GRANT ALL ON public.invoice_settings TO service_role;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO service_role;
+-- Invoice number generators are service-role only.
+REVOKE EXECUTE ON FUNCTION public.generate_next_invoice_no() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.generate_next_invoice_no(boolean) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.generate_next_invoice_no() TO service_role;
+GRANT EXECUTE ON FUNCTION public.generate_next_invoice_no(boolean) TO service_role;
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON public.leads TO anon;
 
