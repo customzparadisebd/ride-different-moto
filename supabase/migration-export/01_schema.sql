@@ -835,6 +835,10 @@ BEGIN
     WHERE id = 'default'
     FOR UPDATE;
 
+    IF v_prefix IS NULL OR v_num IS NULL THEN
+        RAISE EXCEPTION 'Invoice settings are not configured';
+    END IF;
+
     v_invoice_no := v_prefix || '-' || CASE
         WHEN v_num < 10 THEN LPAD(v_num::TEXT, 2, '0')
         ELSE v_num::TEXT
@@ -875,6 +879,10 @@ BEGIN
         FROM public.invoice_settings
         WHERE id = 'default'
         FOR UPDATE;
+    END IF;
+
+    IF v_prefix IS NULL OR v_num IS NULL THEN
+        RAISE EXCEPTION 'Invoice settings are not configured';
     END IF;
 
     v_invoice_no := v_prefix || '-' || CASE
@@ -1876,11 +1884,16 @@ GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO authenticat
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_collisions TO service_role;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO anon;
+-- invoice_settings is admin-only: no anon grant (matches live project, 2026-08-27).
+GRANT SELECT, INSERT, UPDATE ON public.invoice_settings TO authenticated;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO authenticated;
+GRANT ALL ON public.invoice_settings TO service_role;
 
-GRANT DELETE, INSERT, SELECT, UPDATE ON public.invoice_settings TO service_role;
+-- Invoice number generators are service-role only.
+REVOKE EXECUTE ON FUNCTION public.generate_next_invoice_no() FROM PUBLIC, anon, authenticated;
+REVOKE EXECUTE ON FUNCTION public.generate_next_invoice_no(boolean) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.generate_next_invoice_no() TO service_role;
+GRANT EXECUTE ON FUNCTION public.generate_next_invoice_no(boolean) TO service_role;
 
 GRANT DELETE, INSERT, SELECT, UPDATE ON public.leads TO anon;
 
@@ -2341,7 +2354,8 @@ DROP POLICY IF EXISTS "Admins can view collisions" ON public.invoice_collisions;
 CREATE POLICY "Admins can view collisions" ON public.invoice_collisions FOR SELECT TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
 
 DROP POLICY IF EXISTS "Admins can update invoice settings" ON public.invoice_settings;
-CREATE POLICY "Admins can update invoice settings" ON public.invoice_settings FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role));
+DROP POLICY IF EXISTS "Admins can manage invoice settings" ON public.invoice_settings;
+CREATE POLICY "Admins can manage invoice settings" ON public.invoice_settings FOR ALL TO authenticated USING (has_role(auth.uid(), 'admin'::app_role) OR is_super_admin(auth.uid())) WITH CHECK (has_role(auth.uid(), 'admin'::app_role) OR is_super_admin(auth.uid()));
 
 DROP POLICY IF EXISTS "Staff can read invoice settings" ON public.invoice_settings;
 CREATE POLICY "Staff can read invoice settings" ON public.invoice_settings FOR SELECT TO authenticated USING (is_staff(auth.uid()));
