@@ -310,7 +310,7 @@ function Index() {
             
             {showAllProductsSeeAll && (
               <div className="mt-12 flex justify-center">
-                <Button variant="outline" size="lg" asChild className="shadow-3d hover:translate-y-[-2px] active:translate-y-[1px] transition-all border-white/10 text-white hover:bg-white/5 font-display uppercase tracking-wider">
+                <Button variant="outline" size="lg" asChild className="shadow-3d hover:translate-y-[-2px] active:translate-y-[1px] transition-all border-border text-foreground hover:bg-accent hover:text-accent-foreground font-display uppercase tracking-wider">
                   <Link to={allProductsSetting?.buttonLink || "/shop"}>
                     {allProductsSetting?.buttonText || "See All Products"}
                     <ArrowRight className="ml-2 h-5 w-5" />
