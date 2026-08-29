@@ -34,3 +34,22 @@ step 4: it is what stops the next order from reusing an existing invoice number.
   `bike_models` policies call them. Do not swap them for the `public.*` versions.
 - Passwords and MFA/TOTP factors cannot be exported. Accounts are recreated by
   hand and everyone re-enrols two-factor after the first login.
+
+## Changelog
+
+### 2026-08-28 — synced with live database
+
+- `invoice_settings` RLS replaced with a single "Admins can manage invoice settings"
+  policy that allows **Admin or Super Admin** (fixes the "invoice serial won't reset"
+  bug that the older export would have reproduced).
+- Dropped the over-permissive `anon` grant on `invoice_settings`; only
+  `authenticated` + `service_role` remain.
+- `generate_next_invoice_no()` / `generate_next_invoice_no(boolean)` bodies updated
+  to the live versions, including the "Invoice settings are not configured" guard.
+- Added `REVOKE EXECUTE ... FROM PUBLIC, anon, authenticated` plus
+  `GRANT EXECUTE ... TO service_role` on both invoice generators.
+- `orders.invoice_no` unique constraint replaced by a plain (non-unique) index, so
+  an admin-chosen starting number may reuse a historical label.
+
+No database migration is needed for the live project — it already contains all of
+the above; only this export was behind.

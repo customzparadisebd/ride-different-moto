@@ -83,3 +83,32 @@ vars including `SUPABASE_SERVICE_ROLE_KEY`.
 - Permanent delete now runs through service-role hardDeleteOrders() (orders has no staff DELETE policy) and removes dependent rows (items, events, payments, courier/stock records) first.
 - Permanent delete allowed for Admin + Super Admin; per-order confirm by invoice no, plus "Empty orders bin" with typed DELETE. All actions audited.
 - Next: consider same admin-level purge for products/customers if requested.
+
+## 2026-08-28 — Final production-readiness audit
+
+Result: READY to deploy on own Supabase + GitHub + Netlify, no code blockers.
+
+Verified: Netlify config (`DEPLOY_PRESET=netlify`, `publish = dist`, Node 22,
+security headers, `no-store`/`noindex` on `/ad/*`, `/czp-ops-9f2c/*`, `/api/*`),
+portable Vite/nitro build with production sourcemaps off, no secrets in the repo
+(`SUPABASE_SERVICE_ROLE_KEY` read only inside server handlers), server-side auth via
+`requireSupabaseAuth`, and the four-step migration package.
+
+Fixed during the audit:
+- `src/lib/customers.functions.ts` — bulk permanent delete of customers now allows
+  Admin + Super Admin, matching products/orders.
+- `supabase/migration-export/01_schema.sql` — synced with the live database
+  (invoice-settings RLS for Admin *and* Super Admin, `anon` grant dropped, updated
+  invoice generator functions with REVOKE/GRANT hardening, non-unique
+  `orders.invoice_no` index). See that folder's README changelog.
+- `src/lib/hero-restore.server.ts` — hero seed image URLs now built from
+  `process.env['SUPABASE_URL']` instead of a hardcoded project ref.
+
+Owner steps outside Lovable: create the Supabase project, run
+`supabase/migration-export/` steps 1-4, create auth users by hand before step 3 and
+re-enrol MFA, create the six storage buckets from `05_storage.md`, and set on
+Netlify: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`,
+`VITE_SUPABASE_PROJECT_ID`, `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`,
+`SUPABASE_SERVICE_ROLE_KEY` (mandatory).
+
+Next: nothing pending — documentation and audit closed.
