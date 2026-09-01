@@ -976,15 +976,7 @@ AS $function$
   );
 $function$;
 
--- is_super_admin(uuid)
-CREATE OR REPLACE FUNCTION public.is_super_admin(_user_id uuid)
- RETURNS boolean
- LANGUAGE sql
- STABLE SECURITY DEFINER
- SET search_path TO 'public'
-AS $function$
-  SELECT EXISTS (SELECT 1 FROM public.user_roles WHERE user_id = _user_id AND role = 'super_admin');
-$function$;
+
 
 -- next_invoice_no()
 CREATE OR REPLACE FUNCTION public.next_invoice_no()
