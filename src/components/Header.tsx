@@ -228,23 +228,8 @@ export function Header() {
                     </SheetClose>
                   </div>
 
-                  <nav className="flex-1 overflow-y-auto py-4">
-                    {navLinks.map((link) => {
-                      const Icon = NAV_ICONS[link.to] || Home;
-                      return (
-                        <Link
-                          key={link.to}
-                          to={link.to}
-                          onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-4 px-5 py-3.5 text-sm font-bold uppercase tracking-[0.18em] text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary active:bg-primary/10"
-                        >
-                          <Icon className="h-5 w-5 shrink-0" />
-                          <span className="min-w-0 flex-1 truncate">{link.label}</span>
-                          <ChevronRight className="h-4 w-4 shrink-0 opacity-40" />
-                        </Link>
-                      );
-                    })}
-                  </nav>
+                  {drawerNav}
+
 
                   <div className="space-y-3 border-t border-border bg-muted/20 p-5 pb-safe">
                     <div className="flex justify-center">{languageSwitcher()}</div>
