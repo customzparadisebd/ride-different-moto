@@ -144,7 +144,13 @@ export function Header() {
   );
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+    <header
+      className={`fixed top-0 left-0 right-0 z-[100] border-b border-border pt-safe shadow-sm ${
+        menuOpen
+          ? "bg-background"
+          : "bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80"
+      }`}
+    >
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 sm:h-18 sm:px-4 min-[900px]:gap-3 min-[900px]:px-5 min-[1100px]:h-20 min-[1100px]:px-6 xl:px-8">
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
