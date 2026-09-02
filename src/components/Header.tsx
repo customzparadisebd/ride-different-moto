@@ -15,7 +15,7 @@ import {
   X,
   MessageCircle,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
 import { CartSheet } from "@/components/CartSheet";
@@ -52,12 +52,17 @@ export function Header() {
   });
 
   const settings = siteSettings || site;
-  const businessName =
-    (settings as SiteSettings).businessName || (settings as any).name || site.name;
-  const whatsappNumber = (settings as SiteSettings).whatsapp || (settings as any).whatsapp || "";
-  const whatsappHref = whatsappNumber
-    ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`
-    : site.whatsappHref;
+  const { businessName, whatsappHref } = useMemo(() => {
+    const name =
+      (settings as SiteSettings).businessName || (settings as any).name || site.name;
+    const number = (settings as SiteSettings).whatsapp || (settings as any).whatsapp || "";
+    return {
+      businessName: name,
+      whatsappHref: number
+        ? `https://wa.me/${number.replace(/\D/g, "")}`
+        : site.whatsappHref,
+    };
+  }, [settings]);
 
   // Close the drawer whenever the viewport leaves the true mobile layout.
   useEffect(() => {
@@ -68,35 +73,84 @@ export function Header() {
     };
     onChange();
     mql.addEventListener("change", onChange);
-    window.addEventListener("resize", onChange);
     return () => {
       mql.removeEventListener("change", onChange);
-      window.removeEventListener("resize", onChange);
     };
   }, []);
 
-  const languageSwitcher = (extraClass = "") => (
-    <button
-      onClick={toggleLanguage}
-      className={`group flex h-9 items-center rounded-full bg-secondary/50 px-2.5 font-display text-[10px] font-bold transition-all hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:px-3 sm:text-[11px] min-[1100px]:h-11 min-[1100px]:px-5 min-[1100px]:text-[13px] ${extraClass}`}
-      aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
-    >
-      <span
-        className={`transition-colors ${language === "bn" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  const languageSwitcher = useCallback(
+    (extraClass = "") => (
+      <button
+        onClick={toggleLanguage}
+        className={`group flex h-9 items-center rounded-full bg-secondary/50 px-2.5 font-display text-[10px] font-bold transition-colors hover:bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-95 sm:h-10 sm:px-3 sm:text-[11px] min-[1100px]:h-11 min-[1100px]:px-5 min-[1100px]:text-[13px] ${extraClass}`}
+        aria-label={`Switch to ${language === "en" ? "Bangla" : "English"}`}
       >
-        বাং
-      </span>
-      <span className="mx-1 h-3 w-px bg-border/50 min-[1100px]:mx-2" />
-      <span
-        className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}
-      >
-        ENG
-      </span>
-    </button>
+        <span
+          className={`transition-colors ${language === "bn" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}
+        >
+          বাং
+        </span>
+        <span className="mx-1 h-3 w-px bg-border/50 min-[1100px]:mx-2" />
+        <span
+          className={`transition-colors ${language === "en" ? "text-primary" : "text-foreground/40 group-hover:text-foreground/60"}`}
+        >
+          ENG
+        </span>
+      </button>
+    ),
+    [language, toggleLanguage],
+  );
+
+  const desktopNav = useMemo(
+    () => (
+      <nav className="hidden min-w-0 items-center justify-center gap-3 overflow-visible min-[768px]:flex min-[820px]:gap-4 min-[900px]:gap-5 min-[1100px]:gap-6 xl:gap-6">
+        {navLinks.map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="min-w-0 whitespace-nowrap px-1 font-display text-[12px] font-bold uppercase leading-snug tracking-[0.14em] text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[13px] min-[900px]:text-[14px] min-[1100px]:px-1.5 min-[1100px]:text-[15px] xl:text-[16px]"
+          >
+            {link.label}
+          </Link>
+        ))}
+      </nav>
+    ),
+    [],
+  );
+
+  const drawerNav = useMemo(
+    () => (
+      <nav className="flex-1 overflow-y-auto py-4">
+        {navLinks.map((link) => {
+          const Icon = NAV_ICONS[link.to] || Home;
+          return (
+            <Link
+              key={link.to}
+              to={link.to}
+              onClick={closeMenu}
+              className="flex items-center gap-4 px-5 py-3.5 text-sm font-bold uppercase tracking-[0.18em] text-foreground/70 transition-colors hover:bg-primary/5 hover:text-primary active:bg-primary/10"
+            >
+              <Icon className="h-5 w-5 shrink-0" />
+              <span className="min-w-0 flex-1 truncate">{link.label}</span>
+              <ChevronRight className="h-4 w-4 shrink-0 opacity-40" />
+            </Link>
+          );
+        })}
+      </nav>
+    ),
+    [closeMenu],
   );
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] border-b border-border bg-background/95 pt-safe shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+    <header
+      className={`fixed top-0 left-0 right-0 z-[100] border-b border-border pt-safe shadow-sm ${
+        menuOpen
+          ? "bg-background"
+          : "bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/80"
+      }`}
+    >
       <div className="mx-auto grid h-16 max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 px-3 sm:h-18 sm:px-4 min-[900px]:gap-3 min-[900px]:px-5 min-[1100px]:h-20 min-[1100px]:px-6 xl:px-8">
         {/* LEFT: Logo */}
         <div className="flex shrink-0 items-center">
@@ -106,17 +160,8 @@ export function Header() {
         </div>
 
         {/* TABLET / DESKTOP: Main navigation */}
-        <nav className="hidden min-w-0 items-center justify-center gap-3 overflow-visible min-[768px]:flex min-[820px]:gap-4 min-[900px]:gap-5 min-[1100px]:gap-6 xl:gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="min-w-0 whitespace-nowrap px-1 font-display text-[12px] font-bold uppercase leading-snug tracking-[0.14em] text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[13px] min-[900px]:text-[14px] min-[1100px]:px-1.5 min-[1100px]:text-[15px] xl:text-[16px]"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {desktopNav}
+
 
 
         {/* RIGHT: Controls — Language, Theme, Cart, Hamburger */}
@@ -183,23 +228,8 @@ export function Header() {
                     </SheetClose>
                   </div>
 
-                  <nav className="flex-1 overflow-y-auto py-4">
-                    {navLinks.map((link) => {
-                      const Icon = NAV_ICONS[link.to] || Home;
-                      return (
-                        <Link
-                          key={link.to}
-                          to={link.to}
-                          onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-4 px-5 py-3.5 text-sm font-bold uppercase tracking-[0.18em] text-foreground/70 transition-all hover:bg-primary/5 hover:text-primary active:bg-primary/10"
-                        >
-                          <Icon className="h-5 w-5 shrink-0" />
-                          <span className="min-w-0 flex-1 truncate">{link.label}</span>
-                          <ChevronRight className="h-4 w-4 shrink-0 opacity-40" />
-                        </Link>
-                      );
-                    })}
-                  </nav>
+                  {drawerNav}
+
 
                   <div className="space-y-3 border-t border-border bg-muted/20 p-5 pb-safe">
                     <div className="flex justify-center">{languageSwitcher()}</div>
