@@ -160,17 +160,8 @@ export function Header() {
         </div>
 
         {/* TABLET / DESKTOP: Main navigation */}
-        <nav className="hidden min-w-0 items-center justify-center gap-3 overflow-visible min-[768px]:flex min-[820px]:gap-4 min-[900px]:gap-5 min-[1100px]:gap-6 xl:gap-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="min-w-0 whitespace-nowrap px-1 font-display text-[12px] font-bold uppercase leading-snug tracking-[0.14em] text-foreground/80 transition-colors hover:text-primary min-[820px]:text-[13px] min-[900px]:text-[14px] min-[1100px]:px-1.5 min-[1100px]:text-[15px] xl:text-[16px]"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        {desktopNav}
+
 
 
         {/* RIGHT: Controls — Language, Theme, Cart, Hamburger */}
