@@ -27,7 +27,7 @@ import { logNotFound } from "@/lib/analytics.functions";
 import { getSiteSettings } from "@/lib/site-settings.functions";
 import { listLogos } from "@/lib/logos.functions";
 
-import errorGif from "@/assets/404-error.gif.asset.json";
+import errorGif from "@/assets/404-error.gif";
 import { SmoothCursor } from "@/components/SmoothCursor";
 import { type SiteSettings } from "@/lib/settings.shared";
 
@@ -50,7 +50,7 @@ function NotFoundComponent() {
       <div className="w-full max-w-lg text-center">
         <div className="relative mx-auto mb-10 w-full max-w-[320px] overflow-hidden rounded-xl bg-muted/30 sm:max-w-[500px] lg:max-w-[600px]">
           <img
-            src={errorGif.url}
+            src={errorGif}
             alt="Page not found"
             className="h-auto w-full object-contain transition-transform duration-500 hover:scale-105"
             loading="eager"

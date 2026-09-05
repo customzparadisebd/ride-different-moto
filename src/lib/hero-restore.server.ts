@@ -18,8 +18,8 @@ export const restoreHeroSlides = async () => {
     {
       title: "Perfect Price",
       subtitle: "MODIFICATION IS EXPENSIVE BUT HAND IN OUR HEART",
-      image_url: "/__l5e/assets-v1/c187090e-7ba9-4046-9981-57540145e782/hero-desktop.webp",
-      mobile_image_url: "/__l5e/assets-v1/c8d9b474-5ea7-4248-b900-7aa7017003ee/hero-mobile.webp",
+      image_url: "/hero/hero-desktop.png",
+      mobile_image_url: "/hero/hero-mobile.png",
       link_url: "all-products",
       sort_order: 0,
       is_active: true
