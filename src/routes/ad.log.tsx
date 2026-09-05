@@ -24,8 +24,8 @@ import { PasswordInput } from "@/components/PasswordInput";
 import { Logo } from "@/components/Logo";
 import { site } from "@/data/site";
 import { supabase } from "@/integrations/supabase/client";
-import animationAsset from "@/assets/login-animation.mp4.asset.json";
-import logo3dAsset from "@/assets/czp-logo-3d.png.asset.json";
+import animationAsset from "@/assets/login-animation.mp4";
+import logo3dAsset from "@/assets/czp-logo-3d.png";
 import {
   checkLoginAllowed,
   recordSignIn,
@@ -201,7 +201,7 @@ function AuthPage() {
             playsInline
             className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none"
           >
-            <source src={animationAsset.url} type="video/mp4" />
+            <source src={animationAsset} type="video/mp4" />
           </video>
 
           <div className="relative z-10 p-12 text-center">
@@ -321,7 +321,7 @@ function AuthPage() {
           playsInline
           className="absolute inset-0 h-full w-full object-cover opacity-80 brightness-[1.1] contrast-[1.15] saturate-[1.1] pointer-events-none"
         >
-          <source src={animationAsset.url} type="video/mp4" />
+          <source src={animationAsset} type="video/mp4" />
         </video>
         <div className="relative z-10 p-12 text-center">
           <h2 className="font-brush text-4xl font-bold uppercase tracking-wider text-white sm:text-6xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
@@ -419,7 +419,7 @@ function AuthPage() {
       {/* Mobile-only background video overlay */}
       <div className="fixed inset-0 -z-10 md:hidden overflow-hidden pointer-events-none">
         <video autoPlay muted loop playsInline className="h-full w-full object-cover opacity-20">
-          <source src={animationAsset.url} type="video/mp4" />
+          <source src={animationAsset} type="video/mp4" />
         </video>
         <div className="absolute inset-0 bg-black/60" />
       </div>

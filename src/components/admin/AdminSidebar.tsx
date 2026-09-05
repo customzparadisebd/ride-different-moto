@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 
-import czpLogoAsset from "@/assets/czp-logo.png.asset.json";
+import czpLogoAsset from "@/assets/czp-logo.webp";
 
 import {
   Sidebar,

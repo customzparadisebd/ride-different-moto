@@ -1,5 +1,5 @@
-import bannerPerfectPriceMobile from "@/assets/hero-mobile.png.asset.json";
-import bannerPerfectPrice from "@/assets/banner-perfect-price.png.asset.json";
+import bannerPerfectPriceMobile from "@/assets/hero-mobile.png";
+import bannerPerfectPrice from "@/assets/banner-perfect-price.png";
 import heroDuke from "@/assets/hero-duke-250.jpg";
 import heroN160 from "@/assets/hero-pulsar-n160.jpg";
 import heroR15 from "@/assets/hero-r15-v4.jpg";
@@ -21,8 +21,8 @@ const heroSlides: HeroSlide[] = [
     id: "hs-0",
     bikeName: "We Are Perfect Price",
     label: "Quality & Value",
-    image: (bannerPerfectPrice as any).url,
-    mobileImage: (bannerPerfectPriceMobile as any).url,
+    image: bannerPerfectPrice,
+    mobileImage: bannerPerfectPriceMobile,
     alt: "Modification is expensive but hand in our heart - We are perfect price banner",
     bikeSlug: "all-products",
     order: 0,

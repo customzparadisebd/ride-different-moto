@@ -1,4 +1,4 @@
-import orderSuccessVideo from "@/assets/order-confirmation-anim.mp4.asset.json";
+import orderSuccessVideo from "@/assets/order-confirmation-anim.mp4";
 
 /**
  * OrderSuccessAnimation
@@ -22,7 +22,7 @@ export function OrderSuccessAnimation({ className = "" }: { className?: string }
             video.play().catch(() => {});
           }}
         >
-          <source src={orderSuccessVideo.url} type="video/mp4" />
+          <source src={orderSuccessVideo} type="video/mp4" />
         </video>
       </div>
     </div>
