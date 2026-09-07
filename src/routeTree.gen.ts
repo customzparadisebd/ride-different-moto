@@ -57,6 +57,7 @@ import { Route as AuthenticatedAdInvoiceIdRouteImport } from './routes/_authenti
 import { Route as AuthenticatedAdOrdersIndexRouteImport } from './routes/_authenticated/ad/orders.index'
 import { Route as AuthenticatedAdOrdersIdRouteImport } from './routes/_authenticated/ad/orders.$id'
 import { Route as AuthenticatedAdOrdersNewRouteImport } from './routes/_authenticated/ad/orders.new'
+import { Route as ApiPublicMediaSplatRouteImport } from './routes/api/public/media/$'
 import { Route as ApiPublicRobotsTxtRouteImport } from './routes/api/public/robots.txt'
 import { Route as ApiPublicSitemapXmlRouteImport } from './routes/api/public/sitemap.xml'
 
@@ -307,6 +308,11 @@ const AuthenticatedAdOrdersNewRoute =
     path: '/orders/new',
     getParentRoute: () => AuthenticatedAdRouteRoute,
   } as any)
+const ApiPublicMediaSplatRoute = ApiPublicMediaSplatRouteImport.update({
+  id: '/api/public/media/$',
+  path: '/api/public/media/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicRobotsTxtRoute = ApiPublicRobotsTxtRouteImport.update({
   id: '/api/public/robots/txt',
   path: '/api/public/robots/txt',
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
   '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
   '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
@@ -415,6 +422,7 @@ export interface FileRoutesByTo {
   '/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
   '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
   '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/ad/orders': typeof AuthenticatedAdOrdersIndexRoute
@@ -468,6 +476,7 @@ export interface FileRoutesById {
   '/_authenticated/ad/invoice/$id': typeof AuthenticatedAdInvoiceIdRoute
   '/_authenticated/ad/orders/$id': typeof AuthenticatedAdOrdersIdRoute
   '/_authenticated/ad/orders/new': typeof AuthenticatedAdOrdersNewRoute
+  '/api/public/media/$': typeof ApiPublicMediaSplatRoute
   '/api/public/robots/txt': typeof ApiPublicRobotsTxtRoute
   '/api/public/sitemap/xml': typeof ApiPublicSitemapXmlRoute
   '/_authenticated/ad/orders/': typeof AuthenticatedAdOrdersIndexRoute
@@ -521,6 +530,7 @@ export interface FileRouteTypes {
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
     | '/ad/orders/new'
+    | '/api/public/media/$'
     | '/api/public/robots/txt'
     | '/api/public/sitemap/xml'
     | '/ad/orders/'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
     | '/ad/invoice/$id'
     | '/ad/orders/$id'
     | '/ad/orders/new'
+    | '/api/public/media/$'
     | '/api/public/robots/txt'
     | '/api/public/sitemap/xml'
     | '/ad/orders'
@@ -623,6 +634,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ad/invoice/$id'
     | '/_authenticated/ad/orders/$id'
     | '/_authenticated/ad/orders/new'
+    | '/api/public/media/$'
     | '/api/public/robots/txt'
     | '/api/public/sitemap/xml'
     | '/_authenticated/ad/orders/'
@@ -655,6 +667,7 @@ export interface RootRouteChildren {
   BikeModelsIndexRoute: typeof BikeModelsIndexRoute
   CzpOps9f2cIndexRoute: typeof CzpOps9f2cIndexRoute
   ApiHeroUploadRoute: typeof ApiHeroUploadRoute
+  ApiPublicMediaSplatRoute: typeof ApiPublicMediaSplatRoute
   ApiPublicRobotsTxtRoute: typeof ApiPublicRobotsTxtRoute
   ApiPublicSitemapXmlRoute: typeof ApiPublicSitemapXmlRoute
 }
@@ -997,6 +1010,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdOrdersNewRouteImport
       parentRoute: typeof AuthenticatedAdRouteRoute
     }
+    '/api/public/media/$': {
+      id: '/api/public/media/$'
+      path: '/api/public/media/$'
+      fullPath: '/api/public/media/$'
+      preLoaderRoute: typeof ApiPublicMediaSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/robots/txt': {
       id: '/api/public/robots/txt'
       path: '/api/public/robots/txt'
@@ -1103,6 +1123,7 @@ const rootRouteChildren: RootRouteChildren = {
   BikeModelsIndexRoute: BikeModelsIndexRoute,
   CzpOps9f2cIndexRoute: CzpOps9f2cIndexRoute,
   ApiHeroUploadRoute: ApiHeroUploadRoute,
+  ApiPublicMediaSplatRoute: ApiPublicMediaSplatRoute,
   ApiPublicRobotsTxtRoute: ApiPublicRobotsTxtRoute,
   ApiPublicSitemapXmlRoute: ApiPublicSitemapXmlRoute,
 }
