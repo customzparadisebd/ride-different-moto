@@ -45,6 +45,22 @@ Admin → Settings → Couriers → Test connection.
 | --------------- | ---------- | ------- | --------- | --------------------------------------------------------------------- |
 | `DEPLOY_PRESET` | Build only | No      | `netlify` | Already set in `netlify.toml`. Without it the build emits a Cloudflare Worker and Netlify serves no SSR: every page, `/ad/*` and all server functions 404. |
 
+## 3c. Build target — VPS / self-hosted Node
+
+| Host                | Build command        | Start command        | `DEPLOY_PRESET` |
+| ------------------- | -------------------- | -------------------- | --------------- |
+| Netlify             | `npm run build`      | (managed)            | `netlify` (set in `netlify.toml`) |
+| VPS / Docker / Node | `npm run build:node` | `npm run start:node` | `node-server`   |
+
+`npm run build:node` emits a standalone Node server in `.output/`. Run it behind
+nginx/Caddy as a reverse proxy on port `3000` (override with `PORT`), forwarding
+`X-Forwarded-For` and `X-Forwarded-Proto` so rate limiting and audit logs record
+the real client IP. Nothing in the app is Netlify-specific: the only Netlify file
+is `netlify.toml`, which other hosts ignore.
+
+Uploaded images are served by the app itself at `/api/public/media/...`, so no
+CDN, bucket-public setting or host-specific rewrite rule is required.
+
 ## 4. Manual settings that are not environment variables
 
 1. **Auth → URL configuration**: Site URL `https://customzparadisebd.com`,
@@ -52,9 +68,10 @@ Admin → Settings → Couriers → Test connection.
 2. **Auth → Providers**: enable Google, add
    `https://<new-ref>.supabase.co/auth/v1/callback` to the Google Cloud OAuth
    client. Keep anonymous sign-ups **disabled**.
-3. **Storage**: create all six buckets — `avatars` and `logos` private,
-   `products`, `hero`, `hero-banners` and `bike-models` public — then apply the
-   policies. See `05_storage.md`.
+3. **Storage**: create all six buckets — `avatars`, `logos`, `products`, `hero`,
+   `hero-banners`, `bike-models`. They may all stay **private**: media is served
+   through the app's own `/api/public/media/...` path. Then apply the policies in
+   `05_storage.md`.
 
 ## Example `.env`
 

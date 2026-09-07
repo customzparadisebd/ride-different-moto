@@ -1,5 +1,29 @@
 # 05 — Storage buckets (verified against source code)
 
+## 0. Update — Sep 2026: buckets no longer need to be public
+
+Uploaded media is no longer referenced by absolute Supabase URLs. Every upload
+path now stores an app-relative URL:
+
+```
+/api/public/media/<bucket>/<path>
+```
+
+That path is served by `src/routes/api/public/media/$.ts`, which streams the
+object with the service-role key and long-lived cache headers. Consequences:
+
+- `products`, `hero`, `hero-banners`, `bike-models` and `logos` may be **private**;
+  the storefront still shows the images. Making them public also works.
+- Nothing depends on the Supabase project ref or on a specific host, so moving
+  to a VPS or a new Supabase project requires no URL rewriting for new uploads.
+- `avatars` stays private and keeps its signed-URL flow (personal data — it is
+  intentionally NOT served by the media route).
+- Allow-list of buckets served publicly lives in `src/lib/storage-url.ts`.
+
+Policies for `products`, `hero`, `bike-models` (public read + staff-only write)
+are applied in the live project; the SQL is in §2 below.
+
+
 SQL exports do not carry Storage buckets or files. Recreate them by hand in the
 new project, copy the objects, then rewrite the absolute URLs stored in the
 database.
