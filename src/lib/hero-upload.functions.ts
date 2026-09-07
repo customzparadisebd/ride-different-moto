@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { PERMISSIONS } from "./admin.shared";
+import { storageMediaUrl } from "@/lib/storage-url";
 
 export const uploadHeroBanner = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -43,7 +44,5 @@ export const uploadHeroBanner = createServerFn({ method: "POST" })
 
     if (uploadError) throw uploadError;
 
-    const { data: { publicUrl } } = supabaseAdmin.storage.from("products").getPublicUrl(filePath);
-
-    return { url: publicUrl };
+    return { url: storageMediaUrl("products", filePath) };
   });

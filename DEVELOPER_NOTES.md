@@ -3,6 +3,35 @@
 Project: CUSTOMZ PARADISE BD
 Author: Rafi Gazi (Rabbee) Apps
 
+## Hosting-Independent / Portability Pass — Sep 6, 2026
+
+- **Portable media URLs.** All Supabase Storage uploads (products, hero, hero-banners,
+  bike-models, logos) now store an app-relative URL `/api/public/media/<bucket>/<path>`
+  instead of an absolute `https://<ref>.supabase.co/storage/...` URL. Served by
+  `src/routes/api/public/media/$.ts` (service-role read, allow-listed buckets only,
+  `Cache-Control: immutable`). Bucket allow-list: `src/lib/storage-url.ts`.
+  Consequence: uploads work whether buckets are public or private, and no URL
+  rewriting is needed when the Supabase project or the host changes.
+  `avatars` is deliberately excluded (personal data, keeps signed URLs).
+- **Storage policies added** for `products`, `hero`, `bike-models`: public read,
+  staff-only insert/update/delete (`public.is_staff`). Nothing existing weakened.
+  Note: the workspace blocks public buckets, which is why the media route exists.
+- **Removed Lovable/CDN-specific assumptions** from `src/lib/images.functions.ts`
+  (dropped the non-existent `image-cache` bucket lookup and the `lovableproject.com`
+  host check) and `src/components/SafeImage.tsx` (host-agnostic storage check).
+- **Legacy DB links rewritten** to `/api/public/media/...` for 11 bike models and 1
+  product/`site_logos` row; `supabase/migration-export/02_data.sql` rewritten to match
+  (audit-log history rows left untouched on purpose).
+- **VPS/self-host build:** `npm run build:node` (`DEPLOY_PRESET=node-server`) plus
+  `npm run start:node`. The Lovable sandbox always forces the Cloudflare preset, so the
+  Node preset can only be observed on a real host/CI; the config path itself is verified.
+  Docs: `supabase/migration-export/ENV_TEMPLATE.md` §3c, `05_storage.md` §0.
+- **Still requires owner action:** re-upload 11 bike-model images, 1 product image
+  (`drl.jpg`) and 3 hero slide images through the admin panel — those files were already
+  missing/dead externally (ImgBB + Unsplash 404, old storage objects gone).
+- Verified: `tsc --noEmit` clean, production build clean, `/api/public/media/...`
+  returns 200 for a private-bucket object and 404 for non-allow-listed buckets.
+
 ## Completed Milestones
 
 - [x] Initial design system and brand integration.

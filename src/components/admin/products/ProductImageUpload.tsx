@@ -16,6 +16,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { storageMediaUrl } from "@/lib/storage-url";
 
 interface ProductImageUploadProps {
   value: string | string[];
@@ -137,9 +138,7 @@ export function ProductImageUpload({
 
       if (uploadError) throw uploadError;
 
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from("products").getPublicUrl(filePath);
+      const publicUrl = storageMediaUrl("products", filePath);
 
       setUploads((prev) =>
         prev.map((u) =>

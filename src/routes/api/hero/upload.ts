@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { z } from "zod";
+import { storageMediaUrl } from "@/lib/storage-url";
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -39,11 +40,7 @@ export const Route = createFileRoute("/api/hero/upload")({
           return new Response(error.message, { status: 500 });
         }
 
-        const {
-          data: { publicUrl },
-        } = supabaseAdmin.storage.from("hero-banners").getPublicUrl(filePath);
-
-        return new Response(JSON.stringify({ url: publicUrl }), {
+        return new Response(JSON.stringify({ url: storageMediaUrl("hero-banners", filePath) }), {
           status: 200,
           headers: { "Content-Type": "application/json" },
         });

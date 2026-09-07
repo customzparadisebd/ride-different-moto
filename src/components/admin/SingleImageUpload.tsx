@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { storageMediaUrl } from "@/lib/storage-url";
 
 interface SingleImageUploadProps {
   value: string;
@@ -71,9 +72,7 @@ export function SingleImageUpload({
       if (uploadError) throw uploadError;
 
       setProgress(90);
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from(bucket).getPublicUrl(filePath);
+      const publicUrl = storageMediaUrl(bucket, filePath);
 
       setProgress(100);
       onChange(publicUrl);

@@ -1,5 +1,6 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { SiteLogo, LogoUpdateInput, LogoCategory } from "./logos.shared";
+import { storageMediaUrl } from "@/lib/storage-url";
 
 export async function getSiteLogos(): Promise<SiteLogo[]> {
   const { data, error } = await supabaseAdmin
@@ -53,13 +54,9 @@ export async function uploadLogo(
 
   if (uploadError) throw uploadError;
 
-  const { data: { publicUrl } } = supabaseAdmin.storage
-    .from("logos")
-    .getPublicUrl(path);
-
   return updateSiteLogo({
     category,
-    url: publicUrl,
+    url: storageMediaUrl("logos", path),
     storagePath: path,
   });
 }
