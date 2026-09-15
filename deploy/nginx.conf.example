@@ -1,0 +1,56 @@
+##
+## nginx reverse proxy for CUSTOMZ PARADISE BD
+##
+## Install:
+##   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/czp
+##   sudo nano /etc/nginx/sites-available/czp        # replace example.com
+##   sudo ln -s /etc/nginx/sites-available/czp /etc/nginx/sites-enabled/czp
+##   sudo nginx -t && sudo systemctl reload nginx
+##   sudo certbot --nginx -d customzparadisebd.com -d www.customzparadisebd.com
+##
+## Certbot rewrites this file to add the HTTPS server block and the
+## HTTP -> HTTPS redirect. Start from plain HTTP as below.
+##
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name customzparadisebd.com www.customzparadisebd.com;
+
+    # Uploaded images stream through the app (/api/public/media/...), so
+    # allow a comfortable body size for admin uploads.
+    client_max_body_size 25m;
+
+    # Compression is handled here, not by the app.
+    gzip on;
+    gzip_proxied any;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+    gzip_min_length 1024;
+
+    location / {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+
+        # Required: the app reads these for rate limiting, audit-log IPs
+        # and absolute URL generation.
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $remote_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host  $host;
+
+        # Websocket / streaming friendly
+        proxy_set_header Upgrade    $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        proxy_read_timeout 120s;
+        proxy_buffering off;
+    }
+
+    # Long cache for build assets (content-hashed filenames).
+    location /_build/ {
+        proxy_pass http://127.0.0.1:3000;
+        proxy_set_header Host $host;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}
