@@ -17,8 +17,9 @@ import { colorPrice, type StorefrontColor, type StorefrontProduct } from "./stor
 const PRODUCT_FIELDS =
   "id, name, slug, description, details, category, image_url, images, price, offer_price, stock_qty, is_universal, bike_compatibility, is_best_deal, is_featured, is_new_arrival, badge_enabled, badge_text, is_active, has_360_view, video_enabled, video_platform, video_url, deleted_at, sort_order, out_of_stock_toggle";
 
-const COLOR_FIELDS =
-  "id, product_id, name, swatch, price_delta, image_url, linked_product_id, is_active, sort_order";
+const COLOR_FIELDS_BASE =
+  "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
+const COLOR_FIELDS = `${COLOR_FIELDS_BASE}, linked_product_id`;
 
 /** Publishable-key client. Opaque `sb_` keys are not JWTs, so only send `apikey`. */
 function publicClient() {
@@ -57,12 +58,50 @@ function toColor(row: ProductRow, slugById?: Map<string, string>): StorefrontCol
   return {
     id: String(row["id"]),
     name: String(row["name"]),
-    swatch: String(row["swatch"] ?? "#888888"),
+    swatch: String(row["swatch"] ?? row["color_code"] ?? "#888888"),
     priceDelta: num(row["price_delta"]),
     image: (row["image_url"] as string | null) ?? null,
     linkedProductId: linkedId,
     linkedProductSlug: linkedId ? (slugById?.get(linkedId) ?? null) : null,
   };
+}
+
+/** Fetches active product colors with resilient fallback if linked_product_id column does not exist yet. */
+async function fetchProductColorRows(
+  supabase: ReturnType<typeof publicClient>,
+  productId?: string,
+): Promise<ProductRow[]> {
+  let query = supabase
+    .from("product_colors")
+    .select(COLOR_FIELDS)
+    .eq("is_active", true)
+    .order("sort_order");
+  if (productId) {
+    query = query.eq("product_id", productId);
+  }
+
+  const res = await query;
+  if (!res.error) {
+    return (res.data ?? []) as ProductRow[];
+  }
+
+  // Postgres 42703: undefined_column (e.g. linked_product_id migration not yet applied)
+  if (res.error.code === "42703") {
+    let fallbackQuery = supabase
+      .from("product_colors")
+      .select(COLOR_FIELDS_BASE)
+      .eq("is_active", true)
+      .order("sort_order");
+    if (productId) {
+      fallbackQuery = fallbackQuery.eq("product_id", productId);
+    }
+    const fallbackRes = await fallbackQuery;
+    if (!fallbackRes.error) {
+      return (fallbackRes.data ?? []) as ProductRow[];
+    }
+  }
+
+  return [];
 }
 
 /** Resolves the slugs of products linked to colour options, for navigation. */
@@ -136,12 +175,12 @@ export async function fetchActiveProducts(): Promise<StorefrontProduct[]> {
   const supabase = publicClient();
   const [products, colors, images] = await Promise.all([
     supabase.from("products").select(PRODUCT_FIELDS).eq("is_active", true).is("deleted_at", null).order("sort_order", { ascending: true, nullsFirst: false }).order("created_at", { ascending: false }),
-    supabase.from("product_colors").select(COLOR_FIELDS).eq("is_active", true).order("sort_order"),
+    fetchProductColorRows(supabase),
     supabase.from("product_360_images").select("product_id, image_url").order("display_order"),
   ]);
   if (products.error) throw new Error("Could not load the product catalogue.");
 
-  const colorRowsAll = (colors.data ?? []) as ProductRow[];
+  const colorRowsAll = colors;
   const slugById = await linkedSlugMap(supabase, colorRowsAll);
   const byProduct = new Map<string, StorefrontColor[]>();
   for (const row of colorRowsAll) {
@@ -181,13 +220,8 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
   if (!data) return null;
 
   const row = data as any;
-  const [colorRows, imageRows] = await Promise.all([
-    supabase
-      .from("product_colors")
-      .select(COLOR_FIELDS)
-      .eq("product_id", String(row["id"]))
-      .eq("is_active", true)
-      .order("sort_order"),
+  const [colorRowsList, imageRows] = await Promise.all([
+    fetchProductColorRows(supabase, String(row["id"])),
     supabase
       .from("product_360_images")
       .select("image_url")
@@ -195,7 +229,6 @@ export async function fetchProductBySlug(slug: string): Promise<StorefrontProduc
       .order("display_order"),
   ]);
 
-  const colorRowsList = (colorRows.data ?? []) as ProductRow[];
   const slugById = await linkedSlugMap(supabase, colorRowsList);
   const colors = colorRowsList.map((r) => toColor(r, slugById));
   const images = ((imageRows.data ?? []) as ProductRow[]).map((r) => String(r["image_url"]));

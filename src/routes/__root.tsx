@@ -84,7 +84,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -129,10 +129,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     return { siteSettings: null, logos: null };
   },
 
-  head: ({ loaderData }) => {
+  head: ({ loaderData }: { loaderData?: any }) => {
     // Use type assertion for settings to avoid TS issues while safely accessing properties
-    const settings = (loaderData?.siteSettings as unknown as SiteSettings) || site;
-    const siteLogos = (loaderData?.logos as unknown as any[]) || [];
+    const data = loaderData as { siteSettings?: any; logos?: any[] } | undefined;
+    const settings = (data?.siteSettings as unknown as SiteSettings) || site;
+    const siteLogos = (data?.logos as unknown as any[]) || [];
     const siteUrl = (settings as any).productionDomain ? `https://${(settings as any).productionDomain}` : site.url;
 
     const getLogo = (category: string, fallback: string) => {

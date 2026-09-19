@@ -73,10 +73,16 @@ export const productColorInput = z.object({
   swatch: z
     .string()
     .trim()
-    .regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a hex colour like #1D3F8F"),
+    .transform((val) => (/^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(val) ? `#${val}` : val))
+    .pipe(z.string().regex(/^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, "Use a hex colour like #1D3F8F")),
   priceDelta: z.number().finite().min(-1_000_000).max(1_000_000).default(0),
   imageUrl: blankable(600),
-  linkedProductId: z.string().uuid().nullish(),
+  linkedProductId: z
+    .string()
+    .trim()
+    .nullish()
+    .transform((val) => (val && val.length > 0 ? val : null))
+    .pipe(z.string().uuid().nullable()),
   isActive: z.boolean().default(true),
   sortOrder: z.number().int().min(0).max(999).default(0),
 });
@@ -88,6 +94,9 @@ export const productColorReorderInput = z.object({
   productId: z.string().uuid(),
   ids: z.array(z.string().uuid()).min(1).max(40),
 });
+
+export const PRODUCT_COLOR_COLUMNS_BASE =
+  "id, product_id, name, swatch, price_delta, image_url, is_active, sort_order";
 
 export const PRODUCT_COLOR_COLUMNS =
   "id, product_id, name, swatch, price_delta, image_url, linked_product_id, is_active, sort_order";

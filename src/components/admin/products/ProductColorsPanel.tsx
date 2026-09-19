@@ -92,8 +92,11 @@ export function ProductColorsPanel({
   });
   const rows = (colorsQuery.data?.rows ?? []) as unknown as ColorRow[];
 
-  const refresh = () =>
+  const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["admin-product-colors", productId] });
+    void queryClient.invalidateQueries({ queryKey: ["storefront-products"] });
+    void queryClient.invalidateQueries({ queryKey: ["admin-products"] });
+  };
   const onError = (error: Error) => toast.error(error.message || "That action failed.");
 
   const saveMutation = useMutation({

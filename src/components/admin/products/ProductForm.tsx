@@ -81,7 +81,7 @@ export function toProductInput(value: ProductFormValue): ProductInput {
   return {
     name: value.name.trim(),
     sku: value.sku.trim(),
-    slug: value.slug.trim() || slugify(value.name),
+    slug: slugify(value.slug.trim() || value.name),
     imageUrl: value.imageUrl.trim(),
     category: value.category as ProductInput["category"],
     bikeCompatibility: value.bikeCompatibility
@@ -150,6 +150,11 @@ export function ProductForm({
 
     if (!value["sku"].trim()) newErrors["sku"] = "SKU is required.";
 
+    const finalSlug = slugify(value["slug"].trim() || value["name"]);
+    if (finalSlug.length < 2) {
+      newErrors["slug"] = "Product name or URL slug must be at least 2 characters.";
+    }
+
     if (!value["price"].trim()) newErrors["price"] = "Regular price is required.";
     else if (!(Number(value["price"]) > 0))
       newErrors["price"] = "Please enter a valid regular price greater than 0.";
@@ -160,6 +165,19 @@ export function ProductForm({
       } else if (Number(value["offerPrice"]) >= Number(value["price"])) {
         newErrors["offerPrice"] = "Offer Price cannot be higher than Regular Price.";
       }
+    }
+
+    const qty = Number(value["stockQty"]);
+    if (isNaN(qty) || qty < 0 || !Number.isInteger(qty)) {
+      newErrors["stockQty"] = "Stock quantity must be a non-negative whole number.";
+    }
+
+    const galleryUrls = value["images"]
+      .split(/\r?\n/)
+      .map((entry) => entry.trim())
+      .filter(Boolean);
+    if (galleryUrls.length > 12) {
+      newErrors["images"] = "You can add at most 12 gallery images.";
     }
 
     if (!value["category"]) newErrors["category"] = "Please select a valid category.";

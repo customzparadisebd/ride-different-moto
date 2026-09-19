@@ -516,6 +516,7 @@ CREATE TABLE IF NOT EXISTS public.product_colors (
   swatch text DEFAULT '#000000'::text NOT NULL,
   price_delta numeric DEFAULT 0 NOT NULL,
   image_url text,
+  linked_product_id uuid,
   is_active boolean DEFAULT true NOT NULL,
   sort_order integer DEFAULT 0 NOT NULL,
   created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -1606,6 +1607,11 @@ EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition T
 END $$;
 
 DO $$ BEGIN
+  ALTER TABLE public.product_colors ADD CONSTRAINT product_colors_linked_product_id_fkey FOREIGN KEY (linked_product_id) REFERENCES products(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
+END $$;
+
+DO $$ BEGIN
   ALTER TABLE public.products ADD CONSTRAINT products_brand_id_fkey FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL;
 EXCEPTION WHEN duplicate_table OR duplicate_object OR invalid_table_definition THEN NULL;
 END $$;
@@ -1673,6 +1679,8 @@ CREATE INDEX IF NOT EXISTS orders_status_idx ON public.orders USING btree (statu
 CREATE INDEX IF NOT EXISTS payments_order_idx ON public.payments USING btree (order_id, created_at DESC);
 
 CREATE INDEX IF NOT EXISTS product_colors_product_idx ON public.product_colors USING btree (product_id);
+
+CREATE INDEX IF NOT EXISTS product_colors_linked_product_id_idx ON public.product_colors(linked_product_id);
 
 CREATE INDEX IF NOT EXISTS products_active_idx ON public.products USING btree (is_active, deleted_at);
 

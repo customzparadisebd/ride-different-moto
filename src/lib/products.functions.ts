@@ -34,6 +34,7 @@ import {
   productColorReorderInput,
   reorderProductsInput,
   PRODUCT_COLOR_COLUMNS,
+  PRODUCT_COLOR_COLUMNS_BASE,
   productColorToRow,
   product360ImageInput,
   product360ListInput,
@@ -147,7 +148,7 @@ export const updateProduct = createServerFn({ method: "POST" })
       .eq("id", id);
     if (error) {
       throw new Error(
-        error.message.includes("duplicate")
+        error.code === "23505" || error.message.includes("duplicate")
           ? "That SKU or slug is already used by another product."
           : "Could not save the product.",
       );
@@ -320,12 +321,25 @@ export const listProductColors = createServerFn({ method: "POST" })
       PERMISSIONS.ordersView,
     );
 
-    const { data: rows, error } = await context.supabase
+    let rows: any[] | null = null;
+    const initial = await context.supabase
       .from("product_colors")
       .select(PRODUCT_COLOR_COLUMNS)
       .eq("product_id", data.productId)
       .order("sort_order");
-    if (error) throw new Error("Could not load the colour options.");
+
+    if (initial.error && initial.error.code === "42703") {
+      const fallback = await context.supabase
+        .from("product_colors")
+        .select(PRODUCT_COLOR_COLUMNS_BASE)
+        .eq("product_id", data.productId)
+        .order("sort_order");
+      if (fallback.error) throw new Error("Could not load the colour options.");
+      rows = (fallback.data ?? []).map((r) => ({ ...r, linked_product_id: null }));
+    } else {
+      if (initial.error) throw new Error("Could not load the colour options.");
+      rows = initial.data;
+    }
     return { rows: rows ?? [] };
   });
 
@@ -339,11 +353,31 @@ export const saveProductColor = createServerFn({ method: "POST" })
 
     const row = productColorToRow(data);
     if (data.id) {
-      const { error } = await context.supabase.from("product_colors").update(row).eq("id", data.id);
-      if (error) throw new Error("Could not save the colour option.");
+      let { error } = await context.supabase.from("product_colors").update(row).eq("id", data.id);
+      if (error && error.code === "42703" && "linked_product_id" in row) {
+        const { linked_product_id, ...safeRow } = row;
+        const retry = await context.supabase.from("product_colors").update(safeRow).eq("id", data.id);
+        error = retry.error;
+      }
+      if (error) {
+        if (error.code === "23505" || error.message?.includes("product_id_name_key") || error.message?.includes("duplicate")) {
+          throw new Error("A colour with this name already exists for this product.");
+        }
+        throw new Error("Could not save the colour option.");
+      }
     } else {
-      const { error } = await context.supabase.from("product_colors").insert(row);
-      if (error) throw new Error("Could not add the colour option.");
+      let { error } = await context.supabase.from("product_colors").insert(row);
+      if (error && error.code === "42703" && "linked_product_id" in row) {
+        const { linked_product_id, ...safeRow } = row;
+        const retry = await context.supabase.from("product_colors").insert(safeRow);
+        error = retry.error;
+      }
+      if (error) {
+        if (error.code === "23505" || error.message?.includes("product_id_name_key") || error.message?.includes("duplicate")) {
+          throw new Error("A colour with this name already exists for this product.");
+        }
+        throw new Error("Could not add the colour option.");
+      }
     }
 
     await auditFromActor(actor, {
@@ -364,12 +398,24 @@ export const deleteProductColor = createServerFn({ method: "POST" })
     const actor = await resolveActor(context.userId, context.claims as never);
     assertAccess(actor, PERMISSIONS.productsManage);
 
-    const before = await context.supabase
+    let beforeData: { name: string; [key: string]: unknown } | null = null;
+    const initial = await context.supabase
       .from("product_colors")
       .select(PRODUCT_COLOR_COLUMNS)
       .eq("id", data.id)
       .maybeSingle();
-    if (!before.data) throw new Error("Colour option not found.");
+
+    if (initial.error && initial.error.code === "42703") {
+      const fallback = await context.supabase
+        .from("product_colors")
+        .select(PRODUCT_COLOR_COLUMNS_BASE)
+        .eq("id", data.id)
+        .maybeSingle();
+      beforeData = (fallback.data as any) ?? null;
+    } else {
+      beforeData = (initial.data as any) ?? null;
+    }
+    if (!beforeData) throw new Error("Colour option not found.");
 
     const { error } = await context.supabase.from("product_colors").delete().eq("id", data.id);
     if (error) throw new Error("Could not remove the colour option.");
@@ -378,8 +424,8 @@ export const deleteProductColor = createServerFn({ method: "POST" })
       action: AUDIT_ACTIONS.productUpdated,
       targetType: "product_color",
       targetId: data.id,
-      targetLabel: before.data.name,
-      oldValue: before.data,
+      targetLabel: beforeData.name,
+      oldValue: beforeData,
     });
     return { ok: true };
   });

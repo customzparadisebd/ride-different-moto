@@ -177,6 +177,7 @@ function AdminProducts() {
   const refresh = () => {
     void queryClient.invalidateQueries({ queryKey: ["admin-products"] });
     void queryClient.invalidateQueries({ queryKey: ["admin-recycle-bin"] });
+    void queryClient.invalidateQueries({ queryKey: ["storefront-products"] });
   };
   const onError = (error: Error) => toast.error(error.message || "That action failed.");
 
